@@ -2,6 +2,8 @@
 name = "s2protocol"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+    description = "A reader for "
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -13,7 +15,7 @@ tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
 clap = { version = "4.1", features = ["derive"] }
 serde_json = "1.0.91"
 convert_case = "0.6.0"
-nom-mpq = { path = "../nom-mpq" }
+nom-mpq = "0.1.0"
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }
