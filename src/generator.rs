@@ -664,8 +664,8 @@ pub fn generate_code_for_protocol(path: &str, output_name: &str) -> std::io::Res
 
     output.write_all(format!("//! Generated code from source: {}\n", path).as_bytes())?;
     output.write_all(
-        b"use super::*;\n\
-        use crate::parser::peek_hex;\n\
+        b"use crate::*;\n\
+        use nom_mpq::parser::peek_hex;\n\
         use std::convert::TryFrom;\n\
         use nom::*;\n",
     )?;
