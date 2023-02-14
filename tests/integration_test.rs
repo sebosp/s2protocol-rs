@@ -1,4 +1,3 @@
-use crate::tracker_events::read_tracker_events;
 use nom_mpq::parser;
 
 #[test_log::test]

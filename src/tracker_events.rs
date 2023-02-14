@@ -1,15 +1,96 @@
 //! Decodes the Tracker Events.
 //! These are stored in a file in the MPQ file called 'replay.tracker.events'
 
-use super::versions::protocol87702::*;
 use nom::*;
 use nom_mpq::parser::peek_hex;
 use nom_mpq::MPQ;
 
+/// A list of errors when handling TrackerEvents
+#[derive(Debug, thiserror::Error)]
+pub enum TrackerEventError {
+    /// An error to be used in TryFrom, when converting from protocol-specific types into our
+    /// consolidated-types
+    #[error("Unsupported Event Type")]
+    UnsupportedEventType,
+}
+
+/// A protocol agnostic Unit Born
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct UnitBornEvent {
+    pub unit_tag_index: u32,
+    pub unit_tag_recycle: u32,
+    pub unit_type_name: String,
+    pub control_player_id: u8,
+    pub upkeep_player_id: u8,
+    pub x: u8,
+    pub y: u8,
+    pub creator_unit_tag_index: Option<u32>,
+    pub creator_unit_tag_recycle: Option<u32>,
+    pub creator_ability_name: Option<String>,
+}
+
+/// A protocol agnostic Unit Died
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct UnitDiedEvent {
+    pub unit_tag_index: u32,
+    pub unit_tag_recycle: u32,
+    pub killer_player_id: Option<u8>,
+    pub x: u8,
+    pub y: u8,
+    pub killer_unit_tag_index: Option<u32>,
+    pub killer_unit_tag_recycle: Option<u32>,
+}
+
+/// A protocol agnostic Unit Init Event
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct UnitInitEvent {
+    pub unit_tag_index: u32,
+    pub unit_tag_recycle: u32,
+    pub unit_type_name: String,
+    pub control_player_id: u8,
+    pub upkeep_player_id: u8,
+    pub x: u8,
+    pub y: u8,
+}
+
+/// A protocol agnostic Unit Done Event
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct UnitDoneEvent {
+    pub unit_tag_index: u32,
+    pub unit_tag_recycle: u32,
+}
+
+/// A protocol agnostic Unit Done Event
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct UnitPositionsEvent {
+    pub first_unit_index: u32,
+    pub items: Vec<i32>,
+}
+
+/// A unified Replay Tracker that is agnostic of any version.
+/// This should hopefully only add fields to variants to make things backwards compatible
+/// Many of the variants are not supported yet, they will be added as they are considered
+/// relevant  for `swarmy` repo.
+#[derive(Debug, PartialEq, Clone)]
+pub enum ReplayTrackerEvent {
+    UnitBorn(UnitBornEvent),
+    UnitDied(UnitDiedEvent),
+    UnitTypeChange(UnitTypeChangeEvent),
+    UnitInit(UnitInitEvent),
+    UnitDone(UnitDoneEvent),
+    UnitPosition(UnitPositionsEvent),
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct UnitTypeChangeEvent {
+    pub unit_tag_index: u32,
+    pub unit_tag_recycle: u32,
+    pub unit_type_name: String,
+}
+
 /// A Tracker Event is an event in the gameloop for a specific user id
 #[derive(Debug, PartialEq, Clone)]
 pub struct TrackerEvent {
-    pub game_loop: u32,
     pub delta: SVarUint32,
     pub event: ReplayTrackerEEventId,
 }
@@ -19,14 +100,7 @@ impl TrackerEvent {
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, delta) = SVarUint32::parse(input)?;
         let (tail, event) = ReplayTrackerEEventId::parse(tail)?;
-        Ok((
-            tail,
-            Self {
-                delta,
-                event,
-                game_loop: 0u32,
-            },
-        ))
+        Ok((tail, Self { delta, event }))
     }
 }
 
@@ -45,7 +119,6 @@ pub fn read_tracker_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<TrackerEvent>
             SVarUint32::Uint6(val) => val as u32,
             SVarUint32::Uint14(val) | SVarUint32::Uint22(val) | SVarUint32::Uint32(val) => val,
         };
-        tracker_event.game_loop = game_loop;
         event_tail = new_event_tail;
         res.push(tracker_event);
         if event_tail.input_len() == 0 {

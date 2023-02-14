@@ -3,6 +3,13 @@ use crate::*;
 use nom::*;
 use nom_mpq::parser::peek_hex;
 use std::convert::TryFrom;
+use crate::tracker_events::{ReplayTrackerEvent, TrackerEventError,
+    UnitBornEvent,
+    UnitDiedEvent,
+    UnitTypeChangeEvent,
+    UnitInitEvent,
+    UnitDoneEvent,
+    UnitPositionsEvent};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum SVarUint32 {
@@ -3079,5 +3086,39 @@ impl ReplayTrackerSPlayerSetupEvent {
                 m_slot_id: m_slot_id.expect("Missing m_slot_id from struct"),
             },
         ))
+    }
+}
+
+impl TryFrom<ReplayTrackerEEventId> for ReplayTrackerEvent {
+    type Error = TrackerEventError;
+
+    fn try_from(
+        value: ReplayTrackerEEventId,
+    ) -> Result<Self, Self::Error> {
+        match value {
+            ReplayTrackerEEventId::EPlayerStats(_) |
+            ReplayTrackerEEventId::EUnitOwnerChange(_) |
+            ReplayTrackerEEventId::EPlayerSetup(_) => 
+                => Err(TrackerEventError::UnsupportedEventType),
+    ReplayTrackerEEventId::EUnitBorn(e) => {
+        Ok(UnitBornEvent{
+            unit_tag_index: e.m_unit_tag_index,
+            unit_tag_recycle: e.m_unit_tag_recycle,
+            unit_type_name: str::from_utf8(&evt.m_unit_type_name)?.to_string(),
+            control_player_id: evt.m_control_player_id,
+            upkeep_player_id: env.m_upkeep_player_id,
+            x: env.m_x,
+            y: env.m_y,
+            creator_unit_tag_index: e.m_creator_unit_tag_index,
+            creator_unit_tag_recycle: e.m_creator_unit_tag_recycle,
+            creator_ability_name: e.m_creator_ability_name.map(|val| str::from_utf8(v)?.to_string()),
+        })
+    },
+    ReplayTrackerEEventId::EUnitDied(e),
+    ReplayTrackerEEventId::EUnitTypeChange(e),
+    ReplayTrackerEEventId::EUnitInit(e),
+    ReplayTrackerEEventId::EUnitDone(e),
+    ReplayTrackerEEventId::EUnitPosition(e),
+        }
     }
 }
