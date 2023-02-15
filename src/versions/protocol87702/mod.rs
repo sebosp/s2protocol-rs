@@ -1,15 +1,13 @@
 //! Generated code from source: ../s2protocol/json/protocol87702.json
+use crate::tracker_events::{
+    ReplayTrackerEvent, TrackerEvent, TrackerEventError, UnitBornEvent, UnitDiedEvent,
+    UnitDoneEvent, UnitInitEvent, UnitPositionsEvent, UnitTypeChangeEvent,
+};
 use crate::*;
 use nom::*;
 use nom_mpq::parser::peek_hex;
+use nom_mpq::MPQ;
 use std::convert::TryFrom;
-use crate::tracker_events::{ReplayTrackerEvent, TrackerEventError,
-    UnitBornEvent,
-    UnitDiedEvent,
-    UnitTypeChangeEvent,
-    UnitInitEvent,
-    UnitDoneEvent,
-    UnitPositionsEvent};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum SVarUint32 {
@@ -19,7 +17,7 @@ pub enum SVarUint32 {
     Uint32(u32),
 }
 impl SVarUint32 {
-    #[tracing::instrument(name="SVarUint32::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::SVarUint32::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_choice_tag(input)?;
         let (tail, variant_tag) = parse_vlq_int(tail)?;
@@ -103,7 +101,7 @@ impl SVersion {
         tracing::debug!("res: {:?}", m_base_build);
         Ok((tail, u32::try_from(m_base_build).unwrap()))
     }
-    #[tracing::instrument(name="SVersion::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::SVersion::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -242,7 +240,7 @@ impl Smd5 {
         tracing::debug!("res: {:?}", m_data);
         Ok((tail, m_data))
     }
-    #[tracing::instrument(name="Smd5::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::Smd5::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -362,7 +360,7 @@ impl ReplaySHeader {
         tracing::debug!("res: {:?}", m_ngdp_root_key_is_dev_data);
         Ok((tail, m_ngdp_root_key_is_dev_data))
     }
-    #[tracing::instrument(name="ReplaySHeader::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplaySHeader::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -544,7 +542,7 @@ pub enum ReplayTrackerEEventId {
     EPlayerSetup(ReplayTrackerSPlayerSetupEvent),
 }
 impl ReplayTrackerEEventId {
-    #[tracing::instrument(name="ReplayTrackerEEventId::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerEEventId::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_int_tag(input)?;
         let (tail, variant_tag) = parse_vlq_int(tail)?;
@@ -1022,7 +1020,7 @@ impl ReplayTrackerSPlayerStats {
             i32::try_from(m_score_value_vespene_friendly_fire_technology).unwrap(),
         ))
     }
-    #[tracing::instrument(name="ReplayTrackerSPlayerStats::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerSPlayerStats::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -1784,7 +1782,7 @@ impl ReplayTrackerSPlayerStatsEvent {
         tracing::debug!("res: {:?}", m_stats);
         Ok((tail, m_stats))
     }
-    #[tracing::instrument(name="ReplayTrackerSPlayerStatsEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerSPlayerStatsEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -1930,7 +1928,7 @@ impl ReplayTrackerSUnitBornEvent {
         tracing::debug!("res: {:?}", m_creator_ability_name);
         Ok((tail, m_creator_ability_name))
     }
-    #[tracing::instrument(name="ReplayTrackerSUnitBornEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerSUnitBornEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2189,7 +2187,7 @@ impl ReplayTrackerSUnitDiedEvent {
         tracing::debug!("res: {:?}", m_killer_unit_tag_recycle);
         Ok((tail, m_killer_unit_tag_recycle))
     }
-    #[tracing::instrument(name="ReplayTrackerSUnitDiedEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerSUnitDiedEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2355,7 +2353,7 @@ impl ReplayTrackerSUnitOwnerChangeEvent {
         tracing::debug!("res: {:?}", m_upkeep_player_id);
         Ok((tail, u8::try_from(m_upkeep_player_id).unwrap()))
     }
-    #[tracing::instrument(name="ReplayTrackerSUnitOwnerChangeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerSUnitOwnerChangeEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2468,7 +2466,7 @@ impl ReplayTrackerSUnitTypeChangeEvent {
         tracing::debug!("res: {:?}", m_unit_type_name);
         Ok((tail, m_unit_type_name))
     }
-    #[tracing::instrument(name="ReplayTrackerSUnitTypeChangeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerSUnitTypeChangeEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2562,7 +2560,7 @@ impl ReplayTrackerSUpgradeEvent {
         tracing::debug!("res: {:?}", m_count);
         Ok((tail, i32::try_from(m_count).unwrap()))
     }
-    #[tracing::instrument(name="ReplayTrackerSUpgradeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerSUpgradeEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2684,7 +2682,7 @@ impl ReplayTrackerSUnitInitEvent {
         tracing::debug!("res: {:?}", m_y);
         Ok((tail, u8::try_from(m_y).unwrap()))
     }
-    #[tracing::instrument(name="ReplayTrackerSUnitInitEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerSUnitInitEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2833,7 +2831,7 @@ impl ReplayTrackerSUnitDoneEvent {
         tracing::debug!("res: {:?}", m_unit_tag_recycle);
         Ok((tail, u32::try_from(m_unit_tag_recycle).unwrap()))
     }
-    #[tracing::instrument(name="ReplayTrackerSUnitDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerSUnitDoneEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2911,7 +2909,7 @@ impl ReplayTrackerSUnitPositionsEvent {
             .collect();
         Ok((tail, array))
     }
-    #[tracing::instrument(name="ReplayTrackerSUnitPositionsEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerSUnitPositionsEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -3010,7 +3008,7 @@ impl ReplayTrackerSPlayerSetupEvent {
         tracing::debug!("res: {:?}", m_slot_id);
         Ok((tail, m_slot_id))
     }
-    #[tracing::instrument(name="ReplayTrackerSPlayerSetupEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="87702::ReplayTrackerSPlayerSetupEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -3089,36 +3087,140 @@ impl ReplayTrackerSPlayerSetupEvent {
     }
 }
 
+// TODO: From here on this should be added to the generator.
+
+impl ReplayTrackerEEventId {
+    /// Reads a delta, TrackerEvent pair
+    #[tracing::instrument(name="TrackerEvent::parse_event_pair", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    pub fn parse_event_pair(input: &[u8]) -> IResult<&[u8], (u32, ReplayTrackerEEventId)> {
+        let (tail, delta) = SVarUint32::parse(input)?;
+        let (tail, event) = ReplayTrackerEEventId::parse(tail)?;
+        let delta = match delta {
+            SVarUint32::Uint6(val) => val as u32,
+            SVarUint32::Uint14(val) | SVarUint32::Uint22(val) | SVarUint32::Uint32(val) => val,
+        };
+        Ok((tail, (delta, event)))
+    }
+
+    /// Read the Tracker Events
+    pub fn read_tracker_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<TrackerEvent> {
+        // TODO: Make it return an Iterator.
+        let (_event_tail, tracker_events) = mpq
+            .read_mpq_file_sector("replay.tracker.events", false, &file_contents)
+            .unwrap();
+        let mut res = vec![];
+        let mut event_tail: &[u8] = &tracker_events;
+        loop {
+            let (new_event_tail, (delta, event)) =
+                Self::parse_event_pair(&event_tail).expect("Unable to parse TrackerEvents");
+            event_tail = new_event_tail;
+            res.push(TrackerEvent {
+                delta,
+                event: event.try_into().expect("Unable to parse event"),
+            });
+            if event_tail.input_len() == 0 {
+                break;
+            }
+        }
+        res
+    }
+}
+
 impl TryFrom<ReplayTrackerEEventId> for ReplayTrackerEvent {
     type Error = TrackerEventError;
 
-    fn try_from(
-        value: ReplayTrackerEEventId,
-    ) -> Result<Self, Self::Error> {
+    fn try_from(value: ReplayTrackerEEventId) -> Result<Self, Self::Error> {
         match value {
-            ReplayTrackerEEventId::EPlayerStats(_) |
-            ReplayTrackerEEventId::EUnitOwnerChange(_) |
-            ReplayTrackerEEventId::EPlayerSetup(_) => 
-                => Err(TrackerEventError::UnsupportedEventType),
-    ReplayTrackerEEventId::EUnitBorn(e) => {
-        Ok(UnitBornEvent{
-            unit_tag_index: e.m_unit_tag_index,
-            unit_tag_recycle: e.m_unit_tag_recycle,
-            unit_type_name: str::from_utf8(&evt.m_unit_type_name)?.to_string(),
-            control_player_id: evt.m_control_player_id,
-            upkeep_player_id: env.m_upkeep_player_id,
-            x: env.m_x,
-            y: env.m_y,
-            creator_unit_tag_index: e.m_creator_unit_tag_index,
-            creator_unit_tag_recycle: e.m_creator_unit_tag_recycle,
-            creator_ability_name: e.m_creator_ability_name.map(|val| str::from_utf8(v)?.to_string()),
-        })
-    },
-    ReplayTrackerEEventId::EUnitDied(e),
-    ReplayTrackerEEventId::EUnitTypeChange(e),
-    ReplayTrackerEEventId::EUnitInit(e),
-    ReplayTrackerEEventId::EUnitDone(e),
-    ReplayTrackerEEventId::EUnitPosition(e),
+            ReplayTrackerEEventId::EPlayerStats(_)
+            | ReplayTrackerEEventId::EUnitOwnerChange(_)
+            | ReplayTrackerEEventId::EUpgrade(_)
+            | ReplayTrackerEEventId::EPlayerSetup(_) => {
+                Err(TrackerEventError::UnsupportedEventType)
+            }
+            ReplayTrackerEEventId::EUnitBorn(e) => Ok(e.to_versionless()?),
+            ReplayTrackerEEventId::EUnitDied(e) => Ok(e.to_versionless()?),
+            ReplayTrackerEEventId::EUnitTypeChange(e) => Ok(e.to_versionless()?),
+            ReplayTrackerEEventId::EUnitInit(e) => Ok(e.to_versionless()?),
+            ReplayTrackerEEventId::EUnitDone(e) => Ok(e.to_versionless()?),
+            ReplayTrackerEEventId::EUnitPosition(e) => Ok(e.to_versionless()?),
         }
+    }
+}
+
+impl ReplayTrackerSUnitBornEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        let creator_ability_name = if let Some(val) = self.m_creator_ability_name {
+            Some(str::from_utf8(&val)?.to_string())
+        } else {
+            None
+        };
+        Ok(ReplayTrackerEvent::UnitBorn(UnitBornEvent {
+            unit_tag_index: self.m_unit_tag_index,
+            unit_tag_recycle: self.m_unit_tag_recycle,
+            unit_type_name: str::from_utf8(&self.m_unit_type_name)?.to_string(),
+            control_player_id: self.m_control_player_id,
+            upkeep_player_id: self.m_upkeep_player_id,
+            x: self.m_x,
+            y: self.m_y,
+            creator_unit_tag_index: self.m_creator_unit_tag_index,
+            creator_unit_tag_recycle: self.m_creator_unit_tag_recycle,
+            creator_ability_name,
+        }))
+    }
+}
+
+impl ReplayTrackerSUnitDiedEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        Ok(ReplayTrackerEvent::UnitDied(UnitDiedEvent {
+            unit_tag_index: self.m_unit_tag_index,
+            unit_tag_recycle: self.m_unit_tag_recycle,
+            killer_player_id: self.m_killer_player_id,
+            x: self.m_x,
+            y: self.m_y,
+            killer_unit_tag_index: self.m_killer_unit_tag_index,
+            killer_unit_tag_recycle: self.m_killer_unit_tag_recycle,
+        }))
+    }
+}
+
+impl ReplayTrackerSUnitTypeChangeEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        Ok(ReplayTrackerEvent::UnitTypeChange(UnitTypeChangeEvent {
+            unit_tag_index: self.m_unit_tag_index,
+            unit_tag_recycle: self.m_unit_tag_recycle,
+            unit_type_name: str::from_utf8(&self.m_unit_type_name)?.to_string(),
+        }))
+    }
+}
+
+impl ReplayTrackerSUnitInitEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        Ok(ReplayTrackerEvent::UnitInit(UnitInitEvent {
+            unit_tag_index: self.m_unit_tag_index,
+            unit_tag_recycle: self.m_unit_tag_recycle,
+            unit_type_name: str::from_utf8(&self.m_unit_type_name)?.to_string(),
+            control_player_id: self.m_control_player_id,
+            upkeep_player_id: self.m_upkeep_player_id,
+            x: self.m_x,
+            y: self.m_y,
+        }))
+    }
+}
+
+impl ReplayTrackerSUnitDoneEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        Ok(ReplayTrackerEvent::UnitDone(UnitDoneEvent {
+            unit_tag_index: self.m_unit_tag_index,
+            unit_tag_recycle: self.m_unit_tag_recycle,
+        }))
+    }
+}
+
+impl ReplayTrackerSUnitPositionsEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        Ok(ReplayTrackerEvent::UnitPosition(UnitPositionsEvent {
+            first_unit_index: self.m_first_unit_index,
+            items: self.m_items,
+        }))
     }
 }
