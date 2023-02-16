@@ -68,6 +68,35 @@ pub struct UnitPositionsEvent {
     pub items: Vec<i32>,
 }
 
+impl UnitPositionsEvent {
+    pub fn to_unit_positions_vec(self) -> Vec<UnitPosition> {
+        let mut unit_index = self.first_unit_index as i32;
+        let mut res = vec![];
+        for relative_unit_pos in self.items.chunks_exact(3) {
+            unit_index += relative_unit_pos[0];
+            let x = relative_unit_pos[1] * 4;
+            let y = relative_unit_pos[2] * 4;
+            res.push(UnitPosition {
+                tag: unit_index as u32,
+                x,
+                y,
+            });
+            // unit identified by unitIndex at the current event['_gameloop'] time is at approximate position (x, y)
+        }
+        res
+    }
+}
+
+/// A single unit position
+pub struct UnitPosition {
+    /// The unit "tag" is the "index"?
+    pub tag: u32,
+    /// The X position.
+    pub x: i32,
+    /// The Y position.
+    pub y: i32,
+}
+
 /// A unified Replay Tracker that is agnostic of any version.
 /// This should hopefully only add fields to variants to make things backwards compatible
 /// Many of the variants are not supported yet, they will be added as they are considered
