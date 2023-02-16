@@ -3114,10 +3114,12 @@ impl ReplayTrackerEEventId {
             let (new_event_tail, (delta, event)) =
                 Self::parse_event_pair(&event_tail).expect("Unable to parse TrackerEvents");
             event_tail = new_event_tail;
-            res.push(TrackerEvent {
-                delta,
-                event: event.try_into().expect("Unable to parse event"),
-            });
+            match event.try_into() {
+                Ok(val) => res.push(TrackerEvent { delta, event: val }),
+                Err(err) => {
+                    tracing::debug!("Skipping event: {:?}", err);
+                }
+            };
             if event_tail.input_len() == 0 {
                 break;
             }
