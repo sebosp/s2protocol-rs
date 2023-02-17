@@ -1,4 +1,4 @@
-//! Generated code from source: ../s2protocol/json/protocol87702.json
+//! Generated code from source: ../s2protocol/json/protocol89634.json
 use crate::tracker_events::{
     ReplayTrackerEvent, TrackerEvent, TrackerEventError, UnitBornEvent, UnitDiedEvent,
     UnitDoneEvent, UnitInitEvent, UnitPositionsEvent, UnitTypeChangeEvent,
@@ -17,7 +17,7 @@ pub enum SVarUint32 {
     Uint32(u32),
 }
 impl SVarUint32 {
-    #[tracing::instrument(name="87702::SVarUint32::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::SVarUint32::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_choice_tag(input)?;
         let (tail, variant_tag) = parse_vlq_int(tail)?;
@@ -101,7 +101,7 @@ impl SVersion {
         tracing::debug!("res: {:?}", m_base_build);
         Ok((tail, u32::try_from(m_base_build).unwrap()))
     }
-    #[tracing::instrument(name="87702::SVersion::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::SVersion::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -240,7 +240,7 @@ impl Smd5 {
         tracing::debug!("res: {:?}", m_data);
         Ok((tail, m_data))
     }
-    #[tracing::instrument(name="87702::Smd5::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::Smd5::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -360,7 +360,7 @@ impl ReplaySHeader {
         tracing::debug!("res: {:?}", m_ngdp_root_key_is_dev_data);
         Ok((tail, m_ngdp_root_key_is_dev_data))
     }
-    #[tracing::instrument(name="87702::ReplaySHeader::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplaySHeader::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -542,7 +542,7 @@ pub enum ReplayTrackerEEventId {
     EPlayerSetup(ReplayTrackerSPlayerSetupEvent),
 }
 impl ReplayTrackerEEventId {
-    #[tracing::instrument(name="87702::ReplayTrackerEEventId::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerEEventId::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_int_tag(input)?;
         let (tail, variant_tag) = parse_vlq_int(tail)?;
@@ -1020,7 +1020,7 @@ impl ReplayTrackerSPlayerStats {
             i32::try_from(m_score_value_vespene_friendly_fire_technology).unwrap(),
         ))
     }
-    #[tracing::instrument(name="87702::ReplayTrackerSPlayerStats::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerSPlayerStats::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -1782,7 +1782,7 @@ impl ReplayTrackerSPlayerStatsEvent {
         tracing::debug!("res: {:?}", m_stats);
         Ok((tail, m_stats))
     }
-    #[tracing::instrument(name="87702::ReplayTrackerSPlayerStatsEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerSPlayerStatsEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -1928,7 +1928,7 @@ impl ReplayTrackerSUnitBornEvent {
         tracing::debug!("res: {:?}", m_creator_ability_name);
         Ok((tail, m_creator_ability_name))
     }
-    #[tracing::instrument(name="87702::ReplayTrackerSUnitBornEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerSUnitBornEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2187,7 +2187,7 @@ impl ReplayTrackerSUnitDiedEvent {
         tracing::debug!("res: {:?}", m_killer_unit_tag_recycle);
         Ok((tail, m_killer_unit_tag_recycle))
     }
-    #[tracing::instrument(name="87702::ReplayTrackerSUnitDiedEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerSUnitDiedEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2353,7 +2353,7 @@ impl ReplayTrackerSUnitOwnerChangeEvent {
         tracing::debug!("res: {:?}", m_upkeep_player_id);
         Ok((tail, u8::try_from(m_upkeep_player_id).unwrap()))
     }
-    #[tracing::instrument(name="87702::ReplayTrackerSUnitOwnerChangeEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerSUnitOwnerChangeEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2466,7 +2466,7 @@ impl ReplayTrackerSUnitTypeChangeEvent {
         tracing::debug!("res: {:?}", m_unit_type_name);
         Ok((tail, m_unit_type_name))
     }
-    #[tracing::instrument(name="87702::ReplayTrackerSUnitTypeChangeEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerSUnitTypeChangeEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2560,7 +2560,7 @@ impl ReplayTrackerSUpgradeEvent {
         tracing::debug!("res: {:?}", m_count);
         Ok((tail, i32::try_from(m_count).unwrap()))
     }
-    #[tracing::instrument(name="87702::ReplayTrackerSUpgradeEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerSUpgradeEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2682,7 +2682,7 @@ impl ReplayTrackerSUnitInitEvent {
         tracing::debug!("res: {:?}", m_y);
         Ok((tail, u8::try_from(m_y).unwrap()))
     }
-    #[tracing::instrument(name="87702::ReplayTrackerSUnitInitEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerSUnitInitEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2831,7 +2831,7 @@ impl ReplayTrackerSUnitDoneEvent {
         tracing::debug!("res: {:?}", m_unit_tag_recycle);
         Ok((tail, u32::try_from(m_unit_tag_recycle).unwrap()))
     }
-    #[tracing::instrument(name="87702::ReplayTrackerSUnitDoneEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerSUnitDoneEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2909,7 +2909,7 @@ impl ReplayTrackerSUnitPositionsEvent {
             .collect();
         Ok((tail, array))
     }
-    #[tracing::instrument(name="87702::ReplayTrackerSUnitPositionsEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerSUnitPositionsEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -3008,7 +3008,7 @@ impl ReplayTrackerSPlayerSetupEvent {
         tracing::debug!("res: {:?}", m_slot_id);
         Ok((tail, m_slot_id))
     }
-    #[tracing::instrument(name="87702::ReplayTrackerSPlayerSetupEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    #[tracing::instrument(name="89634::ReplayTrackerSPlayerSetupEvent::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -3086,8 +3086,6 @@ impl ReplayTrackerSPlayerSetupEvent {
         ))
     }
 }
-
-// TODO: From here on this should be added to the generator.
 
 impl ReplayTrackerEEventId {
     /// Reads a delta, TrackerEvent pair

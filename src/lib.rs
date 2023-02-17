@@ -12,6 +12,7 @@ use nom_mpq::parser::peek_hex;
 use std::str;
 pub use version_decoder::read_protocol_header;
 
+/// A small combinator that returns 8 bytes around where the error was found.
 pub fn dbg_peek<'a, F, O, E: std::fmt::Debug>(
     f: F,
     context: &'static str,
@@ -28,12 +29,19 @@ where
     }
 }
 
+/// Arrays have this tag prepend.
 pub const ARRAY_TAG: &[u8; 1] = b"\x00";
+/// Blobs have this tag prepend.
 pub const BLOB_TAG: &[u8; 1] = b"\x02";
+/// Choices have this tag prepend.
 pub const CHOICE_TAG: &[u8; 1] = b"\x03";
+/// Optionals have this tag prepend.
 pub const OPT_TAG: &[u8; 1] = b"\x04";
+/// Structs have this tag prepend.
 pub const STRUCT_TAG: &[u8; 1] = b"\x05";
+/// Bools have this tag prepend.
 pub const BOOL_TAG: &[u8; 1] = b"\x06";
+/// Ints have this tag prepend.
 pub const INT_TAG: &[u8; 1] = b"\x09";
 
 /// The protocol contains Variable-Length Quantities (VLQs) that are used to encode the size of
@@ -122,6 +130,7 @@ pub fn tagged_bool(input: &[u8]) -> IResult<&[u8], bool> {
     Ok((tail, value != 0))
 }
 
+/// Reads a VLQ Int that is prepend by its tag
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn parse_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
     let (mut tail, mut v_int_value) = dbg_peek(u8, "v_int")(&input)?;
