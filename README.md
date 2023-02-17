@@ -1,5 +1,5 @@
 [![Crates.io](https://img.shields.io/crates/v/s2protocol.svg)](https://crates.io/crates/s2protocol)
-[![Workflow Status](https://github.com/sebosp/s2protocol-rs/workflows/main/badge.svg)](https://github.com/sebosp/s2protocol-rs/actions?query=workflow%3A%22main%22)
+[![Workflow Status](https://github.com/sebosp/s2protocol-rs/workflows/Rust/badge.svg)](https://github.com/sebosp/s2protocol-rs/actions?query=workflow%3A%22Rust%22)
 
 # s2protocol-rs
 
