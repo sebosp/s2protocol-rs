@@ -88,6 +88,7 @@ impl UnitPositionsEvent {
 }
 
 /// A single unit position
+#[derive(Debug, Default, Clone)]
 pub struct UnitPosition {
     /// The unit "tag" is the "index"?
     pub tag: u32,
