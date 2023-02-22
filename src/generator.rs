@@ -43,8 +43,12 @@ pub fn gen_type_impl_def(name: &str) -> String {
 }
 
 pub fn gen_struct_main_parse_fn(name: &str) -> String {
+    // Try to get the numeric part of the protocol.
+    // XXX: This only works because I'm using ../src/s2protocol/.../, if I use a full path with
+    // numbers on them then this is broken.
+    let proto_num = name.clone().retain(|c| c >= '0' && c <= '9');
     format!(
-        "#[tracing::instrument(name=\"{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
          let (tail, _) = validate_struct_tag(input)?;\n\
          let (mut tail, struct_field_count) = parse_vlq_int(tail)?;\n\
@@ -651,6 +655,65 @@ pub fn gen_proto_enum_code(
     Ok(())
 }
 
+/// Traverses the current depth looking for StructTypes that we will need later to identify field
+/// tags.
+#[tracing::instrument(level = "debug", skip(enum_tags, mod_decl))]
+fn fill_module_decl_structs(enum_tags: &mut HashMap<String, String>, mod_decl: &Value) {
+    if mod_decl["type_info"]["type"] != "StructType" {
+        tracing::warn!(
+            "Skipping mod_decl {} with type: {}",
+            mod_decl["fullname"],
+            mod_decl["type_info"]["type"]
+        );
+        // Skip non StructType
+        return;
+    }
+    tracing::info!(
+        "Processing mod_decl {} with type: {}",
+        mod_decl["fullname"],
+        mod_decl["type_info"]["type"]
+    );
+    let field_array = mod_decl["type_info"]["fields"].as_array().unwrap();
+    for field in field_array {
+        let nnet_field_type = field["type"].as_str().unwrap();
+        if nnet_field_type == "ConstDecl" {
+            let type_full_name = field["type_info"]["fullname"].as_str().unwrap().to_string();
+            if field["value"]["type"] != "IdentifierExpr" {
+                tracing::error!(
+                    "Unknown value.type for ConstDecl: {}",
+                    field["value"]["type"]
+                );
+                panic!(
+                    "Unknown value.type for ConstDecl: {}",
+                    field["value"]["type"]
+                );
+            }
+            let type_variant_value = field["value"]["fullname"].as_str().unwrap().to_string();
+            let type_variant_value =
+                str_nnet_name_to_rust_name(type_variant_value.replace(&type_full_name, ""));
+            let type_variant = str_nnet_name_to_rust_name(type_full_name);
+            tracing::info!(
+                "Found ConstDecl for fullname: {} should be referenced by: {}::{}",
+                mod_decl["fullname"],
+                type_variant,
+                type_variant_value,
+            );
+            let key = format!("{}::{}", type_variant, type_variant_value);
+            let new_val = str_nnet_name_to_rust_name(mod_decl["fullname"].to_string());
+            if let Some(old_val) = enum_tags.insert(key.clone(), new_val.clone()) {
+                tracing::error!(
+                    "enum_tags already contained key '{}' -> '{}' with old value: {}",
+                    key,
+                    new_val,
+                    old_val
+                );
+            } else {
+                tracing::info!("enum_tags Inserted key '{}' -> '{}'", key, new_val);
+            }
+        }
+    }
+}
+
 /// Reads a protocol.json file and generates a Rust module for it.
 #[tracing::instrument(level = "debug", skip(path, output_name))]
 pub fn generate_code_for_protocol(path: &str, output_name: &str) -> std::io::Result<()> {
@@ -680,67 +743,23 @@ pub fn generate_code_for_protocol(path: &str, output_name: &str) -> std::io::Res
     // FIRST PASS.
     tracing::info!("Collecting enum tags");
     for proto_mod in proto_modules_arr.iter() {
-        if proto_mod["fullname"] == "NNet.Replay" {
-            let replay_mods_arr = proto_mod["decls"]
-                .as_array()
-                .expect("NNet.Replay should have '.decls' array");
-            for replay_mod in replay_mods_arr.iter() {
-                if replay_mod["fullname"] == "NNet.Replay.Tracker" {
-                    let tracker_mods_arr = replay_mod["decls"]
-                        .as_array()
-                        .expect("NNet.Replay.Tracker should have '.decls' array");
-                    for tracker_mod in tracker_mods_arr {
-                        if tracker_mod["type_info"]["type"] != "StructType" {
-                            tracing::warn!(
-                                "Skipping tracker_mod {} with type: {}",
-                                tracker_mod["fullname"],
-                                tracker_mod["type_info"]["type"]
-                            );
-                            // Skip non StructType
-                            continue;
-                        }
-                        tracing::info!(
-                            "Processing tracker_mod {} with type: {}",
-                            tracker_mod["fullname"],
-                            tracker_mod["type_info"]["type"]
-                        );
-                        let field_array = tracker_mod["type_info"]["fields"].as_array().unwrap();
-                        for field in field_array {
-                            let nnet_field_type = field["type"].as_str().unwrap();
-                            if nnet_field_type == "ConstDecl" {
-                                let type_full_name =
-                                    field["type_info"]["fullname"].as_str().unwrap().to_string();
-                                if field["value"]["type"] != "IdentifierExpr" {
-                                    tracing::error!(
-                                        "Unknown value.type for ConstDecl: {}",
-                                        field["value"]["type"]
-                                    );
-                                    panic!(
-                                        "Unknown value.type for ConstDecl: {}",
-                                        field["value"]["type"]
-                                    );
-                                }
-                                let type_variant_value =
-                                    field["value"]["fullname"].as_str().unwrap().to_string();
-                                let type_variant_value = str_nnet_name_to_rust_name(
-                                    type_variant_value.replace(&type_full_name, ""),
-                                );
-                                let type_variant = str_nnet_name_to_rust_name(type_full_name);
-                                tracing::info!(
-                                    "Found ConstDecl for fullname: {} should be referenced by: {}::{}",
-                                    tracker_mod["fullname"],
-                                    type_variant,
-                                    type_variant_value,
-                                );
-                                if let Some(key) = enum_tags.insert(
-                                    format!("{}::{}", type_variant, type_variant_value),
-                                    str_nnet_name_to_rust_name(tracker_mod["fullname"].to_string()),
-                                ) {
-                                    tracing::error!("enum_tags already contained key: {:?}", key);
-                                }
-                            }
-                        }
+        // There is different depths for different type declarations:
+        // Each '.' represents a level deep in the hierarchy:
+        // NNet.Game.EEventId is an enum we must parse 3 levels in.
+        // NNet.Replay.Tracker.EEventId is an enum we must parse 4 levels in.
+        if proto_mod["fullname"] == "NNet.Replay" || proto_mod["fullname"] == "NNet.Game" {
+            let sub_mods_arr = proto_mod["decls"].as_array().expect(&format!(
+                "{} should have '.decls' array",
+                proto_mod["fullname"]
+            ));
+            for sub_mod in sub_mods_arr.iter() {
+                if let Some(sub_mod_decls_array) = sub_mod["decls"].as_array() {
+                    // traverse inside the current type's decls.
+                    for sub_mod_decl in sub_mod_decls_array {
+                        fill_module_decl_structs(&mut enum_tags, sub_mod_decl);
                     }
+                } else {
+                    fill_module_decl_structs(&mut enum_tags, &sub_mod);
                 }
             }
         }
@@ -755,6 +774,9 @@ pub fn generate_code_for_protocol(path: &str, output_name: &str) -> std::io::Res
             gen_proto_code(&mut output, proto_mod, &enum_tags)?;
         }
         if proto_mod["fullname"] == "NNet.SMD5" {
+            gen_proto_code(&mut output, proto_mod, &enum_tags)?;
+        }
+        if proto_mod["fullname"] == "NNet.Game" {
             gen_proto_code(&mut output, proto_mod, &enum_tags)?;
         }
         if proto_mod["fullname"] == "NNet.Replay" {
