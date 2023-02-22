@@ -46,7 +46,8 @@ pub fn gen_struct_main_parse_fn(name: &str) -> String {
     // Try to get the numeric part of the protocol.
     // XXX: This only works because I'm using ../src/s2protocol/.../, if I use a full path with
     // numbers on them then this is broken.
-    let proto_num = name.clone().retain(|c| c >= '0' && c <= '9');
+    let mut proto_num = name.to_string();
+    proto_num.retain(|c| c >= '0' && c <= '9');
     format!(
         "#[tracing::instrument(name=\"{proto_num}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
