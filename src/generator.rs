@@ -26,6 +26,10 @@ pub fn gen_enum_type_def_skel(name: &str) -> String {
     format!("#[derive(Debug, PartialEq, Clone)]\npub enum {name} {{\n",)
 }
 
+pub fn gen_int_type_def_skel(name: &str) -> String {
+    format!("#[derive(Debug, Default, PartialEq, Clone)]\npub struct {name}{{ \n",)
+}
+
 pub fn gen_type_def_skel(name: &str, unit_ty: &str) -> String {
     // TODO: A StringType would become a pub <name>(String) with impl Parse that calls
     // tagged_blob().
@@ -34,6 +38,7 @@ pub fn gen_type_def_skel(name: &str, unit_ty: &str) -> String {
         "StructType" => gen_struct_type_def_skel(name),
         "EnumType" => gen_enum_type_def_skel(name),
         "ChoiceType" => gen_enum_type_def_skel(name),
+        "IntType" => gen_int_type_def_skel(name),
         _ => panic!("Unknown unit type: {unit_ty}"),
     }
 }
@@ -59,6 +64,18 @@ pub fn gen_choice_main_parse_fn(proto_num: &str, name: &str) -> String {
          let (tail, _) = validate_choice_tag(input)?;\n\
          let (tail, variant_tag) = parse_vlq_int(tail)?;\n\
          match variant_tag {{
+         ",
+    )
+}
+
+pub fn gen_int_main_parse_fn(proto_num: &str, name: &str) -> String {
+    format!(
+        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
+         let (tail, _) = validate_int_tag(input)?;\n\
+         let (tail, value) = parse_vlq_int(tail)?;\n\
+         // TODO: Unsure about this. \n\
+         Ok((tail, Self {{ value }}))\n\
          ",
     )
 }
@@ -122,6 +139,13 @@ impl From<&str> for ProtoTypeConversion {
                 rust_ty: "SVersion".to_string(),
                 do_try_from: false,
                 parser: "SVersion::parse".to_string(),
+                is_vec: false,
+                is_optional: false,
+            },
+            "NNet.Game.TColorId" => ProtoTypeConversion {
+                rust_ty: "i64".to_string(),
+                do_try_from: true,
+                parser: "tagged_vlq_int".to_string(),
                 is_vec: false,
                 is_optional: false,
             },
@@ -244,6 +268,9 @@ pub fn gen_proto_code(
             type_impl_def,
             enum_tags,
         )?;
+    } else if proto_unit_type == "IntType" {
+        let int_parse_impl_def = gen_int_main_parse_fn(&proto_num, &proto_unit_type_name);
+        gen_proto_int_code(output, proto_type_def, int_parse_impl_def, type_impl_def)?;
     } else {
         tracing::error!("Unhandled protocol unit type: {:?}", proto_unit_type);
     }
@@ -270,16 +297,26 @@ pub fn gen_proto_struct_code(
     enum_tags: &HashMap<String, String>,
 ) -> std::io::Result<()> {
     //output.write_all(format!("\n/*{:#}*/\n", proto_mod).as_bytes())?;
+    let field_array = proto_mod["type_info"]["fields"].as_array().unwrap();
+    let has_tags = if field_array.len() == 1 && field_array[0]["tag"] == Value::Null {
+        false
+    } else {
+        true
+    };
     let mut struct_parse_return = String::from("Ok((tail, Self {");
     // Fields may be out of order so we try to parse them as they appear in a loop.
-    let mut struct_parse_field_try_loop_match = format!(
-        "for i in 0..(struct_field_count as usize) {{\n\
-         let (new_tail, field_tag) = parse_vlq_int(tail)?;\n\
-         tail = new_tail;\n\
-         match field_tag {{\n\
-         "
-    );
-    let field_array = proto_mod["type_info"]["fields"].as_array().unwrap();
+    let mut struct_parse_fields = if has_tags {
+        format!(
+            "for i in 0..(struct_field_count as usize) {{\n\
+             let (new_tail, field_tag) = parse_vlq_int(tail)?;\n\
+             tail = new_tail;\n\
+             match field_tag {{\n\
+             "
+        )
+    } else {
+        // If there are no tags, then it's just one single field inside the struct.
+        String::from("")
+    };
     // The first ConstDecl is the main "tag", which is parsed by the main enum of the type.
     // After this ConstDecl, other ConstDecl's may appear.
     for field in field_array {
@@ -345,15 +382,6 @@ pub fn gen_proto_struct_code(
             morph.do_try_from = enclosed_morph.do_try_from;
             morph.is_vec = true;
         }
-        let proto_field_tag = field["tag"]["value"]
-            .as_str()
-            .expect("Field should have .tag.value");
-        assert!(
-            field["tag"]["type"]
-                .as_str()
-                .expect("Field should have .tag.type")
-                == String::from("IntLiteral")
-        );
         let field_type = &morph.rust_ty;
         let field_value_parser = &morph.parser;
         proto_type_def.push_str(&format!("{field_type},\n"));
@@ -368,18 +396,28 @@ pub fn gen_proto_struct_code(
                 "let mut {field_name}: Option<{field_type}> = None;\n"
             ));
         }
-        struct_parse_field_try_loop_match.push_str(&format!(
+        if has_tags {
+            let proto_field_tag = field["tag"]["value"].as_str().unwrap();
+            assert!(
+                field["tag"]["type"]
+                    .as_str()
+                    .expect("Field should have .tag.type")
+                    == String::from("IntLiteral")
+            );
+            struct_parse_fields.push_str(&format!(
                     " {proto_field_tag} => {{\n\
                        tracing::debug!(\"Field [{{i}}]: tagged '{proto_field_tag}' for field {field_name}\");\n"));
+        }
         if morph.is_optional {
             // The OptionalType is a Some() since we will later unwrap and fail if a field is not
             // provided so we "pre-populate" it to empty.
-            struct_parse_field_try_loop_match
-                .push_str(&format!(" if let Some(None) = {field_name} "));
+            struct_parse_fields.push_str(&format!(" if let Some(None) = {field_name} "));
         } else {
-            struct_parse_field_try_loop_match.push_str(&format!(" if {field_name}.is_none()"));
+            struct_parse_fields.push_str(&format!(" if {field_name}.is_none()"));
         }
-        struct_parse_field_try_loop_match.push_str(&format!(
+        if has_tags {
+            let proto_field_tag = field["tag"]["value"].as_str().unwrap();
+            struct_parse_fields.push_str(&format!(
                     " {{\n\
                             let (new_tail, parsed_{field_name}) = Self::parse_{field_name}(tail)?;\n\
                             tail = new_tail;\n\
@@ -391,6 +429,16 @@ pub fn gen_proto_struct_code(
                         }}\n\
                     }},\n"
                 ));
+        } else {
+            struct_parse_fields.push_str(&format!(
+                " {{\n\
+                 let (new_tail, parsed_{field_name}) = Self::parse_{field_name}(tail)?;\n\
+                 tail = new_tail;\n\
+                 {field_name} = Some(parsed_{field_name});\n\
+                 }}\n\
+                 "
+            ));
+        }
         struct_parse_return.push_str(&format!(
             "{field_name}: {field_name}.expect(\"Missing {field_name} from struct\"),\n"
         ));
@@ -428,7 +476,7 @@ pub fn gen_proto_struct_code(
                     type_impl_def.push_str("    (tail, Some(res))\n");
                 }
             }
-            type_impl_def.push_str("} else {\n"); // - if not provided, just return None
+            type_impl_def.push_str("j else {\n"); // - if not provided, just return None
             type_impl_def.push_str("    (tail, None)\n");
             type_impl_def.push_str("};\n");
             type_impl_def.push_str(&format!(
@@ -473,16 +521,18 @@ pub fn gen_proto_struct_code(
         }
     }
     struct_parse_return.push_str("}))\n"); // Close function definition
-    struct_parse_field_try_loop_match.push_str(
-        "
+    if has_tags {
+        struct_parse_fields.push_str(
+            "
                 _ => {\n\
                     tracing::error!(\"Unknown tag {field_tag}\");\n\
                     panic!(\"Unknown tag {field_tag}\");\n\
                 },\n\
             }\n\
           }",
-    ); // close the match and the for-loop
-    struct_parse_impl_def.push_str(&struct_parse_field_try_loop_match); // Close function definition
+        ); // close the match and the for-loop
+    }
+    struct_parse_impl_def.push_str(&struct_parse_fields); // Close function definition
     struct_parse_impl_def.push_str(&struct_parse_return);
 
     struct_parse_impl_def.push_str("}\n"); // Close function definition
@@ -590,6 +640,155 @@ pub fn gen_proto_choice_code(
     Ok(())
 }
 
+/// Generates the protocol-agnostic version of the TrackerEvents
+/// This may fail in new/older protocols, and the generated code should be
+/// validated, luckily at compile time.
+#[tracing::instrument(level = "debug", skip(output,))]
+pub fn generate_convert_into_versionless(output: &mut File) -> std::io::Result<()> {
+    output.write_all(r#"
+// Translate to the protocol agnostic version of tracker events.
+
+impl ReplayTrackerEEventId {
+    /// Reads a delta, TrackerEvent pair
+    #[tracing::instrument(name="TrackerEvent::parse_event_pair", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+    pub fn parse_event_pair(input: &[u8]) -> IResult<&[u8], (u32, ReplayTrackerEEventId)> {
+        let (tail, delta) = SVarUint32::parse(input)?;
+        let (tail, event) = ReplayTrackerEEventId::parse(tail)?;
+        let delta = match delta {
+            SVarUint32::Uint6(val) => val as u32,
+            SVarUint32::Uint14(val) | SVarUint32::Uint22(val) | SVarUint32::Uint32(val) => val,
+        };
+        Ok((tail, (delta, event)))
+    }
+
+    /// Read the Tracker Events
+    pub fn read_tracker_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<TrackerEvent> {
+        // TODO: Make it return an Iterator.
+        let (_event_tail, tracker_events) = mpq
+            .read_mpq_file_sector("replay.tracker.events", false, &file_contents)
+            .unwrap();
+        let mut res = vec![];
+        let mut event_tail: &[u8] = &tracker_events;
+        loop {
+            let (new_event_tail, (delta, event)) =
+                Self::parse_event_pair(&event_tail).expect("Unable to parse TrackerEvents");
+            event_tail = new_event_tail;
+            match event.try_into() {
+                Ok(val) => res.push(TrackerEvent { delta, event: val }),
+                Err(err) => {
+                    tracing::debug!("Skipping event: {:?}", err);
+                }
+            };
+            if event_tail.input_len() == 0 {
+                break;
+            }
+        }
+        res
+    }
+}
+
+impl TryFrom<ReplayTrackerEEventId> for ReplayTrackerEvent {
+    type Error = TrackerEventError;
+
+    fn try_from(value: ReplayTrackerEEventId) -> Result<Self, Self::Error> {
+        match value {
+            ReplayTrackerEEventId::EPlayerStats(_)
+            | ReplayTrackerEEventId::EUnitOwnerChange(_)
+            | ReplayTrackerEEventId::EUpgrade(_)
+            | ReplayTrackerEEventId::EPlayerSetup(_) => {
+                Err(TrackerEventError::UnsupportedEventType)
+            }
+            ReplayTrackerEEventId::EUnitBorn(e) => Ok(e.to_versionless()?),
+            ReplayTrackerEEventId::EUnitDied(e) => Ok(e.to_versionless()?),
+            ReplayTrackerEEventId::EUnitTypeChange(e) => Ok(e.to_versionless()?),
+            ReplayTrackerEEventId::EUnitInit(e) => Ok(e.to_versionless()?),
+            ReplayTrackerEEventId::EUnitDone(e) => Ok(e.to_versionless()?),
+            ReplayTrackerEEventId::EUnitPosition(e) => Ok(e.to_versionless()?),
+        }
+    }
+}
+
+impl ReplayTrackerSUnitBornEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        let creator_ability_name = if let Some(val) = self.m_creator_ability_name {
+            Some(str::from_utf8(&val)?.to_string())
+        } else {
+            None
+        };
+        Ok(ReplayTrackerEvent::UnitBorn(UnitBornEvent {
+            unit_tag_index: self.m_unit_tag_index,
+            unit_tag_recycle: self.m_unit_tag_recycle,
+            unit_type_name: str::from_utf8(&self.m_unit_type_name)?.to_string(),
+            control_player_id: self.m_control_player_id,
+            upkeep_player_id: self.m_upkeep_player_id,
+            x: self.m_x,
+            y: self.m_y,
+            creator_unit_tag_index: self.m_creator_unit_tag_index,
+            creator_unit_tag_recycle: self.m_creator_unit_tag_recycle,
+            creator_ability_name,
+        }))
+    }
+}
+
+impl ReplayTrackerSUnitDiedEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        Ok(ReplayTrackerEvent::UnitDied(UnitDiedEvent {
+            unit_tag_index: self.m_unit_tag_index,
+            unit_tag_recycle: self.m_unit_tag_recycle,
+            killer_player_id: self.m_killer_player_id,
+            x: self.m_x,
+            y: self.m_y,
+            killer_unit_tag_index: self.m_killer_unit_tag_index,
+            killer_unit_tag_recycle: self.m_killer_unit_tag_recycle,
+        }))
+    }
+}
+
+impl ReplayTrackerSUnitTypeChangeEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        Ok(ReplayTrackerEvent::UnitTypeChange(UnitTypeChangeEvent {
+            unit_tag_index: self.m_unit_tag_index,
+            unit_tag_recycle: self.m_unit_tag_recycle,
+            unit_type_name: str::from_utf8(&self.m_unit_type_name)?.to_string(),
+        }))
+    }
+}
+
+impl ReplayTrackerSUnitInitEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        Ok(ReplayTrackerEvent::UnitInit(UnitInitEvent {
+            unit_tag_index: self.m_unit_tag_index,
+            unit_tag_recycle: self.m_unit_tag_recycle,
+            unit_type_name: str::from_utf8(&self.m_unit_type_name)?.to_string(),
+            control_player_id: self.m_control_player_id,
+            upkeep_player_id: self.m_upkeep_player_id,
+            x: self.m_x,
+            y: self.m_y,
+        }))
+    }
+}
+
+impl ReplayTrackerSUnitDoneEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        Ok(ReplayTrackerEvent::UnitDone(UnitDoneEvent {
+            unit_tag_index: self.m_unit_tag_index,
+            unit_tag_recycle: self.m_unit_tag_recycle,
+        }))
+    }
+}
+
+impl ReplayTrackerSUnitPositionsEvent {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+        Ok(ReplayTrackerEvent::UnitPosition(UnitPositionsEvent {
+            first_unit_index: self.m_first_unit_index,
+            items: self.m_items,
+        }))
+    }
+}
+    "#.as_bytes())?;
+    Ok(())
+}
+
 /// Creates a Rust Enum out of a EnumType type.
 /// The enum variants do not contain internal types
 #[tracing::instrument(
@@ -656,6 +855,32 @@ pub fn gen_proto_enum_code(
 
     enum_parse_impl_def.push_str("}\n"); // Close function definition
     type_impl_def.push_str(&enum_parse_impl_def);
+
+    proto_type_def.push_str("}\n"); // Close struct definition
+    type_impl_def.push_str("}\n"); // Close impl definition
+                                   //
+    output.write_all(format!("\n{}", proto_type_def).as_bytes())?;
+    output.write_all(format!("{}\n", type_impl_def).as_bytes())?;
+    Ok(())
+}
+
+/// Creates a Rust Int out of a IntType type.
+/// The struct contains an interval .value field.
+#[tracing::instrument(
+    level = "debug",
+    skip(output, proto_type_def, int_parse_impl_def, type_impl_def,)
+)]
+pub fn gen_proto_int_code(
+    output: &mut File,
+    mut proto_type_def: String,
+    mut int_parse_impl_def: String,
+    mut type_impl_def: String,
+) -> std::io::Result<()> {
+    // The int_parse_impl_def already contains the int parsing functionality.
+    // This is untested.
+    proto_type_def.push_str(&format!("    value: i64,"));
+    int_parse_impl_def.push_str("}\n"); // Close function definition
+    type_impl_def.push_str(&int_parse_impl_def);
 
     proto_type_def.push_str("}\n"); // Close struct definition
     type_impl_def.push_str("}\n"); // Close impl definition
@@ -827,5 +1052,6 @@ pub fn generate_code_for_protocol(path: &str, output_name: &str) -> std::io::Res
             }
         }
     }
+    generate_convert_into_versionless(&mut output)?;
     Ok(())
 }
