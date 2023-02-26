@@ -4,6 +4,7 @@
 use super::*;
 use nom::bytes::complete::{tag, take};
 use nom::number::complete::u8;
+use nom_mpq::parser::peek_hex;
 
 /// Arrays have this tag prepend.
 pub const ARRAY_TAG: &[u8; 1] = b"\x00";

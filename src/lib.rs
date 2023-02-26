@@ -7,7 +7,7 @@ pub mod tracker_events;
 pub mod versioned_decoder;
 pub mod versions;
 pub use bit_packed_decoder::*;
-use nom::error::{ContextError, Error, ErrorKind};
+use colored::*;
 use nom::number::complete::u8;
 use nom::*;
 use nom_mpq::parser::peek_hex;
@@ -15,6 +15,24 @@ pub use protocol_version_decoder::read_protocol_header;
 use std::str;
 pub use versioned_decoder::*;
 
+/// Creates a colored binary representation of the input.
+/// The pre-amble bits are set to blue (these are bits previously processed)
+/// The current position, is set to green color.
+/// The remaining bits are colored in yellow. These are un-processed bits)
+pub fn peek_bits(input: (&[u8], usize)) -> String {
+    let input_str = format!("{:08b}", input.0);
+    let mut res = String::from("0b");
+    for (idx, bit_str) in input_str.chars().enumerate() {
+        if idx < input.1 {
+            res.push_str(&format!("{}", bit_str).blue());
+        } else if idx == input.1 {
+            res.push_str(&format!("{}", bit_str).green());
+        } else {
+            res.push_str(&format!("{}", bit_str).yellow());
+        }
+    }
+    res
+}
 /// Returns the 8 bytes following where the error was found for context.
 pub fn dbg_peek<'a, F, O, E: std::fmt::Debug>(
     f: F,

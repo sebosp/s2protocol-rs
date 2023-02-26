@@ -10,7 +10,9 @@
 //! Thus, [`syn`] and [`quote`] crates were not involved.
 //! This is really ugly and probably only works for a handful of versions.
 
+pub mod decoder_type;
 use convert_case::{Case, Casing};
+pub use decoder_type::DecoderType;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::convert::From;
@@ -43,20 +45,15 @@ pub fn gen_type_def_skel(name: &str, unit_ty: &str) -> String {
     }
 }
 
-pub fn gen_type_impl_def(name: &str) -> String {
+/// Initializes a type impl block to contain the methods
+pub fn open_gen_type_impl_def(name: &str) -> String {
     format!("impl {name} {{\n",)
 }
 
-pub fn gen_struct_main_parse_fn(proto_num: &str, name: &str) -> String {
-    format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
-         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
-         let (tail, _) = validate_struct_tag(input)?;\n\
-         let (mut tail, struct_field_count) = parse_vlq_int(tail)?;\n\
-         ",
-    )
+/// Closes the type impl scope.
+pub fn close_gen_type_impl_def() -> String {
+    b"}\n"
 }
-
 pub fn gen_choice_main_parse_fn(proto_num: &str, name: &str) -> String {
     format!(
         "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
@@ -96,110 +93,18 @@ pub fn gen_enum_main_parse_fn(proto_num: &str, name: &str) -> String {
 pub struct ProtoTypeConversion {
     /// The destination type in Rust types
     pub rust_ty: String,
-    /// Wether a TryInto should be attempted
+    /// Whether a TryInto should be attempted
     pub do_try_from: bool,
     /// A value parser
     pub parser: String,
-    /// Wether the type is optional
+    /// Whether the type is optional
     pub is_optional: bool,
-    /// Wether the type is a vec, NOTE: No `Vec<Option<T>>` have been observed. But there are
+    /// Whether the type is a vec, NOTE: No `Vec<Option<T>>` have been observed. But there are
     /// `Option<Vec<T>>`.
     pub is_vec: bool,
 }
 
-impl From<&str> for ProtoTypeConversion {
-    fn from(nnet_name: &str) -> Self {
-        match nnet_name {
-            "NNet.uint8"
-            | "NNet.Replay.EReplayType"
-            | "NNet.uint6"
-            | "NNet.Game.TPlayerId"
-            | "NNet.Replay.Tracker.TUIntMiniBits" => ProtoTypeConversion {
-                rust_ty: "u8".to_string(),
-                do_try_from: true,
-                parser: "tagged_vlq_int".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            "NNet.uint32" | "NNet.uint14" | "NNet.uint22" => ProtoTypeConversion {
-                rust_ty: "u32".to_string(),
-                do_try_from: true,
-                parser: "tagged_vlq_int".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            "NNet.int32" | "NNet.Game.TFixedBits" => ProtoTypeConversion {
-                rust_ty: "i32".to_string(),
-                do_try_from: true,
-                parser: "tagged_vlq_int".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            "NNet.SVersion" => ProtoTypeConversion {
-                rust_ty: "SVersion".to_string(),
-                do_try_from: false,
-                parser: "SVersion::parse".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            "NNet.Game.TColorId" => ProtoTypeConversion {
-                rust_ty: "i64".to_string(),
-                do_try_from: true,
-                parser: "tagged_vlq_int".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            "BlobType"
-            | "NNet.Replay.CSignature"
-            | "StringType"
-            | "NNet.Replay.Tracker.CatalogName" => ProtoTypeConversion {
-                rust_ty: "Vec<u8>".to_string(),
-                do_try_from: false,
-                parser: "tagged_blob".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            "BoolType" => ProtoTypeConversion {
-                rust_ty: "bool".to_string(),
-                do_try_from: false,
-                parser: "tagged_bool".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            "OptionalType" => ProtoTypeConversion {
-                // Leaves placeholders to be replaced later by the actual enclosed types
-                rust_ty: "Option<{}>".to_string(),
-                do_try_from: false,
-                parser: "{}".to_string(),
-                is_vec: false,
-                is_optional: true,
-            },
-            "ArrayType" => ProtoTypeConversion {
-                // Leaves placeholders to be replaced later by the actual enclosed types
-                rust_ty: "Vec<{}>".to_string(),
-                do_try_from: false,
-                parser: "{}".to_string(),
-                is_vec: true,
-                is_optional: false,
-            },
-            "NNet.SMD5" => ProtoTypeConversion {
-                rust_ty: "Smd5".to_string(),
-                do_try_from: false,
-                parser: "Smd5::parse".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            "NNet.Replay.Tracker.SPlayerStats" => ProtoTypeConversion {
-                rust_ty: "ReplayTrackerSPlayerStats".to_string(),
-                do_try_from: false,
-                parser: "ReplayTrackerSPlayerStats::parse".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            _ => panic!("Unsupported type: {}", nnet_name),
-        }
-    }
-}
+impl ProtoTypeConversion {}
 
 fn proto_nnet_name_to_rust_name(nnet_name: &Value) -> String {
     str_nnet_name_to_rust_name(nnet_name.as_str().unwrap().to_string())
@@ -221,6 +126,7 @@ pub fn gen_proto_code(
     output: &mut File,
     proto_mod: &Value,
     enum_tags: &HashMap<String, String>,
+    decoder_type: DecoderType,
 ) -> std::io::Result<()> {
     // Try to get the numeric part of the protocol.
     // The source filename is called like: ./s2protocol/json/protocol87702.json
@@ -237,10 +143,11 @@ pub fn gen_proto_code(
     tracing::debug!("Analyzing proto_unit_type_name {proto_unit_type_name}: '{proto_unit_type}'",);
     let proto_type_def = gen_type_def_skel(&proto_unit_type_name, proto_unit_type);
     // The impl <Name> {}
-    let type_impl_def = gen_type_impl_def(&proto_unit_type_name);
+    let type_impl_def = open_gen_type_impl_def(&proto_unit_type_name);
     // The method for parsing all the fields into the struct as a whole.
     if proto_unit_type == "StructType" {
-        let struct_parse_impl_def = gen_struct_main_parse_fn(&proto_num, &proto_unit_type_name);
+        let struct_parse_impl_def =
+            decoder_type.open_gen_struct_main_parse_fn(&proto_num, &proto_unit_type_name);
         gen_proto_struct_code(
             output,
             proto_mod,
@@ -248,6 +155,7 @@ pub fn gen_proto_code(
             struct_parse_impl_def,
             type_impl_def,
             enum_tags,
+            decoder_type,
         )?;
     } else if proto_unit_type == "ChoiceType" {
         let enum_parse_impl_def = gen_choice_main_parse_fn(&proto_num, &proto_unit_type_name);
@@ -257,6 +165,7 @@ pub fn gen_proto_code(
             proto_type_def,
             enum_parse_impl_def,
             type_impl_def,
+            decoder_type,
         )?;
     } else if proto_unit_type == "EnumType" {
         let enum_parse_impl_def = gen_enum_main_parse_fn(&proto_num, &proto_unit_type_name);
@@ -267,10 +176,17 @@ pub fn gen_proto_code(
             enum_parse_impl_def,
             type_impl_def,
             enum_tags,
+            decoder_type,
         )?;
     } else if proto_unit_type == "IntType" {
         let int_parse_impl_def = gen_int_main_parse_fn(&proto_num, &proto_unit_type_name);
-        gen_proto_int_code(output, proto_type_def, int_parse_impl_def, type_impl_def)?;
+        gen_proto_int_code(
+            output,
+            proto_type_def,
+            int_parse_impl_def,
+            type_impl_def,
+            decoder_type,
+        )?;
     } else {
         tracing::error!("Unhandled protocol unit type: {:?}", proto_unit_type);
     }
@@ -285,7 +201,8 @@ pub fn gen_proto_code(
         proto_mod,
         proto_type_def,
         struct_parse_impl_def,
-        type_impl_def
+        type_impl_def,
+        enum_tags,
     )
 )]
 pub fn gen_proto_struct_code(
@@ -295,6 +212,7 @@ pub fn gen_proto_struct_code(
     mut struct_parse_impl_def: String,
     mut type_impl_def: String,
     enum_tags: &HashMap<String, String>,
+    decoder_type: DecoderType,
 ) -> std::io::Result<()> {
     //output.write_all(format!("\n/*{:#}*/\n", proto_mod).as_bytes())?;
     let field_array = proto_mod["type_info"]["fields"].as_array().unwrap();
@@ -304,7 +222,8 @@ pub fn gen_proto_struct_code(
         true
     };
     let mut struct_parse_return = String::from("Ok((tail, Self {");
-    // Fields may be out of order so we try to parse them as they appear in a loop.
+    // Structs are prepend with the number of fields that follow, pressumably to account for
+    // Optionals
     let mut struct_parse_fields = if has_tags {
         format!(
             "for i in 0..(struct_field_count as usize) {{\n\
@@ -476,7 +395,7 @@ pub fn gen_proto_struct_code(
                     type_impl_def.push_str("    (tail, Some(res))\n");
                 }
             }
-            type_impl_def.push_str("j else {\n"); // - if not provided, just return None
+            type_impl_def.push_str("} else {\n"); // - if not provided, just return None
             type_impl_def.push_str("    (tail, None)\n");
             type_impl_def.push_str("};\n");
             type_impl_def.push_str(&format!(
@@ -532,15 +451,15 @@ pub fn gen_proto_struct_code(
           }",
         ); // close the match and the for-loop
     }
-    struct_parse_impl_def.push_str(&struct_parse_fields); // Close function definition
+    struct_parse_impl_def.push_str(&struct_parse_fields);
     struct_parse_impl_def.push_str(&struct_parse_return);
 
-    struct_parse_impl_def.push_str("}\n"); // Close function definition
+    struct_parse_impl_def.push_str("}\n"); // Close the main parse function definition
     type_impl_def.push_str(&struct_parse_impl_def);
 
     proto_type_def.push_str("}\n"); // Close struct definition
-    type_impl_def.push_str("}\n"); // Close impl definition
-                                   //
+    type_impl_def.push_str(close_gen_type_impl_def())?;
+    //
     output.write_all(format!("\n{}", proto_type_def).as_bytes())?;
     output.write_all(format!("{}\n", type_impl_def).as_bytes())?;
     Ok(())
@@ -558,6 +477,7 @@ pub fn gen_proto_choice_code(
     mut proto_type_def: String,
     mut enum_parse_impl_def: String,
     mut type_impl_def: String,
+    decoder_type: DecoderType,
 ) -> std::io::Result<()> {
     // output.write_all(format!("\n/*{:#}*/\n", proto_mod).as_bytes())?;
     let variant_array = proto_mod["type_info"]["fields"].as_array().unwrap();
@@ -809,6 +729,7 @@ pub fn gen_proto_enum_code(
     mut enum_parse_impl_def: String,
     mut type_impl_def: String,
     enum_tags: &HashMap<String, String>,
+    decoder_type: DecoderType,
 ) -> std::io::Result<()> {
     //output.write_all(format!("\n/*{:#}*/\n", proto_mod).as_bytes())?;
     let variant_array = proto_mod["type_info"]["fields"].as_array().unwrap();
@@ -875,6 +796,7 @@ pub fn gen_proto_int_code(
     mut proto_type_def: String,
     mut int_parse_impl_def: String,
     mut type_impl_def: String,
+    decoder_type: DecoderType,
 ) -> std::io::Result<()> {
     // The int_parse_impl_def already contains the int parsing functionality.
     // This is untested.
@@ -968,7 +890,9 @@ pub fn generate_code_for_protocol(path: &str, output_name: &str) -> std::io::Res
         b"use crate::*;\n\
         use nom_mpq::parser::peek_hex;\n\
         use std::convert::TryFrom;\n\
-        use nom::*;\n",
+        use nom::*;\n\
+        pub mod byte_aligned {\n\
+        ",
     )?;
     // So far only one root module has been observed.
     let mut proto_modules = proto_json["modules"][0]["decls"].take();
@@ -1003,26 +927,34 @@ pub fn generate_code_for_protocol(path: &str, output_name: &str) -> std::io::Res
         }
     }
     tracing::info!("Collected enum tags: {:?}", enum_tags);
-    // SECOND PASS.
+    // SECOND PASS. Collect ByteAligned Records. These are for the VersionedDecoder
     for proto_mod in proto_modules_arr.iter_mut() {
         if proto_mod["fullname"] == "NNet.SVersion" {
-            gen_proto_code(path, &mut output, proto_mod, &enum_tags)?;
+            gen_proto_code(
+                path,
+                &mut output,
+                proto_mod,
+                &enum_tags,
+                DecoderType::ByteAligned,
+            )?;
         }
         if proto_mod["fullname"] == "NNet.SVarUint32" {
-            gen_proto_code(path, &mut output, proto_mod, &enum_tags)?;
+            gen_proto_code(
+                path,
+                &mut output,
+                proto_mod,
+                &enum_tags,
+                DecoderType::ByteAligned,
+            )?;
         }
         if proto_mod["fullname"] == "NNet.SMD5" {
-            gen_proto_code(path, &mut output, proto_mod, &enum_tags)?;
-        }
-        if proto_mod["fullname"] == "NNet.Game" {
-            let mut game_mods = proto_mod["decls"].take();
-            let game_mods_arr = game_mods
-                .as_array_mut()
-                .expect("NNet.Replay should have '.decls' array");
-            for game_mod in game_mods_arr.iter_mut() {
-                tracing::info!("Processing: {}", game_mod["fullname"]);
-                gen_proto_code(path, &mut output, game_mod, &enum_tags)?;
-            }
+            gen_proto_code(
+                path,
+                &mut output,
+                proto_mod,
+                &enum_tags,
+                DecoderType::ByteAligned,
+            )?;
         }
         if proto_mod["fullname"] == "NNet.Replay" {
             let mut replay_mods = proto_mod["decls"].take();
@@ -1032,7 +964,13 @@ pub fn generate_code_for_protocol(path: &str, output_name: &str) -> std::io::Res
             for replay_mod in replay_mods_arr.iter_mut() {
                 tracing::info!("Processing: {}", replay_mod["fullname"]);
                 if replay_mod["fullname"] == "NNet.Replay.SHeader" {
-                    gen_proto_code(path, &mut output, replay_mod, &enum_tags)?;
+                    gen_proto_code(
+                        path,
+                        &mut output,
+                        replay_mod,
+                        &enum_tags,
+                        DecoderType::ByteAligned,
+                    )?;
                 }
                 if replay_mod["fullname"] == "NNet.Replay.Tracker" {
                     let mut tracker_mods = replay_mod["decls"].take();
@@ -1045,13 +983,72 @@ pub fn generate_code_for_protocol(path: &str, output_name: &str) -> std::io::Res
                         if tracker_mod_fullname.starts_with("NNet.Replay.Tracker.S")
                             || tracker_mod_fullname == "NNet.Replay.Tracker.EEventId"
                         {
-                            gen_proto_code(path, &mut output, tracker_mod, &enum_tags)?;
+                            gen_proto_code(
+                                path,
+                                &mut output,
+                                tracker_mod,
+                                &enum_tags,
+                                DecoderType::ByteAligned,
+                            )?;
                         }
                     }
                 }
             }
         }
     }
+    // Close the mod byte_aligned
+    output.write_all(
+        b"}
+        pub mod bit_packed {\n\
+        ",
+    )?;
+    // THIRD PASS. Collect ByteAligned Records. These are for the BitPacked entries
+    for proto_mod in proto_modules_arr.iter_mut() {
+        if proto_mod["fullname"] == "NNet.SVersion" {
+            gen_proto_code(
+                path,
+                &mut output,
+                proto_mod,
+                &enum_tags,
+                DecoderType::BitPacked,
+            )?;
+        }
+        if proto_mod["fullname"] == "NNet.SVarUint32" {
+            gen_proto_code(
+                path,
+                &mut output,
+                proto_mod,
+                &enum_tags,
+                DecoderType::BitPacked,
+            )?;
+        }
+        if proto_mod["fullname"] == "NNet.SMD5" {
+            gen_proto_code(
+                path,
+                &mut output,
+                proto_mod,
+                &enum_tags,
+                DecoderType::BitPacked,
+            )?;
+        }
+        if proto_mod["fullname"] == "NNet.Game" {
+            let mut game_mods = proto_mod["decls"].take();
+            let game_mods_arr = game_mods
+                .as_array_mut()
+                .expect("NNet.Replay should have '.decls' array");
+            for game_mod in game_mods_arr.iter_mut() {
+                tracing::info!("Processing: {}", game_mod["fullname"]);
+                gen_proto_code(
+                    path,
+                    &mut output,
+                    game_mod,
+                    &enum_tags,
+                    DecoderType::BitPacked,
+                )?;
+            }
+        }
+    }
+    output.write_all(b"}")?; // Close the mod bit_packed
     generate_convert_into_versionless(&mut output)?;
     Ok(())
 }
