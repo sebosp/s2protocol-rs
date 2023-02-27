@@ -7,6 +7,7 @@
 //! the target file. In this verison we are not yet doing that but we should.
 
 use super::*;
+// TODO: Find a way to parse the version with the latest available protocol.
 use crate::versions::protocol87702::{ReplaySHeader, SVersion};
 use nom::bytes::complete::*;
 use nom::error::dbg_dmp;

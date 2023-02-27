@@ -1,10 +1,7 @@
 //! The Bit Packed Decoder.
 //! As a difference to the Versioned Decoder, the fields are not tagged.
 
-use super::*;
-use nom::bits::complete::take as take_bits;
-use nom::bytes::complete::take as take_bytes;
-use nom::number::complete::u8;
+use nom::bits::complete::take;
 use nom::*;
 
 pub fn peek_bits(input: (&[u8], usize)) -> String {
@@ -18,18 +15,18 @@ pub fn peek_bits(input: (&[u8], usize)) -> String {
 /// Reads a number of bits
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn read_bits(input: (&[u8], usize), num_bits: usize) -> IResult<(&[u8], usize), u8> {
-    take_bits(num_bits)(input)
+    take(num_bits)(input)
 }
 
 /// Reads a packed int
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn parse_packed_int(
     input: (&[u8], usize),
-    low_bound: u8,
+    carry: u8,
     num_bits: usize,
 ) -> IResult<(&[u8], usize), u8> {
     let ((tail, tail_bit_offset), bits) = read_bits(input, num_bits)?;
-    let res = low_bound + bits;
+    let res = carry + bits;
     Ok(((tail, tail_bit_offset), res))
 }
 

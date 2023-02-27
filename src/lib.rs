@@ -20,8 +20,11 @@ pub use versioned_decoder::*;
 /// The current position, is set to green color.
 /// The remaining bits are colored in yellow. These are un-processed bits)
 pub fn peek_bits(input: (&[u8], usize)) -> String {
-    let input_str = format!("{:08b}", input.0);
-    let mut res = String::from("0b");
+    if input.0.is_empty() {
+        return String::from("[]");
+    }
+    let input_str = format!("{:08b}", input.0[0]);
+    let mut res = String::from("[0b");
     for (idx, bit_str) in input_str.chars().enumerate() {
         if idx < input.1 {
             res.push_str(&format!("{}", bit_str).blue());
@@ -31,6 +34,7 @@ pub fn peek_bits(input: (&[u8], usize)) -> String {
             res.push_str(&format!("{}", bit_str).yellow());
         }
     }
+    res.push_str("]");
     res
 }
 /// Returns the 8 bytes following where the error was found for context.
