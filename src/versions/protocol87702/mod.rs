@@ -3087,7 +3087,7 @@ impl ReplayTrackerSPlayerSetupEvent {
     }
 }
 
-// TODO: From here on this should be added to the generator.
+// Translate to the protocol agnostic version of tracker events.
 
 impl ReplayTrackerEEventId {
     /// Reads a delta, TrackerEvent pair

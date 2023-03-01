@@ -1,5 +1,8 @@
 //! Generates code that works for either ByteAligned (VersionedDecoder) or BitPacked encoded data.
 
+use std::collections::HashMap;
+
+use super::proto_morphist::{proto_nnet_name_to_rust_name, str_nnet_name_to_rust_name};
 use super::ProtoTypeConversion;
 use convert_case::{Case, Casing};
 use serde_json::Value;
@@ -19,8 +22,8 @@ impl DecoderType {
     /// In ByteAligned (VersionedDecoder) there is a tag that validates a struct followed by the
     /// number of fields stored for this struct, pressumably to account Optional fields.
     /// The ByteAligned variant takes an input of a byte slice.
-    /// Furthur combinators will use `tail` instead of `input`.
-    fn open_byte_aligned_gen_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
+    /// Further combinators will use `tail` instead of `input`.
+    fn open_byte_aligned_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
         format!(
         "#[tracing::instrument(name=\"{proto_num}::byte_aligned::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
@@ -29,13 +32,19 @@ impl DecoderType {
          ",
     )
     }
+
+    /// Closes the struct main parse function.
+    fn close_byte_aligned_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
+        format!("}}")
+    }
+
     /// In BitPacked there is a *NO* tag that validates a struct and there are also no field
     /// counts.
     /// The BitPacked variant takes an input of a byte slice plus the positional index in the
     /// current byte.
     /// Furthur combinators will use `tail` instead of `input`. To make this re-usable with the
     /// ByteAligned version we just make `tail` point to `input`
-    fn open_bit_packed_gen_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
+    fn open_bit_packed_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
         format!(
         "#[tracing::instrument(name=\"{proto_num}::bit_packed::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
@@ -44,17 +53,17 @@ impl DecoderType {
     )
     }
 
-    /// Opens the main parse function for the current DecoderType
-    pub fn open_gen_struct_main_parse_fn(self, proto_num: u64, name: &str) -> String {
-        match self {
-            Self::ByteAligned => Self::open_byte_aligned_gen_struct_main_parse_fn(proto_num, name),
-            Self::BitPacked => Self::open_bit_packed_gen_struct_main_parse_fn(proto_num, name),
-        }
+    /// Closes the struct main parse function.
+    fn close_bit_packed_gen_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
+        format!("}}")
     }
 
-    /// Closes the struct main parse function.
-    pub fn close_gen_struct_main_parse_fn() -> String {
-        String::from("}")
+    /// Opens the main parse function for the current DecoderType
+    pub fn open_struct_main_parse_fn(self, proto_num: u64, name: &str) -> String {
+        match self {
+            Self::ByteAligned => Self::open_byte_aligned_struct_main_parse_fn(proto_num, name),
+            Self::BitPacked => Self::open_bit_packed_struct_main_parse_fn(proto_num, name),
+        }
     }
 
     /// Generates a ProtoTypeConversion for byte aligned units. This tries to re-use as much as
@@ -255,6 +264,52 @@ impl DecoderType {
         }
     }
 
+    #[tracing::instrument(level = "debug")]
+    pub fn open_byte_aligned_choice_main_parse_fn(proto_num: u64, name: &str) -> String {
+        format!(
+        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
+         let (tail, _) = validate_choice_tag(input)?;\n\
+         let (tail, variant_tag) = parse_vlq_int(tail)?;\n\
+         ",
+    )
+    }
+
+    #[tracing::instrument(level = "debug")]
+    pub fn close_byte_aligned_choice_main_parse_fn() -> String {
+        format!("}}")
+    }
+
+    #[tracing::instrument(level = "debug")]
+    pub fn open_bit_packed_choice_main_parse_fn(proto_num: u64, name: &str) -> String {
+        format!(
+        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         let (tail, variant_tag) = fixme(tail)?;\n\
+         ",
+    )
+    }
+    #[tracing::instrument(level = "debug")]
+    pub fn close_bit_packed_choice_main_parse_fn() -> String {
+        format!("}}")
+    }
+
+    /// Generates the main parse function for a byte aligned choice type
+    #[tracing::instrument(level = "debug")]
+    pub fn open_choice_main_parse_fn(self, proto_num: u64, name: &str) -> String {
+        let mut res = match self {
+            Self::ByteAligned => Self::open_byte_aligned_choice_main_parse_fn(proto_num, name),
+            Self::BitPacked => Self::open_bit_packed_choice_main_parse_fn(proto_num, name),
+        };
+        res.push_str("match variant_tag {");
+        res
+    }
+    /// Generates the main parse function for a byte aligned choice type
+    #[tracing::instrument(level = "debug")]
+    pub fn close_gen_choice_main_parse_fn() -> String {
+        String::from("}")
+    }
+
     #[tracing::instrument(
         level = "debug",
         skip(proto_mod, proto_type_def, struct_parse_impl_def, type_impl_def,)
@@ -262,11 +317,11 @@ impl DecoderType {
     pub fn gen_proto_struct_code(
         &self,
         proto_mod: &Value,
-        &mut proto_type_def: String,
-        &mut struct_parse_impl_def: String,
-        &mut type_impl_def: String,
+        proto_type_def: &mut String,
+        struct_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
     ) {
-        match self {
+        let mut res = match self {
             Self::ByteAligned => Self::gen_byte_aligned_proto_struct_code(
                 proto_mod,
                 proto_type_def,
@@ -279,7 +334,8 @@ impl DecoderType {
                 struct_parse_impl_def,
                 type_impl_def,
             ),
-        }
+        };
+        res
     }
 
     /// Generates a Rust Struct code with fields and parsing methods per field for Byte Aligned
@@ -290,9 +346,9 @@ impl DecoderType {
     )]
     pub fn gen_byte_aligned_proto_struct_code(
         proto_mod: &Value,
-        &mut proto_type_def: String,
-        &mut struct_parse_impl_def: String,
-        &mut type_impl_def: String,
+        proto_type_def: &mut String,
+        struct_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
     ) {
         let decoder = DecoderType::ByteAligned;
         //output.write_all(format!("\n/*{:#}*/\n", proto_mod).as_bytes())?;
@@ -352,7 +408,7 @@ impl DecoderType {
                         .as_str()
                         .expect("Field should have .type_info.type_info.element_type.fullname");
                     tracing::info!("Optional ArrayType Element Type: {}", element_type);
-                    let mut internal_morph = self.from_nnet_name(element_type);
+                    let mut internal_morph = decoder.from_nnet_name(element_type);
                     internal_morph.rust_ty = format!("Vec<{}>", internal_morph.rust_ty);
                     // The intenal type, i.e. u8, needs to now be marked both as Vec<> and as Option<>
                     internal_morph.is_vec = true;
@@ -547,10 +603,346 @@ impl DecoderType {
     )]
     pub fn gen_bit_packed_proto_struct_code(
         proto_mod: &Value,
-        mut proto_type_def: String,
-        mut struct_parse_impl_def: String,
-        mut type_impl_def: String,
+        proto_type_def: &mut String,
+        struct_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
     ) {
         unimplemented!()
+    }
+
+    /// Creates a Rust Enum out of a Choice type, the Choice type is an Enum where Variants contain
+    /// Types
+    #[tracing::instrument(
+        level = "debug",
+        skip(proto_mod, proto_type_def, enum_parse_impl_def, type_impl_def)
+    )]
+    pub fn gen_byte_aligned_proto_choice_code(
+        proto_mod: &Value,
+        proto_type_def: &mut String,
+        enum_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
+    ) {
+        let decoder = DecoderType::ByteAligned;
+        // output.write_all(format!("\n/*{:#}*/\n", proto_mod).as_bytes())?;
+        let variant_array = proto_mod["type_info"]["fields"].as_array().unwrap();
+        for variant in variant_array {
+            let variant_name = proto_nnet_name_to_rust_name(&variant["type_info"]["name"]);
+            proto_type_def.push_str(&format!("    {variant_name}",));
+            let proto_field_type_info = match variant["type_info"]["fullname"].as_str() {
+                Some(val) => val,
+                None => {
+                    // Fallback to the `type_info.type' variant
+                    variant["type_info"]["type"].as_str().unwrap()
+                }
+            };
+            let mut morph = decoder.from_nnet_name(proto_field_type_info);
+            if proto_field_type_info == "OptionalType" {
+                // The enclosed type is wrapped in an additional .type_info field.
+                let enclosed_type = variant["type_info"]["type_info"]["type"].to_string();
+                morph.parser = morph.parser.replace("{}", &enclosed_type);
+                morph.rust_ty = morph.rust_ty.replace("{}", &enclosed_type);
+            }
+            let proto_field_tag = variant["tag"]["value"].as_str().unwrap();
+            assert!(variant["tag"]["type"].as_str().unwrap() == String::from("IntLiteral"));
+            let field_type = &morph.rust_ty;
+            let field_value_parser = &morph.parser;
+            proto_type_def.push_str(&format!("({field_type}),\n"));
+            enum_parse_impl_def.push_str(&format!(
+                " {proto_field_tag} => {{\n\
+                 tracing::debug!(\"Variant tagged '{proto_field_tag}' for {variant_name}\");\n\
+                 "
+            ));
+            if proto_field_type_info == "OptionalType" {
+                enum_parse_impl_def.push_str("let (tail, _) = validate_opt_tag(tail)?;\n");
+                // If the next bit is a filled with zeros, then the field is None
+                enum_parse_impl_def
+                    .push_str("let (tail, is_provided) = nom::number::complete::u8(tail)?;\n");
+                enum_parse_impl_def.push_str("if is_provided != 0 {\n");
+                enum_parse_impl_def.push_str(&format!(
+                    "let (tail, res) = {field_value_parser}(tail)?;\n\
+                     tracing::debug!(\"res: {{:?}}\", res);\n"
+                ));
+                enum_parse_impl_def.push_str(&format!(
+                    "    Ok((tail, Self::{variant_name}(Some(res))))\n"
+                ));
+                enum_parse_impl_def.push_str("} else {\n");
+                enum_parse_impl_def
+                    .push_str(&format!("    Ok((tail, Self::{variant_name}(None)))\n"));
+                enum_parse_impl_def.push_str("}\n");
+            } else {
+                enum_parse_impl_def.push_str(&format!(
+                    "let (tail, res) = {field_value_parser}(tail)?;\n\
+                     tracing::debug!(\"res: {{:?}}\", res);\n"
+                ));
+                if morph.do_try_from {
+                    enum_parse_impl_def.push_str(&format!(
+                    "    Ok((tail, Self::{variant_name}({field_type}::try_from(res).unwrap())))\n"
+                ));
+                } else {
+                    enum_parse_impl_def
+                        .push_str(&format!("    Ok((tail, Self::{variant_name}(res)))\n"));
+                }
+            }
+            enum_parse_impl_def.push_str("    },\n"); // The match stanza end.
+        }
+        enum_parse_impl_def.push_str(
+            "
+            _ => {\n\
+                tracing::error!(\"Unknown variant for tag {variant_tag}\");\n\
+                panic!(\"Unknown variant tag {variant_tag}\");\n\
+            },\n\
+          }",
+        ); // close the match
+
+        enum_parse_impl_def.push_str("}\n"); // Close function definition
+        type_impl_def.push_str(&enum_parse_impl_def);
+    }
+
+    /// Creates a Rust Enum out of a Choice type, the Choice type is an Enum where Variants contain
+    /// Types
+    #[tracing::instrument(
+        level = "debug",
+        skip(proto_mod, proto_type_def, enum_parse_impl_def, type_impl_def)
+    )]
+    pub fn gen_bit_packed_proto_choice_code(
+        proto_mod: &Value,
+        proto_type_def: &mut String,
+        enum_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
+    ) {
+        unimplemented!()
+    }
+
+    #[tracing::instrument(
+        level = "debug",
+        skip(proto_mod, proto_type_def, enum_parse_impl_def, type_impl_def)
+    )]
+    pub fn gen_proto_choice_code(
+        &self,
+        proto_mod: &Value,
+        proto_type_def: &mut String,
+        enum_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
+    ) {
+        match self {
+            Self::ByteAligned => Self::gen_byte_aligned_proto_choice_code(
+                proto_mod,
+                proto_type_def,
+                enum_parse_impl_def,
+                type_impl_def,
+            ),
+            Self::BitPacked => Self::gen_bit_packed_proto_choice_code(
+                proto_mod,
+                proto_type_def,
+                enum_parse_impl_def,
+                type_impl_def,
+            ),
+        }
+    }
+
+    pub fn gen_byte_aligned_int_main_parse_fn(proto_num: u64, name: &str) -> String {
+        format!(
+        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
+         let (tail, _) = validate_int_tag(input)?;\n\
+         let (tail, value) = parse_vlq_int(tail)?;\n\
+         // TODO: Unsure about this. \n\
+         Ok((tail, Self {{ value }}))\n\
+         ",
+    )
+    }
+
+    pub fn gen_bit_packed_int_main_parse_fn(proto_num: u64, name: &str) -> String {
+        unimplemented!()
+    }
+
+    pub fn open_int_main_parse_fn(&self, proto_num: u64, name: &str) -> String {
+        match self {
+            Self::ByteAligned => Self::gen_byte_aligned_int_main_parse_fn(proto_num, name),
+            Self::BitPacked => Self::gen_bit_packed_int_main_parse_fn(proto_num, name),
+        }
+    }
+
+    pub fn gen_byte_aligned_enum_main_parse_fn(proto_num: u64, name: &str) -> String {
+        format!(
+        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
+         let (tail, _) = validate_int_tag(input)?;\n\
+         let (tail, variant_tag) = parse_vlq_int(tail)?;\n\
+         match variant_tag {{
+         ",
+    )
+    }
+
+    pub fn gen_bit_packed_enum_main_parse_fn(proto_num: u64, name: &str) -> String {
+        unimplemented!()
+    }
+
+    pub fn open_enum_main_parse_fn(&self, proto_num: u64, name: &str) -> String {
+        match self {
+            Self::ByteAligned => Self::gen_byte_aligned_enum_main_parse_fn(proto_num, name),
+            Self::BitPacked => Self::gen_bit_packed_enum_main_parse_fn(proto_num, name),
+        }
+    }
+
+    /// Creates a Rust Enum out of a EnumType type.
+    /// The enum variants do not contain internal types
+    #[tracing::instrument(
+        level = "debug",
+        skip(proto_mod, proto_type_def, enum_parse_impl_def, type_impl_def,)
+    )]
+    pub fn gen_byte_aligned_proto_enum_code(
+        proto_mod: &Value,
+        proto_type_def: &mut String,
+        enum_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
+        enum_tags: &HashMap<String, String>,
+    ) {
+        //output.write_all(format!("\n/*{:#}*/\n", proto_mod).as_bytes())?;
+        let variant_array = proto_mod["type_info"]["fields"].as_array().unwrap();
+        for variant in variant_array {
+            let variant_name = proto_nnet_name_to_rust_name(&variant["name"]);
+            proto_type_def.push_str(&format!("    {variant_name}"));
+            let variant_value_fullname = format!(
+                "{}::{}",
+                str_nnet_name_to_rust_name(proto_mod["fullname"].to_string()),
+                variant_name,
+            );
+            if let Some(struct_name) = enum_tags.get(&variant_value_fullname) {
+                proto_type_def.push_str(&format!("({struct_name})"));
+            }
+            proto_type_def.push_str(&format!(",\n",));
+            let proto_variant_value = variant["value"]["value"].as_str().unwrap();
+            assert!(variant["value"]["type"].as_str().unwrap() == String::from("IntLiteral"));
+            enum_parse_impl_def.push_str(&format!(
+                " {proto_variant_value} => {{\n\
+                 tracing::debug!(\"Variant {variant_name} for value '{proto_variant_value}'\");\n"
+            ));
+            if let Some(struct_name) = enum_tags.get(&variant_value_fullname) {
+                enum_parse_impl_def.push_str(&format!(
+                    "
+                let (tail, res) = {struct_name}::parse(tail)?;
+                Ok((tail, Self::{variant_name}(res)))\n\
+                 }},\n"
+                ));
+            } else {
+                enum_parse_impl_def.push_str(&format!(
+                    "Ok((tail, Self::{variant_name}))\n\
+                     }},\n"
+                ));
+            }
+        }
+        enum_parse_impl_def.push_str(
+            "
+            _ => {\n\
+                tracing::error!(\"Unknown variant value {variant_tag}\");\n\
+                panic!(\"Unknown variant value {variant_tag}\");\n\
+            },\n\
+          }",
+        ); // close the match
+
+        enum_parse_impl_def.push_str("}\n"); // Close function definition
+        type_impl_def.push_str(&enum_parse_impl_def);
+    }
+
+    /// Creates a Rust Enum out of a EnumType type.
+    /// The enum variants do not contain internal types
+    #[tracing::instrument(
+        level = "debug",
+        skip(proto_mod, proto_type_def, enum_parse_impl_def, type_impl_def,)
+    )]
+    pub fn gen_bit_packed_proto_enum_code(
+        proto_mod: &Value,
+        proto_type_def: &mut String,
+        enum_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
+        enum_tags: &HashMap<String, String>,
+    ) {
+        unimplemented!()
+    }
+
+    /// Creates a Rust Enum out of a EnumType type.
+    /// The enum variants do not contain internal types
+    #[tracing::instrument(
+        level = "debug",
+        skip(self, proto_mod, proto_type_def, enum_parse_impl_def, type_impl_def,)
+    )]
+    pub fn gen_proto_enum_code(
+        &self,
+        proto_mod: &Value,
+        proto_type_def: &mut String,
+        enum_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
+        enum_tags: &HashMap<String, String>,
+    ) {
+        match self {
+            Self::ByteAligned => Self::gen_byte_aligned_proto_enum_code(
+                proto_mod,
+                proto_type_def,
+                enum_parse_impl_def,
+                type_impl_def,
+                enum_tags,
+            ),
+            Self::BitPacked => Self::gen_bit_packed_proto_enum_code(
+                proto_mod,
+                proto_type_def,
+                enum_parse_impl_def,
+                type_impl_def,
+                enum_tags,
+            ),
+        }
+    }
+
+    #[tracing::instrument(
+        level = "debug",
+        skip(proto_type_def, int_parse_impl_def, type_impl_def,)
+    )]
+    pub fn gen_byte_aligned_proto_int_code(
+        proto_type_def: &mut String,
+        int_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
+    ) {
+        // The int_parse_impl_def already contains the int parsing functionality.
+        // XXX: This is untested.
+        proto_type_def.push_str(&format!("    value: i64,"));
+        int_parse_impl_def.push_str("}\n"); // Close function definition
+        type_impl_def.push_str(&int_parse_impl_def);
+    }
+
+    #[tracing::instrument(
+        level = "debug",
+        skip(proto_type_def, int_parse_impl_def, type_impl_def,)
+    )]
+    pub fn gen_bit_packed_proto_int_code(
+        proto_type_def: &mut String,
+        int_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
+    ) {
+        unimplemented!()
+    }
+    /// Creates a Rust Int out of a IntType type.
+    /// The struct contains an interval .value field.
+    #[tracing::instrument(
+        level = "debug",
+        skip(self, proto_type_def, int_parse_impl_def, type_impl_def,)
+    )]
+    pub fn gen_proto_int_code(
+        &self,
+        proto_type_def: &mut String,
+        int_parse_impl_def: &mut String,
+        type_impl_def: &mut String,
+    ) {
+        match self {
+            Self::ByteAligned => Self::gen_byte_aligned_proto_int_code(
+                proto_type_def,
+                int_parse_impl_def,
+                type_impl_def,
+            ),
+            Self::BitPacked => Self::gen_bit_packed_proto_int_code(
+                proto_type_def,
+                int_parse_impl_def,
+                type_impl_def,
+            ),
+        }
     }
 }

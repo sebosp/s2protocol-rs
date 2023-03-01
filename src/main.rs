@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
 use nom_mpq::parser;
-use s2protocol::generator::generate_code_for_protocol;
+use s2protocol::generator::proto_morphist::ProtoMorphist;
 use s2protocol::versions::read_tracker_events;
 use tracing_subscriber;
 
@@ -35,7 +35,7 @@ fn main() {
     let cli = Cli::parse();
     match &cli.command {
         Commands::Generate { output } => {
-            generate_code_for_protocol(&cli.source, &output).unwrap();
+            ProtoMorphist::gen(&cli.source, &output).unwrap();
         }
         Commands::GetTrackerEvents => {
             tracing::info!("Getting tracker events");
