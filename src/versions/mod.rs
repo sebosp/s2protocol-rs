@@ -12,7 +12,10 @@ pub fn read_tracker_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<TrackerEvent>
     let (_tail, proto_header) = crate::read_protocol_header(&mpq).unwrap();
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
-        87702 => protocol87702::ReplayTrackerEEventId::read_tracker_events(mpq, file_contents),
+        87702 => protocol87702::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
+            mpq,
+            file_contents,
+        ),
         89634 => protocol89634::ReplayTrackerEEventId::read_tracker_events(mpq, file_contents),
         _ => panic!(
             "Unsupported Protocol Version: {}",
@@ -23,7 +26,7 @@ pub fn read_tracker_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<TrackerEvent>
 
 #[cfg(test)]
 mod tests {
-    use super::protocol87702::*;
+    use super::protocol87702::byte_aligned::*;
 
     #[test_log::test]
     fn it_reads_tracker_events() {

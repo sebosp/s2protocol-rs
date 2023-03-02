@@ -26,49 +26,49 @@ pub const INT_TAG: &[u8; 1] = b"\x09";
 /// The arrays are prepend by the [`ARRAY_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_array_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek(tag(ARRAY_TAG), "array tag")(input)
+    dbg_peek_hex(tag(ARRAY_TAG), "array tag")(input)
 }
 
 /// The bitarrays are prepend by the [`BIT_ARRAY_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_bitarray_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek(tag(BIT_ARRAY_TAG), "bitarray tag")(input)
+    dbg_peek_hex(tag(BIT_ARRAY_TAG), "bitarray tag")(input)
 }
 
 /// The blobs are prepend by the [`BLOB_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_blob_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek(tag(BLOB_TAG), "blob tag")(input)
+    dbg_peek_hex(tag(BLOB_TAG), "blob tag")(input)
 }
 
 /// The choice/enums are prepend by the [`CHOICE_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_choice_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek(tag(CHOICE_TAG), "choice tag")(input)
+    dbg_peek_hex(tag(CHOICE_TAG), "choice tag")(input)
 }
 
 /// The optionals are prepend by the [`OPT_TAG`] if provided.
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_opt_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek(tag(OPT_TAG), "opt tag")(input)
+    dbg_peek_hex(tag(OPT_TAG), "opt tag")(input)
 }
 
 /// The structs are prepend by the [`STRUCT_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_struct_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek(tag(STRUCT_TAG), "struct tag")(input)
+    dbg_peek_hex(tag(STRUCT_TAG), "struct tag")(input)
 }
 
 /// The bools are prepend by the [`BOOL_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_bool_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek(tag(BOOL_TAG), "bool tag")(input)
+    dbg_peek_hex(tag(BOOL_TAG), "bool tag")(input)
 }
 
 /// The ints are prepend by the [`INT_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_int_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek(tag(INT_TAG), "int tag")(input)
+    dbg_peek_hex(tag(INT_TAG), "int tag")(input)
 }
 
 /// Reads a bitarray that is prepend by its tag.
@@ -78,7 +78,7 @@ pub fn tagged_bitarray(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
     let (tail, array_length) = parse_vlq_int(tail)?;
     let array_length = (array_length as usize + 7usize) / 8usize;
     tracing::trace!("Reading array length: {}", array_length);
-    let (tail, array) = dbg_peek(take(array_length as usize), "bitarray")(tail)?;
+    let (tail, array) = dbg_peek_hex(take(array_length as usize), "bitarray")(tail)?;
     Ok((tail, array.to_vec()))
 }
 
@@ -88,7 +88,7 @@ pub fn tagged_blob(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
     let (tail, _) = validate_blob_tag(input)?;
     let (tail, blob_length) = parse_vlq_int(tail)?;
     tracing::trace!("Reading blob length: {}", blob_length);
-    let (tail, blob) = dbg_peek(take(blob_length as usize), "blob")(tail)?;
+    let (tail, blob) = dbg_peek_hex(take(blob_length as usize), "blob")(tail)?;
     Ok((tail, blob.to_vec()))
 }
 
@@ -103,6 +103,6 @@ pub fn tagged_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn tagged_bool(input: &[u8]) -> IResult<&[u8], bool> {
     let (tail, _) = validate_bool_tag(input)?;
-    let (tail, value) = dbg_peek(u8, "bool")(&tail)?;
+    let (tail, value) = dbg_peek_hex(u8, "bool")(&tail)?;
     Ok((tail, value != 0))
 }

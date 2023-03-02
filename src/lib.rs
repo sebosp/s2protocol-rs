@@ -37,8 +37,26 @@ pub fn peek_bits(input: (&[u8], usize)) -> String {
     res.push_str("]");
     res
 }
+
 /// Returns the 8 bytes following where the error was found for context.
-pub fn dbg_peek<'a, F, O, E: std::fmt::Debug>(
+pub fn dbg_peek_bits<'a, F, O, E: std::fmt::Debug>(
+    f: F,
+    context: &'static str,
+) -> impl Fn((&'a [u8], usize)) -> IResult<(&'a [u8], usize), O, E>
+where
+    F: Fn((&'a [u8], usize)) -> IResult<(&'a [u8], usize), O, E>,
+{
+    move |i: (&'a [u8], usize)| match f(i) {
+        Err(e) => {
+            tracing::error!("{}: Error({:?}) at: {}", context, e, peek_bits(i));
+            Err(e)
+        }
+        a => a,
+    }
+}
+
+/// Returns the 8 bytes following where the error was found for context.
+pub fn dbg_peek_hex<'a, F, O, E: std::fmt::Debug>(
     f: F,
     context: &'static str,
 ) -> impl Fn(&'a [u8]) -> IResult<&'a [u8], O, E>
@@ -57,12 +75,12 @@ where
 /// Reads a VLQ Int that is prepend by its tag
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn parse_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
-    let (mut tail, mut v_int_value) = dbg_peek(u8, "v_int")(&input)?;
+    let (mut tail, mut v_int_value) = dbg_peek_hex(u8, "v_int")(&input)?;
     let is_negative = v_int_value & 1 != 0;
     let mut result: i64 = ((v_int_value >> 1) & 0x3f) as i64;
     let mut bits: i64 = 6;
     while (v_int_value & 0x80) != 0 {
-        let (new_tail, new_v_int_value) = dbg_peek(u8, "v_int")(&tail)?;
+        let (new_tail, new_v_int_value) = dbg_peek_hex(u8, "v_int")(&tail)?;
         tail = new_tail;
         result |= ((new_v_int_value as i64 & 0x7fi64) << bits) as i64;
         v_int_value = new_v_int_value;

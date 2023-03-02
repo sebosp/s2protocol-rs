@@ -57,7 +57,7 @@ impl ProtoMorphist {
 
     /// Creates the top level of the mod.rs file, basic comment and main imports.
     #[tracing::instrument(level = "debug", skip(self))]
-    pub fn initialize_module_imports(&mut self) -> std::io::Result<()> {
+    pub fn initialize_crate_imports(&mut self) -> std::io::Result<()> {
         self.output.write_all(
             format!(
                 "//! Generated code from source: {}\n",
@@ -138,6 +138,7 @@ impl ProtoMorphist {
     #[tracing::instrument(level = "debug", skip(self))]
     pub fn gen_byte_aligned_mod(&mut self) -> std::io::Result<()> {
         self.open_byte_aligned_mod()?;
+        self.initialize_crate_imports()?;
         let proto_modules_arr = self.proto_json["modules"][0]["decls"]
             .as_array()
             .expect("'.modules[0].decls' not found in json")
@@ -187,6 +188,7 @@ impl ProtoMorphist {
     #[tracing::instrument(level = "debug", skip(self))]
     pub fn gen_bit_packed_mod(&mut self) -> std::io::Result<()> {
         self.open_bit_packed_mod()?;
+        self.initialize_crate_imports()?;
         let proto_modules_arr = self.proto_json["modules"][0]["decls"]
             .as_array()
             .expect("'.modules[0].decls' not found in json")
@@ -282,7 +284,6 @@ impl ProtoMorphist {
     #[tracing::instrument(level = "debug", skip(source_path, output_name))]
     pub fn gen(source_path: &str, output_name: &str) -> std::io::Result<()> {
         let mut generator = Self::new(source_path, output_name)?;
-        generator.initialize_module_imports()?;
         generator.collect_enum_tags()?;
         generator.gen_byte_aligned_mod()?;
         generator.gen_bit_packed_mod()

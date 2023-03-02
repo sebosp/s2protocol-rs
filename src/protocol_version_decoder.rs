@@ -8,7 +8,7 @@
 
 use super::*;
 // TODO: Find a way to parse the version with the latest available protocol.
-use crate::versions::protocol87702::{ReplaySHeader, SVersion};
+use crate::versions::protocol87702::byte_aligned::{ReplaySHeader, SVersion};
 use nom::bytes::complete::*;
 use nom::error::dbg_dmp;
 use nom::*;
