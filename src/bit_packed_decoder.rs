@@ -8,6 +8,40 @@ use nom::number::complete::i64;
 use nom::number::Endianness;
 use nom::*;
 
+/// Takes n total bits from the current u8 slice.
+#[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
+pub fn take_n_bits_into_i64(
+    input: (&[u8], usize),
+    total_bits: usize,
+) -> IResult<(&[u8], usize), i64> {
+    assert!(total_bits < 64);
+    let mut res = 0i64;
+    let mut remaining_bits = total_bits;
+    let mut tail = input;
+    let mut byte_slice = 0usize;
+    loop {
+        let count = if remaining_bits > 8 {
+            8
+        } else {
+            remaining_bits
+        };
+        let (new_tail, bits) =
+            dbg_peek_bits(take::<&[u8], u8, usize, _>(count), "take_n_bits_into_i64")(tail)?;
+        res += (bits as i64) << (byte_slice * 8usize);
+        tail = new_tail;
+        if remaining_bits > 8 {
+            remaining_bits -= 8;
+        } else {
+            remaining_bits = 0;
+        }
+        if remaining_bits == 0 {
+            break;
+        }
+        byte_slice += 1;
+    }
+    Ok((tail, res))
+}
+
 /// Reads a packed int, In offset binary representation, (also called excess-K or biased).
 /// a signed number is represented by the bit pattern corresponding to the unsigned number plus K, with K being the biasing value or offset.
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
@@ -16,9 +50,8 @@ pub fn parse_packed_int(
     offset: i64,
     num_bits: usize,
 ) -> IResult<(&[u8], usize), i64> {
-    let (tail, bits): ((&[u8], usize), Vec<u8>) = take(num_bits)(input)?;
-    let (_, int) = dbg_peek_hex(i64(Endianness::Big), "i64")(&bits)?;
-    let res = offset + int;
+    let (tail, num) = take_n_bits_into_i64(input, num_bits)?;
+    let res = offset + num;
     Ok((tail, res))
 }
 
