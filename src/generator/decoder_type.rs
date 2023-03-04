@@ -173,7 +173,7 @@ impl DecoderType {
             | "NNet.Replay.Tracker.TUIntMiniBits" => ProtoTypeConversion {
                 rust_ty: "u8".to_string(),
                 do_try_from: true,
-                parser: "fixme".to_string(),
+                parser: "parse_packed_int".to_string(),
                 is_vec: false,
                 is_optional: false,
             },
@@ -265,9 +265,13 @@ impl DecoderType {
     }
 
     #[tracing::instrument(level = "debug")]
-    pub fn open_byte_aligned_choice_main_parse_fn(proto_num: u64, name: &str) -> String {
+    pub fn open_byte_aligned_choice_main_parse_fn(
+        proto_num: u64,
+        name: &str,
+        _num_fields: usize,
+    ) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
          let (tail, _) = validate_choice_tag(input)?;\n\
          let (tail, variant_tag) = parse_vlq_int(tail)?;\n\
@@ -281,11 +285,21 @@ impl DecoderType {
     }
 
     #[tracing::instrument(level = "debug")]
-    pub fn open_bit_packed_choice_main_parse_fn(proto_num: u64, name: &str) -> String {
+    pub fn open_bit_packed_choice_main_parse_fn(
+        proto_num: u64,
+        name: &str,
+        num_fields: usize,
+    ) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
-         let (tail, variant_tag) = fixme(tail)?;\n\
+            // ChoiceType:
+            // Use the number of elements in the json .fields to calculate how many
+            // bits to have unique tags.
+            let num_fields: usize = {num_fields};\n\
+            let offset = 0i64;\n\
+            let num_bits = ({num_fields} as f32).sqrt().ceil() as usize;\n\
+            let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;\n\
          ",
     )
     }
@@ -296,10 +310,19 @@ impl DecoderType {
 
     /// Generates the main parse function for a byte aligned choice type
     #[tracing::instrument(level = "debug")]
-    pub fn open_choice_main_parse_fn(self, proto_num: u64, name: &str) -> String {
+    pub fn open_choice_main_parse_fn(
+        self,
+        proto_num: u64,
+        name: &str,
+        num_fields: usize,
+    ) -> String {
         let mut res = match self {
-            Self::ByteAligned => Self::open_byte_aligned_choice_main_parse_fn(proto_num, name),
-            Self::BitPacked => Self::open_bit_packed_choice_main_parse_fn(proto_num, name),
+            Self::ByteAligned => {
+                Self::open_byte_aligned_choice_main_parse_fn(proto_num, name, num_fields)
+            }
+            Self::BitPacked => {
+                Self::open_bit_packed_choice_main_parse_fn(proto_num, name, num_fields)
+            }
         };
         res.push_str("match variant_tag {");
         res
@@ -710,7 +733,80 @@ impl DecoderType {
         enum_parse_impl_def: &mut String,
         type_impl_def: &mut String,
     ) {
-        unimplemented!()
+        let decoder = DecoderType::BitPacked;
+        // output.write_all(format!("\n/*{:#}*/\n", proto_mod).as_bytes())?;
+        let variant_array = proto_mod["type_info"]["fields"].as_array().unwrap();
+        for variant in variant_array {
+            let variant_name = proto_nnet_name_to_rust_name(&variant["type_info"]["name"]);
+            proto_type_def.push_str(&format!("    {variant_name}",));
+            let proto_field_type_info = match variant["type_info"]["fullname"].as_str() {
+                Some(val) => val,
+                None => {
+                    // Fallback to the `type_info.type' variant
+                    variant["type_info"]["type"].as_str().unwrap()
+                }
+            };
+            let mut morph = decoder.from_nnet_name(proto_field_type_info);
+            if proto_field_type_info == "OptionalType" {
+                // The enclosed type is wrapped in an additional .type_info field.
+                let enclosed_type = variant["type_info"]["type_info"]["type"].to_string();
+                morph.parser = morph.parser.replace("{}", &enclosed_type);
+                morph.rust_ty = morph.rust_ty.replace("{}", &enclosed_type);
+            }
+            let proto_field_tag = variant["tag"]["value"].as_str().unwrap();
+            assert!(variant["tag"]["type"].as_str().unwrap() == String::from("IntLiteral"));
+            let field_type = &morph.rust_ty;
+            let field_value_parser = &morph.parser;
+            proto_type_def.push_str(&format!("({field_type}),\n"));
+            enum_parse_impl_def.push_str(&format!(
+                " {proto_field_tag} => {{\n\
+                 tracing::debug!(\"Variant tagged '{proto_field_tag}' for {variant_name}\");\n\
+                 "
+            ));
+            if proto_field_type_info == "OptionalType" {
+                enum_parse_impl_def.push_str("let (tail, _) = fixme_validate_opt_tag(tail)?;\n");
+                // If the next bit is a filled with zeros, then the field is None
+                enum_parse_impl_def
+                    .push_str("let (tail, is_provided) = parse_packed_int(tail, 0, 1)?;\n");
+                enum_parse_impl_def.push_str("if is_provided != 0 {\n");
+                enum_parse_impl_def.push_str(&format!(
+                    "let (tail, res) = {field_value_parser}(tail)?;\n\
+                     tracing::debug!(\"res: {{:?}}\", res);\n"
+                ));
+                enum_parse_impl_def.push_str(&format!(
+                    "    Ok((tail, Self::{variant_name}(Some(res))))\n"
+                ));
+                enum_parse_impl_def.push_str("} else {\n");
+                enum_parse_impl_def
+                    .push_str(&format!("    Ok((tail, Self::{variant_name}(None)))\n"));
+                enum_parse_impl_def.push_str("}\n");
+            } else {
+                enum_parse_impl_def.push_str(&format!(
+                    "let (tail, res) = {field_value_parser}(tail)?;\n\
+                     tracing::debug!(\"res: {{:?}}\", res);\n"
+                ));
+                if morph.do_try_from {
+                    enum_parse_impl_def.push_str(&format!(
+                    "    Ok((tail, Self::{variant_name}({field_type}::try_from(res).unwrap())))\n"
+                ));
+                } else {
+                    enum_parse_impl_def
+                        .push_str(&format!("    Ok((tail, Self::{variant_name}(res)))\n"));
+                }
+            }
+            enum_parse_impl_def.push_str("    },\n"); // The match stanza end.
+        }
+        enum_parse_impl_def.push_str(
+            "
+            _ => {\n\
+                tracing::error!(\"Unknown variant for tag {variant_tag}\");\n\
+                panic!(\"Unknown variant tag {variant_tag}\");\n\
+            },\n\
+          }",
+        ); // close the match
+
+        enum_parse_impl_def.push_str("}\n"); // Close function definition
+        type_impl_def.push_str(&enum_parse_impl_def);
     }
 
     #[tracing::instrument(

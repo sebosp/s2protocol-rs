@@ -1,14 +1,13 @@
 //! The Bit Packed Decoder.
 //! As a difference to the Versioned Decoder, the fields are not tagged.
 
+use crate::dbg_peek_bits;
 use crate::peek_bits;
-use crate::{dbg_peek_bits, dbg_peek_hex};
 use nom::bits::complete::take;
-use nom::number::complete::i64;
-use nom::number::Endianness;
 use nom::*;
 
-/// Takes n total bits from the current u8 slice.
+/// Takes n total bits from the current u8 slice at the current offset and transforms the data into
+/// an u64, this works with Big Endian
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn take_n_bits_into_i64(
     input: (&[u8], usize),
