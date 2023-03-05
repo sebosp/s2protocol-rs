@@ -34,7 +34,7 @@ impl DecoderType {
     }
 
     /// Closes the struct main parse function.
-    fn close_byte_aligned_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
+    fn close_byte_aligned_struct_main_parse_fn() -> String {
         format!("}}")
     }
 
@@ -54,7 +54,7 @@ impl DecoderType {
     }
 
     /// Closes the struct main parse function.
-    fn close_bit_packed_gen_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
+    fn close_bit_packed_struct_main_parse_fn() -> String {
         format!("}}")
     }
 
@@ -63,6 +63,14 @@ impl DecoderType {
         match self {
             Self::ByteAligned => Self::open_byte_aligned_struct_main_parse_fn(proto_num, name),
             Self::BitPacked => Self::open_bit_packed_struct_main_parse_fn(proto_num, name),
+        }
+    }
+
+    /// Opens the main parse function for the current DecoderType
+    pub fn close_struct_main_parse_fn(self) -> String {
+        match self {
+            Self::ByteAligned => Self::close_byte_aligned_struct_main_parse_fn(),
+            Self::BitPacked => Self::close_bit_packed_struct_main_parse_fn(),
         }
     }
 
@@ -298,7 +306,7 @@ impl DecoderType {
             // bits to have unique tags.
             let num_fields: usize = {num_fields};\n\
             let offset = 0i64;\n\
-            let num_bits = ({num_fields} as f32).sqrt().ceil() as usize;\n\
+            let num_bits = (num_fields as f32).sqrt().ceil() as usize;\n\
             let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;\n\
          ",
     )
@@ -311,7 +319,7 @@ impl DecoderType {
     /// Generates the main parse function for a byte aligned choice type
     #[tracing::instrument(level = "debug")]
     pub fn open_choice_main_parse_fn(
-        self,
+        &self,
         proto_num: u64,
         name: &str,
         num_fields: usize,
@@ -329,8 +337,11 @@ impl DecoderType {
     }
     /// Generates the main parse function for a byte aligned choice type
     #[tracing::instrument(level = "debug")]
-    pub fn close_gen_choice_main_parse_fn() -> String {
-        String::from("}")
+    pub fn close_choice_main_parse_fn(&self) -> String {
+        match self {
+            Self::ByteAligned => Self::close_byte_aligned_choice_main_parse_fn(),
+            Self::BitPacked => Self::close_bit_packed_choice_main_parse_fn(),
+        }
     }
 
     #[tracing::instrument(
@@ -341,10 +352,10 @@ impl DecoderType {
         &self,
         proto_mod: &Value,
         proto_type_def: &mut String,
-        struct_parse_impl_def: &mut String,
+        struct_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
-        let mut res = match self {
+        match self {
             Self::ByteAligned => Self::gen_byte_aligned_proto_struct_code(
                 proto_mod,
                 proto_type_def,
@@ -357,8 +368,7 @@ impl DecoderType {
                 struct_parse_impl_def,
                 type_impl_def,
             ),
-        };
-        res
+        }
     }
 
     /// Generates a Rust Struct code with fields and parsing methods per field for Byte Aligned
@@ -370,7 +380,7 @@ impl DecoderType {
     pub fn gen_byte_aligned_proto_struct_code(
         proto_mod: &Value,
         proto_type_def: &mut String,
-        struct_parse_impl_def: &mut String,
+        mut struct_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
         let decoder = DecoderType::ByteAligned;
@@ -614,8 +624,7 @@ impl DecoderType {
         }
         struct_parse_impl_def.push_str(&struct_parse_fields);
         struct_parse_impl_def.push_str(&struct_parse_return);
-
-        struct_parse_impl_def.push_str("}\n"); // Close the main parse function definition
+        type_impl_def.push_str(&struct_parse_impl_def);
     }
 
     /// Generates a Rust Struct code with fields and parsing methods per field for Bit Packed
@@ -627,7 +636,7 @@ impl DecoderType {
     pub fn gen_bit_packed_proto_struct_code(
         proto_mod: &Value,
         proto_type_def: &mut String,
-        struct_parse_impl_def: &mut String,
+        mut struct_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
         unimplemented!()
@@ -642,7 +651,7 @@ impl DecoderType {
     pub fn gen_byte_aligned_proto_choice_code(
         proto_mod: &Value,
         proto_type_def: &mut String,
-        enum_parse_impl_def: &mut String,
+        mut enum_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
         let decoder = DecoderType::ByteAligned;
@@ -716,8 +725,6 @@ impl DecoderType {
             },\n\
           }",
         ); // close the match
-
-        enum_parse_impl_def.push_str("}\n"); // Close function definition
         type_impl_def.push_str(&enum_parse_impl_def);
     }
 
@@ -730,7 +737,7 @@ impl DecoderType {
     pub fn gen_bit_packed_proto_choice_code(
         proto_mod: &Value,
         proto_type_def: &mut String,
-        enum_parse_impl_def: &mut String,
+        mut enum_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
         let decoder = DecoderType::BitPacked;
@@ -804,8 +811,6 @@ impl DecoderType {
             },\n\
           }",
         ); // close the match
-
-        enum_parse_impl_def.push_str("}\n"); // Close function definition
         type_impl_def.push_str(&enum_parse_impl_def);
     }
 
@@ -817,7 +822,7 @@ impl DecoderType {
         &self,
         proto_mod: &Value,
         proto_type_def: &mut String,
-        enum_parse_impl_def: &mut String,
+        enum_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
         match self {
@@ -836,9 +841,14 @@ impl DecoderType {
         }
     }
 
-    pub fn gen_byte_aligned_int_main_parse_fn(proto_num: u64, name: &str) -> String {
+    /// Opens the byte aligned version of the ByteInt parser
+    pub fn open_byte_aligned_int_main_parse_fn(
+        proto_num: u64,
+        _bounds: &Value,
+        name: &str,
+    ) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
          let (tail, _) = validate_int_tag(input)?;\n\
          let (tail, value) = parse_vlq_int(tail)?;\n\
@@ -848,36 +858,106 @@ impl DecoderType {
     )
     }
 
-    pub fn gen_bit_packed_int_main_parse_fn(proto_num: u64, name: &str) -> String {
-        unimplemented!()
+    pub fn close_byte_aligned_int_main_parse_fn() -> String {
+        format!("}}")
     }
 
-    pub fn open_int_main_parse_fn(&self, proto_num: u64, name: &str) -> String {
+    /// Opens the bit packed version of the ByteInt parser
+    pub fn open_bit_packed_int_main_parse_fn(proto_num: u64, bounds: &Value, name: &str) -> String {
+        assert!(bounds["type"] == "MinMaxConstraint");
+        let offset = bounds["min"]["evalue"]
+            .as_str()
+            .expect("bounds should have .min.evalue");
+        let mut num_bits: usize = bounds["max"]["value"]["rhs"]
+            .as_str()
+            .expect("bounds should have .max.value.rhs")
+            .parse()
+            .expect(".max.value.rhs should be usize");
+        if offset.starts_with('-') {
+            // If the offset is negative, we need to account for one more bit.
+            num_bits += 1;
+        }
+        format!(
+            "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         let offset: i64 = {offset};
+         let num_bits: usize = {num_bits};
+         let (tail, num) = parse_packed_int(input, offset, num_bits)?;\n\
+         // TODO: Unsure about this. \n\
+         Ok((tail, Self {{ value: <_>::try_from(res).unwrap() }}))\n\
+         ",
+        )
+    }
+
+    pub fn close_bit_packed_int_main_parse_fn() -> String {
+        format!("}}")
+    }
+
+    pub fn open_int_main_parse_fn(&self, proto_num: u64, bounds: &Value, name: &str) -> String {
         match self {
-            Self::ByteAligned => Self::gen_byte_aligned_int_main_parse_fn(proto_num, name),
-            Self::BitPacked => Self::gen_bit_packed_int_main_parse_fn(proto_num, name),
+            Self::ByteAligned => Self::open_byte_aligned_int_main_parse_fn(proto_num, bounds, name),
+            Self::BitPacked => Self::open_bit_packed_int_main_parse_fn(proto_num, bounds, name),
         }
     }
 
-    pub fn gen_byte_aligned_enum_main_parse_fn(proto_num: u64, name: &str) -> String {
+    pub fn close_int_main_parse_fn(&self) -> String {
+        match self {
+            Self::ByteAligned => Self::close_byte_aligned_int_main_parse_fn(),
+            Self::BitPacked => Self::close_bit_packed_int_main_parse_fn(),
+        }
+    }
+
+    pub fn open_byte_aligned_enum_main_parse_fn(proto_num: u64, name: &str) -> String {
         format!(
         "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
          let (tail, _) = validate_int_tag(input)?;\n\
          let (tail, variant_tag) = parse_vlq_int(tail)?;\n\
-         match variant_tag {{
+         match variant_tag {{\n\
          ",
     )
     }
 
-    pub fn gen_bit_packed_enum_main_parse_fn(proto_num: u64, name: &str) -> String {
-        unimplemented!()
+    pub fn close_byte_aligned_enum_main_parse_fn() -> String {
+        // Close both the match and the function
+        format!(
+            "
+         }}\n\
+         }}"
+        )
+    }
+
+    pub fn open_bit_packed_enum_main_parse_fn(proto_num: u64, name: &str) -> String {
+        // XXX: untested
+        format!(
+        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         fixme()
+         match variant_tag {{\n\
+         ",
+    )
+    }
+
+    pub fn close_bit_packed_enum_main_parse_fn() -> String {
+        // Close both the match and the function
+        format!(
+            "
+         }}\n\
+         }}"
+        )
     }
 
     pub fn open_enum_main_parse_fn(&self, proto_num: u64, name: &str) -> String {
         match self {
-            Self::ByteAligned => Self::gen_byte_aligned_enum_main_parse_fn(proto_num, name),
-            Self::BitPacked => Self::gen_bit_packed_enum_main_parse_fn(proto_num, name),
+            Self::ByteAligned => Self::open_byte_aligned_enum_main_parse_fn(proto_num, name),
+            Self::BitPacked => Self::open_bit_packed_enum_main_parse_fn(proto_num, name),
+        }
+    }
+
+    pub fn close_enum_main_parse_fn(&self) -> String {
+        match self {
+            Self::ByteAligned => Self::close_byte_aligned_enum_main_parse_fn(),
+            Self::BitPacked => Self::close_bit_packed_enum_main_parse_fn(),
         }
     }
 
@@ -890,7 +970,7 @@ impl DecoderType {
     pub fn gen_byte_aligned_proto_enum_code(
         proto_mod: &Value,
         proto_type_def: &mut String,
-        enum_parse_impl_def: &mut String,
+        mut enum_parse_impl_def: String,
         type_impl_def: &mut String,
         enum_tags: &HashMap<String, String>,
     ) {
@@ -933,11 +1013,8 @@ impl DecoderType {
             _ => {\n\
                 tracing::error!(\"Unknown variant value {variant_tag}\");\n\
                 panic!(\"Unknown variant value {variant_tag}\");\n\
-            },\n\
-          }",
-        ); // close the match
-
-        enum_parse_impl_def.push_str("}\n"); // Close function definition
+            },\n",
+        );
         type_impl_def.push_str(&enum_parse_impl_def);
     }
 
@@ -950,7 +1027,7 @@ impl DecoderType {
     pub fn gen_bit_packed_proto_enum_code(
         proto_mod: &Value,
         proto_type_def: &mut String,
-        enum_parse_impl_def: &mut String,
+        enum_parse_impl_def: String,
         type_impl_def: &mut String,
         enum_tags: &HashMap<String, String>,
     ) {
@@ -967,7 +1044,7 @@ impl DecoderType {
         &self,
         proto_mod: &Value,
         proto_type_def: &mut String,
-        enum_parse_impl_def: &mut String,
+        enum_parse_impl_def: String,
         type_impl_def: &mut String,
         enum_tags: &HashMap<String, String>,
     ) {
@@ -995,13 +1072,12 @@ impl DecoderType {
     )]
     pub fn gen_byte_aligned_proto_int_code(
         proto_type_def: &mut String,
-        int_parse_impl_def: &mut String,
+        int_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
         // The int_parse_impl_def already contains the int parsing functionality.
         // XXX: This is untested.
         proto_type_def.push_str(&format!("    value: i64,"));
-        int_parse_impl_def.push_str("}\n"); // Close function definition
         type_impl_def.push_str(&int_parse_impl_def);
     }
 
@@ -1011,10 +1087,11 @@ impl DecoderType {
     )]
     pub fn gen_bit_packed_proto_int_code(
         proto_type_def: &mut String,
-        int_parse_impl_def: &mut String,
+        int_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
-        unimplemented!()
+        proto_type_def.push_str(&format!("    value: i64,"));
+        type_impl_def.push_str(&int_parse_impl_def);
     }
     /// Creates a Rust Int out of a IntType type.
     /// The struct contains an interval .value field.
@@ -1025,7 +1102,7 @@ impl DecoderType {
     pub fn gen_proto_int_code(
         &self,
         proto_type_def: &mut String,
-        int_parse_impl_def: &mut String,
+        int_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
         match self {

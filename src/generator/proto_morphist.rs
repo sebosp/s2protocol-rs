@@ -145,16 +145,19 @@ impl ProtoMorphist {
             .clone();
         // SECOND PASS. Collect ByteAligned Records. These are for the VersionedDecoder
         for proto_mod in proto_modules_arr.iter() {
-            if proto_mod["fullname"] == "NNet.SVersion" {
+            let full_name = proto_mod["fullname"]
+                .as_str()
+                .expect("module decl should have fullname on fields");
+            if full_name == "NNet.SVersion" {
                 self.gen_proto_code(proto_mod, DecoderType::ByteAligned)?;
             }
-            if proto_mod["fullname"] == "NNet.SVarUint32" {
+            if full_name == "NNet.SVarUint32" {
                 self.gen_proto_code(proto_mod, DecoderType::ByteAligned)?;
             }
-            if proto_mod["fullname"] == "NNet.SMD5" {
+            if full_name == "NNet.SMD5" {
                 self.gen_proto_code(proto_mod, DecoderType::ByteAligned)?;
             }
-            if proto_mod["fullname"] == "NNet.Replay" {
+            if full_name == "NNet.Replay" {
                 let replay_mods_arr = proto_mod["decls"]
                     .as_array()
                     .expect("NNet.Replay should have '.decls' array");
@@ -195,16 +198,27 @@ impl ProtoMorphist {
             .clone();
         // THIRD PASS. Collect BitPacked Types
         for proto_mod in proto_modules_arr.iter() {
-            if proto_mod["fullname"] == "NNet.SVersion" {
+            let full_name = proto_mod["fullname"]
+                .as_str()
+                .expect("module decl should have fullname on fields");
+            if full_name.starts_with("NNet.uint") {
+                // Fetch all unsigned integer definitions
                 self.gen_proto_code(proto_mod, DecoderType::BitPacked)?;
             }
-            if proto_mod["fullname"] == "NNet.SVarUint32" {
+            if full_name.starts_with("NNet.int") {
+                // Fetch all signed integer definitions
                 self.gen_proto_code(proto_mod, DecoderType::BitPacked)?;
             }
-            if proto_mod["fullname"] == "NNet.SMD5" {
+            if full_name == "NNet.SVarUint32" {
                 self.gen_proto_code(proto_mod, DecoderType::BitPacked)?;
             }
-            if proto_mod["fullname"] == "NNet.Game" {
+            if full_name == "NNet.SVersion" {
+                self.gen_proto_code(proto_mod, DecoderType::BitPacked)?;
+            }
+            if full_name == "NNet.SMD5" {
+                self.gen_proto_code(proto_mod, DecoderType::BitPacked)?;
+            }
+            if full_name == "NNet.Game" {
                 let game_mods_arr = proto_mod["decls"]
                     .as_array()
                     .expect("NNet.Replay should have '.decls' array");
@@ -315,40 +329,50 @@ impl ProtoMorphist {
             decoder_type.gen_proto_struct_code(
                 proto_mod,
                 &mut proto_type_def,
-                &mut struct_parse_impl_def,
+                struct_parse_impl_def,
                 &mut type_impl_def,
             );
-            type_impl_def.push_str(&struct_parse_impl_def);
+            type_impl_def.push_str(&decoder_type.close_struct_main_parse_fn());
         } else if proto_unit_type == "ChoiceType" {
-            let mut enum_parse_impl_def =
-                decoder_type.open_choice_main_parse_fn(self.proto_num, &proto_unit_type_name);
+            let num_fields = proto_mod["type_info"]["fields"]
+                .as_array()
+                .expect("type_info should have .fields")
+                .len();
+            let mut enum_parse_impl_def = decoder_type.open_choice_main_parse_fn(
+                self.proto_num,
+                &proto_unit_type_name,
+                num_fields,
+            );
             decoder_type.gen_proto_choice_code(
                 proto_mod,
                 &mut proto_type_def,
-                &mut enum_parse_impl_def,
+                enum_parse_impl_def,
                 &mut type_impl_def,
             );
-            type_impl_def.push_str(&enum_parse_impl_def);
+            type_impl_def.push_str(&decoder_type.close_choice_main_parse_fn());
         } else if proto_unit_type == "EnumType" {
             let mut enum_parse_impl_def =
                 decoder_type.open_enum_main_parse_fn(self.proto_num, &proto_unit_type_name);
             decoder_type.gen_proto_enum_code(
                 proto_mod,
                 &mut proto_type_def,
-                &mut enum_parse_impl_def,
+                enum_parse_impl_def,
                 &mut type_impl_def,
                 &self.enum_tags,
             );
-            type_impl_def.push_str(&enum_parse_impl_def);
+            type_impl_def.push_str(&decoder_type.close_enum_main_parse_fn());
         } else if proto_unit_type == "IntType" {
-            let mut int_parse_impl_def =
-                decoder_type.open_int_main_parse_fn(self.proto_num, &proto_unit_type_name);
+            let mut int_parse_impl_def = decoder_type.open_int_main_parse_fn(
+                self.proto_num,
+                &proto_mod["type_info"]["type"]["bounds"],
+                &proto_unit_type_name,
+            );
             decoder_type.gen_proto_int_code(
                 &mut proto_type_def,
-                &mut int_parse_impl_def,
+                int_parse_impl_def,
                 &mut type_impl_def,
             );
-            type_impl_def.push_str(&int_parse_impl_def);
+            type_impl_def.push_str(&decoder_type.close_int_main_parse_fn());
         } else {
             tracing::error!("Unhandled protocol unit type: {:?}", proto_unit_type);
         }
@@ -385,7 +409,7 @@ pub fn open_type_impl_def(name: &str) -> String {
 
 /// Closes the type impl scope.
 pub fn close_type_impl_def() -> String {
-    String::from("}\n")
+    format!("}}\n")
 }
 
 /// Converts from a &Value that must be a str into a Rust-friendly type
