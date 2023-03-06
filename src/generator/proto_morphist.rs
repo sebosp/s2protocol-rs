@@ -324,7 +324,7 @@ impl ProtoMorphist {
         let mut type_impl_def = open_type_impl_def(&proto_unit_type_name);
         // The method for parsing all the fields into the struct as a whole.
         if proto_unit_type == "StructType" {
-            let mut struct_parse_impl_def: String =
+            let struct_parse_impl_def: String =
                 decoder_type.open_struct_main_parse_fn(self.proto_num, &proto_unit_type_name);
             decoder_type.gen_proto_struct_code(
                 proto_mod,
@@ -338,7 +338,7 @@ impl ProtoMorphist {
                 .as_array()
                 .expect("type_info should have .fields")
                 .len();
-            let mut enum_parse_impl_def = decoder_type.open_choice_main_parse_fn(
+            let enum_parse_impl_def = decoder_type.open_choice_main_parse_fn(
                 self.proto_num,
                 &proto_unit_type_name,
                 num_fields,
@@ -351,7 +351,7 @@ impl ProtoMorphist {
             );
             type_impl_def.push_str(&decoder_type.close_choice_main_parse_fn());
         } else if proto_unit_type == "EnumType" {
-            let mut enum_parse_impl_def =
+            let enum_parse_impl_def =
                 decoder_type.open_enum_main_parse_fn(self.proto_num, &proto_unit_type_name);
             decoder_type.gen_proto_enum_code(
                 proto_mod,
@@ -362,9 +362,9 @@ impl ProtoMorphist {
             );
             type_impl_def.push_str(&decoder_type.close_enum_main_parse_fn());
         } else if proto_unit_type == "IntType" {
-            let mut int_parse_impl_def = decoder_type.open_int_main_parse_fn(
+            let int_parse_impl_def = decoder_type.open_int_main_parse_fn(
                 self.proto_num,
-                &proto_mod["type_info"]["type"]["bounds"],
+                &proto_mod["type_info"]["bounds"],
                 &proto_unit_type_name,
             );
             decoder_type.gen_proto_int_code(

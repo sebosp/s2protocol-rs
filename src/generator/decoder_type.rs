@@ -172,33 +172,18 @@ impl DecoderType {
     /// A coversion table with compatible Rust types to Protocol Types for the ByteAligned variant.
     #[tracing::instrument(level = "debug")]
     fn bit_packed_from_nnet_name(nnet_name: &str) -> ProtoTypeConversion {
+        if nnet_name.starts_with("NNet.uint") || nnet_name.starts_with("NNet.int") {
+            let proto_unit_type_name = str_nnet_name_to_rust_name(nnet_name.to_string());
+            return ProtoTypeConversion {
+                rust_ty: proto_unit_type_name.clone(),
+                do_try_from: false,
+                parser: format!("{}::parse", proto_unit_type_name),
+                is_vec: false,
+                is_optional: false,
+            };
+        }
         // XXX: FIX THIS
         match nnet_name {
-            "NNet.uint8"
-            | "NNet.Replay.EReplayType"
-            | "NNet.uint6"
-            | "NNet.Game.TPlayerId"
-            | "NNet.Replay.Tracker.TUIntMiniBits" => ProtoTypeConversion {
-                rust_ty: "u8".to_string(),
-                do_try_from: true,
-                parser: "parse_packed_int".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            "NNet.uint32" | "NNet.uint14" | "NNet.uint22" => ProtoTypeConversion {
-                rust_ty: "u32".to_string(),
-                do_try_from: true,
-                parser: "fixme".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            "NNet.int32" | "NNet.Game.TFixedBits" => ProtoTypeConversion {
-                rust_ty: "i32".to_string(),
-                do_try_from: true,
-                parser: "fixme".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
             "NNet.SVersion" => ProtoTypeConversion {
                 rust_ty: "SVersion".to_string(),
                 do_try_from: false,
@@ -244,20 +229,6 @@ impl DecoderType {
                 do_try_from: false,
                 parser: "{}".to_string(),
                 is_vec: true,
-                is_optional: false,
-            },
-            "NNet.SMD5" => ProtoTypeConversion {
-                rust_ty: "Smd5".to_string(),
-                do_try_from: false,
-                parser: "fixme".to_string(),
-                is_vec: false,
-                is_optional: false,
-            },
-            "NNet.Replay.Tracker.SPlayerStats" => ProtoTypeConversion {
-                rust_ty: "ReplayTrackerSPlayerStats".to_string(),
-                do_try_from: false,
-                parser: "fixme".to_string(),
-                is_vec: false,
                 is_optional: false,
             },
             _ => panic!("Unsupported type: {}", nnet_name),
@@ -868,11 +839,11 @@ impl DecoderType {
         let offset = bounds["min"]["evalue"]
             .as_str()
             .expect("bounds should have .min.evalue");
-        let mut num_bits: usize = bounds["max"]["value"]["rhs"]
+        let mut num_bits: usize = bounds["max"]["value"]["rhs"]["value"]
             .as_str()
-            .expect("bounds should have .max.value.rhs")
+            .expect("bounds should have .max.value.rhs.value")
             .parse()
-            .expect(".max.value.rhs should be usize");
+            .expect(".max.value.rhs.value should be usize");
         if offset.starts_with('-') {
             // If the offset is negative, we need to account for one more bit.
             num_bits += 1;
