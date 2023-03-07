@@ -57,12 +57,13 @@ pub fn parse_packed_int(
 #[cfg(test)]
 mod tests {
     use crate::versions::protocol87702::bit_packed::SVarUint32;
+    use crate::versions::protocol87702::game_event::bit_packed::Uint6;
 
     #[test_log::test]
     fn it_reads_game_events() {
         // Game events have first the delta and then some event.
         let data: Vec<u8> = vec![0x00, 0xf0, 0x64, 0x2b, 0x4b, 0xa4, 0x0c, 0x00];
         let ((_tail, _tail_bits), res) = SVarUint32::parse((&data, 0usize)).unwrap();
-        assert_eq!(res, SVarUint32::Uint6(0));
+        assert_eq!(res, SVarUint32::Uint6(Uint6 { value: 0 }));
     }
 }

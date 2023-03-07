@@ -269,15 +269,16 @@ impl DecoderType {
         name: &str,
         num_fields: usize,
     ) -> String {
+        let num_bits = (num_fields as f32).sqrt().ceil() as usize;
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
             // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
             // bits to have unique tags.
             let num_fields: usize = {num_fields};\n\
             let offset = 0i64;\n\
-            let num_bits = (num_fields as f32).sqrt().ceil() as usize;\n\
+            let num_bits: usize = {num_bits};\n\
             let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;\n\
          ",
     )
@@ -849,11 +850,11 @@ impl DecoderType {
             num_bits += 1;
         }
         format!(
-            "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
          let offset: i64 = {offset};
          let num_bits: usize = {num_bits};
-         let (tail, num) = parse_packed_int(input, offset, num_bits)?;\n\
+         let (tail, res) = parse_packed_int(input, offset, num_bits)?;\n\
          // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value: <_>::try_from(res).unwrap() }}))\n\
          ",
@@ -901,7 +902,7 @@ impl DecoderType {
     pub fn open_bit_packed_enum_main_parse_fn(proto_num: u64, name: &str) -> String {
         // XXX: untested
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
          fixme()
          match variant_tag {{\n\

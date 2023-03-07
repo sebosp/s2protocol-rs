@@ -55,9 +55,9 @@ impl ProtoMorphist {
         })
     }
 
-    /// Creates the top level of the mod.rs file, basic comment and main imports.
+    /// Creates the byte_aligned module imports.
     #[tracing::instrument(level = "debug", skip(self))]
-    pub fn initialize_crate_imports(&mut self) -> std::io::Result<()> {
+    pub fn initialize_byte_aligned_crate_imports(&mut self) -> std::io::Result<()> {
         self.output.write_all(
             format!(
                 "//! Generated code from source: {}\n",
@@ -67,8 +67,31 @@ impl ProtoMorphist {
         )?;
         self.output.write_all(
             b"use crate::*;\n\
-        use nom_mpq::parser::peek_hex;\n\
-        use std::convert::TryFrom;\n\
+              use nom_mpq::parser::peek_hex;\n\
+              use crate::tracker_events::{
+                ReplayTrackerEvent, TrackerEvent, TrackerEventError, UnitBornEvent, UnitDiedEvent,
+                UnitDoneEvent, UnitInitEvent, UnitPositionsEvent, UnitTypeChangeEvent,
+              };
+              use std::convert::TryFrom;\n\
+              use nom_mpq::MPQ;\n\
+              use nom::*;\n",
+        )
+    }
+
+    /// Creates the bit packed module imports.
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub fn initialize_bit_packed_crate_imports(&mut self) -> std::io::Result<()> {
+        self.output.write_all(
+            format!(
+                "//! Generated code from source: {}\n",
+                self.json_proto_path.display()
+            )
+            .as_bytes(),
+        )?;
+        self.output.write_all(
+            b"use crate::*;\n\
+        // use nom_mpq::MPQ;\n\
+        // use std::convert::TryFrom;\n\
         use nom::*;\n",
         )
     }
@@ -138,7 +161,7 @@ impl ProtoMorphist {
     #[tracing::instrument(level = "debug", skip(self))]
     pub fn gen_byte_aligned_mod(&mut self) -> std::io::Result<()> {
         self.open_byte_aligned_mod()?;
-        self.initialize_crate_imports()?;
+        self.initialize_byte_aligned_crate_imports()?;
         let proto_modules_arr = self.proto_json["modules"][0]["decls"]
             .as_array()
             .expect("'.modules[0].decls' not found in json")
@@ -191,7 +214,7 @@ impl ProtoMorphist {
     #[tracing::instrument(level = "debug", skip(self))]
     pub fn gen_bit_packed_mod(&mut self) -> std::io::Result<()> {
         self.open_bit_packed_mod()?;
-        self.initialize_crate_imports()?;
+        self.initialize_bit_packed_crate_imports()?;
         let proto_modules_arr = self.proto_json["modules"][0]["decls"]
             .as_array()
             .expect("'.modules[0].decls' not found in json")
