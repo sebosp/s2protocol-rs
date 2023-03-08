@@ -1049,7 +1049,7 @@ impl DecoderType {
     ) {
         // The int_parse_impl_def already contains the int parsing functionality.
         // XXX: This is untested.
-        proto_type_def.push_str(&format!("    value: i64,"));
+        proto_type_def.push_str(&format!("    pub value: i64,"));
         type_impl_def.push_str(&int_parse_impl_def);
     }
 
@@ -1062,7 +1062,7 @@ impl DecoderType {
         int_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
-        proto_type_def.push_str(&format!("    value: i64,"));
+        proto_type_def.push_str(&format!("    pub value: i64,"));
         type_impl_def.push_str(&int_parse_impl_def);
     }
     /// Creates a Rust Int out of a IntType type.
