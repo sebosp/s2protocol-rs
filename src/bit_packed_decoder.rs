@@ -42,7 +42,8 @@ pub fn take_n_bits_into_i64(
 }
 
 /// Reads a packed int, In offset binary representation, (also called excess-K or biased).
-/// a signed number is represented by the bit pattern corresponding to the unsigned number plus K, with K being the biasing value or offset.
+/// a signed number is represented by the bit pattern corresponding to the unsigned number plus K,
+/// with K being the biasing value or offset.
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn parse_packed_int(
     input: (&[u8], usize),
@@ -62,6 +63,7 @@ mod tests {
     #[test_log::test]
     fn it_reads_game_events() {
         // Game events have first the delta and then some event.
+        // 0b -> tag 00 -> res = 000000 -> -> (0xf0, 0)
         let data: Vec<u8> = vec![0x00, 0xf0, 0x64, 0x2b, 0x4b, 0xa4, 0x0c, 0x00];
         let ((_tail, _tail_bits), res) = SVarUint32::parse((&data, 0usize)).unwrap();
         assert_eq!(res, SVarUint32::Uint6(Uint6 { value: 0 }));

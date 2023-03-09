@@ -235,6 +235,17 @@ impl ProtoMorphist {
             if full_name == "NNet.SVarUint32" {
                 self.gen_proto_code(proto_mod, DecoderType::BitPacked)?;
             }
+            if full_name == "NNet.Replay" {
+                let replay_mods_arr = proto_mod["decls"]
+                    .as_array()
+                    .expect("NNet.Replay should have '.decls' array");
+                for replay_mod in replay_mods_arr {
+                    tracing::info!("Processing: {}", replay_mod["fullname"]);
+                    if replay_mod["fullname"] == "NNet.Replay.SGameUserId" {
+                        self.gen_proto_code(replay_mod, DecoderType::BitPacked)?;
+                    }
+                }
+            }
             if full_name == "NNet.SVersion" {
                 self.gen_proto_code(proto_mod, DecoderType::BitPacked)?;
             }
@@ -335,6 +346,11 @@ impl ProtoMorphist {
         decoder_type: DecoderType,
     ) -> std::io::Result<()> {
         // The pub <Type> <Name> {}
+        let field_type = proto_mod["type"].as_str().unwrap();
+        if field_type == "ConstDecl" {
+            tracing::info!("Skipping ConstDecl field, typed: {field_type}");
+            return Ok(());
+        }
         let proto_unit_type = proto_mod["type_info"]["type"]
             .as_str()
             .expect(".type_info.type field expected in mod");
