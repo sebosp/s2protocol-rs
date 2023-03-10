@@ -276,7 +276,7 @@ impl DecoderType {
             // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
             // bits to have unique tags.
-            let num_fields: usize = {num_fields};\n\
+            // let num_fields: usize = {num_fields};\n\
             let offset = 0i64;\n\
             let num_bits: usize = {num_bits};\n\
             let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;\n\
@@ -840,11 +840,23 @@ impl DecoderType {
         let offset = bounds["min"]["evalue"]
             .as_str()
             .expect("bounds should have .min.evalue");
-        let mut num_bits: usize = bounds["max"]["value"]["rhs"]["value"]
-            .as_str()
-            .expect("bounds should have .max.value.rhs.value")
-            .parse()
-            .expect(".max.value.rhs.value should be usize");
+        let mut num_bits = 0usize;
+        if let Some(rhs_value) = bounds["max"]["value"]["rhs"]["value"].as_str() {
+            num_bits = rhs_value
+                .parse()
+                .expect(".max.value.rhs.value should be usize");
+        } else {
+            if let Some(evalue) = bounds["max"]["evalue"].as_str() {
+                let mut max_value = evalue
+                    .parse::<f32>()
+                    .expect(".max.value.rhs.value should be usize");
+                if bounds["max"]["inclusive"].as_bool() == Some(true) {
+                    max_value += 1.;
+                }
+                num_bits = max_value.sqrt().ceil() as usize;
+            }
+        }
+        //    .expect("bounds should have .max.value.rhs.value")
         if offset.starts_with('-') {
             // If the offset is negative, we need to account for one more bit.
             num_bits += 1;
