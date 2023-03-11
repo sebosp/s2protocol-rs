@@ -6,6 +6,17 @@ use crate::peek_bits;
 use nom::bits::complete::take;
 use nom::*;
 
+/*
+ * Seems like the only use we could have for BitArray is the NNet.Game.SelectionMaskType
+/// Stores a bit array.
+#[derive(Debug, Clone, Copy)]
+pub struct BitArray {
+    /// The data read
+    data: Vec<u8>,
+    /// The last byte may have only a few addressed bits.
+    left_overs: usize,
+}*/
+
 /// Takes n total bits from the current u8 slice at the current offset and transforms the data into
 /// an u64, this works with Big Endian
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
@@ -37,6 +48,38 @@ pub fn take_n_bits_into_i64(
             break;
         }
         byte_slice += 1;
+    }
+    Ok((tail, res))
+}
+
+/// Takes n total bits from the current u8 slice at the current offset and transforms the data into
+/// a Vec<u8>
+#[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
+pub fn take_bit_array(
+    input: (&[u8], usize),
+    total_bits: usize,
+) -> IResult<(&[u8], usize), Vec<u8>> {
+    let mut res = vec![];
+    let mut remaining_bits = total_bits;
+    let mut tail = input;
+    loop {
+        let count = if remaining_bits > 8 {
+            8
+        } else {
+            remaining_bits
+        };
+        let (new_tail, bits) =
+            dbg_peek_bits(take::<&[u8], u8, usize, _>(count), "take_bit_array")(tail)?;
+        res.push(bits);
+        tail = new_tail;
+        if remaining_bits > 8 {
+            remaining_bits -= 8;
+        } else {
+            remaining_bits = 0;
+        }
+        if remaining_bits == 0 {
+            break;
+        }
     }
     Ok((tail, res))
 }
