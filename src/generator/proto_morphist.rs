@@ -258,6 +258,9 @@ impl ProtoMorphist {
                     .expect("NNet.Replay should have '.decls' array");
                 for game_mod in game_mods_arr {
                     tracing::info!("Processing: {}", game_mod["fullname"]);
+                    if game_mod["fullname"] == "NNet.Game.ESenders" {
+                        continue;
+                    }
                     self.gen_proto_code(game_mod, DecoderType::BitPacked)?;
                 }
             }
@@ -390,8 +393,15 @@ impl ProtoMorphist {
             );
             type_impl_def.push_str(&decoder_type.close_choice_main_parse_fn());
         } else if proto_unit_type == "EnumType" {
-            let enum_parse_impl_def =
-                decoder_type.open_enum_main_parse_fn(self.proto_num, &proto_unit_type_name);
+            let num_fields = proto_mod["type_info"]["fields"]
+                .as_array()
+                .expect("type_info should have .fields")
+                .len();
+            let enum_parse_impl_def = decoder_type.open_enum_main_parse_fn(
+                self.proto_num,
+                &proto_unit_type_name,
+                num_fields,
+            );
             decoder_type.gen_proto_enum_code(
                 proto_mod,
                 &mut proto_type_def,
@@ -412,6 +422,28 @@ impl ProtoMorphist {
                 &mut type_impl_def,
             );
             type_impl_def.push_str(&decoder_type.close_int_main_parse_fn());
+        } else if proto_unit_type == "BitArrayType" {
+            let bit_packed_parse_impl_def = decoder_type.open_bit_array_main_parse_fn(
+                self.proto_num,
+                &proto_mod["type_info"]["bounds"],
+                &proto_unit_type_name,
+            );
+            decoder_type.gen_proto_bit_array_code(
+                &mut proto_type_def,
+                bit_packed_parse_impl_def,
+                &mut type_impl_def,
+            );
+            type_impl_def.push_str(&decoder_type.close_bit_array_main_parse_fn());
+        } else if proto_unit_type == "UserType" {
+            let bit_packed_parse_impl_def =
+                decoder_type.open_user_type_main_parse_fn(self.proto_num, &proto_unit_type_name);
+            decoder_type.gen_proto_user_type_code(
+                &mut proto_type_def,
+                bit_packed_parse_impl_def,
+                &mut type_impl_def,
+                &proto_unit_type_name,
+            );
+            type_impl_def.push_str(&decoder_type.close_user_type_main_parse_fn());
         } else {
             tracing::error!("Unhandled protocol unit type: {:?}", proto_unit_type);
         }
@@ -438,6 +470,16 @@ pub fn open_enum_type_def_skel(name: &str) -> String {
 
 /// Generates the start of a type alias, tho for now this is being used as a one-element struct.
 pub fn open_int_type_def_skel(name: &str) -> String {
+    format!("#[derive(Debug, Default, PartialEq, Clone)]\npub struct {name} ",)
+}
+
+/// Generates the start of a type alias, tho for now this is being used as a one-element struct.
+pub fn open_user_type_def_skel(name: &str) -> String {
+    format!("#[derive(Debug, Default, PartialEq, Clone)]\npub struct {name} ",)
+}
+
+/// Generates the start of a type alias, tho for now this is being used as a one-element struct.
+pub fn open_bit_array_type_def_skel(name: &str) -> String {
     format!("#[derive(Debug, Default, PartialEq, Clone)]\npub struct {name} ",)
 }
 
@@ -475,6 +517,8 @@ pub fn open_type_def_skel(name: &str, unit_ty: &str) -> String {
         "EnumType" => open_enum_type_def_skel(name),
         "ChoiceType" => open_enum_type_def_skel(name),
         "IntType" => open_int_type_def_skel(name),
+        "BitArrayType" => open_bit_array_type_def_skel(name),
+        "UserType" => open_user_type_def_skel(name),
         _ => panic!("Unknown unit type: {unit_ty}"),
     };
     res.push_str(" {\n");
