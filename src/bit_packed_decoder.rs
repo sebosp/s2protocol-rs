@@ -98,6 +98,14 @@ pub fn parse_packed_int(
     Ok((tail, res))
 }
 
+/// Reads a single bit and transforms into a bool.
+#[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
+pub fn parse_bool(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
+    let (tail, val) =
+        dbg_peek_bits(take::<&[u8], u8, usize, _>(1usize), "take_bit_for_bool")(input)?;
+    Ok((tail, val != 0))
+}
+
 #[cfg(test)]
 mod tests {
     use crate::versions::protocol87702::bit_packed::SVarUint32;
