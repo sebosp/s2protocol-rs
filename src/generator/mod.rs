@@ -30,4 +30,19 @@ pub struct ProtoTypeConversion {
     /// Whether the type is a vec, NOTE: No `Vec<Option<T>>` have been observed. But there are
     /// `Option<Vec<T>>`.
     pub is_vec: bool,
+    /// The type may be an int made of up several bits
+    pub is_sized_int: bool,
+}
+
+impl Default for ProtoTypeConversion {
+    fn default() -> Self {
+        Self {
+            rust_ty: "unknown_type".to_string(),
+            do_try_from: false,
+            parser: "unknown_parser".to_string(),
+            is_optional: false,
+            is_vec: false,
+            is_sized_int: false,
+        }
+    }
 }

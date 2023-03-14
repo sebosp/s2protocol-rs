@@ -435,15 +435,30 @@ impl ProtoMorphist {
             );
             type_impl_def.push_str(&decoder_type.close_bit_array_main_parse_fn());
         } else if proto_unit_type == "UserType" {
-            let bit_packed_parse_impl_def =
-                decoder_type.open_user_type_main_parse_fn(self.proto_num, &proto_unit_type_name);
+            let bit_packed_parse_impl_def = decoder_type.open_user_type_main_parse_fn(
+                self.proto_num,
+                &proto_mod["type_info"]["fullname"],
+                &proto_unit_type_name,
+            );
             decoder_type.gen_proto_user_type_code(
                 &mut proto_type_def,
                 bit_packed_parse_impl_def,
                 &mut type_impl_def,
-                &proto_unit_type_name,
+                &proto_mod["type_info"]["fullname"],
             );
             type_impl_def.push_str(&decoder_type.close_user_type_main_parse_fn());
+        } else if proto_unit_type == "BlobType" {
+            let bit_packed_parse_impl_def = decoder_type.open_blob_main_parse_fn(
+                self.proto_num,
+                &proto_mod["type_info"]["bounds"],
+                &proto_unit_type_name,
+            );
+            decoder_type.gen_proto_blob_code(
+                &mut proto_type_def,
+                bit_packed_parse_impl_def,
+                &mut type_impl_def,
+            );
+            type_impl_def.push_str(&decoder_type.close_bit_array_main_parse_fn());
         } else {
             tracing::error!("Unhandled protocol unit type: {:?}", proto_unit_type);
         }

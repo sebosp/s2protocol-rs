@@ -87,142 +87,125 @@ impl DecoderType {
                 rust_ty: "u8".to_string(),
                 do_try_from: true,
                 parser: "tagged_vlq_int".to_string(),
-                is_vec: false,
-                is_optional: false,
+                ..Default::default()
             },
             "NNet.uint32" | "NNet.uint14" | "NNet.uint22" => ProtoTypeConversion {
                 rust_ty: "u32".to_string(),
                 do_try_from: true,
                 parser: "tagged_vlq_int".to_string(),
-                is_vec: false,
-                is_optional: false,
+                ..Default::default()
             },
             "NNet.int32" | "NNet.Game.TFixedBits" => ProtoTypeConversion {
                 rust_ty: "i32".to_string(),
                 do_try_from: true,
                 parser: "tagged_vlq_int".to_string(),
-                is_vec: false,
-                is_optional: false,
+                ..Default::default()
             },
             "NNet.SVersion" => ProtoTypeConversion {
                 rust_ty: "SVersion".to_string(),
-                do_try_from: false,
                 parser: "SVersion::parse".to_string(),
-                is_vec: false,
-                is_optional: false,
+                ..Default::default()
             },
             "NNet.Game.TColorId" => ProtoTypeConversion {
                 rust_ty: "i64".to_string(),
                 do_try_from: true,
                 parser: "tagged_vlq_int".to_string(),
-                is_vec: false,
-                is_optional: false,
+                ..Default::default()
             },
             "BlobType"
             | "NNet.Replay.CSignature"
             | "StringType"
             | "NNet.Replay.Tracker.CatalogName" => ProtoTypeConversion {
                 rust_ty: "Vec<u8>".to_string(),
-                do_try_from: false,
                 parser: "tagged_blob".to_string(),
-                is_vec: false,
-                is_optional: false,
+                ..Default::default()
             },
             "BoolType" => ProtoTypeConversion {
                 rust_ty: "bool".to_string(),
-                do_try_from: false,
                 parser: "tagged_bool".to_string(),
-                is_vec: false,
-                is_optional: false,
+                ..Default::default()
             },
             "OptionalType" => ProtoTypeConversion {
                 // Leaves placeholders to be replaced later by the actual enclosed types
                 rust_ty: "Option<{}>".to_string(),
-                do_try_from: false,
                 parser: "{}".to_string(),
-                is_vec: false,
                 is_optional: true,
+                ..Default::default()
             },
             "ArrayType" => ProtoTypeConversion {
                 // Leaves placeholders to be replaced later by the actual enclosed types
                 rust_ty: "Vec<{}>".to_string(),
-                do_try_from: false,
                 parser: "{}".to_string(),
                 is_vec: true,
-                is_optional: false,
+                ..Default::default()
             },
             "NNet.SMD5" => ProtoTypeConversion {
                 rust_ty: "Smd5".to_string(),
-                do_try_from: false,
                 parser: "Smd5::parse".to_string(),
-                is_vec: false,
-                is_optional: false,
+                ..Default::default()
             },
             "NNet.Replay.Tracker.SPlayerStats" => ProtoTypeConversion {
                 rust_ty: "ReplayTrackerSPlayerStats".to_string(),
-                do_try_from: false,
                 parser: "ReplayTrackerSPlayerStats::parse".to_string(),
-                is_vec: false,
-                is_optional: false,
+                ..Default::default()
             },
             _ => panic!("Unsupported type: {}", nnet_name),
         }
     }
 
-    /// A coversion table with compatible Rust types to Protocol Types for the ByteAligned variant.
+    /// A coversion table with compatible Rust types to Protocol Types for the BitPacked variant.
     #[tracing::instrument(level = "debug")]
     fn bit_packed_from_nnet_name(nnet_name: &str) -> ProtoTypeConversion {
         if nnet_name.starts_with("NNet") {
             let proto_unit_type_name = str_nnet_name_to_rust_name(nnet_name.to_string());
             return ProtoTypeConversion {
                 rust_ty: proto_unit_type_name.clone(),
-                do_try_from: false,
                 parser: format!("{}::parse", proto_unit_type_name),
-                is_vec: false,
-                is_optional: false,
+                ..Default::default()
             };
         }
         match nnet_name {
             "BoolType" => ProtoTypeConversion {
                 rust_ty: "bool".to_string(),
-                do_try_from: false,
                 parser: "parse_bool".to_string(),
-                is_vec: false,
-                is_optional: false,
+                ..Default::default()
             },
             "OptionalType" => ProtoTypeConversion {
                 // Leaves placeholders to be replaced later by the actual enclosed types
                 rust_ty: "Option<{}>".to_string(),
-                do_try_from: false,
                 parser: "{}".to_string(),
-                is_vec: false,
                 is_optional: true,
+                ..Default::default()
             },
             "ArrayType" => ProtoTypeConversion {
                 // Leaves placeholders to be replaced later by the actual enclosed types
                 rust_ty: "Vec<{}>".to_string(),
-                do_try_from: false,
                 parser: "{}".to_string(),
                 is_vec: true,
-                is_optional: false,
+                ..Default::default()
             },
             "BitArrayType" => ProtoTypeConversion {
                 // If we can ever make use of the bits we would need to account for the last byte
                 // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
                 rust_ty: "Vec<u8>".to_string(),
-                do_try_from: false,
                 parser: "u8".to_string(),
                 is_vec: true,
-                is_optional: false,
+                ..Default::default()
             },
             "BlobType" => ProtoTypeConversion {
                 // If we can ever make use of the bits we would need to account for the last byte
                 // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
                 rust_ty: "Vec<u8>".to_string(),
-                do_try_from: false,
-                parser: "u8".to_string(),
-                is_vec: true,
-                is_optional: false,
+                parser: "fixme".to_string(),
+                ..Default::default()
+            },
+            "IntType" => ProtoTypeConversion {
+                // If we can ever make use of the bits we would need to account for the last byte
+                // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
+                rust_ty: "i64".to_string(),
+                parser: "parse_packed_int({})".to_string(),
+                is_sized_int: true,
+                ..Default::default()
             },
             _ => panic!("Unsupported type: {}", nnet_name),
         }
@@ -393,7 +376,7 @@ impl DecoderType {
             let field_name = field["name"].as_str().unwrap().to_case(Case::Snake);
             proto_type_def.push_str(&format!("    pub {field_name}: ",));
             let mut morph = decoder.from_nnet_name(proto_field_type_info);
-            // If the type if Optional, we need to find the internal parser in case the field is
+            // If the type is Optional, we need to find the internal parser in case the field is
             // provided.
             if proto_field_type_info == "OptionalType" {
                 // We should wrap this in Option<T>, but, it may also be a Option<Vec<T>>
@@ -436,6 +419,21 @@ impl DecoderType {
                 morph.parser = morph.parser.replace("{}", &enclosed_morph.parser);
                 morph.do_try_from = enclosed_morph.do_try_from;
                 morph.is_vec = true;
+            }
+            if morph.is_sized_int {
+                let offset = field["type_info"]["bounds"]["min"]
+                    .as_str()
+                    .expect("Field should have .type_info.bounds.min");
+                let max_value = field["type_info"]["bounds"]["max"]
+                    .as_str()
+                    .expect("Field should have .type_info.bounds.max")
+                    .parse::<f32>()
+                    .expect(".type_info.bounds_max should be f32");
+                let num_bits = max_value.log2().ceil() as usize;
+                tracing::info!("IntType offset: {}, num_bits: {}", offset, num_bits);
+                morph.parser = morph
+                    .parser
+                    .replace("{}", &format!("input, {},{}usize", offset, num_bits));
             }
             let field_type = &morph.rust_ty;
             let field_value_parser = &morph.parser;
@@ -537,8 +535,7 @@ impl DecoderType {
                 type_impl_def.push_str("};\n");
                 type_impl_def.push_str(&format!(
                     "    tracing::debug!(\"res: {{:?}}\", {field_name});\n\
-                     Ok((tail, {field_name}))\n\
-                     }}\n"
+                     Ok((tail, {field_name}))\n"
                 ));
             } else if morph.is_vec {
                 type_impl_def.push_str(&format!(
@@ -546,35 +543,33 @@ impl DecoderType {
                  let (tail, array_length) = parse_vlq_int(tail)?;\n\
                  tracing::debug!(\"Reading array length: {{array_length}}\");\n\
                  let (tail, array) = nom::multi::count({field_value_parser}, array_length as usize)(tail)?;\n"
-            ));
+                ));
                 if morph.do_try_from {
                     type_impl_def.push_str(
                     "let array = array.iter().map(|val| <_>::try_from(*val).unwrap()).collect();\n",
                 );
                 }
-                type_impl_def.push_str(
-                    "Ok((tail, array))\n\
-                     }",
-                );
+                type_impl_def.push_str("Ok((tail, array))\n");
+            } else if morph.is_sized_int {
+                type_impl_def.push_str(&format!(
+                    " let (tail, {field_name}) = {field_value_parser}?;\n
+                      tracing::debug!(\"res: {{:?}}\", {field_name});\n
+                      Ok((tail, {field_name}))\n"
+                ));
             } else {
                 type_impl_def.push_str(&format!(
-                    " let (tail, {field_name}) = {field_value_parser}(input)?;\n"
-                ));
-                type_impl_def.push_str(&format!(
-                    "    tracing::debug!(\"res: {{:?}}\", {field_name});\n"
+                    " let (tail, {field_name}) = {field_value_parser}(input)?;\n
+                      tracing::debug!(\"res: {{:?}}\", {field_name});\n"
                 ));
                 if morph.do_try_from {
                     type_impl_def.push_str(&format!(
-                        "        Ok((tail, {field_type}::try_from({field_name}).unwrap()))\n\
-                         }}\n"
+                        "        Ok((tail, {field_type}::try_from({field_name}).unwrap()))\n"
                     ));
                 } else {
-                    type_impl_def.push_str(&format!(
-                        "        Ok((tail, {field_name}))\n\
-                         }}\n"
-                    ));
+                    type_impl_def.push_str(&format!("        Ok((tail, {field_name}))\n"));
                 }
             }
+            type_impl_def.push_str(&format!("}}\n"));
         }
         struct_parse_return.push_str("}))\n"); // Close function definition
         if has_tags {
@@ -647,7 +642,9 @@ impl DecoderType {
                 // structure that can be arbirtrary wrapping of types and maybe we should then just
                 // create the serde for the whole protocol file and from there generate the code....
                 // Maybe that's step 2.
-                let enclosed_morph = if type_info_type == "ArrayType" {
+                let enclosed_morph = if type_info_type == "ArrayType"
+                    || type_info_type == "BitArrayType"
+                {
                     // The enclosed type is wrapped in an additional .element_type field.
                     let element_type = if type_info_type == "ArrayType" {
                         field["type_info"]["type_info"]["element_type"]["fullname"]
@@ -679,7 +676,6 @@ impl DecoderType {
                 morph.is_optional = true;
             } else if proto_field_type_info == "ArrayType"
                 || proto_field_type_info == "BitArrayType"
-                || proto_field_type_info == "BlobType"
             {
                 // The enclosed type is wrapped in an additional .element_type field.
                 let element_type = if proto_field_type_info == "ArrayType" {
@@ -1120,11 +1116,20 @@ impl DecoderType {
     }
 
     /// Opens the byte aligned version of the ByteInt parser
-    pub fn open_byte_aligned_user_type_main_parse_fn(proto_num: u64, name: &str) -> String {
+    pub fn open_byte_aligned_user_type_main_parse_fn(
+        proto_num: u64,
+        type_info: &Value,
+        name: &str,
+    ) -> String {
+        let type_info = type_info
+            .as_str()
+            .expect("type_info.fullname should be string");
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
-         unimplemented!()\n\
+         let (tail, value) = {type_info}::parse(input)?;\n\
+         // TODO: UNTESTED. \n\
+         Ok((tail, Self {{ value }}))\n\
          ",
     )
     }
@@ -1134,11 +1139,17 @@ impl DecoderType {
     }
 
     /// Opens the bit packed version of the ByteInt parser
-    pub fn open_bit_packed_user_type_main_parse_fn(proto_num: u64, name: &str) -> String {
+    pub fn open_bit_packed_user_type_main_parse_fn(
+        proto_num: u64,
+        type_info: &Value,
+        name: &str,
+    ) -> String {
+        let type_info = proto_nnet_name_to_rust_name(type_info);
+
         format!(
-            "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
-         let (tail, value) = {name}::parse(input)?;\n\
+         let (tail, value) = {type_info}::parse(input)?;\n\
          // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
          ",
@@ -1149,10 +1160,19 @@ impl DecoderType {
         format!("}}")
     }
 
-    pub fn open_user_type_main_parse_fn(&self, proto_num: u64, name: &str) -> String {
+    pub fn open_user_type_main_parse_fn(
+        &self,
+        proto_num: u64,
+        type_info: &Value,
+        name: &str,
+    ) -> String {
         match self {
-            Self::ByteAligned => Self::open_byte_aligned_user_type_main_parse_fn(proto_num, name),
-            Self::BitPacked => Self::open_bit_packed_user_type_main_parse_fn(proto_num, name),
+            Self::ByteAligned => {
+                Self::open_byte_aligned_user_type_main_parse_fn(proto_num, type_info, name)
+            }
+            Self::BitPacked => {
+                Self::open_bit_packed_user_type_main_parse_fn(proto_num, type_info, name)
+            }
         }
     }
 
@@ -1538,9 +1558,10 @@ impl DecoderType {
         proto_type_def: &mut String,
         bit_packed_parse_impl_def: String,
         type_impl_def: &mut String,
-        name: &str,
+        type_info: &Value,
     ) {
-        proto_type_def.push_str(&format!("    pub value: {name},"));
+        let type_info_name = proto_nnet_name_to_rust_name(type_info);
+        proto_type_def.push_str(&format!("    pub value: {type_info_name},"));
         type_impl_def.push_str(&bit_packed_parse_impl_def);
     }
 
@@ -1555,7 +1576,7 @@ impl DecoderType {
         proto_type_def: &mut String,
         int_parse_impl_def: String,
         type_impl_def: &mut String,
-        name: &str,
+        type_info: &Value,
     ) {
         match self {
             Self::ByteAligned => panic!("UserType is not supported for ByteAligned"),
@@ -1563,7 +1584,7 @@ impl DecoderType {
                 proto_type_def,
                 int_parse_impl_def,
                 type_impl_def,
-                name,
+                type_info,
             ),
         }
     }
