@@ -184,7 +184,8 @@ impl DecoderType {
                 is_vec: true,
                 ..Default::default()
             },
-            "BitArrayType" => ProtoTypeConversion {
+            "BitArrayType" | "AsciiStringType" | "StringType" => ProtoTypeConversion {
+                // TODO: Missing byte_align for StringTypes
                 // If we can ever make use of the bits we would need to account for the last byte
                 // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
                 rust_ty: "Vec<u8>".to_string(),
@@ -786,9 +787,12 @@ impl DecoderType {
                      }}\n"
                 ));
             } else if morph.is_vec {
-                let array_length = field["bounds"]["max"]["evalue"]
-                    .as_str()
-                    .expect("Field should have .bounds.max.evalue");
+                let array_length = match field["bounds"]["max"]["evalue"].as_str() {
+                        Some(val) => val.to_string(),
+                        None => field["type_info"]["bounds"]["max"]["evalue"].as_str()
+                            .expect("Field is vec but has no .bounds.max.evalue or .type_info.bounds.max.evalue")
+                            .to_string(),
+                };
                 tracing::info!("ArrayType array Length: {}", array_length);
                 type_impl_def.push_str(&format!(
                     "let array_length: usize = {array_length};\n\
@@ -855,6 +859,9 @@ impl DecoderType {
         // output.write_all(format!("\n/*{:#}*/\n", proto_mod).as_bytes())?;
         let variant_array = proto_mod["type_info"]["fields"].as_array().unwrap();
         for variant in variant_array {
+            if variant["type_info"]["type"] == "NullType" {
+                continue;
+            }
             let variant_name = proto_nnet_name_to_rust_name(&variant["type_info"]["name"]);
             proto_type_def.push_str(&format!("    {variant_name}",));
             let proto_field_type_info = match variant["type_info"]["fullname"].as_str() {
@@ -938,9 +945,12 @@ impl DecoderType {
         type_impl_def: &mut String,
     ) {
         let decoder = DecoderType::BitPacked;
-        // output.write_all(format!("\n/*{:#}*/\n", proto_mod).as_bytes())?;
+        // tracing::info!("\n/*{:#}*/\n", proto_mod);
         let variant_array = proto_mod["type_info"]["fields"].as_array().unwrap();
         for variant in variant_array {
+            if variant["type_info"]["type"] == "NullType" {
+                continue;
+            }
             let variant_name = proto_nnet_name_to_rust_name(&variant["type_info"]["name"]);
             proto_type_def.push_str(&format!("    {variant_name}",));
             let proto_field_type_info = match variant["type_info"]["fullname"].as_str() {
