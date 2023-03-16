@@ -185,7 +185,6 @@ impl DecoderType {
                 ..Default::default()
             },
             "BitArrayType" | "AsciiStringType" | "StringType" => ProtoTypeConversion {
-                // TODO: Missing byte_align for StringTypes
                 // If we can ever make use of the bits we would need to account for the last byte
                 // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
                 rust_ty: "Vec<u8>".to_string(),
@@ -421,21 +420,6 @@ impl DecoderType {
                 morph.do_try_from = enclosed_morph.do_try_from;
                 morph.is_vec = true;
             }
-            if morph.is_sized_int {
-                let offset = field["type_info"]["bounds"]["min"]
-                    .as_str()
-                    .expect("Field should have .type_info.bounds.min");
-                let max_value = field["type_info"]["bounds"]["max"]
-                    .as_str()
-                    .expect("Field should have .type_info.bounds.max")
-                    .parse::<f32>()
-                    .expect(".type_info.bounds_max should be f32");
-                let num_bits = max_value.log2().ceil() as usize;
-                tracing::info!("IntType offset: {}, num_bits: {}", offset, num_bits);
-                morph.parser = morph
-                    .parser
-                    .replace("{}", &format!("input, {},{}usize", offset, num_bits));
-            }
             let field_type = &morph.rust_ty;
             let field_value_parser = &morph.parser;
             proto_type_def.push_str(&format!("{field_type},\n"));
@@ -629,8 +613,19 @@ impl DecoderType {
                 panic!("Unknown {proto_field_type_info} field type: {nnet_field_type}");
             }
             let field_name = field["name"].as_str().unwrap().to_case(Case::Snake);
+            tracing::debug!("Processing field {field_name}");
             proto_type_def.push_str(&format!("    pub {field_name}: ",));
-            let mut morph = decoder.from_nnet_name(proto_field_type_info);
+            let mut morph =
+                if field["name"] == "m_eventData" && proto_field_type_info == "ChoiceType" {
+                    // This is a special case of embedded ChoiceType, hopefully is just one.
+                    ProtoTypeConversion {
+                        rust_ty: "MEventData".to_string(),
+                        parser: "MEventData::parse".to_string(),
+                        ..Default::default()
+                    }
+                } else {
+                    decoder.from_nnet_name(proto_field_type_info)
+                };
             // If the type if Optional, we need to find the internal parser in case the field is
             // provided.
             if proto_field_type_info == "OptionalType" {
@@ -665,16 +660,33 @@ impl DecoderType {
                     internal_morph
                 } else {
                     // The enclosed type is wrapped in an additional .type_info field.
-                    let enclosed_type = field["type_info"]["type_info"]["fullname"]
-                        .as_str()
-                        .expect("Field should contain .type_info.type_info.fullname");
-                    decoder.from_nnet_name(enclosed_type)
+                    let enclosed_type = match field["type_info"]["type_info"]["fullname"]
+                        .as_str() {
+                        Some(val) => val.to_string(),
+                        None => field["type_info"]["type_info"]["type"].as_str()
+                        .expect("Field should contain .type_info.type_info.fullname or .type_info.type_info.fullname")
+                        .to_string(),
+                    };
+                    decoder.from_nnet_name(&enclosed_type)
                 };
                 morph.rust_ty = morph.rust_ty.replace("{}", &enclosed_morph.rust_ty);
                 morph.parser = morph.parser.replace("{}", &enclosed_morph.parser);
                 morph.do_try_from = enclosed_morph.do_try_from;
                 morph.is_vec = enclosed_morph.is_vec;
                 morph.is_optional = true;
+                if enclosed_morph.is_sized_int {
+                    let offset = field["type_info"]["type_info"]["bounds"]["min"]["evalue"]
+                        .as_str()
+                        .expect("Field should have .type_info.bounds.min.evalue");
+                    let num_bits = Self::bounds_max_value_to_bit_size(
+                        &field["type_info"]["type_info"]["bounds"]["max"]["evalue"],
+                        &field["type_info"]["type_info"]["bounds"]["max"]["inclusive"],
+                    );
+                    tracing::info!("IntType offset: {}, num_bits: {}", offset, num_bits);
+                    morph.parser = morph
+                        .parser
+                        .replace("{}", &format!("input, {},{}usize", offset, num_bits));
+                }
             } else if proto_field_type_info == "ArrayType"
                 || proto_field_type_info == "BitArrayType"
             {
@@ -693,7 +705,21 @@ impl DecoderType {
                 morph.rust_ty = morph.rust_ty.replace("{}", &enclosed_morph.rust_ty);
                 morph.parser = morph.parser.replace("{}", &enclosed_morph.parser);
                 morph.do_try_from = enclosed_morph.do_try_from;
+                morph.is_sized_int = enclosed_morph.is_sized_int;
                 morph.is_vec = true;
+            }
+            if morph.is_sized_int {
+                let offset = field["type_info"]["bounds"]["min"]["evalue"]
+                    .as_str()
+                    .expect("Field should have .type_info.bounds.min.evalue");
+                let num_bits = Self::bounds_max_value_to_bit_size(
+                    &field["type_info"]["bounds"]["max"]["evalue"],
+                    &field["type_info"]["bounds"]["max"]["inclusive"],
+                );
+                tracing::info!("IntType offset: {}, num_bits: {}", offset, num_bits);
+                morph.parser = morph
+                    .parser
+                    .replace("{}", &format!("input, {},{}usize", offset, num_bits));
             }
             let field_type = &morph.rust_ty;
             let field_value_parser = &morph.parser;
@@ -1068,6 +1094,20 @@ impl DecoderType {
         format!("}}")
     }
 
+    /// Transforms a bounds[max][evalue] possibly "inclusive" (i.e. "less than _or equal_) to the
+    /// number of bits needed to represent such max value.
+    pub fn bounds_max_value_to_bit_size(max_value: &Value, is_inclusive: &Value) -> usize {
+        let mut res = max_value
+            .as_str()
+            .expect("Missing have .max value string")
+            .parse::<f32>()
+            .expect(".max value must be parseable usize");
+        if is_inclusive.as_bool() == Some(true) {
+            res += 1.;
+        }
+        res.log2().ceil() as usize
+    }
+
     /// Opens the bit packed version of the ByteInt parser
     pub fn open_bit_packed_int_main_parse_fn(proto_num: u64, bounds: &Value, name: &str) -> String {
         assert!(bounds["type"] == "MinMaxConstraint");
@@ -1081,13 +1121,10 @@ impl DecoderType {
                 .expect(".max.value.rhs.value should be usize");
         } else {
             if let Some(evalue) = bounds["max"]["evalue"].as_str() {
-                let mut max_value = evalue
-                    .parse::<f32>()
-                    .expect(".max.value.rhs.value should be usize");
-                if bounds["max"]["inclusive"].as_bool() == Some(true) {
-                    max_value += 1.;
-                }
-                num_bits = max_value.log2().ceil() as usize;
+                num_bits = Self::bounds_max_value_to_bit_size(
+                    &bounds["max"]["evalue"],
+                    &bounds["max"]["inclusive"],
+                );
             }
         }
         //    .expect("bounds should have .max.value.rhs.value")
@@ -1201,15 +1238,10 @@ impl DecoderType {
     ) -> String {
         assert!(bounds["type"] == "MinMaxConstraint");
         assert!(bounds["min"]["evalue"] == "0");
-        let mut max_value = bounds["max"]["evalue"]
-            .as_str()
-            .expect("BitArrayType should have max.evalue")
-            .parse::<f32>()
-            .expect(".max.evalue should be usize");
-        if bounds["max"]["inclusive"].as_bool() == Some(true) {
-            max_value += 1.;
-        }
-        let num_bits = max_value.log2().ceil() as usize;
+        let num_bits = Self::bounds_max_value_to_bit_size(
+            &bounds["max"]["evalue"],
+            &bounds["max"]["inclusive"],
+        );
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BitArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
@@ -1254,15 +1286,10 @@ impl DecoderType {
     ) -> String {
         assert!(bounds["type"] == "ExactConstraint");
         assert!(bounds["min"]["evalue"] == bounds["max"]["evalue"]);
-        let mut max_value = bounds["max"]["evalue"]
-            .as_str()
-            .expect("BlobType should have max.evalue")
-            .parse::<f32>()
-            .expect(".max.evalue should be usize");
-        if bounds["max"]["inclusive"].as_bool() == Some(true) {
-            max_value += 1.;
-        }
-        let num_bits = max_value.log2().ceil() as usize;
+        let num_bits = Self::bounds_max_value_to_bit_size(
+            &bounds["max"]["evalue"],
+            &bounds["max"]["inclusive"],
+        );
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BlobType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
