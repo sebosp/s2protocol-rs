@@ -1293,8 +1293,15 @@ impl DecoderType {
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BlobType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         let input = tail;\n\
+         let tail = if tail.1 != 0 {{\n\
+             let (tail, _) = nom::bits::complete::take(8usize - tail.1)(tail)?;\n\
+             tail\n\
+         }} else {{\n\
+             tail\n\
+         }};\n\
          let num_bits: usize = {num_bits};
-         let (tail, value) = take_bit_array(input, num_bits)?;\n\
+         let (tail, value) = take_bit_array(tail, num_bits)?;\n\
          // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
          ",
@@ -1302,6 +1309,59 @@ impl DecoderType {
     }
 
     pub fn close_bit_packed_blob_main_parse_fn() -> String {
+        format!("}}")
+    }
+
+    pub fn open_string_main_parse_fn(&self, proto_num: u64, bounds: &Value, name: &str) -> String {
+        match self {
+            Self::ByteAligned => panic!("BitArray not supported for ByteAligned types"),
+            Self::BitPacked => Self::open_bit_packed_string_main_parse_fn(proto_num, bounds, name),
+        }
+    }
+
+    pub fn close_string_main_parse_fn(&self) -> String {
+        match self {
+            Self::ByteAligned => panic!("BitArray not supported for ByteAligned types"),
+            Self::BitPacked => Self::close_bit_packed_string_main_parse_fn(),
+        }
+    }
+
+    /// Opens the bit packed version of the ByteArray parser
+    pub fn open_bit_packed_string_main_parse_fn(
+        proto_num: u64,
+        bounds: &Value,
+        name: &str,
+    ) -> String {
+        assert!(bounds["type"] == "MinMaxConstraint");
+        assert!(bounds["min"]["evalue"] == "0");
+        let mut res = bounds["max"]["evalue"]
+            .as_str()
+            .expect("Missing have .max value string")
+            .parse::<f32>()
+            .expect(".max value must be parseable usize");
+        if bounds["max"]["inclusive"].as_bool() == Some(false) {
+            res -= 1.;
+        }
+        let str_size_num_bits = res.log2().floor() as usize + 3;
+        format!(
+            "#[tracing::instrument(name=\"{proto_num}::{name}::BlobType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         let str_size_num_bits: usize = {str_size_num_bits};\n\
+         let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)\n\
+         let tail = if tail.1 != 0 {{\n\
+             let (tail, _) = nom::bits::complete::take(8usize - tail.1)(tail)?;\n\
+             tail\n\
+         }} else {{\n\
+             tail\n\
+         }};\n\
+         let (tail, value) = take_bit_array(input, num_bits)?;\n\
+         // TODO: Unsure about this. \n\
+         Ok((tail, Self {{ value }}))\n\
+         ",
+        )
+    }
+
+    pub fn close_bit_packed_string_main_parse_fn() -> String {
         format!("}}")
     }
 
@@ -1315,7 +1375,7 @@ impl DecoderType {
     pub fn close_blob_main_parse_fn(&self) -> String {
         match self {
             Self::ByteAligned => panic!("BitArray not supported for ByteAligned types"),
-            Self::BitPacked => Self::close_bit_packed_int_main_parse_fn(),
+            Self::BitPacked => Self::close_bit_packed_blob_main_parse_fn(),
         }
     }
 

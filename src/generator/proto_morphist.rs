@@ -435,27 +435,39 @@ impl ProtoMorphist {
             );
             type_impl_def.push_str(&decoder_type.close_bit_array_main_parse_fn());
         } else if proto_unit_type == "UserType" {
-            let bit_packed_parse_impl_def = decoder_type.open_user_type_main_parse_fn(
+            let user_type_parse_impl_def = decoder_type.open_user_type_main_parse_fn(
                 self.proto_num,
                 &proto_mod["type_info"]["fullname"],
                 &proto_unit_type_name,
             );
             decoder_type.gen_proto_user_type_code(
                 &mut proto_type_def,
-                bit_packed_parse_impl_def,
+                user_type_parse_impl_def,
                 &mut type_impl_def,
                 &proto_mod["type_info"]["fullname"],
             );
             type_impl_def.push_str(&decoder_type.close_user_type_main_parse_fn());
         } else if proto_unit_type == "BlobType" {
-            let bit_packed_parse_impl_def = decoder_type.open_blob_main_parse_fn(
+            let blob_type_parse_impl_def = decoder_type.open_blob_main_parse_fn(
                 self.proto_num,
                 &proto_mod["type_info"]["bounds"],
                 &proto_unit_type_name,
             );
             decoder_type.gen_proto_blob_code(
                 &mut proto_type_def,
-                bit_packed_parse_impl_def,
+                blob_type_parse_impl_def,
+                &mut type_impl_def,
+            );
+            type_impl_def.push_str(&decoder_type.close_bit_array_main_parse_fn());
+        } else if proto_unit_type == "StringType" {
+            let string_type_parse_impl_def = decoder_type.open_string_main_parse_fn(
+                self.proto_num,
+                &proto_mod["type_info"]["bounds"],
+                &proto_unit_type_name,
+            );
+            decoder_type.gen_proto_blob_code(
+                &mut proto_type_def,
+                string_type_parse_impl_def,
                 &mut type_impl_def,
             );
             type_impl_def.push_str(&decoder_type.close_bit_array_main_parse_fn());
@@ -473,28 +485,13 @@ impl ProtoMorphist {
     }
 }
 
-/// Generates the start of a struct definition.
-pub fn open_struct_type_def_skel(name: &str) -> String {
-    format!("#[derive(Debug, Default, PartialEq, Clone)]\npub struct {name}",)
-}
-
 /// Generates the start of an enum/choice definition.
-pub fn open_enum_type_def_skel(name: &str) -> String {
+pub fn open_struct_type_def_skel(name: &str) -> String {
     format!("#[derive(Debug, PartialEq, Clone)]\npub enum {name}",)
 }
 
 /// Generates the start of a type alias, tho for now this is being used as a one-element struct.
-pub fn open_int_type_def_skel(name: &str) -> String {
-    format!("#[derive(Debug, Default, PartialEq, Clone)]\npub struct {name} ",)
-}
-
-/// Generates the start of a type alias, tho for now this is being used as a one-element struct.
-pub fn open_user_type_def_skel(name: &str) -> String {
-    format!("#[derive(Debug, Default, PartialEq, Clone)]\npub struct {name} ",)
-}
-
-/// Generates the start of a type alias, tho for now this is being used as a one-element struct.
-pub fn open_bit_array_type_def_skel(name: &str) -> String {
+pub fn open_single_value_type_def_skel(name: &str) -> String {
     format!("#[derive(Debug, Default, PartialEq, Clone)]\npub struct {name} ",)
 }
 
@@ -525,15 +522,15 @@ pub fn str_nnet_name_to_rust_name(input: String) -> String {
 /// Generates the start of an type definition skeleton.
 #[tracing::instrument(level = "debug")]
 pub fn open_type_def_skel(name: &str, unit_ty: &str) -> String {
-    // TODO: A StringType would become a pub <name>(String) with impl Parse that calls
     // tagged_blob().
     let mut res = match unit_ty {
         "StructType" => open_struct_type_def_skel(name),
-        "EnumType" => open_enum_type_def_skel(name),
-        "ChoiceType" => open_enum_type_def_skel(name),
-        "IntType" => open_int_type_def_skel(name),
-        "BitArrayType" => open_bit_array_type_def_skel(name),
-        "UserType" => open_user_type_def_skel(name),
+        "EnumType" => open_struct_type_def_skel(name),
+        "ChoiceType" => open_struct_type_def_skel(name),
+        "IntType" => open_struct_type_def_skel(name),
+        "BitArrayType" => open_struct_type_def_skel(name),
+        "UserType" => open_struct_type_def_skel(name),
+        "StringType" => open_struct_type_def_skel(name),
         _ => panic!("Unknown unit type: {unit_ty}"),
     };
     res.push_str(" {\n");
