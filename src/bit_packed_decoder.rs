@@ -84,6 +84,26 @@ pub fn take_bit_array(
     Ok((tail, res))
 }
 
+/// Takes the remainder of bits in the current input to align the input to a byte boundary.
+#[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
+pub fn byte_align(input: (&[u8], usize)) -> IResult<(&[u8], usize), ()> {
+    if input.1 != 0 {
+        let (tail, _) = dbg_peek_bits(
+            take::<&[u8], u8, usize, _>(8usize - input.1),
+            "take_n_bits_into_i64",
+        )(input)?;
+        Ok((tail, ()))
+    } else {
+        Ok((input, ()))
+    }
+}
+
+/// Takes 4 unaligned bytes
+#[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
+pub fn take_fourcc(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
+    take_bit_array(input, 4usize * 8usize)
+}
+
 /// Reads a packed int, In offset binary representation, (also called excess-K or biased).
 /// a signed number is represented by the bit pattern corresponding to the unsigned number plus K,
 /// with K being the biasing value or offset.

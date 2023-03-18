@@ -192,19 +192,24 @@ impl DecoderType {
                 is_vec: true,
                 ..Default::default()
             },
-            "BlobType" => ProtoTypeConversion {
-                // If we can ever make use of the bits we would need to account for the last byte
-                // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
+            /*"BlobType" => ProtoTypeConversion {
+                // The blob type is byte aligned
                 rust_ty: "Vec<u8>".to_string(),
-                parser: "fixme".to_string(),
+                parser: "fixme_length_take_bit_array({})".to_string(),
                 ..Default::default()
-            },
+            },*/
             "IntType" => ProtoTypeConversion {
                 // If we can ever make use of the bits we would need to account for the last byte
                 // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
                 rust_ty: "i64".to_string(),
                 parser: "parse_packed_int({})".to_string(),
                 is_sized_int: true,
+                ..Default::default()
+            },
+            "FourCCType" => ProtoTypeConversion {
+                // The blob type is byte aligned
+                rust_ty: "Vec<u8>".to_string(),
+                parser: "take_fourcc".to_string(),
                 ..Default::default()
             },
             _ => panic!("Unsupported type: {}", nnet_name),
@@ -1120,7 +1125,7 @@ impl DecoderType {
                 .parse()
                 .expect(".max.value.rhs.value should be usize");
         } else {
-            if let Some(evalue) = bounds["max"]["evalue"].as_str() {
+            if bounds["max"]["evalue"].as_str().is_some() {
                 num_bits = Self::bounds_max_value_to_bit_size(
                     &bounds["max"]["evalue"],
                     &bounds["max"]["inclusive"],
@@ -1293,13 +1298,7 @@ impl DecoderType {
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BlobType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
-         let input = tail;\n\
-         let tail = if tail.1 != 0 {{\n\
-             let (tail, _) = nom::bits::complete::take(8usize - tail.1)(tail)?;\n\
-             tail\n\
-         }} else {{\n\
-             tail\n\
-         }};\n\
+         let (tail, _) = byte_align(input)?;
          let num_bits: usize = {num_bits};
          let (tail, value) = take_bit_array(tail, num_bits)?;\n\
          // TODO: Unsure about this. \n\
@@ -1342,18 +1341,17 @@ impl DecoderType {
         if bounds["max"]["inclusive"].as_bool() == Some(false) {
             res -= 1.;
         }
+        // this works for some numbers spotted, no idea why the +3.
+        // 781 string max.evalue needs 12 bits read for its size
+        // 79 string max.evalue needs 9 bits read for its size
+        // 19 string max.evalue needs 7 bits read for its size
         let str_size_num_bits = res.log2().floor() as usize + 3;
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BlobType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
          let str_size_num_bits: usize = {str_size_num_bits};\n\
          let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)\n\
-         let tail = if tail.1 != 0 {{\n\
-             let (tail, _) = nom::bits::complete::take(8usize - tail.1)(tail)?;\n\
-             tail\n\
-         }} else {{\n\
-             tail\n\
-         }};\n\
+         let (tail, _) = byte_align(tail)?;
          let (tail, value) = take_bit_array(input, num_bits)?;\n\
          // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
