@@ -184,7 +184,7 @@ impl DecoderType {
                 is_vec: true,
                 ..Default::default()
             },
-            "BitArrayType" | "AsciiStringType" | "StringType" => ProtoTypeConversion {
+            "BlobType" | "BitArrayType" | "AsciiStringType" | "StringType" => ProtoTypeConversion {
                 // If we can ever make use of the bits we would need to account for the last byte
                 // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
                 rust_ty: "Vec<u8>".to_string(),
@@ -192,12 +192,6 @@ impl DecoderType {
                 is_vec: true,
                 ..Default::default()
             },
-            /*"BlobType" => ProtoTypeConversion {
-                // The blob type is byte aligned
-                rust_ty: "Vec<u8>".to_string(),
-                parser: "fixme_length_take_bit_array({})".to_string(),
-                ..Default::default()
-            },*/
             "IntType" => ProtoTypeConversion {
                 // If we can ever make use of the bits we would need to account for the last byte
                 // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
