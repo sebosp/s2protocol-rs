@@ -132,7 +132,7 @@ impl DecoderType {
                 is_optional: true,
                 ..Default::default()
             },
-            "ArrayType" => ProtoTypeConversion {
+            "ArrayType" | "DynArrayType" => ProtoTypeConversion {
                 // Leaves placeholders to be replaced later by the actual enclosed types
                 rust_ty: "Vec<{}>".to_string(),
                 parser: "{}".to_string(),
@@ -177,7 +177,7 @@ impl DecoderType {
                 is_optional: true,
                 ..Default::default()
             },
-            "ArrayType" => ProtoTypeConversion {
+            "ArrayType" | "DynArrayType" => ProtoTypeConversion {
                 // Leaves placeholders to be replaced later by the actual enclosed types
                 rust_ty: "Vec<{}>".to_string(),
                 parser: "{}".to_string(),
@@ -501,8 +501,8 @@ impl DecoderType {
                 ));
                     if morph.do_try_from {
                         type_impl_def.push_str(
-                        "let array = array.iter().map(|val| <_>::try_from(*val).unwrap()).collect();\n",
-                    );
+                            "let array = array.iter().map(|val| <_>::try_from(*val).unwrap()).collect();\n",
+                        );
                     }
                     type_impl_def.push_str("(tail, Some(array))");
                 } else {
@@ -641,7 +641,9 @@ impl DecoderType {
                     || type_info_type == "BitArrayType"
                 {
                     // The enclosed type is wrapped in an additional .element_type field.
-                    let element_type = if type_info_type == "ArrayType" {
+                    let element_type = if type_info_type == "ArrayType"
+                        || type_info_type == "DynArrayType"
+                    {
                         field["type_info"]["type_info"]["element_type"]["fullname"]
                             .as_str()
                             .expect("Field should have .type_info.type_info.element_type.fullname")
@@ -688,9 +690,12 @@ impl DecoderType {
                 }
             } else if proto_field_type_info == "ArrayType"
                 || proto_field_type_info == "BitArrayType"
+                || proto_field_type_info == "DynArrayType"
             {
                 // The enclosed type is wrapped in an additional .element_type field.
-                let element_type = if proto_field_type_info == "ArrayType" {
+                let element_type = if proto_field_type_info == "ArrayType"
+                    || proto_field_type_info == "DynArrayType"
+                {
                     field["type_info"]["element_type"]["fullname"]
                         .as_str()
                         .expect("Field should have .type_info.element_type.fullname")
@@ -976,6 +981,7 @@ impl DecoderType {
             if variant["type_info"]["type"] == "NullType" {
                 continue;
             }
+            tracing::debug!("Checking variant: {:?}", variant);
             let variant_name = proto_nnet_name_to_rust_name(&variant["type_info"]["name"]);
             proto_type_def.push_str(&format!("    {variant_name}",));
             let proto_field_type_info = match variant["type_info"]["fullname"].as_str() {
@@ -1341,7 +1347,7 @@ impl DecoderType {
         // 19 string max.evalue needs 7 bits read for its size
         let str_size_num_bits = res.log2().floor() as usize + 3;
         format!(
-            "#[tracing::instrument(name=\"{proto_num}::{name}::BlobType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::StringType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
          let str_size_num_bits: usize = {str_size_num_bits};\n\
          let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)\n\
@@ -1354,6 +1360,61 @@ impl DecoderType {
     }
 
     pub fn close_bit_packed_string_main_parse_fn() -> String {
+        format!("}}")
+    }
+
+    /// Opens a definition of an ArrayType that contains a value: Vec<{}>
+    pub fn open_array_main_parse_fn(
+        &self,
+        proto_num: u64,
+        bounds: &Value,
+        name: &str,
+        internal_type: &str,
+    ) -> String {
+        match self {
+            Self::ByteAligned => panic!("ArrayType not supported for ByteAligned types"),
+            Self::BitPacked => {
+                Self::open_bit_packed_array_main_parse_fn(proto_num, bounds, name, internal_type)
+            }
+        }
+    }
+
+    pub fn close_array_main_parse_fn(&self) -> String {
+        match self {
+            Self::ByteAligned => panic!("ArrayType not supported for ByteAligned types"),
+            Self::BitPacked => Self::close_bit_packed_array_main_parse_fn(),
+        }
+    }
+
+    /// Opens the bit packed version of the ByteArray parser
+    pub fn open_bit_packed_array_main_parse_fn(
+        proto_num: u64,
+        bounds: &Value,
+        name: &str,
+        internal_type: &str,
+    ) -> String {
+        let mut array_max_value = bounds["max"]["evalue"]
+            .as_str()
+            .expect("Missing have .max value in ArrayType")
+            .parse::<f32>()
+            .expect(".max value must be parseable usize");
+        if bounds["max"]["inclusive"].as_bool() == Some(false) {
+            array_max_value -= 1.;
+        }
+        let array_length_num_bits = (array_max_value as f32).log2().ceil() as usize;
+        format!(
+            "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         let array_length_num_bits: usize = {array_length_num_bits};\n\
+         let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)\n\
+         let (tail, value) = nom::multi::count({internal_type}::parse(tail), array_length as usize)(tail)?;\n\
+         // TODO: Unsure about this. \n\
+         Ok((tail, Self {{ value }}))\n\
+         ",
+        )
+    }
+
+    pub fn close_bit_packed_array_main_parse_fn() -> String {
         format!("}}")
     }
 
@@ -1674,6 +1735,44 @@ impl DecoderType {
                 int_parse_impl_def,
                 type_impl_def,
                 type_info,
+            ),
+        }
+    }
+
+    #[tracing::instrument(
+        level = "debug",
+        skip(proto_type_def, bit_packed_parse_impl_def, type_impl_def,)
+    )]
+    pub fn gen_bit_packed_proto_array_code(
+        proto_type_def: &mut String,
+        bit_packed_parse_impl_def: String,
+        type_impl_def: &mut String,
+        internal_type: &str,
+    ) {
+        proto_type_def.push_str(&format!("    pub value: Vec<{}>,", internal_type));
+        type_impl_def.push_str(&bit_packed_parse_impl_def);
+    }
+
+    /// Creates a Rust Vec<{}> out of an ArrayType.
+    /// The struct contains an interval .value field.
+    #[tracing::instrument(
+        level = "debug",
+        skip(self, proto_type_def, int_parse_impl_def, type_impl_def,)
+    )]
+    pub fn gen_proto_array_code(
+        &self,
+        proto_type_def: &mut String,
+        int_parse_impl_def: String,
+        type_impl_def: &mut String,
+        internal_type: &str,
+    ) {
+        match self {
+            Self::ByteAligned => panic!("ArrayType is not supported for ByteAligned"),
+            Self::BitPacked => Self::gen_bit_packed_proto_array_code(
+                proto_type_def,
+                int_parse_impl_def,
+                type_impl_def,
+                internal_type,
             ),
         }
     }
