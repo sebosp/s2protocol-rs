@@ -630,7 +630,7 @@ impl DecoderType {
             if proto_field_type_info == "OptionalType" {
                 let type_info_type = field["type_info"]["type_info"]["type"]
                     .as_str()
-                    .unwrap()
+                    .expect("OptionalType should have type_info.type_info.type")
                     .to_string();
                 // We should wrap this in Option<T>, but, it may also be a Option<Vec<T>>
                 // A Vec<Option<T>> has *NOT* been observed, otherwise we would need some complex
@@ -790,7 +790,7 @@ impl DecoderType {
                         ));
                     } else {
                         type_impl_def.push_str(&format!(
-                            "let (tail, array) = nom::multi::count({field_value_parser}, array_length)(tail)?;\n"
+                            "let (tail, array) = nom::multi::count({field_value_parser}, array_length)(input)?;\n"
                         ));
                     }
                     if morph.do_try_from {
@@ -892,7 +892,7 @@ impl DecoderType {
             if variant["type_info"]["type"] == "NullType" {
                 continue;
             }
-            let variant_name = proto_nnet_name_to_rust_name(&variant["type_info"]["name"]);
+            let variant_name = proto_nnet_name_to_rust_name(&variant["name"]);
             proto_type_def.push_str(&format!("    {variant_name}",));
             let proto_field_type_info = match variant["type_info"]["fullname"].as_str() {
                 Some(val) => val,
@@ -981,8 +981,9 @@ impl DecoderType {
             if variant["type_info"]["type"] == "NullType" {
                 continue;
             }
-            tracing::debug!("Checking variant: {:?}", variant);
-            let variant_name = proto_nnet_name_to_rust_name(&variant["type_info"]["name"]);
+            tracing::debug!("INIT variant: {:?}", variant);
+            let variant_name = proto_nnet_name_to_rust_name(&variant["name"]);
+            tracing::debug!("DONE variant: {:?}", variant);
             proto_type_def.push_str(&format!("    {variant_name}",));
             let proto_field_type_info = match variant["type_info"]["fullname"].as_str() {
                 Some(val) => val,
@@ -1350,7 +1351,7 @@ impl DecoderType {
             "#[tracing::instrument(name=\"{proto_num}::{name}::StringType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
          let str_size_num_bits: usize = {str_size_num_bits};\n\
-         let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)\n\
+         let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;\n\
          let (tail, _) = byte_align(tail)?;
          let (tail, value) = take_bit_array(input, num_bits)?;\n\
          // TODO: Unsure about this. \n\
@@ -1406,7 +1407,7 @@ impl DecoderType {
             "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
          let array_length_num_bits: usize = {array_length_num_bits};\n\
-         let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)\n\
+         let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;\n\
          let (tail, value) = nom::multi::count({internal_type}::parse(tail), array_length as usize)(tail)?;\n\
          // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
@@ -1464,7 +1465,7 @@ impl DecoderType {
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
          // Total fields: {num_fields}\n\
          let num_bits: usize = {num_bits};\n\
-         let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;\n\
+         let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;\n\
          match variant_tag {{\n\
          ",
     )
