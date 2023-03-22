@@ -686,7 +686,7 @@ impl DecoderType {
                     tracing::info!("IntType offset: {}, num_bits: {}", offset, num_bits);
                     morph.parser = morph
                         .parser
-                        .replace("{}", &format!("input, {},{}usize", offset, num_bits));
+                        .replace("{}", &format!("input, {}, {}usize", offset, num_bits));
                 }
             } else if proto_field_type_info == "ArrayType"
                 || proto_field_type_info == "BitArrayType"
@@ -723,7 +723,7 @@ impl DecoderType {
                 tracing::info!("IntType offset: {}, num_bits: {}", offset, num_bits);
                 morph.parser = morph
                     .parser
-                    .replace("{}", &format!("input, {},{}usize", offset, num_bits));
+                    .replace("{}", &format!("input, {}, {}usize", offset, num_bits));
             }
             let field_type = &morph.rust_ty;
             let field_value_parser = &morph.parser;
@@ -765,10 +765,10 @@ impl DecoderType {
             if morph.is_optional {
                 // If the next bit is a zero, then the field is None
                 type_impl_def.push_str(
-                    "let (tail, is_provided) = nom::bits::complete::take(1usize)(input)?;\n",
+                    "let (tail, is_provided): ((&[u8], usize), u8) = nom::bits::complete::take(1usize)(input)?;\n",
                 );
                 type_impl_def.push_str(&format!(
-                    "let (tail, {field_name}) = if is_provided != 0 {{\n"
+                    "let (tail, {field_name}) = if is_provided != 0u8 {{\n"
                 ));
                 if morph.is_vec {
                     let array_length = field["type_info"]["type_info"]["bounds"]["max"]["evalue"]
@@ -786,7 +786,7 @@ impl DecoderType {
                     ));
                     if is_bit_array {
                         type_impl_def.push_str(&format!(
-                            "let (tail, array) = take_bit_array(tail, array_length)?;\n"
+                            "let (tail, array) = take_bit_array(input, array_length)?;\n"
                         ));
                     } else {
                         type_impl_def.push_str(&format!(
@@ -829,15 +829,9 @@ impl DecoderType {
                      tracing::debug!(\"Reading array length: {{array_length}}\");\n\
                      "
                 ));
-                if is_bit_array {
-                    type_impl_def.push_str(&format!(
-                        "let (tail, array) = take_bit_array(tail, array_length)?;\n"
-                    ));
-                } else {
-                    type_impl_def.push_str(&format!(
-                         "let (tail, array) = nom::multi::count({field_value_parser}, array_length as usize)(tail)?;\n"
-                    ));
-                }
+                type_impl_def.push_str(&format!(
+                    "let (tail, array) = take_bit_array(tail, array_length)?;\n"
+                ));
                 if morph.do_try_from {
                     type_impl_def.push_str(
                     "let array = array.iter().map(|val| <_>::try_from(*val).unwrap()).collect();\n",
@@ -848,9 +842,17 @@ impl DecoderType {
                      }",
                 );
             } else {
-                type_impl_def.push_str(&format!(
-                    " let (tail, {field_name}) = {field_value_parser}(input)?;\n"
-                ));
+                if field_value_parser.contains("input,") {
+                    // The field parser may already contain input parameter, no need to add it to
+                    // the end.
+                    type_impl_def.push_str(&format!(
+                        " let (tail, {field_name}) = {field_value_parser}?;\n"
+                    ));
+                } else {
+                    type_impl_def.push_str(&format!(
+                        " let (tail, {field_name}) = {field_value_parser}(input)?;\n"
+                    ));
+                }
                 type_impl_def.push_str(&format!(
                     "    tracing::debug!(\"res: {{:?}}\", {field_name});\n"
                 ));
@@ -995,7 +997,13 @@ impl DecoderType {
             let mut morph = decoder.from_nnet_name(proto_field_type_info);
             if proto_field_type_info == "OptionalType" {
                 // The enclosed type is wrapped in an additional .type_info field.
-                let enclosed_type = variant["type_info"]["type_info"]["type"].to_string();
+                let mut enclosed_type = variant["type_info"]["type_info"]["type"].to_string();
+                if enclosed_type == "\"UserType\"" {
+                    // If it's a UserType we need to find the internal field's fullname
+                    enclosed_type = proto_nnet_name_to_rust_name(
+                        &variant["type_info"]["type_info"]["fullname"],
+                    );
+                }
                 morph.parser = morph.parser.replace("{}", &enclosed_type);
                 morph.rust_ty = morph.rust_ty.replace("{}", &enclosed_type);
             }
@@ -1012,8 +1020,8 @@ impl DecoderType {
             if proto_field_type_info == "OptionalType" {
                 // If the next bit is a filled with zeros, then the field is None
                 enum_parse_impl_def
-                    .push_str("let (tail, is_provided) = parse_packed_int(tail, 0, 1)?;\n");
-                enum_parse_impl_def.push_str("if is_provided != 0 {\n");
+                    .push_str("let (tail, is_provided): ((&[u8], usize), u8) = nom::bits::complete::take(1usize)(tail)?;\n");
+                enum_parse_impl_def.push_str("if is_provided != 0u8 {\n");
                 enum_parse_impl_def.push_str(&format!(
                     "let (tail, res) = {field_value_parser}(tail)?;\n\
                      tracing::debug!(\"res: {{:?}}\", res);\n"
@@ -1353,7 +1361,7 @@ impl DecoderType {
          let str_size_num_bits: usize = {str_size_num_bits};\n\
          let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;\n\
          let (tail, _) = byte_align(tail)?;
-         let (tail, value) = take_bit_array(input, num_bits)?;\n\
+         let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;\n\
          // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
          ",
@@ -1408,7 +1416,7 @@ impl DecoderType {
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
          let array_length_num_bits: usize = {array_length_num_bits};\n\
          let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;\n\
-         let (tail, value) = nom::multi::count({internal_type}::parse(tail), array_length as usize)(tail)?;\n\
+         let (tail, value) = nom::multi::count({internal_type}::parse, array_length as usize)(tail)?;\n\
          // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
          ",
