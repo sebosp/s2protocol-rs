@@ -19,8 +19,8 @@ impl ReplayTrackerEEventId {
         let (tail, delta) = SVarUint32::parse(input)?;
         let (tail, event) = ReplayTrackerEEventId::parse(tail)?;
         let delta = match delta {
-            SVarUint32::Uint6(val) => val as u32,
-            SVarUint32::Uint14(val) | SVarUint32::Uint22(val) | SVarUint32::Uint32(val) => val,
+            SVarUint32::MUint6(val) => val as u32,
+            SVarUint32::MUint14(val) | SVarUint32::MUint22(val) | SVarUint32::MUint32(val) => val,
         };
         Ok((tail, (delta, event)))
     }
@@ -161,10 +161,9 @@ impl ReplayTrackerSUnitPositionsEvent {
 pub fn generate_game_events_convert_into_versionless(output: &mut File) -> std::io::Result<()> {
     output.write_all(
         r#"
-    /// TODO:
+    // TODO:
     "#
         .as_bytes(),
     )?;
     Ok(())
 }
-

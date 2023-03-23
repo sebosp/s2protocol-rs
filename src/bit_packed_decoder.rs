@@ -98,6 +98,13 @@ pub fn byte_align(input: (&[u8], usize)) -> IResult<(&[u8], usize), ()> {
     }
 }
 
+/// Takes 1 unaligned bytes
+#[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
+pub fn take_unaligned_byte(input: (&[u8], usize)) -> IResult<(&[u8], usize), u8> {
+    let (tail, res) = take_bit_array(input, 8usize)?;
+    Ok((tail, res[0]))
+}
+
 /// Takes 4 unaligned bytes
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn take_fourcc(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
@@ -125,7 +132,6 @@ pub fn parse_bool(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
         dbg_peek_bits(take::<&[u8], u8, usize, _>(1usize), "take_bit_for_bool")(input)?;
     Ok((tail, val != 0))
 }
-
 #[cfg(test)]
 mod tests {
     use crate::versions::protocol87702::bit_packed::SVarUint32;
@@ -137,6 +143,6 @@ mod tests {
         // 0b -> tag 00 -> res = 000000 -> -> (0xf0, 0)
         let data: Vec<u8> = vec![0x00, 0xf0, 0x64, 0x2b, 0x4b, 0xa4, 0x0c, 0x00];
         let ((_tail, _tail_bits), res) = SVarUint32::parse((&data, 0usize)).unwrap();
-        assert_eq!(res, SVarUint32::Uint6(Uint6 { value: 0 }));
+        assert_eq!(res, SVarUint32::MUint6(Uint6 { value: 0 }));
     }
 }
