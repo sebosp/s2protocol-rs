@@ -48,7 +48,7 @@ impl DecoderType {
         format!(
         "#[tracing::instrument(name=\"{proto_num}::bit_packed::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
-             let tail = input;
+             let mut tail = input;
          ",
     )
     }
@@ -188,7 +188,7 @@ impl DecoderType {
                 // If we can ever make use of the bits we would need to account for the last byte
                 // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
                 rust_ty: "Vec<u8>".to_string(),
-                parser: "u8".to_string(),
+                parser: "take_unaligned_byte".to_string(),
                 is_vec: true,
                 ..Default::default()
             },
@@ -790,7 +790,7 @@ impl DecoderType {
                         ));
                     } else {
                         type_impl_def.push_str(&format!(
-                            "let (tail, array) = nom::multi::count({field_value_parser}, array_length)(input)?;\n"
+                            "/*793*/let (tail, array) = nom::multi::count({field_value_parser}, array_length)(input)?;\n"
                         ));
                     }
                     if morph.do_try_from {
@@ -800,8 +800,13 @@ impl DecoderType {
                     }
                     type_impl_def.push_str("(tail, Some(array))");
                 } else {
-                    type_impl_def
-                        .push_str(&format!("let (tail, res) = {field_value_parser}(tail)?;\n"));
+                    if field_value_parser.contains("input,") {
+                        type_impl_def
+                            .push_str(&format!("let (tail, res) = {field_value_parser}?;\n"));
+                    } else {
+                        type_impl_def
+                            .push_str(&format!("let (tail, res) = {field_value_parser}(tail)?;\n"));
+                    }
                     if morph.do_try_from {
                         type_impl_def.push_str("    (tail, Some(<_>::try_from(res).unwrap()))\n");
                     } else {
@@ -830,7 +835,13 @@ impl DecoderType {
                      "
                 ));
                 type_impl_def.push_str(&format!(
-                    "let (tail, array) = take_bit_array(tail, array_length)?;\n"
+                    "let mut tail = input;\n\
+                     let mut array = vec![];\n\
+                     for _ in 0..array_length {{\n\
+                     let (new_tail, data) = {field_value_parser}(tail)?;\n\
+                     tail = new_tail;\n\
+                     array.push(data);\n\
+                     }}\n"
                 ));
                 if morph.do_try_from {
                     type_impl_def.push_str(
@@ -1023,7 +1034,7 @@ impl DecoderType {
                     .push_str("let (tail, is_provided): ((&[u8], usize), u8) = nom::bits::complete::take(1usize)(tail)?;\n");
                 enum_parse_impl_def.push_str("if is_provided != 0u8 {\n");
                 enum_parse_impl_def.push_str(&format!(
-                    "let (tail, res) = {field_value_parser}(tail)?;\n\
+                    "let (tail, res) = {field_value_parser}::parse(tail)?;\n\
                      tracing::debug!(\"res: {{:?}}\", res);\n"
                 ));
                 enum_parse_impl_def.push_str(&format!(
