@@ -135,7 +135,7 @@ pub fn parse_bool(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
 #[cfg(test)]
 mod tests {
     use crate::versions::protocol87702::bit_packed::SVarUint32;
-    use crate::versions::protocol87702::game_event::bit_packed::Uint6;
+    use crate::versions::protocol87702::bit_packed::Uint6;
 
     #[test_log::test]
     fn it_reads_game_events() {

@@ -1,6 +1,7 @@
 //! S2 Protocol use of the MPQ archive
 
 pub mod bit_packed_decoder;
+pub mod game_events;
 pub mod generator;
 pub mod protocol_version_decoder;
 pub mod tracker_events;
