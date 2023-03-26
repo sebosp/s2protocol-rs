@@ -17,6 +17,30 @@ pub struct BitArray {
     left_overs: usize,
 }*/
 
+/// Takes n bits from the input bytes.
+/// The bits are taken counting from right to left.
+/// It returns the original input as if had not been processed.
+/// The caller must call the normal take process afterwards.
+pub fn rtake_n_bits(input: (&[u8], usize), count: usize) -> IResult<(&[u8], usize), u8> {
+    let res = if input.1 + count > 8usize {
+        // We need to process the current left-over bits (from the left)
+        let (_, res0) = take::<&[u8], u8, usize, _>(8usize - input.1)((input.0, 0usize))?;
+        // Then advance the current bits
+        let (tail, _) = take::<&[u8], u8, usize, _>(8usize)((input.0, 0usize))?;
+        // and join them with the subsequent bits on teh next byte
+        let left_over_count = count - (8usize - input.1);
+        let (_, res1) =
+            take::<&[u8], u8, usize, _>(left_over_count)((tail.0, 8usize - left_over_count))?;
+        // join them
+        let res = (res0 << left_over_count) + res1;
+        res
+    } else {
+        let (_, res) = take::<&[u8], u8, usize, _>(count)((input.0, 8usize - input.1 - count))?;
+        res
+    };
+    Ok(((input.0, input.1 + count), res))
+}
+
 /// Takes n total bits from the current u8 slice at the current offset and transforms the data into
 /// an u64, this works with Big Endian
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
@@ -35,7 +59,8 @@ pub fn take_n_bits_into_i64(
         } else {
             remaining_bits
         };
-        let (new_tail, bits) =
+        let (_, bits) = rtake_n_bits(tail, count)?;
+        let (new_tail, _) =
             dbg_peek_bits(take::<&[u8], u8, usize, _>(count), "take_n_bits_into_i64")(tail)?;
         res += (bits as i64) << (byte_slice * 8usize);
         tail = new_tail;
@@ -88,10 +113,8 @@ pub fn take_bit_array(
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn byte_align(input: (&[u8], usize)) -> IResult<(&[u8], usize), ()> {
     if input.1 != 0 {
-        let (tail, _) = dbg_peek_bits(
-            take::<&[u8], u8, usize, _>(8usize - input.1),
-            "take_n_bits_into_i64",
-        )(input)?;
+        let (tail, _) =
+            dbg_peek_bits(take::<&[u8], u8, usize, _>(8usize - input.1), "byte_align")(input)?;
         Ok((tail, ()))
     } else {
         Ok((input, ()))
@@ -135,14 +158,21 @@ pub fn parse_bool(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
 #[cfg(test)]
 mod tests {
     use crate::versions::protocol87702::bit_packed::SVarUint32;
+    use crate::versions::protocol87702::bit_packed::TUserId;
     use crate::versions::protocol87702::bit_packed::Uint6;
 
     #[test_log::test]
     fn it_reads_game_events() {
         // Game events have first the delta and then some event.
-        // 0b -> tag 00 -> res = 000000 -> -> (0xf0, 0)
         let data: Vec<u8> = vec![0x00, 0xf0, 0x64, 0x2b, 0x4b, 0xa4, 0x0c, 0x00];
-        let ((_tail, _tail_bits), res) = SVarUint32::parse((&data, 0usize)).unwrap();
+        let tail: (&[u8], usize) = (&data, 0usize);
+        let (tail, res) = SVarUint32::parse(tail).unwrap();
         assert_eq!(res, SVarUint32::MUint6(Uint6 { value: 0 }));
+        // 2 bits for the ChoiceType of SVarUint32, these contain the binary 00 for MUint6
+        // 6 bits then with value 0
+        assert_eq!(tail.0[0], 0xf0);
+        assert_eq!(tail.1, 0usize);
+        let (_tail, res) = TUserId::parse(tail).unwrap();
+        assert_eq!(res, TUserId { value: 16 });
     }
 }
