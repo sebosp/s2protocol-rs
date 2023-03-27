@@ -1130,7 +1130,7 @@ impl DecoderType {
         if is_inclusive.as_bool() == Some(true) {
             res += 1.;
         }
-        res.log2().ceil() as usize
+        (res.log2() + 1.).floor() as usize
     }
 
     /// Opens the bit packed version of the ByteInt parser
@@ -1358,14 +1358,14 @@ impl DecoderType {
             .expect("Missing have .max value string")
             .parse::<f32>()
             .expect(".max value must be parseable usize");
-        if bounds["max"]["inclusive"].as_bool() == Some(false) {
-            res -= 1.;
+        if bounds["max"]["inclusive"].as_bool() == Some(true) {
+            res += 1.;
         }
-        // this works for some numbers spotted, no idea why the +3.
+        // this works for some numbers spotted, no idea why the +2.
         // 781 string max.evalue needs 12 bits read for its size
         // 79 string max.evalue needs 9 bits read for its size
         // 19 string max.evalue needs 7 bits read for its size
-        let str_size_num_bits = res.log2().floor() as usize + 3;
+        let str_size_num_bits = (res.log2() + 1.).floor() as usize + 2;
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::StringType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
@@ -1418,10 +1418,10 @@ impl DecoderType {
             .expect("Missing have .max value in ArrayType")
             .parse::<f32>()
             .expect(".max value must be parseable usize");
-        if bounds["max"]["inclusive"].as_bool() == Some(false) {
-            array_max_value -= 1.;
+        if bounds["max"]["inclusive"].as_bool() == Some(true) {
+            array_max_value += 1.;
         }
-        let array_length_num_bits = (array_max_value as f32).log2().ceil() as usize;
+        let array_length_num_bits = ((array_max_value as f32).log2() + 1.).floor() as usize;
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
