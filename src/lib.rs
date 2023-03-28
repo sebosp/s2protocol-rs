@@ -30,12 +30,13 @@ pub fn peek_bits(input: (&[u8], usize)) -> String {
         if idx < input.1 {
             res.push_str(&format!("{}", bit_str).blue());
         } else if idx == input.1 {
-            res.push_str(&format!("{}", bit_str).green());
+            res.push_str(&format!(">{}<", bit_str).green());
         } else {
             res.push_str(&format!("{}", bit_str).yellow());
         }
     }
     res.push_str("]");
+    res.push_str(&peek_hex(input.0));
     res
 }
 
