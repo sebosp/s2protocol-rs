@@ -21,6 +21,7 @@ pub struct BitArray {
 /// The bits are taken counting from right to left.
 /// It returns the original input as if had not been processed.
 /// The caller must call the normal take process afterwards.
+#[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn rtake_n_bits(input: (&[u8], usize), count: usize) -> IResult<(&[u8], usize), u8> {
     let res = if input.1 + count > 8usize {
         // We need to process the current left-over bits (from the left)
@@ -157,8 +158,10 @@ pub fn parse_bool(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
 }
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::versions::protocol87702::bit_packed::SVarUint32;
     use crate::versions::protocol87702::bit_packed::TUserId;
+    use crate::versions::protocol87702::bit_packed::Uint32;
     use crate::versions::protocol87702::bit_packed::Uint6;
 
     #[test_log::test]
@@ -172,7 +175,14 @@ mod tests {
         // 6 bits then with value 0
         assert_eq!(tail.0[0], 0xf0);
         assert_eq!(tail.1, 0usize);
-        let (_tail, res) = TUserId::parse(tail).unwrap();
+        let (tail, res) = TUserId::parse(tail).unwrap();
         assert_eq!(res, TUserId { value: 16 });
+        assert_eq!(tail.1, 5usize);
+        let (tail, variant_tag) = parse_packed_int(tail, 0, 7usize).unwrap();
+        assert_eq!(tail.1, 4usize);
+        assert_eq!(variant_tag, 116);
+        let (tail, m_sync_time) = Uint32::parse(tail).unwrap();
+        assert_eq!(tail.1, 0usize);
+        assert_eq!(m_sync_time.value, 1656011340);
     }
 }
