@@ -232,7 +232,31 @@ impl ProtoMorphist {
                 // Fetch all signed integer definitions
                 self.gen_proto_code(proto_mod, DecoderType::BitPacked)?;
             }
-            if full_name == "NNet.SVarUint32" {
+            if full_name == "NNet.SVarUint32"
+                || full_name == "NNet.TUserId"
+                || full_name == "NNet.ELeaveReason"
+                || full_name == "NNet.CToonHandle"
+                || full_name == "NNet.CFilePath"
+                || full_name == "NNet.EObserve"
+                || full_name == "NNet.CUserName"
+                || full_name == "NNet.CClanTag"
+                || full_name == "NNet.CUserInitialDataArray"
+                || full_name == "NNet.EReconnectStatus"
+                || full_name == "NNet.TUserCount"
+                || full_name == "NNet.CCommanderHandle"
+                || full_name == "NNet.CMountHandle"
+                || full_name == "NNet.CSkinHandle"
+                || full_name == "NNet.CHeroHandle"
+                || full_name == "NNet.TRacePreference"
+                || full_name == "NNet.CArtifactHandle"
+                || full_name == "NNet.TRaceCount"
+                || full_name == "NNet.TRaceId"
+                || full_name == "NNet.SUserInitialData"
+                || full_name == "NNet.CAllowedObserveTypes"
+                || full_name == "NNet.CAllowedRaces"
+                || full_name == "NNet.CCacheHandle"
+                || full_name == "NNet.TTeamPreference"
+            {
                 self.gen_proto_code(proto_mod, DecoderType::BitPacked)?;
             }
             if full_name == "NNet.Replay" {
@@ -255,13 +279,23 @@ impl ProtoMorphist {
             if full_name == "NNet.Game" {
                 let game_mods_arr = proto_mod["decls"]
                     .as_array()
-                    .expect("NNet.Replay should have '.decls' array");
+                    .expect("NNet.Game should have '.decls' array");
                 for game_mod in game_mods_arr {
                     tracing::info!("Processing: {}", game_mod["fullname"]);
                     if game_mod["fullname"] == "NNet.Game.ESenders" {
                         continue;
                     }
                     self.gen_proto_code(game_mod, DecoderType::BitPacked)?;
+                    if game_mod["fullname"] == "NNet.Game.STriggerDialogControlEvent" {
+                        let ctrl_event_fields = game_mod["type_info"]["fields"].as_array().expect(
+                            "NNet.Game.STriggerDialogControlEvent should have '.type_info.fields' array",
+                        );
+                        for ctrl_event_field in ctrl_event_fields {
+                            if ctrl_event_field["name"] == "m_eventData" {
+                                self.gen_proto_code(ctrl_event_field, DecoderType::BitPacked)?;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -357,7 +391,14 @@ impl ProtoMorphist {
         let proto_unit_type = proto_mod["type_info"]["type"]
             .as_str()
             .expect(".type_info.type field expected in mod");
-        let proto_unit_type_name = proto_nnet_name_to_rust_name(&proto_mod["fullname"]);
+        let proto_unit_type_name = match proto_mod["fullname"].as_str() {
+            Some(val) => str_nnet_name_to_rust_name(val.to_string()),
+            None => {
+                // Special case where the m_eventData is a bit too complex in its depth
+                assert!(proto_mod["name"] == "m_eventData");
+                proto_nnet_name_to_rust_name(&proto_mod["name"])
+            }
+        };
         tracing::debug!(
             "Analyzing proto_unit_type_name {proto_unit_type_name}: '{proto_unit_type}'",
         );
@@ -410,7 +451,7 @@ impl ProtoMorphist {
                 &self.enum_tags,
             );
             type_impl_def.push_str(&decoder_type.close_enum_main_parse_fn());
-        } else if proto_unit_type == "IntType" {
+        } else if proto_unit_type == "IntType" || proto_unit_type == "InumType" {
             let int_parse_impl_def = decoder_type.open_int_main_parse_fn(
                 self.proto_num,
                 &proto_mod["type_info"]["bounds"],
@@ -458,7 +499,7 @@ impl ProtoMorphist {
                 blob_type_parse_impl_def,
                 &mut type_impl_def,
             );
-            type_impl_def.push_str(&decoder_type.close_bit_array_main_parse_fn());
+            type_impl_def.push_str(&decoder_type.close_blob_main_parse_fn());
         } else if proto_unit_type == "StringType" {
             let string_type_parse_impl_def = decoder_type.open_string_main_parse_fn(
                 self.proto_num,
@@ -470,7 +511,24 @@ impl ProtoMorphist {
                 string_type_parse_impl_def,
                 &mut type_impl_def,
             );
-            type_impl_def.push_str(&decoder_type.close_bit_array_main_parse_fn());
+            type_impl_def.push_str(&decoder_type.close_string_main_parse_fn());
+        } else if proto_unit_type == "ArrayType" || proto_unit_type == "DynArrayType" {
+            // Note: This type seems to be handled here only be for BitPacked and only for GameEvents
+            let internal_ty =
+                proto_nnet_name_to_rust_name(&proto_mod["type_info"]["element_type"]["fullname"]);
+            let array_type_parse_impl_def = decoder_type.open_array_main_parse_fn(
+                self.proto_num,
+                &proto_mod["type_info"]["bounds"],
+                &proto_unit_type_name,
+                &internal_ty,
+            );
+            decoder_type.gen_proto_array_code(
+                &mut proto_type_def,
+                array_type_parse_impl_def,
+                &mut type_impl_def,
+                &internal_ty,
+            );
+            type_impl_def.push_str(&decoder_type.close_array_main_parse_fn());
         } else {
             tracing::error!("Unhandled protocol unit type: {:?}", proto_unit_type);
         }
@@ -485,14 +543,19 @@ impl ProtoMorphist {
     }
 }
 
-/// Generates the start of an enum/choice definition.
+/// Generates the start of a struct definition.
 pub fn open_struct_type_def_skel(name: &str) -> String {
+    format!("#[derive(Debug, PartialEq, Clone)]\npub struct {name}",)
+}
+
+/// Generates the start of an enum/choice definition.
+pub fn open_enum_type_def_skel(name: &str) -> String {
     format!("#[derive(Debug, PartialEq, Clone)]\npub enum {name}",)
 }
 
 /// Generates the start of a type alias, tho for now this is being used as a one-element struct.
 pub fn open_single_value_type_def_skel(name: &str) -> String {
-    format!("#[derive(Debug, Default, PartialEq, Clone)]\npub struct {name} ",)
+    format!("#[derive(Debug, PartialEq, Clone)]\npub struct {name} ",)
 }
 
 /// Initializes a type impl block to contain the methods
@@ -525,12 +588,16 @@ pub fn open_type_def_skel(name: &str, unit_ty: &str) -> String {
     // tagged_blob().
     let mut res = match unit_ty {
         "StructType" => open_struct_type_def_skel(name),
-        "EnumType" => open_struct_type_def_skel(name),
-        "ChoiceType" => open_struct_type_def_skel(name),
+        "EnumType" => open_enum_type_def_skel(name),
+        "ChoiceType" => open_enum_type_def_skel(name),
         "IntType" => open_struct_type_def_skel(name),
         "BitArrayType" => open_struct_type_def_skel(name),
         "UserType" => open_struct_type_def_skel(name),
         "StringType" => open_struct_type_def_skel(name),
+        "ArrayType" => open_struct_type_def_skel(name),
+        "DynArrayType" => open_struct_type_def_skel(name),
+        "InumType" => open_struct_type_def_skel(name),
+        "BlobType" => open_struct_type_def_skel(name),
         _ => panic!("Unknown unit type: {unit_ty}"),
     };
     res.push_str(" {\n");
