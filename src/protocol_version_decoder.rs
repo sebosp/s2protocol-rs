@@ -16,7 +16,7 @@ use nom_mpq::parser::peek_hex;
 use nom_mpq::MPQ;
 
 /// The S2 Protocol Header
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct ProtocolHeader {
     pub m_signature: Vec<u8>,
     pub m_version: SVersion,
