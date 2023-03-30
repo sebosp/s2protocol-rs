@@ -1,6 +1,6 @@
 use super::bit_packed::*;
 use crate::game_events::GameEvent;
-use crate::peek_bits;
+use crate::{byte_align, peek_bits};
 use nom::*;
 use nom_mpq::MPQ;
 
@@ -11,14 +11,19 @@ impl GameEEventId {
         input: (&[u8], usize),
     ) -> IResult<(&[u8], usize), (i64, i64, GameEEventId)> {
         let (tail, delta) = SVarUint32::parse(input)?;
+        tracing::info!("Delta: {:?}", delta);
         let (tail, user_id) = TUserId::parse(tail)?;
+        tracing::info!("UserId: {:?}", user_id);
         let (tail, event) = GameEEventId::parse(tail)?;
+        tracing::info!("Event: {:?}", event);
         let delta = match delta {
             SVarUint32::MUint6(val) => val.value,
             SVarUint32::MUint14(val) => val.value,
             SVarUint32::MUint22(val) => val.value,
             SVarUint32::MUint32(val) => val.value,
         };
+        // The next event is byte aligned
+        let (tail, _) = byte_align(tail)?;
         Ok((tail, (delta, user_id.value, event)))
     }
 
