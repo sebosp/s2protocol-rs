@@ -69,19 +69,14 @@ pub fn take_n_bits_into_i64(
         let (_, bits) = rtake_n_bits(tail, count)?;
         let (new_tail, drop_bits) =
             dbg_peek_bits(take::<&[u8], u8, usize, _>(count), "take_n_bits_into_i64")(tail)?;
-        tracing::info!("XXX drp:{} .0x{:02x}", count, drop_bits);
-        tracing::info!("XXX drp:{} .0b{:08b}", count, drop_bits);
         res |= (bits as i64) << remaining_bits - count;
         // copy << (total_bits - resultbits - copybits)
         tail = new_tail;
         remaining_bits -= count;
-        tracing::info!("XXX res:{} .0x{:08x}", remaining_bits, res);
-        tracing::info!("XXX res:{} .0b{:032b}", remaining_bits, res);
         if remaining_bits == 0 {
             break;
         }
     }
-    tracing::info!("XXX res: >0b{:032b}", res);
     Ok((tail, res))
 }
 
