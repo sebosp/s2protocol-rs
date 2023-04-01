@@ -34,9 +34,11 @@ pub fn rtake_n_bits(input: (&[u8], usize), count: usize) -> IResult<(&[u8], usiz
             take::<&[u8], u8, usize, _>(left_over_count)((tail.0, 8usize - left_over_count))?;
         // join them
         let res = (res0 << left_over_count) + res1;
+        tracing::info!(">8=>0b{:08b}", res);
         res
     } else {
         let (_, res) = take::<&[u8], u8, usize, _>(count)((input.0, 8usize - input.1 - count))?;
+        tracing::info!("<8=>{:08b}", res);
         res
     };
     Ok(((input.0, input.1 + count), res))
@@ -53,28 +55,33 @@ pub fn take_n_bits_into_i64(
     let mut res = 0i64;
     let mut remaining_bits = total_bits;
     let mut tail = input;
-    let mut byte_slice = 0usize;
     loop {
         let count = if remaining_bits > 8 {
-            8
+            // Try to byte-align
+            if tail.1 != 0 {
+                8usize - tail.1
+            } else {
+                8usize
+            }
         } else {
             remaining_bits
         };
         let (_, bits) = rtake_n_bits(tail, count)?;
-        let (new_tail, _) =
+        let (new_tail, drop_bits) =
             dbg_peek_bits(take::<&[u8], u8, usize, _>(count), "take_n_bits_into_i64")(tail)?;
-        res += (bits as i64) << (byte_slice * 8usize);
+        tracing::info!("XXX drp:{} .0x{:02x}", count, drop_bits);
+        tracing::info!("XXX drp:{} .0b{:08b}", count, drop_bits);
+        res |= (bits as i64) << remaining_bits - count;
+        // copy << (total_bits - resultbits - copybits)
         tail = new_tail;
-        if remaining_bits > 8 {
-            remaining_bits -= 8;
-        } else {
-            remaining_bits = 0;
-        }
+        remaining_bits -= count;
+        tracing::info!("XXX res:{} .0x{:08x}", remaining_bits, res);
+        tracing::info!("XXX res:{} .0b{:032b}", remaining_bits, res);
         if remaining_bits == 0 {
             break;
         }
-        byte_slice += 1;
     }
+    tracing::info!("XXX res: >0b{:032b}", res);
     Ok((tail, res))
 }
 
@@ -181,8 +188,10 @@ mod tests {
         let (tail, variant_tag) = parse_packed_int(tail, 0, 7usize).unwrap();
         assert_eq!(tail.1, 4usize);
         assert_eq!(variant_tag, 116);
+        let (_, uint32_first_4_bits) = rtake_n_bits(tail, 4usize).unwrap();
+        assert_eq!(uint32_first_4_bits, 0x06);
         let (tail, m_sync_time) = Uint32::parse(tail).unwrap();
-        assert_eq!(tail.1, 0usize);
+        assert_eq!(tail.1, 4usize);
         assert_eq!(m_sync_time.value, 1656011340);
     }
 }
