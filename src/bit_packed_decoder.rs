@@ -34,11 +34,9 @@ pub fn rtake_n_bits(input: (&[u8], usize), count: usize) -> IResult<(&[u8], usiz
             take::<&[u8], u8, usize, _>(left_over_count)((tail.0, 8usize - left_over_count))?;
         // join them
         let res = (res0 << left_over_count) + res1;
-        tracing::info!(">8=>0b{:08b}", res);
         res
     } else {
         let (_, res) = take::<&[u8], u8, usize, _>(count)((input.0, 8usize - input.1 - count))?;
-        tracing::info!("<8=>{:08b}", res);
         res
     };
     Ok(((input.0, input.1 + count), res))
