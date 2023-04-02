@@ -3577,7 +3577,6 @@ pub mod bit_packed {
             let offset: i64 = 0;
             let num_bits: usize = 32;
             let (tail, res) = parse_packed_int(input, offset, num_bits)?;
-            tracing::info!("Read {}", res);
             // TODO: Unsure about this.
             Ok((
                 tail,
@@ -4588,7 +4587,8 @@ pub mod bit_packed {
             let (tail, is_provided): ((&[u8], usize), u8) =
                 nom::bits::complete::take(1usize)(input)?;
             let (tail, m_data_deprecated) = if is_provided != 0u8 {
-                let array_length: usize = 16;
+                let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
+                let array_length = array_length as usize;
                 tracing::debug!("Reading array length: 16");
                 /*793*/
                 let (tail, array) = nom::multi::count(Uint8::parse, array_length)(input)?;
@@ -4601,9 +4601,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_data(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 16;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -6128,9 +6128,9 @@ pub mod bit_packed {
     impl GameSBankFileEvent {
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 75;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -6164,9 +6164,9 @@ pub mod bit_packed {
     impl GameSBankSectionEvent {
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 59;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 6)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -6202,9 +6202,9 @@ pub mod bit_packed {
     impl GameSBankKeyEvent {
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 59;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 6)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -6221,9 +6221,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_data(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 19;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -6279,9 +6279,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 59;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 6)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -6292,9 +6292,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_data(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 781;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 10)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -6343,9 +6343,9 @@ pub mod bit_packed {
     impl GameSBankSignatureEvent {
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_signature(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<Uint8>> {
-            let array_length: usize = 20;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = Uint8::parse(tail)?;
@@ -6493,9 +6493,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_hotkey_profile(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 79;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -6960,9 +6960,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 40;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 6)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -6973,9 +6973,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_description(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 256;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -7515,9 +7515,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_resources(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<Int32>> {
-            let array_length: usize = 4;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 3)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = Int32::parse(tail)?;
@@ -8243,9 +8243,9 @@ pub mod bit_packed {
         pub fn parse_m_user_infos(
             input: (&[u8], usize),
         ) -> IResult<(&[u8], usize), Vec<GameSHijackReplaySessionUserInfo>> {
-            let array_length: usize = 16;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameSHijackReplaySessionUserInfo::parse(tail)?;
@@ -8421,9 +8421,9 @@ pub mod bit_packed {
         pub fn parse_m_user_infos(
             input: (&[u8], usize),
         ) -> IResult<(&[u8], usize), Vec<GameSHijackReplayGameUserInfo>> {
-            let array_length: usize = 16;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameSHijackReplayGameUserInfo::parse(tail)?;
@@ -9583,9 +9583,9 @@ pub mod bit_packed {
     impl GameSResourceRequestEvent {
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_resources(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<Int32>> {
-            let array_length: usize = 4;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 3)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = Int32::parse(tail)?;
@@ -10065,9 +10065,9 @@ pub mod bit_packed {
     impl GameSTriggerMovieFunctionEvent {
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_function_name(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 64;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -10317,9 +10317,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_bookmark_name(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 79;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -10399,9 +10399,9 @@ pub mod bit_packed {
         pub fn parse_m_conversation_line(
             input: (&[u8], usize),
         ) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 79;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -10414,9 +10414,9 @@ pub mod bit_packed {
         pub fn parse_m_alt_conversation_line(
             input: (&[u8], usize),
         ) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 79;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -10476,9 +10476,9 @@ pub mod bit_packed {
         pub fn parse_m_conversation_line(
             input: (&[u8], usize),
         ) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 79;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -10863,9 +10863,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_field(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 256;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -10876,9 +10876,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_value(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 256;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -11996,9 +11996,9 @@ pub mod bit_packed {
     impl GameSSyncSoundLength {
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sound_hash(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<Uint32>> {
-            let array_length: usize = 110;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = Uint32::parse(tail)?;
@@ -12009,9 +12009,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_length(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<Uint32>> {
-            let array_length: usize = 110;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = Uint32::parse(tail)?;
@@ -12052,9 +12052,9 @@ pub mod bit_packed {
     impl GameSThumbnail {
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_file(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 512;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 10)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -12220,9 +12220,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 26;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -12314,9 +12314,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_race(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 64;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -12380,9 +12380,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_hero(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 64;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -12551,9 +12551,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_title(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 256;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -12564,9 +12564,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_difficulty(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 64;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -12624,9 +12624,9 @@ pub mod bit_packed {
         }
         #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_description(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-            let array_length: usize = 1024;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 11)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -16117,9 +16117,9 @@ pub mod bit_packed {
         pub fn parse_m_add_subgroups(
             input: (&[u8], usize),
         ) -> IResult<(&[u8], usize), Vec<GameSSelectionDeltaSubgroup>> {
-            let array_length: usize = 500;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameSSelectionDeltaSubgroup::parse(tail)?;
@@ -16132,9 +16132,9 @@ pub mod bit_packed {
         pub fn parse_m_add_unit_tags(
             input: (&[u8], usize),
         ) -> IResult<(&[u8], usize), Vec<GameTUnitTag>> {
-            let array_length: usize = 500;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameTUnitTag::parse(tail)?;
@@ -16338,9 +16338,9 @@ pub mod bit_packed {
         pub fn parse_m_checksums(
             input: (&[u8], usize),
         ) -> IResult<(&[u8], usize), Vec<GameTSyncChecksum>> {
-            let array_length: usize = 32;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 6)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameTSyncChecksum::parse(tail)?;
@@ -16376,9 +16376,9 @@ pub mod bit_packed {
         pub fn parse_m_checksums(
             input: (&[u8], usize),
         ) -> IResult<(&[u8], usize), Vec<GameTSyncChecksum>> {
-            let array_length: usize = 255;
+            let (mut tail, array_length) = take_n_bits_into_i64(input, 8)?;
+            let array_length = array_length as usize;
             tracing::debug!("Reading array length: {array_length}");
-            let mut tail = input;
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameTSyncChecksum::parse(tail)?;

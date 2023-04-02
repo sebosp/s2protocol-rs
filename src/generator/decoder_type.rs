@@ -779,8 +779,11 @@ impl DecoderType {
                         is_bit_array,
                         array_length
                     );
+                    let array_size_bits =
+                        (array_length.parse::<f32>().unwrap().log2() + 1.).floor() as usize;
                     type_impl_def.push_str(&format!(
-                        "let array_length: usize = {array_length};\n\
+                        "let (mut tail, array_length) = take_n_bits_into_i64(input, {array_size_bits})?;\n\
+                        let array_length = array_length as usize;\n\
                          tracing::debug!(\"Reading array length: {array_length}\");\n\
                          "
                     ));
@@ -829,14 +832,16 @@ impl DecoderType {
                             .to_string(),
                 };
                 tracing::info!("ArrayType array Length: {}", array_length);
+                let array_size_bits =
+                    (array_length.parse::<f32>().unwrap().log2() + 1.).floor() as usize;
                 type_impl_def.push_str(&format!(
-                    "let array_length: usize = {array_length};\n\
+                     "let (mut tail, array_length) = take_n_bits_into_i64(input, {array_size_bits})?;\n\
+                     let array_length = array_length as usize;\n\
                      tracing::debug!(\"Reading array length: {{array_length}}\");\n\
                      "
                 ));
                 type_impl_def.push_str(&format!(
-                    "let mut tail = input;\n\
-                     let mut array = vec![];\n\
+                    " let mut array = vec![];\n\
                      for _ in 0..array_length {{\n\
                      let (new_tail, data) = {field_value_parser}(tail)?;\n\
                      tail = new_tail;\n\

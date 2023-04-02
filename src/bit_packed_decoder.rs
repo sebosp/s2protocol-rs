@@ -65,7 +65,7 @@ pub fn take_n_bits_into_i64(
             remaining_bits
         };
         let (_, bits) = rtake_n_bits(tail, count)?;
-        let (new_tail, drop_bits) =
+        let (new_tail, _) =
             dbg_peek_bits(take::<&[u8], u8, usize, _>(count), "take_n_bits_into_i64")(tail)?;
         res |= (bits as i64) << remaining_bits - count;
         // copy << (total_bits - resultbits - copybits)
