@@ -206,6 +206,12 @@ impl DecoderType {
                 parser: "take_fourcc".to_string(),
                 ..Default::default()
             },
+            "NullType" => ProtoTypeConversion {
+                // The blob type is byte aligned
+                rust_ty: "()".to_string(),
+                parser: "take_null".to_string(),
+                ..Default::default()
+            },
             _ => panic!("Unsupported type: {}", nnet_name),
         }
     }
@@ -996,9 +1002,6 @@ impl DecoderType {
         // tracing::info!("\n/*{:#}*/\n", proto_mod);
         let variant_array = proto_mod["type_info"]["fields"].as_array().unwrap();
         for variant in variant_array {
-            if variant["type_info"]["type"] == "NullType" {
-                continue;
-            }
             tracing::debug!("INIT variant: {:?}", variant);
             let variant_name = proto_nnet_name_to_rust_name(&variant["name"]);
             tracing::debug!("DONE variant: {:?}", variant);

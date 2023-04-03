@@ -5967,6 +5967,7 @@ pub mod bit_packed {
 
     #[derive(Debug, PartialEq, Clone)]
     pub enum GameSCmdData {
+        None(()),
         TargetPoint(GameSMapCoord3D),
         TargetUnit(GameSCmdDataTargetUnit),
         Data(Uint32),
@@ -5982,6 +5983,12 @@ pub mod bit_packed {
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;
             match variant_tag {
+                0 => {
+                    tracing::debug!("Variant tagged '0' for None");
+                    let (tail, res) = take_null(tail)?;
+                    tracing::debug!("res: {:?}", res);
+                    Ok((tail, Self::None(res)))
+                }
                 1 => {
                     tracing::debug!("Variant tagged '1' for TargetPoint");
                     let (tail, res) = GameSMapCoord3D::parse(tail)?;
@@ -8612,6 +8619,7 @@ pub mod bit_packed {
 
     #[derive(Debug, PartialEq, Clone)]
     pub enum MEventData {
+        None(()),
         Checked(bool),
         ValueChanged(Uint32),
         SelectionChanged(Int32),
@@ -8629,6 +8637,12 @@ pub mod bit_packed {
             let num_bits: usize = 3;
             let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;
             match variant_tag {
+                0 => {
+                    tracing::debug!("Variant tagged '0' for None");
+                    let (tail, res) = take_null(tail)?;
+                    tracing::debug!("res: {:?}", res);
+                    Ok((tail, Self::None(res)))
+                }
                 1 => {
                     tracing::debug!("Variant tagged '1' for Checked");
                     let (tail, res) = parse_bool(tail)?;
@@ -16047,6 +16061,7 @@ pub mod bit_packed {
 
     #[derive(Debug, PartialEq, Clone)]
     pub enum GameSSelectionMask {
+        None(()),
         Mask(GameSelectionMaskType),
         OneIndices(GameSelectionIndexArrayType),
         ZeroIndices(GameSelectionIndexArrayType),
@@ -16062,6 +16077,12 @@ pub mod bit_packed {
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;
             match variant_tag {
+                0 => {
+                    tracing::debug!("Variant tagged '0' for None");
+                    let (tail, res) = take_null(tail)?;
+                    tracing::debug!("res: {:?}", res);
+                    Ok((tail, Self::None(res)))
+                }
                 1 => {
                     tracing::debug!("Variant tagged '1' for Mask");
                     let (tail, res) = GameSelectionMaskType::parse(tail)?;

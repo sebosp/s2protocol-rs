@@ -135,6 +135,11 @@ pub fn take_fourcc(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
     take_bit_array(input, 4usize * 8usize)
 }
 
+/// Just a function that would be called when a null is needed, this is for debugging purposes
+#[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
+pub fn take_null(input: (&[u8], usize)) -> IResult<(&[u8], usize), ()> {
+    Ok((input, ()))
+}
 /// Reads a packed int, In offset binary representation, (also called excess-K or biased).
 /// a signed number is represented by the bit pattern corresponding to the unsigned number plus K,
 /// with K being the biasing value or offset.
