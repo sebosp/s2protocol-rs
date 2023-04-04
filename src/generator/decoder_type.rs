@@ -686,8 +686,7 @@ impl DecoderType {
                         .as_str()
                         .expect("Field should have .type_info.bounds.min.evalue");
                     let num_bits = Self::bounds_max_value_to_bit_size(
-                        &field["type_info"]["type_info"]["bounds"]["max"]["evalue"],
-                        &field["type_info"]["type_info"]["bounds"]["max"]["inclusive"],
+                        &field["type_info"]["type_info"]["bounds"],
                     );
                     tracing::info!("IntType offset: {}, num_bits: {}", offset, num_bits);
                     morph.parser = morph
@@ -722,10 +721,7 @@ impl DecoderType {
                 let offset = field["type_info"]["bounds"]["min"]["evalue"]
                     .as_str()
                     .expect("Field should have .type_info.bounds.min.evalue");
-                let num_bits = Self::bounds_max_value_to_bit_size(
-                    &field["type_info"]["bounds"]["max"]["evalue"],
-                    &field["type_info"]["bounds"]["max"]["inclusive"],
-                );
+                let num_bits = Self::bounds_max_value_to_bit_size(&field["type_info"]["bounds"]);
                 tracing::info!("IntType offset: {}, num_bits: {}", offset, num_bits);
                 morph.parser = morph
                     .parser
@@ -771,11 +767,9 @@ impl DecoderType {
             if morph.is_optional {
                 // If the next bit is a zero, then the field is None
                 type_impl_def.push_str(
-                    "let (tail, is_provided): ((&[u8], usize), u8) = nom::bits::complete::take(1usize)(input)?;\n",
+                    "let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;\n",
                 );
-                type_impl_def.push_str(&format!(
-                    "let (tail, {field_name}) = if is_provided != 0u8 {{\n"
-                ));
+                type_impl_def.push_str(&format!("let (tail, {field_name}) = if is_provided {{\n"));
                 if morph.is_vec {
                     let array_length = field["type_info"]["type_info"]["bounds"]["max"]["evalue"]
                         .as_str()
@@ -1038,9 +1032,10 @@ impl DecoderType {
             ));
             if proto_field_type_info == "OptionalType" {
                 // If the next bit is a filled with zeros, then the field is None
-                enum_parse_impl_def
-                    .push_str("let (tail, is_provided): ((&[u8], usize), u8) = nom::bits::complete::take(1usize)(tail)?;\n");
-                enum_parse_impl_def.push_str("if is_provided != 0u8 {\n");
+                enum_parse_impl_def.push_str(
+                    "let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(tail)?;\n",
+                );
+                enum_parse_impl_def.push_str("if is_provided {\n");
                 enum_parse_impl_def.push_str(&format!(
                     "let (tail, res) = {field_value_parser}::parse(tail)?;\n\
                      tracing::debug!(\"res: {{:?}}\", res);\n"
@@ -1129,16 +1124,29 @@ impl DecoderType {
 
     /// Transforms a bounds[max][evalue] possibly "inclusive" (i.e. "less than _or equal_) to the
     /// number of bits needed to represent such max value.
-    pub fn bounds_max_value_to_bit_size(max_value: &Value, is_inclusive: &Value) -> usize {
-        let mut res = max_value
+    pub fn bounds_max_value_to_bit_size(bounds: &Value) -> usize {
+        let mut res = bounds["max"]["evalue"]
             .as_str()
-            .expect("Missing have .max value string")
+            .expect("Missing have .max.evalue string")
             .parse::<f32>()
-            .expect(".max value must be parseable usize");
-        if is_inclusive.as_bool() == Some(true) {
-            res += 1.;
+            .expect(".max.evalue must be parseable usize");
+        if bounds["min"]["inclusive"]
+            .as_bool()
+            .expect("Missing .min.inclusive")
+            == false
+        {
+            res -= 1.;
         }
-        (res.log2() + 1.).floor() as usize
+        if bounds["max"]["inclusive"]
+            .as_bool()
+            .expect("Missing .max.inclusive")
+            == false
+        {
+            res -= 1.;
+        };
+        let total_bits = (res.log2() + 1.).floor() as usize;
+        tracing::info!("Max bound: {:?} total_bits = {}", bounds, total_bits);
+        total_bits
     }
 
     /// Opens the bit packed version of the ByteInt parser
@@ -1148,30 +1156,32 @@ impl DecoderType {
             .as_str()
             .expect("bounds should have .min.evalue");
         let mut num_bits = 0usize;
-        if let Some(rhs_value) = bounds["max"]["value"]["rhs"]["value"].as_str() {
+        let bound_type = if let Some(rhs_value) = bounds["max"]["value"]["rhs"]["value"].as_str() {
             num_bits = rhs_value
                 .parse()
                 .expect(".max.value.rhs.value should be usize");
+            assert!(
+                bounds["max"]["value"]["type"] == "PowExpr",
+                "RHS Bound must be PowExpr expr"
+            );
+            String::from("PowExpr")
         } else {
             if bounds["max"]["evalue"].as_str().is_some() {
-                num_bits = Self::bounds_max_value_to_bit_size(
-                    &bounds["max"]["evalue"],
-                    &bounds["max"]["inclusive"],
-                );
+                num_bits = Self::bounds_max_value_to_bit_size(&bounds);
             }
-        }
+            bounds["type"].as_str().unwrap().to_string()
+        };
         //    .expect("bounds should have .max.value.rhs.value")
         if offset.starts_with('-') {
             // If the offset is negative, we need to account for one more bit.
             num_bits += 1;
         }
         format!(
-            "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse::{bound_type}\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
          let offset: i64 = {offset};
          let num_bits: usize = {num_bits};
          let (tail, res) = parse_packed_int(input, offset, num_bits)?;\n\
-         // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value: <_>::try_from(res).unwrap() }}))\n\
          ",
         )
@@ -1271,10 +1281,7 @@ impl DecoderType {
     ) -> String {
         assert!(bounds["type"] == "MinMaxConstraint");
         assert!(bounds["min"]["evalue"] == "0");
-        let num_bits = Self::bounds_max_value_to_bit_size(
-            &bounds["max"]["evalue"],
-            &bounds["max"]["inclusive"],
-        );
+        let num_bits = Self::bounds_max_value_to_bit_size(&bounds);
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BitArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
@@ -1319,10 +1326,7 @@ impl DecoderType {
     ) -> String {
         assert!(bounds["type"] == "ExactConstraint");
         assert!(bounds["min"]["evalue"] == bounds["max"]["evalue"]);
-        let num_bits = Self::bounds_max_value_to_bit_size(
-            &bounds["max"]["evalue"],
-            &bounds["max"]["inclusive"],
-        );
+        let num_bits = Self::bounds_max_value_to_bit_size(&bounds);
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BlobType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
