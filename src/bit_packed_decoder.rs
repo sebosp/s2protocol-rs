@@ -157,8 +157,8 @@ pub fn parse_packed_int(
 /// Reads a single bit and transforms into a bool.
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn parse_bool(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
-    let (tail, val) =
-        dbg_peek_bits(take::<&[u8], u8, usize, _>(1usize), "take_bit_for_bool")(input)?;
+    let (_, val) = rtake_n_bits(input, 1usize)?;
+    let (tail, _) = dbg_peek_bits(take::<&[u8], u8, usize, _>(1usize), "take_bit_for_bool")(input)?;
     Ok((tail, val != 0))
 }
 #[cfg(test)]
