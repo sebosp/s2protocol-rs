@@ -90,19 +90,22 @@ pub fn take_bit_array(
     let mut tail = input;
     loop {
         let count = if remaining_bits > 8 {
-            8
+            // Try to byte-align
+            if tail.1 != 0 {
+                8usize - tail.1
+            } else {
+                8usize
+            }
         } else {
             remaining_bits
         };
-        let (new_tail, bits) =
+        let (_, bits) = rtake_n_bits(tail, count)?;
+        let (new_tail, _) =
             dbg_peek_bits(take::<&[u8], u8, usize, _>(count), "take_bit_array")(tail)?;
         res.push(bits);
+        // copy << (total_bits - resultbits - copybits)
         tail = new_tail;
-        if remaining_bits > 8 {
-            remaining_bits -= 8;
-        } else {
-            remaining_bits = 0;
-        }
+        remaining_bits -= count;
         if remaining_bits == 0 {
             break;
         }

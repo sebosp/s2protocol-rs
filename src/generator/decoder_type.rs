@@ -1125,10 +1125,11 @@ impl DecoderType {
     /// Transforms a bounds[max][evalue] possibly "inclusive" (i.e. "less than _or equal_) to the
     /// number of bits needed to represent such max value.
     pub fn bounds_max_value_to_bit_size(bounds: &Value) -> usize {
+        tracing::info!("Max bound: {:?}", bounds);
         let mut res = bounds["max"]["evalue"]
             .as_str()
             .expect("Missing have .max.evalue string")
-            .parse::<f32>()
+            .parse::<f64>()
             .expect(".max.evalue must be parseable usize");
         if bounds["min"]["inclusive"]
             .as_bool()
@@ -1144,9 +1145,7 @@ impl DecoderType {
         {
             res -= 1.;
         };
-        let total_bits = (res.log2() + 1.).floor() as usize;
-        tracing::info!("Max bound: {:?} total_bits = {}", bounds, total_bits);
-        total_bits
+        (res.log2() + 1.).floor() as usize
     }
 
     /// Opens the bit packed version of the ByteInt parser
@@ -1285,8 +1284,9 @@ impl DecoderType {
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BitArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
-         let num_bits: usize = {num_bits};
-         let (tail, value) = take_bit_array(input, num_bits)?;\n\
+         let bitarray_length_bits: usize = {num_bits};
+         let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
+         let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;\n\
          // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
          ",

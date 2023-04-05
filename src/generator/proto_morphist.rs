@@ -370,6 +370,9 @@ impl ProtoMorphist {
     pub fn gen(source_path: &str, output_name: &str) -> std::io::Result<()> {
         let mut generator = Self::new(source_path, output_name)?;
         generator.collect_enum_tags()?;
+        generator
+            .output
+            .write_all(b"pub mod events;\npub use events::*;\n")?;
         generator.gen_byte_aligned_mod()?;
         generator.gen_bit_packed_mod()
     }
