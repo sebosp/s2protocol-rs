@@ -410,8 +410,18 @@ impl ProtoMorphist {
         let mut type_impl_def = open_type_impl_def(&proto_unit_type_name);
         // The method for parsing all the fields into the struct as a whole.
         if proto_unit_type == "StructType" {
-            let struct_parse_impl_def: String =
-                decoder_type.open_struct_main_parse_fn(self.proto_num, &proto_unit_type_name);
+            let not_const_num_fields = proto_mod["type_info"]["fields"]
+                .as_array()
+                .expect("type_info should have .fields")
+                .iter()
+                .filter(|x| x["type"] != "ConstDecl")
+                .collect::<Vec<_>>()
+                .len();
+            let struct_parse_impl_def: String = decoder_type.open_struct_main_parse_fn(
+                self.proto_num,
+                &proto_unit_type_name,
+                not_const_num_fields,
+            );
             decoder_type.gen_proto_struct_code(
                 proto_mod,
                 &mut proto_type_def,

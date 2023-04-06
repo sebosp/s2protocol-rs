@@ -4566,11 +4566,10 @@ pub mod bit_packed {
         ) -> IResult<(&[u8], usize), Option<Vec<Uint8>>> {
             let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
             let (tail, m_data_deprecated) = if is_provided {
-                let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
+                let (tail, array_length) = take_n_bits_into_i64(input, 5)?;
                 let array_length = array_length as usize;
                 tracing::debug!("Reading array length: 16");
-                /*793*/
-                let (tail, array) = nom::multi::count(Uint8::parse, array_length)(input)?;
+                let (tail, array) = nom::multi::count(Uint8::parse, array_length)(tail)?;
                 (tail, Some(array))
             } else {
                 (tail, None)
@@ -6087,7 +6086,7 @@ pub mod bit_packed {
     impl GameSStartGameEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSStartGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -6097,7 +6096,7 @@ pub mod bit_packed {
     impl GameSDropOurselvesEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSDropOurselvesEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -6647,7 +6646,7 @@ pub mod bit_packed {
     impl GameSUserFinishedLoadingEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSUserFinishedLoadingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -6657,7 +6656,7 @@ pub mod bit_packed {
     impl GameSUserFinishedLoadingSyncEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSUserFinishedLoadingSyncEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -6696,7 +6695,7 @@ pub mod bit_packed {
     impl GameSTurnEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTurnEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -6809,7 +6808,7 @@ pub mod bit_packed {
     impl GameSSingleStepGameEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSSingleStepGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -7015,7 +7014,7 @@ pub mod bit_packed {
     impl GameSSaveGameDoneEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSSaveGameDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -7025,7 +7024,7 @@ pub mod bit_packed {
     impl GameSLoadGameDoneEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSLoadGameDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -8440,7 +8439,7 @@ pub mod bit_packed {
     impl GameSTriggerAbortMissionEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerAbortMissionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -8480,7 +8479,7 @@ pub mod bit_packed {
     impl GameSTriggerPurchaseExitEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerPurchaseExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -8520,7 +8519,7 @@ pub mod bit_packed {
     impl GameSTriggerPlanetPanelCanceledEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelCanceledEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -8652,7 +8651,7 @@ pub mod bit_packed {
     impl GameSTriggerSkippedEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerSkippedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -9424,7 +9423,7 @@ pub mod bit_packed {
     impl GameSTriggerPlanetPanelReplayEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelReplayEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -9535,7 +9534,7 @@ pub mod bit_packed {
     impl GameSTriggerPlanetPanelBirthCompleteEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelBirthCompleteEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -9545,7 +9544,7 @@ pub mod bit_packed {
     impl GameSTriggerPlanetPanelDeathCompleteEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelDeathCompleteEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -9652,7 +9651,7 @@ pub mod bit_packed {
     impl GameSTriggerResearchPanelExitEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerResearchPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -9662,7 +9661,7 @@ pub mod bit_packed {
     impl GameSTriggerResearchPanelPurchaseEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerResearchPanelPurchaseEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -9753,7 +9752,7 @@ pub mod bit_packed {
     impl GameSTriggerMercenaryPanelExitEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerMercenaryPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -9763,7 +9762,7 @@ pub mod bit_packed {
     impl GameSTriggerMercenaryPanelPurchaseEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerMercenaryPanelPurchaseEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -9802,7 +9801,7 @@ pub mod bit_packed {
     impl GameSTriggerVictoryPanelExitEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerVictoryPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -9812,7 +9811,7 @@ pub mod bit_packed {
     impl GameSTriggerBattleReportPanelExitEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerBattleReportPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -9957,7 +9956,7 @@ pub mod bit_packed {
     impl GameSTriggerMovieStartedEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerMovieStartedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -9967,7 +9966,7 @@ pub mod bit_packed {
     impl GameSTriggerMovieFinishedEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerMovieFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -10271,7 +10270,7 @@ pub mod bit_packed {
     impl GameSTriggerGameCreditsFinishedEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerGameCreditsFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -10928,7 +10927,7 @@ pub mod bit_packed {
     impl GameSTriggerProfilerLoggingFinishedEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerProfilerLoggingFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }
@@ -15558,7 +15557,7 @@ pub mod bit_packed {
     impl GameSServerPingMessage {
         #[tracing::instrument(name="87702::bit_packed::GameSServerPingMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
-            let mut tail = input;
+            let tail = input;
             Ok((tail, Self {}))
         }
     }

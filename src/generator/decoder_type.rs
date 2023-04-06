@@ -44,11 +44,22 @@ impl DecoderType {
     /// current byte.
     /// Furthur combinators will use `tail` instead of `input`. To make this re-usable with the
     /// ByteAligned version we just make `tail` point to `input`
-    fn open_bit_packed_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
+    fn open_bit_packed_struct_main_parse_fn(
+        proto_num: u64,
+        name: &str,
+        not_const_num_fields: usize,
+    ) -> String {
+        // If there are fields, then tail doesn't need to be mutable, if we set it to mutable we
+        // get compiler warnings;
+        let tail_str = if not_const_num_fields != 0 {
+            "mut tail"
+        } else {
+            "tail"
+        };
         format!(
         "#[tracing::instrument(name=\"{proto_num}::bit_packed::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
-             let mut tail = input;
+             let {tail_str} = input;
          ",
     )
     }
@@ -59,10 +70,17 @@ impl DecoderType {
     }
 
     /// Opens the main parse function for the current DecoderType
-    pub fn open_struct_main_parse_fn(self, proto_num: u64, name: &str) -> String {
+    pub fn open_struct_main_parse_fn(
+        self,
+        proto_num: u64,
+        name: &str,
+        not_const_num_fields: usize,
+    ) -> String {
         match self {
             Self::ByteAligned => Self::open_byte_aligned_struct_main_parse_fn(proto_num, name),
-            Self::BitPacked => Self::open_bit_packed_struct_main_parse_fn(proto_num, name),
+            Self::BitPacked => {
+                Self::open_bit_packed_struct_main_parse_fn(proto_num, name, not_const_num_fields)
+            }
         }
     }
 
@@ -782,7 +800,7 @@ impl DecoderType {
                     let array_size_bits =
                         (array_length.parse::<f32>().unwrap().log2() + 1.).floor() as usize;
                     type_impl_def.push_str(&format!(
-                        "let (mut tail, array_length) = take_n_bits_into_i64(input, {array_size_bits})?;\n\
+                        "let (tail, array_length) = take_n_bits_into_i64(input, {array_size_bits})?;\n\
                         let array_length = array_length as usize;\n\
                          tracing::debug!(\"Reading array length: {array_length}\");\n\
                          "
@@ -793,7 +811,7 @@ impl DecoderType {
                         ));
                     } else {
                         type_impl_def.push_str(&format!(
-                            "/*793*/let (tail, array) = nom::multi::count({field_value_parser}, array_length)(input)?;\n"
+                            "let (tail, array) = nom::multi::count({field_value_parser}, array_length)(tail)?;\n"
                         ));
                     }
                     if morph.do_try_from {

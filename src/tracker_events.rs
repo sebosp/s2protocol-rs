@@ -125,3 +125,15 @@ pub struct TrackerEvent {
     pub delta: u32,
     pub event: ReplayTrackerEvent,
 }
+
+pub fn unit_tag(unit_tag_index: u32, unit_tag_recycle: u32) -> i64 {
+    ((unit_tag_index as i64) << 18usize) + unit_tag_recycle as i64
+}
+
+pub fn unit_tag_index(unit_tag: i64) -> u32 {
+    ((unit_tag >> 18) & 0x00003fff) as u32
+}
+
+pub fn unit_tag_recycle(unit_tag: i64) -> u32 {
+    ((unit_tag) & 0x0003ffff) as u32
+}

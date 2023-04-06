@@ -167,8 +167,8 @@ pub fn parse_bool(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::versions::protocol87702::bit_packed::ReplaySGameUserId;
     use crate::versions::protocol87702::bit_packed::SVarUint32;
-    use crate::versions::protocol87702::bit_packed::TUserId;
     use crate::versions::protocol87702::bit_packed::Uint32;
     use crate::versions::protocol87702::bit_packed::Uint6;
 
@@ -183,8 +183,8 @@ mod tests {
         // 6 bits then with value 0
         assert_eq!(tail.0[0], 0xf0);
         assert_eq!(tail.1, 0usize);
-        let (tail, res) = TUserId::parse(tail).unwrap();
-        assert_eq!(res, TUserId { value: 16 });
+        let (tail, res) = ReplaySGameUserId::parse(tail).unwrap();
+        assert_eq!(res, ReplaySGameUserId { m_user_id: 16 });
         assert_eq!(tail.1, 5usize);
         let (tail, variant_tag) = parse_packed_int(tail, 0, 7usize).unwrap();
         assert_eq!(tail.1, 4usize);
