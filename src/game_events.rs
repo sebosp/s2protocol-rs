@@ -4,8 +4,6 @@
 use std::convert::TryFrom;
 use std::str::Utf8Error;
 
-use crate::versions::protocol87702::bit_packed::GameEEventId;
-
 /// A list of errors when handling TrackerEvents
 #[derive(Debug, thiserror::Error)]
 pub enum GameEventError {
@@ -66,17 +64,99 @@ pub struct GameSPointMini {
     pub y: GameTFixedMiniBitsUnsigned,
 }
 
-impl TryFrom<GameEEventId> for ReplayGameEvent {
+impl TryFrom<crate::versions::protocol87702::bit_packed::GameEEventId> for ReplayGameEvent {
     type Error = GameEventError;
-    fn try_from(value: GameEEventId) -> Result<Self, Self::Error> {
+    fn try_from(
+        value: crate::versions::protocol87702::bit_packed::GameEEventId,
+    ) -> Result<Self, Self::Error> {
         match value {
-            GameEEventId::ECameraSave(e) => Ok(e.to_versionless()?),
+            crate::versions::protocol87702::bit_packed::GameEEventId::ECameraSave(e) => {
+                Ok(e.to_versionless()?)
+            }
             _ => Err(GameEventError::UnsupportedEventType),
         }
     }
 }
 
 impl crate::versions::protocol87702::bit_packed::GameSCameraSaveEvent {
+    pub fn to_versionless(self) -> Result<ReplayGameEvent, GameEventError> {
+        Ok(ReplayGameEvent::CameraSave(GameSCameraSaveEvent {
+            m_which: self.m_which,
+            m_target: GameSPointMini {
+                x: self.m_target.x.value.value,
+                y: self.m_target.y.value.value,
+            },
+        }))
+    }
+}
+
+impl TryFrom<crate::versions::protocol88500::bit_packed::GameEEventId> for ReplayGameEvent {
+    type Error = GameEventError;
+    fn try_from(
+        value: crate::versions::protocol88500::bit_packed::GameEEventId,
+    ) -> Result<Self, Self::Error> {
+        match value {
+            crate::versions::protocol88500::bit_packed::GameEEventId::ECameraSave(e) => {
+                Ok(e.to_versionless()?)
+            }
+            _ => Err(GameEventError::UnsupportedEventType),
+        }
+    }
+}
+
+impl crate::versions::protocol88500::bit_packed::GameSCameraSaveEvent {
+    pub fn to_versionless(self) -> Result<ReplayGameEvent, GameEventError> {
+        Ok(ReplayGameEvent::CameraSave(GameSCameraSaveEvent {
+            m_which: self.m_which,
+            m_target: GameSPointMini {
+                x: self.m_target.x.value.value,
+                y: self.m_target.y.value.value,
+            },
+        }))
+    }
+}
+
+impl TryFrom<crate::versions::protocol89634::bit_packed::GameEEventId> for ReplayGameEvent {
+    type Error = GameEventError;
+    fn try_from(
+        value: crate::versions::protocol89634::bit_packed::GameEEventId,
+    ) -> Result<Self, Self::Error> {
+        match value {
+            crate::versions::protocol89634::bit_packed::GameEEventId::ECameraSave(e) => {
+                Ok(e.to_versionless()?)
+            }
+            _ => Err(GameEventError::UnsupportedEventType),
+        }
+    }
+}
+
+impl crate::versions::protocol89634::bit_packed::GameSCameraSaveEvent {
+    pub fn to_versionless(self) -> Result<ReplayGameEvent, GameEventError> {
+        Ok(ReplayGameEvent::CameraSave(GameSCameraSaveEvent {
+            m_which: self.m_which,
+            m_target: GameSPointMini {
+                x: self.m_target.x.value.value,
+                y: self.m_target.y.value.value,
+            },
+        }))
+    }
+}
+
+impl TryFrom<crate::versions::protocol89720::bit_packed::GameEEventId> for ReplayGameEvent {
+    type Error = GameEventError;
+    fn try_from(
+        value: crate::versions::protocol89720::bit_packed::GameEEventId,
+    ) -> Result<Self, Self::Error> {
+        match value {
+            crate::versions::protocol89720::bit_packed::GameEEventId::ECameraSave(e) => {
+                Ok(e.to_versionless()?)
+            }
+            _ => Err(GameEventError::UnsupportedEventType),
+        }
+    }
+}
+
+impl crate::versions::protocol89720::bit_packed::GameSCameraSaveEvent {
     pub fn to_versionless(self) -> Result<ReplayGameEvent, GameEventError> {
         Ok(ReplayGameEvent::CameraSave(GameSCameraSaveEvent {
             m_which: self.m_which,

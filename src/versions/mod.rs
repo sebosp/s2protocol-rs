@@ -5,7 +5,9 @@ use crate::tracker_events::TrackerEvent;
 use nom_mpq::MPQ;
 
 pub mod protocol87702;
+pub mod protocol88500;
 pub mod protocol89634;
+pub mod protocol89720;
 
 /// Attempts to read the tracker events, panics under unknown protocol
 pub fn read_tracker_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<TrackerEvent> {
@@ -16,7 +18,18 @@ pub fn read_tracker_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<TrackerEvent>
             mpq,
             file_contents,
         ),
-        89634 => protocol89634::ReplayTrackerEEventId::read_tracker_events(mpq, file_contents),
+        88500 => protocol88500::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
+            mpq,
+            file_contents,
+        ),
+        89634 => protocol89634::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
+            mpq,
+            file_contents,
+        ),
+        89720 => protocol89720::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
+            mpq,
+            file_contents,
+        ),
         _ => panic!(
             "Unsupported Protocol Version: {}",
             proto_header.m_version.m_base_build
@@ -30,6 +43,9 @@ pub fn read_game_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<GameEvent> {
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         87702 => protocol87702::bit_packed::GameEEventId::read_events(mpq, file_contents),
+        88500 => protocol88500::bit_packed::GameEEventId::read_events(mpq, file_contents),
+        89634 => protocol89634::bit_packed::GameEEventId::read_events(mpq, file_contents),
+        89720 => protocol89720::bit_packed::GameEEventId::read_events(mpq, file_contents),
         _ => panic!(
             "Unsupported Protocol Version: {}",
             proto_header.m_version.m_base_build
@@ -39,7 +55,7 @@ pub fn read_game_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<GameEvent> {
 
 #[cfg(test)]
 mod tests {
-    use crate::versions::protocol89634::ReplayTrackerEEventId;
+    use crate::versions::protocol89634::byte_aligned::ReplayTrackerEEventId;
 
     #[test_log::test]
     fn it_reads_tracker_events() {

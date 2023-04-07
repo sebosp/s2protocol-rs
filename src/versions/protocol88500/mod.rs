@@ -1,7 +1,7 @@
 pub mod events;
 pub use events::*;
 pub mod byte_aligned {
-//! Generated code from source: ../s2protocol/json/protocol89634.json
+//! Generated code from source: ../s2protocol/json/protocol88500.json
 use crate::*;
 use nom_mpq::parser::peek_hex;
 use crate::tracker_events::{
@@ -20,7 +20,7 @@ pub enum SVarUint32 {
     MUint32(u32),
 }
 impl SVarUint32 {
-#[tracing::instrument(name="89634::SVarUint32::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::SVarUint32::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_choice_tag(input)?;
 let (tail, variant_tag) = parse_vlq_int(tail)?;
@@ -108,7 +108,7 @@ pub fn parse_m_base_build(input: &[u8]) -> IResult<&[u8], u32> {
                       tracing::debug!("res: {:?}", m_base_build);
         Ok((tail, u32::try_from(m_base_build).unwrap()))
 }
-#[tracing::instrument(name="89634::byte_aligned::SVersion::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::SVersion::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -239,7 +239,7 @@ pub fn parse_m_data(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
                       tracing::debug!("res: {:?}", m_data);
         Ok((tail, m_data))
 }
-#[tracing::instrument(name="89634::byte_aligned::Smd5::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::Smd5::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -361,7 +361,7 @@ pub fn parse_m_ngdp_root_key_is_dev_data(input: &[u8]) -> IResult<&[u8], bool> {
                       tracing::debug!("res: {:?}", m_ngdp_root_key_is_dev_data);
         Ok((tail, m_ngdp_root_key_is_dev_data))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplaySHeader::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplaySHeader::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -519,7 +519,7 @@ pub enum ReplayTrackerEEventId {
     EPlayerSetup(ReplayTrackerSPlayerSetupEvent),
 }
 impl ReplayTrackerEEventId {
-#[tracing::instrument(name="89634::ReplayTrackerEEventId::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::ReplayTrackerEEventId::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_int_tag(input)?;
 let (tail, variant_tag) = parse_vlq_int(tail)?;
@@ -910,7 +910,7 @@ pub fn parse_m_score_value_vespene_friendly_fire_technology(input: &[u8]) -> IRe
                       tracing::debug!("res: {:?}", m_score_value_vespene_friendly_fire_technology);
         Ok((tail, i32::try_from(m_score_value_vespene_friendly_fire_technology).unwrap()))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplayTrackerSPlayerStats::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplayTrackerSPlayerStats::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -1494,7 +1494,7 @@ pub fn parse_m_stats(input: &[u8]) -> IResult<&[u8], ReplayTrackerSPlayerStats> 
                       tracing::debug!("res: {:?}", m_stats);
         Ok((tail, m_stats))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplayTrackerSPlayerStatsEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplayTrackerSPlayerStatsEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -1642,7 +1642,7 @@ let (tail, res) = tagged_blob(tail)?;
     tracing::debug!("res: {:?}", m_creator_ability_name);
 Ok((tail, m_creator_ability_name))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplayTrackerSUnitBornEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplayTrackerSUnitBornEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -1878,7 +1878,7 @@ let (tail, res) = tagged_vlq_int(tail)?;
     tracing::debug!("res: {:?}", m_killer_unit_tag_recycle);
 Ok((tail, m_killer_unit_tag_recycle))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplayTrackerSUnitDiedEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplayTrackerSUnitDiedEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2030,7 +2030,7 @@ pub fn parse_m_upkeep_player_id(input: &[u8]) -> IResult<&[u8], u8> {
                       tracing::debug!("res: {:?}", m_upkeep_player_id);
         Ok((tail, u8::try_from(m_upkeep_player_id).unwrap()))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplayTrackerSUnitOwnerChangeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplayTrackerSUnitOwnerChangeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2132,7 +2132,7 @@ pub fn parse_m_unit_type_name(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
                       tracing::debug!("res: {:?}", m_unit_type_name);
         Ok((tail, m_unit_type_name))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplayTrackerSUnitTypeChangeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplayTrackerSUnitTypeChangeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2220,7 +2220,7 @@ pub fn parse_m_count(input: &[u8]) -> IResult<&[u8], i32> {
                       tracing::debug!("res: {:?}", m_count);
         Ok((tail, i32::try_from(m_count).unwrap()))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplayTrackerSUpgradeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplayTrackerSUpgradeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2340,7 +2340,7 @@ pub fn parse_m_y(input: &[u8]) -> IResult<&[u8], u8> {
                       tracing::debug!("res: {:?}", m_y);
         Ok((tail, u8::try_from(m_y).unwrap()))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplayTrackerSUnitInitEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplayTrackerSUnitInitEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2476,7 +2476,7 @@ pub fn parse_m_unit_tag_recycle(input: &[u8]) -> IResult<&[u8], u32> {
                       tracing::debug!("res: {:?}", m_unit_tag_recycle);
         Ok((tail, u32::try_from(m_unit_tag_recycle).unwrap()))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplayTrackerSUnitDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplayTrackerSUnitDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2544,7 +2544,7 @@ let (tail, array) = nom::multi::count(tagged_vlq_int, array_length as usize)(tai
 let array = array.iter().map(|val| <_>::try_from(*val).unwrap()).collect();
 Ok((tail, array))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplayTrackerSUnitPositionsEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplayTrackerSUnitPositionsEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2638,7 +2638,7 @@ let (tail, res) = tagged_vlq_int(tail)?;
     tracing::debug!("res: {:?}", m_slot_id);
 Ok((tail, m_slot_id))
 }
-#[tracing::instrument(name="89634::byte_aligned::ReplayTrackerSPlayerSetupEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+#[tracing::instrument(name="88500::byte_aligned::ReplayTrackerSPlayerSetupEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
 pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
 let (tail, _) = validate_struct_tag(input)?;
 let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2853,7 +2853,7 @@ impl ReplayTrackerSUnitPositionsEvent {
 }
     }
 pub mod bit_packed {
-//! Generated code from source: ../s2protocol/json/protocol89634.json
+//! Generated code from source: ../s2protocol/json/protocol88500.json
 use crate::*;
 // use nom_mpq::MPQ;
 // use std::convert::TryFrom;
@@ -2863,7 +2863,7 @@ use nom::*;
 pub struct CFilePath {
     pub value: Vec<u8>,}
 impl CFilePath {
-#[tracing::instrument(name="89634::CFilePath::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CFilePath::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 11;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -2878,7 +2878,7 @@ Ok((tail, Self { value }))
 pub struct TRaceId {
     pub value: i64,}
 impl TRaceId {
-#[tracing::instrument(name="89634::TRaceId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::TRaceId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 8;
@@ -2891,7 +2891,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct TRaceCount {
     pub value: i64,}
 impl TRaceCount {
-#[tracing::instrument(name="89634::TRaceCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::TRaceCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 1;
          let num_bits: usize = 8;
@@ -2917,7 +2917,7 @@ let (tail, res) = TRaceId::parse(tail)?;
     tracing::debug!("res: {:?}", m_race);
 Ok((tail, m_race))
 }
-#[tracing::instrument(name="89634::bit_packed::TRacePreference::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::TRacePreference::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_race: Option<Option<TRaceId>> = Some(None);
@@ -2935,7 +2935,7 @@ Ok((tail, Self {m_race: m_race.expect("Missing m_race from struct"),
 pub struct CAllowedRaces {
     pub value: Vec<u8>,}
 impl CAllowedRaces {
-#[tracing::instrument(name="89634::CAllowedRaces::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CAllowedRaces::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let bitarray_length_bits: usize = 8;
          let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
@@ -2949,7 +2949,7 @@ Ok((tail, Self { value }))
 pub struct Int8 {
     pub value: i64,}
 impl Int8 {
-#[tracing::instrument(name="89634::Int8::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::Int8::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = -128;
          let num_bits: usize = 8;
@@ -2962,7 +2962,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct Int16 {
     pub value: i64,}
 impl Int16 {
-#[tracing::instrument(name="89634::Int16::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::Int16::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = -32768;
          let num_bits: usize = 16;
@@ -2975,7 +2975,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct Int32 {
     pub value: i64,}
 impl Int32 {
-#[tracing::instrument(name="89634::Int32::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::Int32::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = -2147483648;
          let num_bits: usize = 32;
@@ -2988,7 +2988,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct Int64 {
     pub value: i64,}
 impl Int64 {
-#[tracing::instrument(name="89634::Int64::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::Int64::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = -9223372036854775808;
          let num_bits: usize = 64;
@@ -3001,7 +3001,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct Uint8 {
     pub value: i64,}
 impl Uint8 {
-#[tracing::instrument(name="89634::Uint8::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::Uint8::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 8;
@@ -3014,7 +3014,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct Uint16 {
     pub value: i64,}
 impl Uint16 {
-#[tracing::instrument(name="89634::Uint16::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::Uint16::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 16;
@@ -3027,7 +3027,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct Uint32 {
     pub value: i64,}
 impl Uint32 {
-#[tracing::instrument(name="89634::Uint32::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::Uint32::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 32;
@@ -3040,7 +3040,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct Uint64 {
     pub value: i64,}
 impl Uint64 {
-#[tracing::instrument(name="89634::Uint64::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::Uint64::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 64;
@@ -3053,7 +3053,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct Uint6 {
     pub value: i64,}
 impl Uint6 {
-#[tracing::instrument(name="89634::Uint6::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::Uint6::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 6;
@@ -3066,7 +3066,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct Uint14 {
     pub value: i64,}
 impl Uint14 {
-#[tracing::instrument(name="89634::Uint14::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::Uint14::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 14;
@@ -3079,7 +3079,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct Uint22 {
     pub value: i64,}
 impl Uint22 {
-#[tracing::instrument(name="89634::Uint22::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::Uint22::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 22;
@@ -3096,7 +3096,7 @@ pub enum SVarUint32 {
     MUint32(Uint32),
 }
 impl SVarUint32 {
-#[tracing::instrument(name="89634::SVarUint32::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::SVarUint32::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
@@ -3141,7 +3141,7 @@ panic!("Unknown variant tag {variant_tag}");
 pub struct TUserId {
     pub value: i64,}
 impl TUserId {
-#[tracing::instrument(name="89634::TUserId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::TUserId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 4;
@@ -3154,7 +3154,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct TUserCount {
     pub value: i64,}
 impl TUserCount {
-#[tracing::instrument(name="89634::TUserCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::TUserCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 5;
@@ -3167,7 +3167,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct CCacheHandle {
     pub value: Vec<u8>,}
 impl CCacheHandle {
-#[tracing::instrument(name="89634::CCacheHandle::BlobType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CCacheHandle::BlobType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, _) = byte_align(input)?;
          let num_bits: usize = 6;
@@ -3181,7 +3181,7 @@ Ok((tail, Self { value }))
 pub struct CUserName {
     pub value: Vec<u8>,}
 impl CUserName {
-#[tracing::instrument(name="89634::CUserName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CUserName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 8;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -3196,7 +3196,7 @@ Ok((tail, Self { value }))
 pub struct CClanTag {
     pub value: Vec<u8>,}
 impl CClanTag {
-#[tracing::instrument(name="89634::CClanTag::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CClanTag::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 8;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -3211,7 +3211,7 @@ Ok((tail, Self { value }))
 pub struct CHeroHandle {
     pub value: Vec<u8>,}
 impl CHeroHandle {
-#[tracing::instrument(name="89634::CHeroHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CHeroHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 10;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -3226,7 +3226,7 @@ Ok((tail, Self { value }))
 pub struct CSkinHandle {
     pub value: Vec<u8>,}
 impl CSkinHandle {
-#[tracing::instrument(name="89634::CSkinHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CSkinHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 10;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -3241,7 +3241,7 @@ Ok((tail, Self { value }))
 pub struct CMountHandle {
     pub value: Vec<u8>,}
 impl CMountHandle {
-#[tracing::instrument(name="89634::CMountHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CMountHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 10;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -3256,7 +3256,7 @@ Ok((tail, Self { value }))
 pub struct CArtifactHandle {
     pub value: Vec<u8>,}
 impl CArtifactHandle {
-#[tracing::instrument(name="89634::CArtifactHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CArtifactHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 10;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -3271,7 +3271,7 @@ Ok((tail, Self { value }))
 pub struct CToonHandle {
     pub value: Vec<u8>,}
 impl CToonHandle {
-#[tracing::instrument(name="89634::CToonHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CToonHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 7;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -3286,7 +3286,7 @@ Ok((tail, Self { value }))
 pub struct CCommanderHandle {
     pub value: Vec<u8>,}
 impl CCommanderHandle {
-#[tracing::instrument(name="89634::CCommanderHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CCommanderHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 10;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -3304,7 +3304,7 @@ pub enum EObserve {
     EReferee,
 }
 impl EObserve {
-#[tracing::instrument(name="89634::EObserve::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::EObserve::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 3
 let num_bits: usize = 2;
@@ -3336,7 +3336,7 @@ panic!("Unknown variant value {variant_tag}");
 pub struct CAllowedObserveTypes {
     pub value: Vec<u8>,}
 impl CAllowedObserveTypes {
-#[tracing::instrument(name="89634::CAllowedObserveTypes::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CAllowedObserveTypes::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let bitarray_length_bits: usize = 2;
          let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
@@ -3363,7 +3363,7 @@ let (tail, res) = Uint8::parse(tail)?;
     tracing::debug!("res: {:?}", m_team);
 Ok((tail, m_team))
 }
-#[tracing::instrument(name="89634::bit_packed::TTeamPreference::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::TTeamPreference::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_team: Option<Option<Uint8>> = Some(None);
@@ -3544,7 +3544,7 @@ let (tail, res) = Int32::parse(tail)?;
     tracing::debug!("res: {:?}", m_scaled_rating);
 Ok((tail, m_scaled_rating))
 }
-#[tracing::instrument(name="89634::bit_packed::SUserInitialData::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::SUserInitialData::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_name: Option<CUserName> = None;
@@ -3688,7 +3688,7 @@ m_scaled_rating: m_scaled_rating.expect("Missing m_scaled_rating from struct"),
 pub struct CUserInitialDataArray {
     pub value: Vec<SUserInitialData>,}
 impl CUserInitialDataArray {
-#[tracing::instrument(name="89634::CUserInitialDataArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::CUserInitialDataArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 5;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -3718,7 +3718,7 @@ pub enum ELeaveReason {
     ETakeCommandDropped,
 }
 impl ELeaveReason {
-#[tracing::instrument(name="89634::ELeaveReason::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::ELeaveReason::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 16
 let num_bits: usize = 4;
@@ -3806,7 +3806,7 @@ pub enum EReconnectStatus {
     EUnrecoverable,
 }
 impl EReconnectStatus {
-#[tracing::instrument(name="89634::EReconnectStatus::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::EReconnectStatus::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 4
 let num_bits: usize = 2;
@@ -3884,7 +3884,7 @@ pub fn parse_m_base_build(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint
     tracing::debug!("res: {:?}", m_base_build);
         Ok((tail, m_base_build))
 }
-#[tracing::instrument(name="89634::bit_packed::SVersion::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::SVersion::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_flags: Option<Uint8> = None;
@@ -3965,7 +3965,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::Smd5::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::Smd5::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_data_deprecated: Option<Option<Vec<Uint8>>> = Some(None);
@@ -3990,7 +3990,7 @@ m_data: m_data.expect("Missing m_data from struct"),
 pub struct GameTColorId {
     pub value: i64,}
 impl GameTColorId {
-#[tracing::instrument(name="89634::GameTColorId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTColorId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 5;
@@ -4003,7 +4003,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTColorCount {
     pub value: i64,}
 impl GameTColorCount {
-#[tracing::instrument(name="89634::GameTColorCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTColorCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 6;
@@ -4029,7 +4029,7 @@ let (tail, res) = GameTColorId::parse(tail)?;
     tracing::debug!("res: {:?}", m_color);
 Ok((tail, m_color))
 }
-#[tracing::instrument(name="89634::bit_packed::GameTColorPreference::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameTColorPreference::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_color: Option<Option<GameTColorId>> = Some(None);
@@ -4047,7 +4047,7 @@ Ok((tail, Self {m_color: m_color.expect("Missing m_color from struct"),
 pub struct GameCAllowedColors {
     pub value: Vec<u8>,}
 impl GameCAllowedColors {
-#[tracing::instrument(name="89634::GameCAllowedColors::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCAllowedColors::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let bitarray_length_bits: usize = 6;
          let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
@@ -4064,7 +4064,7 @@ pub enum GameESynchronous {
     EGame(GameSBankFileEvent),
 }
 impl GameESynchronous {
-#[tracing::instrument(name="89634::GameESynchronous::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameESynchronous::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 3
 let num_bits: usize = 2;
@@ -4102,7 +4102,7 @@ pub enum GameESynthesized {
     ENotSynthesized(GameSSetLobbySlotEvent),
 }
 impl GameESynthesized {
-#[tracing::instrument(name="89634::GameESynthesized::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameESynthesized::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 2
 let num_bits: usize = 1;
@@ -4136,7 +4136,7 @@ pub enum GameEDebug {
     ENotDebug(GameSSetLobbySlotEvent),
 }
 impl GameEDebug {
-#[tracing::instrument(name="89634::GameEDebug::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEDebug::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 2
 let num_bits: usize = 1;
@@ -4170,7 +4170,7 @@ pub enum GameEHijackMethod {
     ETakeCommand,
 }
 impl GameEHijackMethod {
-#[tracing::instrument(name="89634::GameEHijackMethod::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEHijackMethod::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 2
 let num_bits: usize = 1;
@@ -4198,7 +4198,7 @@ panic!("Unknown variant value {variant_tag}");
 pub struct GameTQueryId {
     pub value: Uint16,}
 impl GameTQueryId {
-#[tracing::instrument(name="89634::GameTQueryId::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTQueryId::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint16::parse(input)?;
 // TODO: Unsure about this. 
@@ -4330,7 +4330,7 @@ pub enum GameEEventId {
     EPeerSetSyncPlayingTime(GameSPeerSetSyncPlayingTimeEvent),
 }
 impl GameEEventId {
-#[tracing::instrument(name="89634::GameEEventId::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEEventId::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 120
 let num_bits: usize = 7;
@@ -5097,7 +5097,7 @@ let (tail, res) = Uint8::parse(tail)?;
     tracing::debug!("res: {:?}", m_abil_cmd_data);
 Ok((tail, m_abil_cmd_data))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSCmdAbil::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSCmdAbil::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_abil_link: Option<GameTAbilLink> = None;
@@ -5190,7 +5190,7 @@ pub fn parse_m_snapshot_point(input: (&[u8], usize)) -> IResult<(&[u8], usize), 
     tracing::debug!("res: {:?}", m_snapshot_point);
         Ok((tail, m_snapshot_point))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSCmdDataTargetUnit::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSCmdDataTargetUnit::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_target_unit_flags: Option<Uint16> = None;
@@ -5254,7 +5254,7 @@ pub enum GameSCmdData {
     Data(Uint32),
 }
 impl GameSCmdData {
-#[tracing::instrument(name="89634::GameSCmdData::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameSCmdData::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
@@ -5313,7 +5313,7 @@ pub fn parse_m_slot_change(input: (&[u8], usize)) -> IResult<(&[u8], usize), Gam
     tracing::debug!("res: {:?}", m_slot_change);
         Ok((tail, m_slot_change))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSetLobbySlotEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSetLobbySlotEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_slot_id: Option<GameTLobbySlotId> = None;
@@ -5352,7 +5352,7 @@ pub fn parse_m_reason(input: (&[u8], usize)) -> IResult<(&[u8], usize), ELeaveRe
     tracing::debug!("res: {:?}", m_reason);
         Ok((tail, m_reason))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSDropUserEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSDropUserEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_drop_session_user_id: Option<TUserId> = None;
@@ -5377,7 +5377,7 @@ m_reason: m_reason.expect("Missing m_reason from struct"),
 pub struct GameSStartGameEvent {
 }
 impl GameSStartGameEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSStartGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSStartGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -5388,7 +5388,7 @@ let tail = input;
 pub struct GameSDropOurselvesEvent {
 }
 impl GameSDropOurselvesEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSDropOurselvesEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSDropOurselvesEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -5412,7 +5412,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSBankFileEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSBankFileEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_name: Option<Vec<u8>> = None;
@@ -5443,7 +5443,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSBankSectionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSBankSectionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_name: Option<Vec<u8>> = None;
@@ -5494,7 +5494,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSBankKeyEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSBankKeyEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_name: Option<Vec<u8>> = None;
@@ -5559,7 +5559,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSBankValueEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSBankValueEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_type: Option<Uint32> = None;
@@ -5611,7 +5611,7 @@ pub fn parse_m_toon_handle(input: (&[u8], usize)) -> IResult<(&[u8], usize), CTo
     tracing::debug!("res: {:?}", m_toon_handle);
         Ok((tail, m_toon_handle))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSBankSignatureEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSBankSignatureEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_signature: Option<Vec<Uint8>> = None;
@@ -5740,7 +5740,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSUserOptionsEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSUserOptionsEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_game_fully_downloaded: Option<bool> = None;
@@ -5856,7 +5856,7 @@ pub fn parse_m_picked_map_tag(input: (&[u8], usize)) -> IResult<(&[u8], usize), 
     tracing::debug!("res: {:?}", m_picked_map_tag);
         Ok((tail, m_picked_map_tag))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSPickMapTagEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSPickMapTagEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_picked_map_tag: Option<Uint8> = None;
@@ -5874,7 +5874,7 @@ Ok((tail, Self {m_picked_map_tag: m_picked_map_tag.expect("Missing m_picked_map_
 pub struct GameSUserFinishedLoadingEvent {
 }
 impl GameSUserFinishedLoadingEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSUserFinishedLoadingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSUserFinishedLoadingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -5885,7 +5885,7 @@ let tail = input;
 pub struct GameSUserFinishedLoadingSyncEvent {
 }
 impl GameSUserFinishedLoadingSyncEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSUserFinishedLoadingSyncEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSUserFinishedLoadingSyncEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -5903,7 +5903,7 @@ pub fn parse_m_game_duration(input: (&[u8], usize)) -> IResult<(&[u8], usize), U
     tracing::debug!("res: {:?}", m_game_duration);
         Ok((tail, m_game_duration))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSetGameDurationEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSetGameDurationEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_game_duration: Option<Uint32> = None;
@@ -5921,7 +5921,7 @@ Ok((tail, Self {m_game_duration: m_game_duration.expect("Missing m_game_duration
 pub struct GameSTurnEvent {
 }
 impl GameSTurnEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTurnEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTurnEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -5946,7 +5946,7 @@ pub fn parse_m_target(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameSPoi
     tracing::debug!("res: {:?}", m_target);
         Ok((tail, m_target))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSCameraSaveEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSCameraSaveEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_which: Option<i64> = None;
@@ -5978,7 +5978,7 @@ pub fn parse_m_pause_type_index(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_pause_type_index);
         Ok((tail, m_pause_type_index))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSPauseGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSPauseGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_pause_type_index: Option<Uint8> = None;
@@ -6003,7 +6003,7 @@ pub fn parse_m_pause_type_index(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_pause_type_index);
         Ok((tail, m_pause_type_index))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSUnpauseGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSUnpauseGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_pause_type_index: Option<Uint8> = None;
@@ -6021,7 +6021,7 @@ Ok((tail, Self {m_pause_type_index: m_pause_type_index.expect("Missing m_pause_t
 pub struct GameSSingleStepGameEvent {
 }
 impl GameSSingleStepGameEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSSingleStepGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSingleStepGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -6039,7 +6039,7 @@ pub fn parse_m_speed(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameEGame
     tracing::debug!("res: {:?}", m_speed);
         Ok((tail, m_speed))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSetGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSetGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_speed: Option<GameEGameSpeed> = None;
@@ -6064,7 +6064,7 @@ pub fn parse_m_delta(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int8> {
     tracing::debug!("res: {:?}", m_delta);
         Ok((tail, m_delta))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSAddGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSAddGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_delta: Option<Int8> = None;
@@ -6095,7 +6095,7 @@ let (tail, res) = Uint32::parse(tail)?;
     tracing::debug!("res: {:?}", m_replay_jump_game_loop);
 Ok((tail, m_replay_jump_game_loop))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSReplayJumpEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSReplayJumpEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_replay_jump_game_loop: Option<Option<Uint32>> = Some(None);
@@ -6160,7 +6160,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSSaveGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSSaveGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_file_name: Option<CFilePath> = None;
@@ -6206,7 +6206,7 @@ m_description: m_description.expect("Missing m_description from struct"),
 pub struct GameSSaveGameDoneEvent {
 }
 impl GameSSaveGameDoneEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSSaveGameDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSaveGameDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -6217,7 +6217,7 @@ let tail = input;
 pub struct GameSLoadGameDoneEvent {
 }
 impl GameSLoadGameDoneEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSLoadGameDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSLoadGameDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -6256,7 +6256,7 @@ pub fn parse_m_arguments(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameC
     tracing::debug!("res: {:?}", m_arguments);
         Ok((tail, m_arguments))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSCheatEventData::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSCheatEventData::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_point: Option<GameSPoint> = None;
@@ -6302,7 +6302,7 @@ pub fn parse_m_data(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameSCheat
     tracing::debug!("res: {:?}", m_data);
         Ok((tail, m_data))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSessionCheatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSessionCheatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_data: Option<GameSCheatEventData> = None;
@@ -6327,7 +6327,7 @@ pub fn parse_m_sequence(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint32
     tracing::debug!("res: {:?}", m_sequence);
         Ok((tail, m_sequence))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSCommandManagerResetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSCommandManagerResetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_sequence: Option<Uint32> = None;
@@ -6352,7 +6352,7 @@ pub fn parse_m_data(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameSCheat
     tracing::debug!("res: {:?}", m_data);
         Ok((tail, m_data))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSGameCheatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSGameCheatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_data: Option<GameSCheatEventData> = None;
@@ -6430,7 +6430,7 @@ let (tail, res) = Uint32::parse(tail)?;
     tracing::debug!("res: {:?}", m_unit_group);
 Ok((tail, m_unit_group))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSCmdEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSCmdEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_cmd_flags: Option<i64> = None;
@@ -6497,7 +6497,7 @@ pub fn parse_m_delta(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameSSele
     tracing::debug!("res: {:?}", m_delta);
         Ok((tail, m_delta))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSelectionDeltaEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSelectionDeltaEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_control_group_id: Option<GameTControlGroupId> = None;
@@ -6543,7 +6543,7 @@ pub fn parse_m_mask(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameSSelec
     tracing::debug!("res: {:?}", m_mask);
         Ok((tail, m_mask))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSControlGroupUpdateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSControlGroupUpdateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_control_group_index: Option<GameTControlGroupIndex> = None;
@@ -6589,7 +6589,7 @@ pub fn parse_m_selection_sync_data(input: (&[u8], usize)) -> IResult<(&[u8], usi
     tracing::debug!("res: {:?}", m_selection_sync_data);
         Ok((tail, m_selection_sync_data))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSelectionSyncCheckEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSelectionSyncCheckEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_control_group_id: Option<GameTControlGroupId> = None;
@@ -6634,7 +6634,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSResourceTradeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSResourceTradeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_recipient_id: Option<GameTPlayerId> = None;
@@ -6666,7 +6666,7 @@ pub fn parse_m_chat_message(input: (&[u8], usize)) -> IResult<(&[u8], usize), Ga
     tracing::debug!("res: {:?}", m_chat_message);
         Ok((tail, m_chat_message))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerChatMessageEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerChatMessageEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_chat_message: Option<GameCTriggerChatMessageString> = None;
@@ -6747,7 +6747,7 @@ pub fn parse_m_target_point(input: (&[u8], usize)) -> IResult<(&[u8], usize), Ga
     tracing::debug!("res: {:?}", m_target_point);
         Ok((tail, m_target_point))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSaiCommunicateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSaiCommunicateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_beacon: Option<Int8> = None;
@@ -6828,7 +6828,7 @@ pub fn parse_m_speed(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameEGame
     tracing::debug!("res: {:?}", m_speed);
         Ok((tail, m_speed))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSetAbsoluteGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSetAbsoluteGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_speed: Option<GameEGameSpeed> = None;
@@ -6853,7 +6853,7 @@ pub fn parse_m_delta(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int8> {
     tracing::debug!("res: {:?}", m_delta);
         Ok((tail, m_delta))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSAddAbsoluteGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSAddAbsoluteGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_delta: Option<Int8> = None;
@@ -6946,7 +6946,7 @@ pub fn parse_m_option(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int32> {
     tracing::debug!("res: {:?}", m_option);
         Ok((tail, m_option))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_point: Option<GameSPoint> = None;
@@ -7034,7 +7034,7 @@ pub fn parse_m_arguments(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameC
     tracing::debug!("res: {:?}", m_arguments);
         Ok((tail, m_arguments))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSBroadcastCheatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSBroadcastCheatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_verb: Option<GameCCheatString> = None;
@@ -7073,7 +7073,7 @@ pub fn parse_m_control(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint32>
     tracing::debug!("res: {:?}", m_control);
         Ok((tail, m_control))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSAllianceEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSAllianceEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_alliance: Option<Uint32> = None;
@@ -7105,7 +7105,7 @@ pub fn parse_m_unit_tag(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameTU
     tracing::debug!("res: {:?}", m_unit_tag);
         Ok((tail, m_unit_tag))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSUnitClickEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSUnitClickEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_unit_tag: Option<GameTUnitTag> = None;
@@ -7137,7 +7137,7 @@ pub fn parse_m_flags(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint8> {
     tracing::debug!("res: {:?}", m_flags);
         Ok((tail, m_flags))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSUnitHighlightEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSUnitHighlightEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_unit_tag: Option<GameTUnitTag> = None;
@@ -7176,7 +7176,7 @@ pub fn parse_m_reply_id(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int32>
     tracing::debug!("res: {:?}", m_reply_id);
         Ok((tail, m_reply_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerReplySelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerReplySelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_conversation_id: Option<Int32> = None;
@@ -7222,7 +7222,7 @@ pub fn parse_m_game_user_id(input: (&[u8], usize)) -> IResult<(&[u8], usize), TU
     tracing::debug!("res: {:?}", m_game_user_id);
         Ok((tail, m_game_user_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSHijackReplaySessionUserInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSHijackReplaySessionUserInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_session_user_id: Option<TUserId> = None;
@@ -7274,7 +7274,7 @@ pub fn parse_m_method(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameEHij
     tracing::debug!("res: {:?}", m_method);
         Ok((tail, m_method))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSHijackReplaySessionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSHijackReplaySessionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_user_infos: Option<Vec<GameSHijackReplaySessionUserInfo>> = None;
@@ -7359,7 +7359,7 @@ let (tail, res) = GameCCacheHandle::parse(tail)?;
     tracing::debug!("res: {:?}", m_clan_logo);
 Ok((tail, m_clan_logo))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSHijackReplayGameUserInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSHijackReplayGameUserInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_game_user_id: Option<TUserId> = None;
@@ -7432,7 +7432,7 @@ pub fn parse_m_method(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameEHij
     tracing::debug!("res: {:?}", m_method);
         Ok((tail, m_method))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSHijackReplayGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSHijackReplayGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_user_infos: Option<Vec<GameSHijackReplayGameUserInfo>> = None;
@@ -7457,7 +7457,7 @@ m_method: m_method.expect("Missing m_method from struct"),
 pub struct GameSTriggerAbortMissionEvent {
 }
 impl GameSTriggerAbortMissionEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerAbortMissionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerAbortMissionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -7475,7 +7475,7 @@ pub fn parse_m_purchase_item_id(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_purchase_item_id);
         Ok((tail, m_purchase_item_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPurchaseMadeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPurchaseMadeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_purchase_item_id: Option<Int32> = None;
@@ -7493,7 +7493,7 @@ Ok((tail, Self {m_purchase_item_id: m_purchase_item_id.expect("Missing m_purchas
 pub struct GameSTriggerPurchaseExitEvent {
 }
 impl GameSTriggerPurchaseExitEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPurchaseExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPurchaseExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -7511,7 +7511,7 @@ pub fn parse_m_difficulty_level(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_difficulty_level);
         Ok((tail, m_difficulty_level))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPlanetMissionLaunchedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPlanetMissionLaunchedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_difficulty_level: Option<Int32> = None;
@@ -7529,7 +7529,7 @@ Ok((tail, Self {m_difficulty_level: m_difficulty_level.expect("Missing m_difficu
 pub struct GameSTriggerPlanetPanelCanceledEvent {
 }
 impl GameSTriggerPlanetPanelCanceledEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPlanetPanelCanceledEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPlanetPanelCanceledEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -7561,7 +7561,7 @@ pub fn parse_m_event_data(input: (&[u8], usize)) -> IResult<(&[u8], usize), MEve
     tracing::debug!("res: {:?}", m_event_data);
         Ok((tail, m_event_data))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerDialogControlEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerDialogControlEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_control_id: Option<Int32> = None;
@@ -7599,7 +7599,7 @@ pub enum MEventData {
     MouseButton(Uint32),
 }
 impl MEventData {
-#[tracing::instrument(name="89634::MEventData::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::MEventData::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
@@ -7656,7 +7656,7 @@ panic!("Unknown variant tag {variant_tag}");
 pub struct GameSTriggerSkippedEvent {
 }
 impl GameSTriggerSkippedEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerSkippedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerSkippedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -7681,7 +7681,7 @@ pub fn parse_m_length(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint32> 
     tracing::debug!("res: {:?}", m_length);
         Ok((tail, m_length))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerSoundLengthQueryEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerSoundLengthQueryEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_sound_hash: Option<Uint32> = None;
@@ -7713,7 +7713,7 @@ pub fn parse_m_sync_info(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameS
     tracing::debug!("res: {:?}", m_sync_info);
         Ok((tail, m_sync_info))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerSoundLengthSyncEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerSoundLengthSyncEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_sync_info: Option<GameSSyncSoundLength> = None;
@@ -7752,7 +7752,7 @@ pub fn parse_m_finish_game_loop(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_finish_game_loop);
         Ok((tail, m_finish_game_loop))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerAnimLengthQueryByNameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerAnimLengthQueryByNameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_query_id: Option<GameTQueryId> = None;
@@ -7798,7 +7798,7 @@ pub fn parse_m_length_ms(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint3
     tracing::debug!("res: {:?}", m_length_ms);
         Ok((tail, m_length_ms))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerAnimLengthQueryByPropsEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerAnimLengthQueryByPropsEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_query_id: Option<GameTQueryId> = None;
@@ -7830,7 +7830,7 @@ pub fn parse_m_anim_wait_query_id(input: (&[u8], usize)) -> IResult<(&[u8], usiz
     tracing::debug!("res: {:?}", m_anim_wait_query_id);
         Ok((tail, m_anim_wait_query_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerAnimOffsetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerAnimOffsetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_anim_wait_query_id: Option<GameTQueryId> = None;
@@ -7855,7 +7855,7 @@ pub fn parse_m_sound(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameTTrig
     tracing::debug!("res: {:?}", m_sound);
         Ok((tail, m_sound))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerSoundOffsetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerSoundOffsetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_sound: Option<GameTTriggerSoundTag> = None;
@@ -7887,7 +7887,7 @@ pub fn parse_m_thread(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameTTri
     tracing::debug!("res: {:?}", m_thread);
         Ok((tail, m_thread))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerTransmissionOffsetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerTransmissionOffsetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_transmission_id: Option<Int32> = None;
@@ -7919,7 +7919,7 @@ pub fn parse_m_transmission_id(input: (&[u8], usize)) -> IResult<(&[u8], usize),
     tracing::debug!("res: {:?}", m_transmission_id);
         Ok((tail, m_transmission_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerTransmissionCompleteEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerTransmissionCompleteEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_transmission_id: Option<Int32> = None;
@@ -8009,7 +8009,7 @@ pub fn parse_m_follow(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
     tracing::debug!("res: {:?}", m_follow);
         Ok((tail, m_follow))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSCameraUpdateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSCameraUpdateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_target: Option<Option<GameSPointMini>> = Some(None);
@@ -8069,7 +8069,7 @@ pub fn parse_m_skip_type(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameE
     tracing::debug!("res: {:?}", m_skip_type);
         Ok((tail, m_skip_type))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerConversationSkippedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerConversationSkippedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_skip_type: Option<GameEConversationSkip> = None;
@@ -8122,7 +8122,7 @@ pub fn parse_m_flags(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int8> {
     tracing::debug!("res: {:?}", m_flags);
         Ok((tail, m_flags))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerMouseClickedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerMouseClickedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_button: Option<Uint32> = None;
@@ -8189,7 +8189,7 @@ pub fn parse_m_flags(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int8> {
     tracing::debug!("res: {:?}", m_flags);
         Ok((tail, m_flags))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerMouseMovedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerMouseMovedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_pos_ui: Option<GameSuiCoord> = None;
@@ -8228,7 +8228,7 @@ pub fn parse_m_achievement_link(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_achievement_link);
         Ok((tail, m_achievement_link))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSAchievementAwardedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSAchievementAwardedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_achievement_link: Option<GameTAchievementLink> = None;
@@ -8260,7 +8260,7 @@ pub fn parse_m_down(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
     tracing::debug!("res: {:?}", m_down);
         Ok((tail, m_down))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerHotkeyPressedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerHotkeyPressedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_hotkey: Option<Uint32> = None;
@@ -8306,7 +8306,7 @@ pub fn parse_m_state(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int8> {
     tracing::debug!("res: {:?}", m_state);
         Ok((tail, m_state))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerTargetModeUpdateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerTargetModeUpdateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_abil_link: Option<GameTAbilLink> = None;
@@ -8338,7 +8338,7 @@ m_state: m_state.expect("Missing m_state from struct"),
 pub struct GameSTriggerPlanetPanelReplayEvent {
 }
 impl GameSTriggerPlanetPanelReplayEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPlanetPanelReplayEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPlanetPanelReplayEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -8356,7 +8356,7 @@ pub fn parse_m_soundtrack(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint
     tracing::debug!("res: {:?}", m_soundtrack);
         Ok((tail, m_soundtrack))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerSoundtrackDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerSoundtrackDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_soundtrack: Option<Uint32> = None;
@@ -8381,7 +8381,7 @@ pub fn parse_m_planet_id(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int32
     tracing::debug!("res: {:?}", m_planet_id);
         Ok((tail, m_planet_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPlanetMissionSelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPlanetMissionSelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_planet_id: Option<Int32> = None;
@@ -8413,7 +8413,7 @@ pub fn parse_m_flags(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int8> {
     tracing::debug!("res: {:?}", m_flags);
         Ok((tail, m_flags))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerKeyPressedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerKeyPressedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_key: Option<Int8> = None;
@@ -8438,7 +8438,7 @@ m_flags: m_flags.expect("Missing m_flags from struct"),
 pub struct GameSTriggerPlanetPanelBirthCompleteEvent {
 }
 impl GameSTriggerPlanetPanelBirthCompleteEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPlanetPanelBirthCompleteEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPlanetPanelBirthCompleteEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -8449,7 +8449,7 @@ let tail = input;
 pub struct GameSTriggerPlanetPanelDeathCompleteEvent {
 }
 impl GameSTriggerPlanetPanelDeathCompleteEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPlanetPanelDeathCompleteEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPlanetPanelDeathCompleteEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -8473,7 +8473,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSResourceRequestEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSResourceRequestEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_resources: Option<Vec<Int32>> = None;
@@ -8498,7 +8498,7 @@ pub fn parse_m_fulfill_request_id(input: (&[u8], usize)) -> IResult<(&[u8], usiz
     tracing::debug!("res: {:?}", m_fulfill_request_id);
         Ok((tail, m_fulfill_request_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSResourceRequestFulfillEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSResourceRequestFulfillEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_fulfill_request_id: Option<Int32> = None;
@@ -8523,7 +8523,7 @@ pub fn parse_m_cancel_request_id(input: (&[u8], usize)) -> IResult<(&[u8], usize
     tracing::debug!("res: {:?}", m_cancel_request_id);
         Ok((tail, m_cancel_request_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSResourceRequestCancelEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSResourceRequestCancelEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_cancel_request_id: Option<Int32> = None;
@@ -8541,7 +8541,7 @@ Ok((tail, Self {m_cancel_request_id: m_cancel_request_id.expect("Missing m_cance
 pub struct GameSTriggerResearchPanelExitEvent {
 }
 impl GameSTriggerResearchPanelExitEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerResearchPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerResearchPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -8552,7 +8552,7 @@ let tail = input;
 pub struct GameSTriggerResearchPanelPurchaseEvent {
 }
 impl GameSTriggerResearchPanelPurchaseEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerResearchPanelPurchaseEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerResearchPanelPurchaseEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -8583,7 +8583,7 @@ let (tail, res) = GameSCmdAbil::parse(tail)?;
     tracing::debug!("res: {:?}", m_abil);
 Ok((tail, m_abil))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerCommandErrorEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerCommandErrorEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_error: Option<Int32> = None;
@@ -8615,7 +8615,7 @@ pub fn parse_m_research_item_id(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_research_item_id);
         Ok((tail, m_research_item_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerResearchPanelSelectionChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerResearchPanelSelectionChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_research_item_id: Option<Int32> = None;
@@ -8633,7 +8633,7 @@ Ok((tail, Self {m_research_item_id: m_research_item_id.expect("Missing m_researc
 pub struct GameSTriggerMercenaryPanelExitEvent {
 }
 impl GameSTriggerMercenaryPanelExitEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerMercenaryPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerMercenaryPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -8644,7 +8644,7 @@ let tail = input;
 pub struct GameSTriggerMercenaryPanelPurchaseEvent {
 }
 impl GameSTriggerMercenaryPanelPurchaseEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerMercenaryPanelPurchaseEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerMercenaryPanelPurchaseEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -8662,7 +8662,7 @@ pub fn parse_m_mercenary_id(input: (&[u8], usize)) -> IResult<(&[u8], usize), In
     tracing::debug!("res: {:?}", m_mercenary_id);
         Ok((tail, m_mercenary_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerMercenaryPanelSelectionChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerMercenaryPanelSelectionChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_mercenary_id: Option<Int32> = None;
@@ -8680,7 +8680,7 @@ Ok((tail, Self {m_mercenary_id: m_mercenary_id.expect("Missing m_mercenary_id fr
 pub struct GameSTriggerVictoryPanelExitEvent {
 }
 impl GameSTriggerVictoryPanelExitEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerVictoryPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerVictoryPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -8691,7 +8691,7 @@ let tail = input;
 pub struct GameSTriggerBattleReportPanelExitEvent {
 }
 impl GameSTriggerBattleReportPanelExitEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerBattleReportPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerBattleReportPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -8716,7 +8716,7 @@ pub fn parse_m_difficulty_level(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_difficulty_level);
         Ok((tail, m_difficulty_level))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerBattleReportPanelPlayMissionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerBattleReportPanelPlayMissionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_battle_report_id: Option<Int32> = None;
@@ -8748,7 +8748,7 @@ pub fn parse_m_battle_report_id(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_battle_report_id);
         Ok((tail, m_battle_report_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerBattleReportPanelPlaySceneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerBattleReportPanelPlaySceneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_battle_report_id: Option<Int32> = None;
@@ -8773,7 +8773,7 @@ pub fn parse_m_battle_report_id(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_battle_report_id);
         Ok((tail, m_battle_report_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerBattleReportPanelSelectionChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerBattleReportPanelSelectionChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_battle_report_id: Option<Int32> = None;
@@ -8798,7 +8798,7 @@ pub fn parse_m_difficulty_level(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_difficulty_level);
         Ok((tail, m_difficulty_level))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerVictoryPanelPlayMissionAgainEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerVictoryPanelPlayMissionAgainEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_difficulty_level: Option<Int32> = None;
@@ -8816,7 +8816,7 @@ Ok((tail, Self {m_difficulty_level: m_difficulty_level.expect("Missing m_difficu
 pub struct GameSTriggerMovieStartedEvent {
 }
 impl GameSTriggerMovieStartedEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerMovieStartedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerMovieStartedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -8827,7 +8827,7 @@ let tail = input;
 pub struct GameSTriggerMovieFinishedEvent {
 }
 impl GameSTriggerMovieFinishedEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerMovieFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerMovieFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -8845,7 +8845,7 @@ pub fn parse_m_decrement_seconds(input: (&[u8], usize)) -> IResult<(&[u8], usize
     tracing::debug!("res: {:?}", m_decrement_seconds);
         Ok((tail, m_decrement_seconds))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSDecrementGameTimeRemainingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSDecrementGameTimeRemainingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_decrement_seconds: Option<Int32> = None;
@@ -8870,7 +8870,7 @@ pub fn parse_m_portrait_id(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int
     tracing::debug!("res: {:?}", m_portrait_id);
         Ok((tail, m_portrait_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPortraitLoadedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPortraitLoadedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_portrait_id: Option<Int32> = None;
@@ -8901,7 +8901,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSTriggerMovieFunctionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSTriggerMovieFunctionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_function_name: Option<Vec<u8>> = None;
@@ -8926,7 +8926,7 @@ pub fn parse_m_result(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int32> {
     tracing::debug!("res: {:?}", m_result);
         Ok((tail, m_result))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerCustomDialogDismissedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerCustomDialogDismissedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_result: Option<Int32> = None;
@@ -8951,7 +8951,7 @@ pub fn parse_m_game_menu_item_index(input: (&[u8], usize)) -> IResult<(&[u8], us
     tracing::debug!("res: {:?}", m_game_menu_item_index);
         Ok((tail, m_game_menu_item_index))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerGameMenuItemSelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerGameMenuItemSelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_game_menu_item_index: Option<Int32> = None;
@@ -8983,7 +8983,7 @@ pub fn parse_m_flags(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int8> {
     tracing::debug!("res: {:?}", m_flags);
         Ok((tail, m_flags))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerMouseWheelEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerMouseWheelEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_wheel_spin: Option<GameTFixedMiniBitsSigned> = None;
@@ -9015,7 +9015,7 @@ pub fn parse_m_purchase_item_id(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_purchase_item_id);
         Ok((tail, m_purchase_item_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPurchasePanelSelectedPurchaseItemChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPurchasePanelSelectedPurchaseItemChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_purchase_item_id: Option<Int32> = None;
@@ -9040,7 +9040,7 @@ pub fn parse_m_purchase_category_id(input: (&[u8], usize)) -> IResult<(&[u8], us
     tracing::debug!("res: {:?}", m_purchase_category_id);
         Ok((tail, m_purchase_category_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_purchase_category_id: Option<Int32> = None;
@@ -9065,7 +9065,7 @@ pub fn parse_m_button(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameTBut
     tracing::debug!("res: {:?}", m_button);
         Ok((tail, m_button))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerButtonPressedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerButtonPressedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_button: Option<GameTButtonLink> = None;
@@ -9083,7 +9083,7 @@ Ok((tail, Self {m_button: m_button.expect("Missing m_button from struct"),
 pub struct GameSTriggerGameCreditsFinishedEvent {
 }
 impl GameSTriggerGameCreditsFinishedEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerGameCreditsFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerGameCreditsFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -9114,7 +9114,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSTriggerCutsceneBookmarkFiredEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSTriggerCutsceneBookmarkFiredEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_cutscene_id: Option<Int32> = None;
@@ -9146,7 +9146,7 @@ pub fn parse_m_cutscene_id(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int
     tracing::debug!("res: {:?}", m_cutscene_id);
         Ok((tail, m_cutscene_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerCutsceneEndSceneFiredEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerCutsceneEndSceneFiredEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_cutscene_id: Option<Int32> = None;
@@ -9197,7 +9197,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSTriggerCutsceneConversationLineEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSTriggerCutsceneConversationLineEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_cutscene_id: Option<Int32> = None;
@@ -9249,7 +9249,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSTriggerCutsceneConversationLineMissingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSTriggerCutsceneConversationLineMissingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_cutscene_id: Option<Int32> = None;
@@ -9281,7 +9281,7 @@ pub fn parse_m_leave_reason(input: (&[u8], usize)) -> IResult<(&[u8], usize), EL
     tracing::debug!("res: {:?}", m_leave_reason);
         Ok((tail, m_leave_reason))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSGameUserLeaveEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSGameUserLeaveEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_leave_reason: Option<ELeaveReason> = None;
@@ -9372,7 +9372,7 @@ let (tail, res) = TUserId::parse(tail)?;
     tracing::debug!("res: {:?}", m_hijack_clone_game_user_id);
 Ok((tail, m_hijack_clone_game_user_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSGameUserJoinEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSGameUserJoinEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_observe: Option<EObserve> = None;
@@ -9435,7 +9435,7 @@ pub enum GameECommandManagerState {
     EFireMany,
 }
 impl GameECommandManagerState {
-#[tracing::instrument(name="89634::GameECommandManagerState::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameECommandManagerState::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 3
 let num_bits: usize = 2;
@@ -9487,7 +9487,7 @@ let (tail, res) = parse_packed_int(input, 1, 32usize)?;
     tracing::debug!("res: {:?}", m_sequence);
 Ok((tail, m_sequence))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSCommandManagerStateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSCommandManagerStateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_state: Option<GameECommandManagerState> = None;
@@ -9519,7 +9519,7 @@ pub fn parse_m_target(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameSMap
     tracing::debug!("res: {:?}", m_target);
         Ok((tail, m_target))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSCmdUpdateTargetPointEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSCmdUpdateTargetPointEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_target: Option<GameSMapCoord3D> = None;
@@ -9544,7 +9544,7 @@ pub fn parse_m_target(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameSCmd
     tracing::debug!("res: {:?}", m_target);
         Ok((tail, m_target))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSCmdUpdateTargetUnitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSCmdUpdateTargetUnitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_target: Option<GameSCmdDataTargetUnit> = None;
@@ -9602,7 +9602,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSCatalogModifyEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSCatalogModifyEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_catalog: Option<Uint8> = None;
@@ -9648,7 +9648,7 @@ pub fn parse_m_index(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint32> {
     tracing::debug!("res: {:?}", m_index);
         Ok((tail, m_index))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSHeroTalentTreeSelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSHeroTalentTreeSelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_index: Option<Uint32> = None;
@@ -9666,7 +9666,7 @@ Ok((tail, Self {m_index: m_index.expect("Missing m_index from struct"),
 pub struct GameSTriggerProfilerLoggingFinishedEvent {
 }
 impl GameSTriggerProfilerLoggingFinishedEvent {
-#[tracing::instrument(name="89634::bit_packed::GameSTriggerProfilerLoggingFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSTriggerProfilerLoggingFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -9684,7 +9684,7 @@ pub fn parse_m_shown(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
     tracing::debug!("res: {:?}", m_shown);
         Ok((tail, m_shown))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSHeroTalentTreeSelectionPanelToggledEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSHeroTalentTreeSelectionPanelToggledEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_shown: Option<bool> = None;
@@ -9716,7 +9716,7 @@ pub fn parse_m_muted(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
     tracing::debug!("res: {:?}", m_muted);
         Ok((tail, m_muted))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSMuteChatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSMuteChatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_target_user_id: Option<TUserId> = None;
@@ -9754,7 +9754,7 @@ let (tail, res) = Int32::parse(tail)?;
     tracing::debug!("res: {:?}", m_replay_jump_game_loop);
 Ok((tail, m_replay_jump_game_loop))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSConvertToReplaySessionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSConvertToReplaySessionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_replay_jump_game_loop: Option<Option<Int32>> = Some(None);
@@ -9779,7 +9779,7 @@ pub fn parse_m_sync_time(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint3
     tracing::debug!("res: {:?}", m_sync_time);
         Ok((tail, m_sync_time))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSetSyncLoadingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSetSyncLoadingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_sync_time: Option<Uint32> = None;
@@ -9804,7 +9804,7 @@ pub fn parse_m_sync_time(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint3
     tracing::debug!("res: {:?}", m_sync_time);
         Ok((tail, m_sync_time))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSetSyncPlayingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSetSyncPlayingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_sync_time: Option<Uint32> = None;
@@ -9829,7 +9829,7 @@ pub fn parse_m_sync_time(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint3
     tracing::debug!("res: {:?}", m_sync_time);
         Ok((tail, m_sync_time))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSPeerSetSyncLoadingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSPeerSetSyncLoadingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_sync_time: Option<Uint32> = None;
@@ -9854,7 +9854,7 @@ pub fn parse_m_sync_time(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint3
     tracing::debug!("res: {:?}", m_sync_time);
         Ok((tail, m_sync_time))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSPeerSetSyncPlayingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSPeerSetSyncPlayingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_sync_time: Option<Uint32> = None;
@@ -9877,7 +9877,7 @@ pub enum GameEGameSpeed {
     EFaster,
 }
 impl GameEGameSpeed {
-#[tracing::instrument(name="89634::GameEGameSpeed::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEGameSpeed::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 5
 let num_bits: usize = 3;
@@ -9923,7 +9923,7 @@ pub enum GameEPhase {
     EGameover,
 }
 impl GameEPhase {
-#[tracing::instrument(name="89634::GameEPhase::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEPhase::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 6
 let num_bits: usize = 3;
@@ -9969,7 +9969,7 @@ pub enum GameEConversationSkip {
     ESkipAllLines,
 }
 impl GameEConversationSkip {
-#[tracing::instrument(name="89634::GameEConversationSkip::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEConversationSkip::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 2
 let num_bits: usize = 1;
@@ -9997,7 +9997,7 @@ panic!("Unknown variant value {variant_tag}");
 pub struct GameCCheatString {
     pub value: Vec<u8>,}
 impl GameCCheatString {
-#[tracing::instrument(name="89634::GameCCheatString::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCCheatString::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 11;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -10012,7 +10012,7 @@ Ok((tail, Self { value }))
 pub struct GameCTriggerChatMessageString {
     pub value: Vec<u8>,}
 impl GameCTriggerChatMessageString {
-#[tracing::instrument(name="89634::GameCTriggerChatMessageString::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCTriggerChatMessageString::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 11;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -10027,7 +10027,7 @@ Ok((tail, Self { value }))
 pub struct GameTAchievementLink {
     pub value: Uint16,}
 impl GameTAchievementLink {
-#[tracing::instrument(name="89634::GameTAchievementLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTAchievementLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint16::parse(input)?;
 // TODO: Unsure about this. 
@@ -10039,7 +10039,7 @@ Ok((tail, Self { value }))
 pub struct GameTAchievementTermLink {
     pub value: Uint16,}
 impl GameTAchievementTermLink {
-#[tracing::instrument(name="89634::GameTAchievementTermLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTAchievementTermLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint16::parse(input)?;
 // TODO: Unsure about this. 
@@ -10051,7 +10051,7 @@ Ok((tail, Self { value }))
 pub struct GameTButtonLink {
     pub value: Uint16,}
 impl GameTButtonLink {
-#[tracing::instrument(name="89634::GameTButtonLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTButtonLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint16::parse(input)?;
 // TODO: Unsure about this. 
@@ -10063,7 +10063,7 @@ Ok((tail, Self { value }))
 pub struct GameTUnitLink {
     pub value: Uint16,}
 impl GameTUnitLink {
-#[tracing::instrument(name="89634::GameTUnitLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTUnitLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint16::parse(input)?;
 // TODO: Unsure about this. 
@@ -10075,7 +10075,7 @@ Ok((tail, Self { value }))
 pub struct GameTUnitTag {
     pub value: Uint32,}
 impl GameTUnitTag {
-#[tracing::instrument(name="89634::GameTUnitTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTUnitTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint32::parse(input)?;
 // TODO: Unsure about this. 
@@ -10087,7 +10087,7 @@ Ok((tail, Self { value }))
 pub struct GameTTriggerThreadTag {
     pub value: Uint32,}
 impl GameTTriggerThreadTag {
-#[tracing::instrument(name="89634::GameTTriggerThreadTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTTriggerThreadTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint32::parse(input)?;
 // TODO: Unsure about this. 
@@ -10099,7 +10099,7 @@ Ok((tail, Self { value }))
 pub struct GameTTriggerSoundTag {
     pub value: Uint32,}
 impl GameTTriggerSoundTag {
-#[tracing::instrument(name="89634::GameTTriggerSoundTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTTriggerSoundTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint32::parse(input)?;
 // TODO: Unsure about this. 
@@ -10111,7 +10111,7 @@ Ok((tail, Self { value }))
 pub struct GameTAbilLink {
     pub value: Uint16,}
 impl GameTAbilLink {
-#[tracing::instrument(name="89634::GameTAbilLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTAbilLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint16::parse(input)?;
 // TODO: Unsure about this. 
@@ -10123,7 +10123,7 @@ Ok((tail, Self { value }))
 pub struct GameTFixedBits {
     pub value: Int32,}
 impl GameTFixedBits {
-#[tracing::instrument(name="89634::GameTFixedBits::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTFixedBits::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Int32::parse(input)?;
 // TODO: Unsure about this. 
@@ -10135,7 +10135,7 @@ Ok((tail, Self { value }))
 pub struct GameTFixedMiniBitsUnsigned {
     pub value: Uint16,}
 impl GameTFixedMiniBitsUnsigned {
-#[tracing::instrument(name="89634::GameTFixedMiniBitsUnsigned::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTFixedMiniBitsUnsigned::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint16::parse(input)?;
 // TODO: Unsure about this. 
@@ -10147,7 +10147,7 @@ Ok((tail, Self { value }))
 pub struct GameTFixedMiniBitsSigned {
     pub value: Int16,}
 impl GameTFixedMiniBitsSigned {
-#[tracing::instrument(name="89634::GameTFixedMiniBitsSigned::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTFixedMiniBitsSigned::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Int16::parse(input)?;
 // TODO: Unsure about this. 
@@ -10159,7 +10159,7 @@ Ok((tail, Self { value }))
 pub struct GameTPlayerLogoIndex {
     pub value: Uint32,}
 impl GameTPlayerLogoIndex {
-#[tracing::instrument(name="89634::GameTPlayerLogoIndex::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTPlayerLogoIndex::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint32::parse(input)?;
 // TODO: Unsure about this. 
@@ -10171,7 +10171,7 @@ Ok((tail, Self { value }))
 pub struct GameTFixedInt {
     pub value: i64,}
 impl GameTFixedInt {
-#[tracing::instrument(name="89634::GameTFixedInt::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTFixedInt::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = -524288;
          let num_bits: usize = 20;
@@ -10184,7 +10184,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTFixedUInt {
     pub value: i64,}
 impl GameTFixedUInt {
-#[tracing::instrument(name="89634::GameTFixedUInt::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTFixedUInt::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 19;
@@ -10197,7 +10197,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTMapCoordFixedBits {
     pub value: i64,}
 impl GameTMapCoordFixedBits {
-#[tracing::instrument(name="89634::GameTMapCoordFixedBits::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTMapCoordFixedBits::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 20;
@@ -10210,7 +10210,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTuiCoordX {
     pub value: i64,}
 impl GameTuiCoordX {
-#[tracing::instrument(name="89634::GameTuiCoordX::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTuiCoordX::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 11;
@@ -10223,7 +10223,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTuiCoordY {
     pub value: i64,}
 impl GameTuiCoordY {
-#[tracing::instrument(name="89634::GameTuiCoordY::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTuiCoordY::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 11;
@@ -10236,7 +10236,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTHeroLink {
     pub value: Uint16,}
 impl GameTHeroLink {
-#[tracing::instrument(name="89634::GameTHeroLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTHeroLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint16::parse(input)?;
 // TODO: Unsure about this. 
@@ -10262,7 +10262,7 @@ pub fn parse_y(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameTFixedBits>
     tracing::debug!("res: {:?}", y);
         Ok((tail, y))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSPoint::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSPoint::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut x: Option<GameTFixedBits> = None;
@@ -10308,7 +10308,7 @@ pub fn parse_z(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameTFixedBits>
     tracing::debug!("res: {:?}", z);
         Ok((tail, z))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSPoint3::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSPoint3::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut x: Option<GameTFixedBits> = None;
@@ -10354,7 +10354,7 @@ pub fn parse_y(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameTFixedMiniB
     tracing::debug!("res: {:?}", y);
         Ok((tail, y))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSPointMini::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSPointMini::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut x: Option<GameTFixedMiniBitsUnsigned> = None;
@@ -10393,7 +10393,7 @@ pub fn parse_y(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameTMapCoordFi
     tracing::debug!("res: {:?}", y);
         Ok((tail, y))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSMapCoord::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSMapCoord::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut x: Option<GameTMapCoordFixedBits> = None;
@@ -10439,7 +10439,7 @@ pub fn parse_z(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameTFixedBits>
     tracing::debug!("res: {:?}", z);
         Ok((tail, z))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSMapCoord3D::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSMapCoord3D::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut x: Option<GameTMapCoordFixedBits> = None;
@@ -10485,7 +10485,7 @@ pub fn parse_y(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameTuiCoordY> 
     tracing::debug!("res: {:?}", y);
         Ok((tail, y))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSuiCoord::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSuiCoord::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut x: Option<GameTuiCoordX> = None;
@@ -10510,7 +10510,7 @@ y: y.expect("Missing y from struct"),
 pub struct GameTHandicap {
     pub value: Uint32,}
 impl GameTHandicap {
-#[tracing::instrument(name="89634::GameTHandicap::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTHandicap::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint32::parse(input)?;
 // TODO: Unsure about this. 
@@ -10522,7 +10522,7 @@ Ok((tail, Self { value }))
 pub struct GameTDifficulty {
     pub value: i64,}
 impl GameTDifficulty {
-#[tracing::instrument(name="89634::GameTDifficulty::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTDifficulty::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 6;
@@ -10535,7 +10535,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameCAllowedDifficulty {
     pub value: Vec<u8>,}
 impl GameCAllowedDifficulty {
-#[tracing::instrument(name="89634::GameCAllowedDifficulty::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCAllowedDifficulty::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let bitarray_length_bits: usize = 6;
          let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
@@ -10549,7 +10549,7 @@ Ok((tail, Self { value }))
 pub struct GameTaiBuild {
     pub value: i64,}
 impl GameTaiBuild {
-#[tracing::instrument(name="89634::GameTaiBuild::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTaiBuild::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 8;
@@ -10562,7 +10562,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameCAllowedAiBuild {
     pub value: Vec<u8>,}
 impl GameCAllowedAiBuild {
-#[tracing::instrument(name="89634::GameCAllowedAiBuild::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCAllowedAiBuild::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let bitarray_length_bits: usize = 8;
          let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
@@ -10602,7 +10602,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSSyncSoundLength::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSSyncSoundLength::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_sound_hash: Option<Vec<Uint32>> = None;
@@ -10640,7 +10640,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSThumbnail::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSThumbnail::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_file: Option<Vec<u8>> = None;
@@ -10686,7 +10686,7 @@ pub fn parse_m_b(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint8> {
     tracing::debug!("res: {:?}", m_b);
         Ok((tail, m_b))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSColor::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSColor::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_a: Option<Uint8> = None;
@@ -10729,7 +10729,7 @@ pub enum GameEResultDetails {
     ETie,
 }
 impl GameEResultDetails {
-#[tracing::instrument(name="89634::GameEResultDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEResultDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 4
 let num_bits: usize = 2;
@@ -10806,7 +10806,7 @@ pub fn parse_m_id(input: (&[u8], usize)) -> IResult<(&[u8], usize), Uint64> {
     tracing::debug!("res: {:?}", m_id);
         Ok((tail, m_id))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSToonNameDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSToonNameDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_region: Option<Uint8> = None;
@@ -10947,7 +10947,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSPlayerDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSPlayerDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_name: Option<CUserName> = None;
@@ -11035,7 +11035,7 @@ m_hero: m_hero.expect("Missing m_hero from struct"),
 pub struct GameCPlayerDetailsArray {
     pub value: Vec<GameSPlayerDetails>,}
 impl GameCPlayerDetailsArray {
-#[tracing::instrument(name="89634::GameCPlayerDetailsArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCPlayerDetailsArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 5;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -11049,7 +11049,7 @@ Ok((tail, Self { value }))
 pub struct GameCModPaths {
     pub value: Vec<CFilePath>,}
 impl GameCModPaths {
-#[tracing::instrument(name="89634::GameCModPaths::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCModPaths::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 6;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -11231,7 +11231,7 @@ let (tail, res) = GameCModPaths::parse(tail)?;
     tracing::debug!("res: {:?}", m_mod_paths);
 Ok((tail, m_mod_paths))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_player_list: Option<Option<GameCPlayerDetailsArray>> = Some(None);
@@ -11372,7 +11372,7 @@ pub enum GameEOptionFog {
     EAlwaysVisible,
 }
 impl GameEOptionFog {
-#[tracing::instrument(name="89634::GameEOptionFog::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEOptionFog::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 4
 let num_bits: usize = 2;
@@ -11412,7 +11412,7 @@ pub enum GameEOptionObservers {
     ERefereesOnJoin,
 }
 impl GameEOptionObservers {
-#[tracing::instrument(name="89634::GameEOptionObservers::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEOptionObservers::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 4
 let num_bits: usize = 2;
@@ -11451,7 +11451,7 @@ pub enum GameEOptionUserDifficulty {
     EIndividual,
 }
 impl GameEOptionUserDifficulty {
-#[tracing::instrument(name="89634::GameEOptionUserDifficulty::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEOptionUserDifficulty::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 3
 let num_bits: usize = 2;
@@ -11489,7 +11489,7 @@ pub enum GameEGameLaunch {
     EServerReplay,
 }
 impl GameEGameLaunch {
-#[tracing::instrument(name="89634::GameEGameLaunch::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEGameLaunch::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 6
 let num_bits: usize = 3;
@@ -11533,7 +11533,7 @@ panic!("Unknown variant value {variant_tag}");
 pub struct GameEClientDebugFlags {
     pub value: i64,}
 impl GameEClientDebugFlags {
-#[tracing::instrument(name="89634::GameEClientDebugFlags::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEClientDebugFlags::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 64;
@@ -11658,7 +11658,7 @@ pub fn parse_m_build_coach_enabled(input: (&[u8], usize)) -> IResult<(&[u8], usi
     tracing::debug!("res: {:?}", m_build_coach_enabled);
         Ok((tail, m_build_coach_enabled))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSGameOptions::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSGameOptions::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_lock_teams: Option<bool> = None;
@@ -11788,7 +11788,7 @@ pub enum GameEGameType {
     EFourTeamPlay,
 }
 impl GameEGameType {
-#[tracing::instrument(name="89634::GameEGameType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEGameType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 7
 let num_bits: usize = 3;
@@ -11840,7 +11840,7 @@ pub enum GameEControl {
     EComputer,
 }
 impl GameEControl {
-#[tracing::instrument(name="89634::GameEControl::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEControl::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 4
 let num_bits: usize = 2;
@@ -11876,7 +11876,7 @@ panic!("Unknown variant value {variant_tag}");
 pub struct GameTControlId {
     pub value: i64,}
 impl GameTControlId {
-#[tracing::instrument(name="89634::GameTControlId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTControlId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 8;
@@ -11889,7 +11889,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTControlCount {
     pub value: i64,}
 impl GameTControlCount {
-#[tracing::instrument(name="89634::GameTControlCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTControlCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 8;
@@ -11902,7 +11902,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameCAllowedControls {
     pub value: Vec<u8>,}
 impl GameCAllowedControls {
-#[tracing::instrument(name="89634::GameCAllowedControls::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCAllowedControls::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let bitarray_length_bits: usize = 8;
          let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
@@ -11958,7 +11958,7 @@ pub fn parse_m_allowed_ai_builds(input: (&[u8], usize)) -> IResult<(&[u8], usize
     tracing::debug!("res: {:?}", m_allowed_ai_builds);
         Ok((tail, m_allowed_ai_builds))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSlotDescription::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSlotDescription::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_allowed_colors: Option<GameCAllowedColors> = None;
@@ -12011,7 +12011,7 @@ m_allowed_ai_builds: m_allowed_ai_builds.expect("Missing m_allowed_ai_builds fro
 pub struct GameCCacheHandle {
     pub value: Vec<u8>,}
 impl GameCCacheHandle {
-#[tracing::instrument(name="89634::GameCCacheHandle::BlobType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCCacheHandle::BlobType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, _) = byte_align(input)?;
          let num_bits: usize = 6;
@@ -12025,7 +12025,7 @@ Ok((tail, Self { value }))
 pub struct GameCCacheHandles {
     pub value: Vec<GameCCacheHandle>,}
 impl GameCCacheHandles {
-#[tracing::instrument(name="89634::GameCCacheHandles::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCCacheHandles::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 6;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -12039,7 +12039,7 @@ Ok((tail, Self { value }))
 pub struct GameCGameCacheName {
     pub value: Vec<u8>,}
 impl GameCGameCacheName {
-#[tracing::instrument(name="89634::GameCGameCacheName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCGameCacheName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 11;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -12054,7 +12054,7 @@ Ok((tail, Self { value }))
 pub struct GameCAuthorName {
     pub value: Vec<u8>,}
 impl GameCAuthorName {
-#[tracing::instrument(name="89634::GameCAuthorName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCAuthorName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 8;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -12069,7 +12069,7 @@ Ok((tail, Self { value }))
 pub struct GameSSlotDescriptions {
     pub value: Vec<GameSSlotDescription>,}
 impl GameSSlotDescriptions {
-#[tracing::instrument(name="89634::GameSSlotDescriptions::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameSSlotDescriptions::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 5;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -12279,7 +12279,7 @@ pub fn parse_m_is_realtime_mode(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_is_realtime_mode);
         Ok((tail, m_is_realtime_mode))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSGameDescription::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSGameDescription::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_random_value: Option<Uint32> = None;
@@ -12486,7 +12486,7 @@ m_is_realtime_mode: m_is_realtime_mode.expect("Missing m_is_realtime_mode from s
 pub struct GameTLobbySlotCount {
     pub value: i64,}
 impl GameTLobbySlotCount {
-#[tracing::instrument(name="89634::GameTLobbySlotCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTLobbySlotCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 5;
@@ -12499,7 +12499,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTLobbySlotId {
     pub value: i64,}
 impl GameTLobbySlotId {
-#[tracing::instrument(name="89634::GameTLobbySlotId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTLobbySlotId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 4;
@@ -12512,7 +12512,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameCArtifactArray {
     pub value: Vec<CArtifactHandle>,}
 impl GameCArtifactArray {
-#[tracing::instrument(name="89634::GameCArtifactArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCArtifactArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 4;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -12526,7 +12526,7 @@ Ok((tail, Self { value }))
 pub struct GameCCommanderMasteryTalentArray {
     pub value: Vec<Uint32>,}
 impl GameCCommanderMasteryTalentArray {
-#[tracing::instrument(name="89634::GameCCommanderMasteryTalentArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCCommanderMasteryTalentArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 3;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -12540,7 +12540,7 @@ Ok((tail, Self { value }))
 pub struct GameCRetryMutationIndexArray {
     pub value: Vec<Uint32>,}
 impl GameCRetryMutationIndexArray {
-#[tracing::instrument(name="89634::GameCRetryMutationIndexArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCRetryMutationIndexArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 3;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -12554,7 +12554,7 @@ Ok((tail, Self { value }))
 pub struct GameTReward {
     pub value: Uint32,}
 impl GameTReward {
-#[tracing::instrument(name="89634::GameTReward::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTReward::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint32::parse(input)?;
 // TODO: Unsure about this. 
@@ -12566,7 +12566,7 @@ Ok((tail, Self { value }))
 pub struct GameCRewardArray {
     pub value: Vec<GameTReward>,}
 impl GameCRewardArray {
-#[tracing::instrument(name="89634::GameCRewardArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCRewardArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 17;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -12594,7 +12594,7 @@ pub fn parse_m_rewards(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameCRe
     tracing::debug!("res: {:?}", m_rewards);
         Ok((tail, m_rewards))
 }
-#[tracing::instrument(name="89634::bit_packed::GameCRewardOverride::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameCRewardOverride::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_key: Option<Uint32> = None;
@@ -12619,7 +12619,7 @@ m_rewards: m_rewards.expect("Missing m_rewards from struct"),
 pub struct GameCRewardOverrideArray {
     pub value: Vec<GameCRewardOverride>,}
 impl GameCRewardOverrideArray {
-#[tracing::instrument(name="89634::GameCRewardOverrideArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCRewardOverrideArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 17;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -12633,7 +12633,7 @@ Ok((tail, Self { value }))
 pub struct GameTLicense {
     pub value: Uint32,}
 impl GameTLicense {
-#[tracing::instrument(name="89634::GameTLicense::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTLicense::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint32::parse(input)?;
 // TODO: Unsure about this. 
@@ -12645,7 +12645,7 @@ Ok((tail, Self { value }))
 pub struct GameCLicenseArray {
     pub value: Vec<GameTLicense>,}
 impl GameCLicenseArray {
-#[tracing::instrument(name="89634::GameCLicenseArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCLicenseArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 16;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -12659,7 +12659,7 @@ Ok((tail, Self { value }))
 pub struct GameTFlexLicenseName {
     pub value: Vec<u8>,}
 impl GameTFlexLicenseName {
-#[tracing::instrument(name="89634::GameTFlexLicenseName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTFlexLicenseName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 8;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -12674,7 +12674,7 @@ Ok((tail, Self { value }))
 pub struct GameTFlexLicenseAttributeName {
     pub value: Vec<u8>,}
 impl GameTFlexLicenseAttributeName {
-#[tracing::instrument(name="89634::GameTFlexLicenseAttributeName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTFlexLicenseAttributeName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 8;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -12689,7 +12689,7 @@ Ok((tail, Self { value }))
 pub struct GameTFlexLicenseAttributeValue {
     pub value: Vec<u8>,}
 impl GameTFlexLicenseAttributeValue {
-#[tracing::instrument(name="89634::GameTFlexLicenseAttributeValue::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTFlexLicenseAttributeValue::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 11;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -12952,7 +12952,7 @@ pub fn parse_m_selected_commander_prestige(input: (&[u8], usize)) -> IResult<(&[
     tracing::debug!("res: {:?}", m_selected_commander_prestige);
         Ok((tail, m_selected_commander_prestige))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSLobbySlot::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSLobbySlot::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_control: Option<GameTControlId> = None;
@@ -13187,7 +13187,7 @@ m_selected_commander_prestige: m_selected_commander_prestige.expect("Missing m_s
 pub struct GameCLobbySlotArray {
     pub value: Vec<GameSLobbySlot>,}
 impl GameCLobbySlotArray {
-#[tracing::instrument(name="89634::GameCLobbySlotArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCLobbySlotArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 5;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -13226,7 +13226,7 @@ pub enum GameSLobbySlotChange {
     MSelectedCommanderPrestige(Uint32),
 }
 impl GameSLobbySlotChange {
-#[tracing::instrument(name="89634::GameSLobbySlotChange::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameSLobbySlotChange::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
@@ -13495,7 +13495,7 @@ pub fn parse_m_default_ai_build(input: (&[u8], usize)) -> IResult<(&[u8], usize)
     tracing::debug!("res: {:?}", m_default_ai_build);
         Ok((tail, m_default_ai_build))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSLobbyState::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSLobbyState::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_phase: Option<GameEPhase> = None;
@@ -13604,7 +13604,7 @@ pub fn parse_m_lobby_state(input: (&[u8], usize)) -> IResult<(&[u8], usize), Gam
     tracing::debug!("res: {:?}", m_lobby_state);
         Ok((tail, m_lobby_state))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSLobbySyncState::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSLobbySyncState::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_user_initial_data: Option<CUserInitialDataArray> = None;
@@ -13641,7 +13641,7 @@ pub enum GameEMessageRecipient {
     EObservers,
 }
 impl GameEMessageRecipient {
-#[tracing::instrument(name="89634::GameEMessageRecipient::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEMessageRecipient::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 5
 let num_bits: usize = 3;
@@ -13681,7 +13681,7 @@ panic!("Unknown variant value {variant_tag}");
 pub struct GameCChatString {
     pub value: Vec<u8>,}
 impl GameCChatString {
-#[tracing::instrument(name="89634::GameCChatString::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameCChatString::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let str_size_num_bits: usize = 11;
 let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -13701,7 +13701,7 @@ pub enum GameEMessageId {
     EReconnectNotify(GameSReconnectNotifyMessage),
 }
 impl GameEMessageId {
-#[tracing::instrument(name="89634::GameEMessageId::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEMessageId::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 5
 let num_bits: usize = 3;
@@ -13765,7 +13765,7 @@ pub fn parse_m_string(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameCCha
     tracing::debug!("res: {:?}", m_string);
         Ok((tail, m_string))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSChatMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSChatMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_recipient: Option<GameEMessageRecipient> = None;
@@ -13804,7 +13804,7 @@ pub fn parse_m_point(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameSPoin
     tracing::debug!("res: {:?}", m_point);
         Ok((tail, m_point))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSPingMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSPingMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_recipient: Option<GameEMessageRecipient> = None;
@@ -13836,7 +13836,7 @@ pub fn parse_m_progress(input: (&[u8], usize)) -> IResult<(&[u8], usize), Int32>
     tracing::debug!("res: {:?}", m_progress);
         Ok((tail, m_progress))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSLoadingProgressMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSLoadingProgressMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_progress: Option<Int32> = None;
@@ -13854,7 +13854,7 @@ Ok((tail, Self {m_progress: m_progress.expect("Missing m_progress from struct"),
 pub struct GameSServerPingMessage {
 }
 impl GameSServerPingMessage {
-#[tracing::instrument(name="89634::bit_packed::GameSServerPingMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSServerPingMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let tail = input;
          Ok((tail, Self {}))
@@ -13872,7 +13872,7 @@ pub fn parse_m_status(input: (&[u8], usize)) -> IResult<(&[u8], usize), EReconne
     tracing::debug!("res: {:?}", m_status);
         Ok((tail, m_status))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSReconnectNotifyMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSReconnectNotifyMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_status: Option<EReconnectStatus> = None;
@@ -13890,7 +13890,7 @@ Ok((tail, Self {m_status: m_status.expect("Missing m_status from struct"),
 pub struct GameTPlayerId {
     pub value: i64,}
 impl GameTPlayerId {
-#[tracing::instrument(name="89634::GameTPlayerId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTPlayerId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 4;
@@ -13903,7 +13903,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTPlayerCount {
     pub value: i64,}
 impl GameTPlayerCount {
-#[tracing::instrument(name="89634::GameTPlayerCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTPlayerCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 5;
@@ -13920,7 +13920,7 @@ pub enum GameEResultCode {
     EWin,
 }
 impl GameEResultCode {
-#[tracing::instrument(name="89634::GameEResultCode::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEResultCode::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 4
 let num_bits: usize = 2;
@@ -13962,7 +13962,7 @@ pub enum GameEControlGroupUpdate {
     EAppendAndSteal,
 }
 impl GameEControlGroupUpdate {
-#[tracing::instrument(name="89634::GameEControlGroupUpdate::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameEControlGroupUpdate::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // Total fields: 6
 let num_bits: usize = 3;
@@ -14006,7 +14006,7 @@ panic!("Unknown variant value {variant_tag}");
 pub struct GameTSelectionCount {
     pub value: i64,}
 impl GameTSelectionCount {
-#[tracing::instrument(name="89634::GameTSelectionCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTSelectionCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 9;
@@ -14019,7 +14019,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTSelectionIndex {
     pub value: i64,}
 impl GameTSelectionIndex {
-#[tracing::instrument(name="89634::GameTSelectionIndex::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTSelectionIndex::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 9;
@@ -14032,7 +14032,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTSubgroupPriority {
     pub value: i64,}
 impl GameTSubgroupPriority {
-#[tracing::instrument(name="89634::GameTSubgroupPriority::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTSubgroupPriority::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 8;
@@ -14045,7 +14045,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTSubgroupCount {
     pub value: i64,}
 impl GameTSubgroupCount {
-#[tracing::instrument(name="89634::GameTSubgroupCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTSubgroupCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 9;
@@ -14058,7 +14058,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTSubgroupIndex {
     pub value: i64,}
 impl GameTSubgroupIndex {
-#[tracing::instrument(name="89634::GameTSubgroupIndex::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTSubgroupIndex::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 9;
@@ -14071,7 +14071,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTControlGroupCount {
     pub value: i64,}
 impl GameTControlGroupCount {
-#[tracing::instrument(name="89634::GameTControlGroupCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTControlGroupCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 4;
@@ -14084,7 +14084,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTControlGroupIndex {
     pub value: i64,}
 impl GameTControlGroupIndex {
-#[tracing::instrument(name="89634::GameTControlGroupIndex::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTControlGroupIndex::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 4;
@@ -14097,7 +14097,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTControlGroupId {
     pub value: i64,}
 impl GameTControlGroupId {
-#[tracing::instrument(name="89634::GameTControlGroupId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTControlGroupId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 4;
@@ -14138,7 +14138,7 @@ pub fn parse_m_count(input: (&[u8], usize)) -> IResult<(&[u8], usize), GameTSele
     tracing::debug!("res: {:?}", m_count);
         Ok((tail, m_count))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSelectionDeltaSubgroup::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSelectionDeltaSubgroup::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_unit_link: Option<GameTUnitLink> = None;
@@ -14177,7 +14177,7 @@ m_count: m_count.expect("Missing m_count from struct"),
 pub struct GameSelectionIndexArrayType {
     pub value: Vec<GameTSelectionIndex>,}
 impl GameSelectionIndexArrayType {
-#[tracing::instrument(name="89634::GameSelectionIndexArrayType::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameSelectionIndexArrayType::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let array_length_num_bits: usize = 9;
 let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
@@ -14191,7 +14191,7 @@ Ok((tail, Self { value }))
 pub struct GameSelectionMaskType {
     pub value: Vec<u8>,}
 impl GameSelectionMaskType {
-#[tracing::instrument(name="89634::GameSelectionMaskType::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameSelectionMaskType::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let bitarray_length_bits: usize = 9;
          let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
@@ -14209,7 +14209,7 @@ pub enum GameSSelectionMask {
     ZeroIndices(GameSelectionIndexArrayType),
 }
 impl GameSSelectionMask {
-#[tracing::instrument(name="89634::GameSSelectionMask::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameSSelectionMask::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
@@ -14294,7 +14294,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSSelectionDelta::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSSelectionDelta::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_subgroup_index: Option<GameTSubgroupIndex> = None;
@@ -14375,7 +14375,7 @@ pub fn parse_m_subgroups_checksum(input: (&[u8], usize)) -> IResult<(&[u8], usiz
     tracing::debug!("res: {:?}", m_subgroups_checksum);
         Ok((tail, m_subgroups_checksum))
 }
-#[tracing::instrument(name="89634::bit_packed::GameSSelectionSyncData::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::GameSSelectionSyncData::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_count: Option<GameTSelectionCount> = None;
@@ -14428,7 +14428,7 @@ m_subgroups_checksum: m_subgroups_checksum.expect("Missing m_subgroups_checksum 
 pub struct GameTSyncChecksum {
     pub value: Uint32,}
 impl GameTSyncChecksum {
-#[tracing::instrument(name="89634::GameTSyncChecksum::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTSyncChecksum::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint32::parse(input)?;
 // TODO: Unsure about this. 
@@ -14440,7 +14440,7 @@ Ok((tail, Self { value }))
 pub struct GameTSyncValue {
     pub value: Uint16,}
 impl GameTSyncValue {
-#[tracing::instrument(name="89634::GameTSyncValue::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTSyncValue::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let (tail, value) = Uint16::parse(input)?;
 // TODO: Unsure about this. 
@@ -14465,7 +14465,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSSessionSyncInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSSessionSyncInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_checksums: Option<Vec<GameTSyncChecksum>> = None;
@@ -14496,7 +14496,7 @@ tail = new_tail;
 array.push(data);
 }
 Ok((tail, array))
-}#[tracing::instrument(name="89634::bit_packed::GameSGameSyncInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+}#[tracing::instrument(name="88500::bit_packed::GameSGameSyncInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_checksums: Option<Vec<GameTSyncChecksum>> = None;
@@ -14514,7 +14514,7 @@ Ok((tail, Self {m_checksums: m_checksums.expect("Missing m_checksums from struct
 pub struct GameTTeamId {
     pub value: i64,}
 impl GameTTeamId {
-#[tracing::instrument(name="89634::GameTTeamId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTTeamId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 0;
          let num_bits: usize = 4;
@@ -14527,7 +14527,7 @@ Ok((tail, Self { value: <_>::try_from(res).unwrap() }))
 pub struct GameTTeamCount {
     pub value: i64,}
 impl GameTTeamCount {
-#[tracing::instrument(name="89634::GameTTeamCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::GameTTeamCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let offset: i64 = 1;
          let num_bits: usize = 5;
@@ -14547,7 +14547,7 @@ pub fn parse_m_user_id(input: (&[u8], usize)) -> IResult<(&[u8], usize), i64> {
     tracing::debug!("res: {:?}", m_user_id);
         Ok((tail, m_user_id))
 }
-#[tracing::instrument(name="89634::bit_packed::ReplaySGameUserId::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+#[tracing::instrument(name="88500::bit_packed::ReplaySGameUserId::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
 pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
 let mut tail = input;
          let mut m_user_id: Option<i64> = None;
