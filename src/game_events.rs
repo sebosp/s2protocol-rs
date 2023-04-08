@@ -1,10 +1,9 @@
 //! Decodes the Game Events.
 //! These are stored in an embebdded file in the MPQ file called 'replay.game.events'
 
-use std::convert::TryFrom;
 use std::str::Utf8Error;
 
-/// A list of errors when handling TrackerEvents
+/// A list of errors when handling GameEvents
 #[derive(Debug, thiserror::Error)]
 pub enum GameEventError {
     /// An error to be used in TryFrom, when converting from protocol-specific types into our
@@ -25,17 +24,17 @@ pub struct GameEvent {
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum ReplayGameEvent {
-    CameraSave(GameSCameraSaveEvent),
-    /*Cmd(GameSCmdEvent),
-    SelectionDelta(GameSSelectionDeltaEvent),
+    CameraSave(CameraSaveEvent),
+    Cmd(GameSCmdEvent),
+    /*SelectionDelta(GameSSelectionDeltaEvent),
     ControlGroupUpdate(GameSControlGroupUpdateEvent),
     SelectionSyncCheck(GameSSelectionSyncCheckEvent),
     TriggerChatMessage(GameSTriggerChatMessageEvent),
     UnitClick(GameSUnitClickEvent),
     UnitHighlight(GameSUnitHighlightEvent),
-    TriggerReplySelected(GameSTriggerReplySelectedEvent),
-    CameraUpdate(GameSCameraUpdateEvent),
-    TriggerMouseClicked(GameSTriggerMouseClickedEvent),
+    TriggerReplySelected(GameSTriggerReplySelectedEvent),*/
+    CameraUpdate(CameraUpdateEvent),
+    /*TriggerMouseClicked(GameSTriggerMouseClickedEvent),
     TriggerMouseMoved(GameSTriggerMouseMovedEvent),
     TriggerHotkeyPressed(GameSTriggerHotkeyPressedEvent),
     TriggerTargetModeUpdate(GameSTriggerTargetModeUpdateEvent),
@@ -50,10 +49,21 @@ pub enum ReplayGameEvent {
     TriggerAnimLengthQueryByName(GameSTriggerAnimLengthQueryByNameEvent),
     TriggerAnimLengthQueryByProps(GameSTriggerAnimLengthQueryByPropsEvent),*/
 }
+
 #[derive(Debug, PartialEq, Clone)]
-pub struct GameSCameraSaveEvent {
+pub struct CameraSaveEvent {
     pub m_which: i64,
     pub m_target: GameSPointMini,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct CameraUpdateEvent {
+    pub m_target: Option<GameSPointMini>,
+    pub m_distance: Option<GameTFixedMiniBitsUnsigned>,
+    pub m_pitch: Option<GameTFixedMiniBitsUnsigned>,
+    pub m_yaw: Option<GameTFixedMiniBitsUnsigned>,
+    pub m_reason: Option<i8>,
+    pub m_follow: bool,
 }
 
 pub type GameTFixedMiniBitsUnsigned = i64;
@@ -64,106 +74,52 @@ pub struct GameSPointMini {
     pub y: GameTFixedMiniBitsUnsigned,
 }
 
-impl TryFrom<crate::versions::protocol87702::bit_packed::GameEEventId> for ReplayGameEvent {
-    type Error = GameEventError;
-    fn try_from(
-        value: crate::versions::protocol87702::bit_packed::GameEEventId,
-    ) -> Result<Self, Self::Error> {
-        match value {
-            crate::versions::protocol87702::bit_packed::GameEEventId::ECameraSave(e) => {
-                Ok(e.to_versionless()?)
-            }
-            _ => Err(GameEventError::UnsupportedEventType),
-        }
-    }
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSCmdEvent {
+    pub m_cmd_flags: i64,
+    pub m_abil: Option<GameSCmdAbil>,
+    pub m_data: GameSCmdData,
+    pub m_sequence: i64,
+    pub m_other_unit: Option<GameTUnitTag>,
+    pub m_unit_group: Option<u32>,
 }
 
-impl crate::versions::protocol87702::bit_packed::GameSCameraSaveEvent {
-    pub fn to_versionless(self) -> Result<ReplayGameEvent, GameEventError> {
-        Ok(ReplayGameEvent::CameraSave(GameSCameraSaveEvent {
-            m_which: self.m_which,
-            m_target: GameSPointMini {
-                x: self.m_target.x.value.value,
-                y: self.m_target.y.value.value,
-            },
-        }))
-    }
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSCmdAbil {
+    pub m_abil_link: GameTAbilLink,
+    pub m_abil_cmd_index: i64,
+    pub m_abil_cmd_data: Option<u8>,
 }
 
-impl TryFrom<crate::versions::protocol88500::bit_packed::GameEEventId> for ReplayGameEvent {
-    type Error = GameEventError;
-    fn try_from(
-        value: crate::versions::protocol88500::bit_packed::GameEEventId,
-    ) -> Result<Self, Self::Error> {
-        match value {
-            crate::versions::protocol88500::bit_packed::GameEEventId::ECameraSave(e) => {
-                Ok(e.to_versionless()?)
-            }
-            _ => Err(GameEventError::UnsupportedEventType),
-        }
-    }
+#[derive(Debug, PartialEq, Clone)]
+pub enum GameSCmdData {
+    None,
+    TargetPoint(GameSMapCoord3D),
+    TargetUnit(GameSCmdDataTargetUnit),
+    Data(u32),
 }
 
-impl crate::versions::protocol88500::bit_packed::GameSCameraSaveEvent {
-    pub fn to_versionless(self) -> Result<ReplayGameEvent, GameEventError> {
-        Ok(ReplayGameEvent::CameraSave(GameSCameraSaveEvent {
-            m_which: self.m_which,
-            m_target: GameSPointMini {
-                x: self.m_target.x.value.value,
-                y: self.m_target.y.value.value,
-            },
-        }))
-    }
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSMapCoord3D {
+    pub x: GameTMapCoordFixedBits,
+    pub y: GameTMapCoordFixedBits,
+    pub z: GameTFixedBits,
 }
 
-impl TryFrom<crate::versions::protocol89634::bit_packed::GameEEventId> for ReplayGameEvent {
-    type Error = GameEventError;
-    fn try_from(
-        value: crate::versions::protocol89634::bit_packed::GameEEventId,
-    ) -> Result<Self, Self::Error> {
-        match value {
-            crate::versions::protocol89634::bit_packed::GameEEventId::ECameraSave(e) => {
-                Ok(e.to_versionless()?)
-            }
-            _ => Err(GameEventError::UnsupportedEventType),
-        }
-    }
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSCmdDataTargetUnit {
+    pub m_target_unit_flags: u16,
+    pub m_timer: u8,
+    pub m_tag: GameTUnitTag,
+    pub m_snapshot_unit_link: GameTUnitLink,
+    pub m_snapshot_control_player_id: Option<GameTPlayerId>,
+    pub m_snapshot_upkeep_player_id: Option<GameTPlayerId>,
+    pub m_snapshot_point: GameSMapCoord3D,
 }
 
-impl crate::versions::protocol89634::bit_packed::GameSCameraSaveEvent {
-    pub fn to_versionless(self) -> Result<ReplayGameEvent, GameEventError> {
-        Ok(ReplayGameEvent::CameraSave(GameSCameraSaveEvent {
-            m_which: self.m_which,
-            m_target: GameSPointMini {
-                x: self.m_target.x.value.value,
-                y: self.m_target.y.value.value,
-            },
-        }))
-    }
-}
-
-impl TryFrom<crate::versions::protocol89720::bit_packed::GameEEventId> for ReplayGameEvent {
-    type Error = GameEventError;
-    fn try_from(
-        value: crate::versions::protocol89720::bit_packed::GameEEventId,
-    ) -> Result<Self, Self::Error> {
-        match value {
-            crate::versions::protocol89720::bit_packed::GameEEventId::ECameraSave(e) => {
-                Ok(e.to_versionless()?)
-            }
-            _ => Err(GameEventError::UnsupportedEventType),
-        }
-    }
-}
-
-impl crate::versions::protocol89720::bit_packed::GameSCameraSaveEvent {
-    pub fn to_versionless(self) -> Result<ReplayGameEvent, GameEventError> {
-        Ok(ReplayGameEvent::CameraSave(GameSCameraSaveEvent {
-            m_which: self.m_which,
-            m_target: GameSPointMini {
-                x: self.m_target.x.value.value,
-                y: self.m_target.y.value.value,
-            },
-        }))
-    }
-}
+pub type GameTUnitTag = u32;
+pub type GameTUnitLink = u16;
+pub type GameTPlayerId = i64;
+pub type GameTMapCoordFixedBits = i64;
+pub type GameTFixedBits = i32;
+pub type GameTAbilLink = i32;

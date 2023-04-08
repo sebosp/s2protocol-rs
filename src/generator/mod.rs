@@ -12,7 +12,6 @@
 
 pub mod decoder_type;
 pub mod proto_morphist;
-pub mod versionless;
 pub use decoder_type::DecoderType;
 pub use proto_morphist::ProtoMorphist;
 

@@ -2,8 +2,6 @@
 //! intermediate state mostly.
 
 use super::decoder_type::DecoderType;
-use super::versionless::generate_game_events_convert_into_versionless;
-use super::versionless::generate_replay_tracker_convert_into_versionless;
 use convert_case::{Case, Casing};
 use serde_json::Value;
 use std::collections::HashMap;
@@ -68,12 +66,6 @@ impl ProtoMorphist {
         self.output.write_all(
             b"use crate::*;\n\
               use nom_mpq::parser::peek_hex;\n\
-              use crate::tracker_events::{
-                ReplayTrackerEvent, TrackerEvent, TrackerEventError, UnitBornEvent, UnitDiedEvent,
-                UnitDoneEvent, UnitInitEvent, UnitPositionsEvent, UnitTypeChangeEvent,
-              };
-              use std::convert::TryFrom;\n\
-              use nom_mpq::MPQ;\n\
               use nom::*;\n",
         )
     }
@@ -90,9 +82,7 @@ impl ProtoMorphist {
         )?;
         self.output.write_all(
             b"use crate::*;\n\
-        // use nom_mpq::MPQ;\n\
-        // use std::convert::TryFrom;\n\
-        use nom::*;\n",
+              use nom::*;\n",
         )
     }
 
@@ -207,7 +197,6 @@ impl ProtoMorphist {
             }
         }
 
-        generate_replay_tracker_convert_into_versionless(&mut self.output)?;
         self.close_byte_aligned_mod()
     }
 
@@ -299,7 +288,6 @@ impl ProtoMorphist {
                 }
             }
         }
-        generate_game_events_convert_into_versionless(&mut self.output)?;
         self.close_bit_packed_mod()
     }
 
