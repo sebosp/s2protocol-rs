@@ -15,6 +15,15 @@ pub enum GameEventError {
     Utf8Error(#[from] Utf8Error),
 }
 
+pub type GameTUnitTag = u32;
+pub type GameTUnitLink = u16;
+pub type GameTPlayerId = i64;
+pub type GameTMapCoordFixedBits = i64;
+pub type GameTFixedBits = i32;
+pub type GameTAbilLink = i32;
+pub type GameTFixedMiniBitsSigned = i16;
+pub type GameTFixedMiniBitsUnsigned = i64;
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct GameEvent {
     pub delta: i64,
@@ -34,19 +43,19 @@ pub enum ReplayGameEvent {
     UnitHighlight(GameSUnitHighlightEvent),
     TriggerReplySelected(GameSTriggerReplySelectedEvent),*/
     CameraUpdate(CameraUpdateEvent),
-    /*TriggerMouseClicked(GameSTriggerMouseClickedEvent),
+    TriggerMouseClicked(GameSTriggerMouseClickedEvent),
     TriggerMouseMoved(GameSTriggerMouseMovedEvent),
-    TriggerHotkeyPressed(GameSTriggerHotkeyPressedEvent),
+    /*TriggerHotkeyPressed(GameSTriggerHotkeyPressedEvent),
     TriggerTargetModeUpdate(GameSTriggerTargetModeUpdateEvent),
-    TriggerKeyPressed(GameSTriggerKeyPressedEvent),
+    TriggerKeyPressed(GameSTriggerKeyPressedEvent),*/
     TriggerMouseWheel(GameSTriggerMouseWheelEvent),
-    TriggerButtonPressed(GameSTriggerButtonPressedEvent),
+    /*TriggerButtonPressed(GameSTriggerButtonPressedEvent),
     GameUserLeave(GameSGameUserLeaveEvent),
     GameUserJoin(GameSGameUserJoinEvent),
-    CommandManagerState(GameSCommandManagerStateEvent),
+    CommandManagerState(GameSCommandManagerStateEvent),*/
     CmdUpdateTargetPoint(GameSCmdUpdateTargetPointEvent),
     CmdUpdateTargetUnit(GameSCmdUpdateTargetUnitEvent),
-    TriggerAnimLengthQueryByName(GameSTriggerAnimLengthQueryByNameEvent),
+    /*TriggerAnimLengthQueryByName(GameSTriggerAnimLengthQueryByNameEvent),
     TriggerAnimLengthQueryByProps(GameSTriggerAnimLengthQueryByPropsEvent),*/
 }
 
@@ -65,8 +74,6 @@ pub struct CameraUpdateEvent {
     pub m_reason: Option<i8>,
     pub m_follow: bool,
 }
-
-pub type GameTFixedMiniBitsUnsigned = i64;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GameSPointMini {
@@ -117,9 +124,36 @@ pub struct GameSCmdDataTargetUnit {
     pub m_snapshot_point: GameSMapCoord3D,
 }
 
-pub type GameTUnitTag = u32;
-pub type GameTUnitLink = u16;
-pub type GameTPlayerId = i64;
-pub type GameTMapCoordFixedBits = i64;
-pub type GameTFixedBits = i32;
-pub type GameTAbilLink = i32;
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSCmdUpdateTargetPointEvent {
+    pub m_target: GameSMapCoord3D,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSCmdUpdateTargetUnitEvent {
+    pub m_target: GameSCmdDataTargetUnit,
+}
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSTriggerMouseClickedEvent {
+    pub m_button: u32,
+    pub m_down: bool,
+    pub m_pos_ui: GameSuiCoord,
+    pub m_pos_world: GameSMapCoord3D,
+    pub m_flags: i8,
+}
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSTriggerMouseMovedEvent {
+    pub m_pos_ui: GameSuiCoord,
+    pub m_pos_world: GameSMapCoord3D,
+    pub m_flags: i8,
+}
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSuiCoord {
+    pub x: u16,
+    pub y: u16,
+}
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSTriggerMouseWheelEvent {
+    pub m_wheel_spin: GameTFixedMiniBitsSigned,
+    pub m_flags: i8,
+}

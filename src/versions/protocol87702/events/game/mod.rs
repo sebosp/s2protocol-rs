@@ -10,6 +10,10 @@ use nom_mpq::MPQ;
 
 pub mod camera;
 pub use camera::*;
+pub mod cmd;
+pub use cmd::*;
+pub mod mouse;
+pub use mouse::*;
 
 impl GameEEventId {
     /// Reads a delta, GameEvent set
@@ -68,48 +72,6 @@ impl GameEEventId {
     }
 }
 
-impl From<GameSCmdEvent> for ReplayGameEvent {
-    fn from(source: GameSCmdEvent) -> ReplayGameEvent {
-        let m_abil = match source.m_abil {
-            Some(val) => Some(val.into()),
-            None => None,
-        };
-        ReplayGameEvent::Cmd(crate::game_events::GameSCmdEvent {
-            m_cmd_flags: source.m_cmd_flags,
-            m_abil,
-            m_data: source.m_data.into(),
-            m_sequence: source.m_sequence,
-            m_other_unit: source.m_other_unit.map(|u| u.value.value as u32),
-            m_unit_group: source.m_unit_group.map(|g| g.value as u32),
-        })
-    }
-}
-
-impl From<GameSCmdAbil> for crate::game_events::GameSCmdAbil {
-    fn from(source: GameSCmdAbil) -> crate::game_events::GameSCmdAbil {
-        crate::game_events::GameSCmdAbil {
-            m_abil_link: source.m_abil_link.value.value as i32,
-            m_abil_cmd_index: source.m_abil_cmd_index,
-            m_abil_cmd_data: source.m_abil_cmd_data.map(|d| d.value as u8),
-        }
-    }
-}
-
-impl From<GameSCmdData> for crate::game_events::GameSCmdData {
-    fn from(source: GameSCmdData) -> crate::game_events::GameSCmdData {
-        match source {
-            GameSCmdData::None(()) => crate::game_events::GameSCmdData::None,
-            GameSCmdData::TargetPoint(val) => {
-                crate::game_events::GameSCmdData::TargetPoint(val.into())
-            }
-            GameSCmdData::TargetUnit(val) => {
-                crate::game_events::GameSCmdData::TargetUnit(val.into())
-            }
-            GameSCmdData::Data(val) => crate::game_events::GameSCmdData::Data(val.into()),
-        }
-    }
-}
-
 impl From<GameSMapCoord3D> for crate::game_events::GameSMapCoord3D {
     fn from(source: GameSMapCoord3D) -> crate::game_events::GameSMapCoord3D {
         crate::game_events::GameSMapCoord3D {
@@ -120,16 +82,11 @@ impl From<GameSMapCoord3D> for crate::game_events::GameSMapCoord3D {
     }
 }
 
-impl From<GameSCmdDataTargetUnit> for crate::game_events::GameSCmdDataTargetUnit {
-    fn from(source: GameSCmdDataTargetUnit) -> crate::game_events::GameSCmdDataTargetUnit {
-        crate::game_events::GameSCmdDataTargetUnit {
-            m_target_unit_flags: source.m_target_unit_flags.value as u16,
-            m_timer: source.m_timer.value as u8,
-            m_tag: source.m_tag.value.into(),
-            m_snapshot_unit_link: source.m_snapshot_unit_link.value.into(),
-            m_snapshot_control_player_id: source.m_snapshot_control_player_id.map(|p| p.value),
-            m_snapshot_upkeep_player_id: source.m_snapshot_upkeep_player_id.map(|p| p.value),
-            m_snapshot_point: source.m_snapshot_point.into(),
+impl From<GameSuiCoord> for crate::game_events::GameSuiCoord {
+    fn from(source: GameSuiCoord) -> crate::game_events::GameSuiCoord {
+        crate::game_events::GameSuiCoord {
+            x: source.x.value as u16,
+            y: source.y.value as u16,
         }
     }
 }
@@ -152,6 +109,12 @@ impl From<Uint16> for u16 {
     }
 }
 
+impl From<Int16> for i16 {
+    fn from(source: Int16) -> i16 {
+        source.value as i16
+    }
+}
+
 impl TryFrom<GameEEventId> for ReplayGameEvent {
     type Error = GameEventError;
     fn try_from(value: GameEEventId) -> Result<Self, Self::Error> {
@@ -159,6 +122,11 @@ impl TryFrom<GameEEventId> for ReplayGameEvent {
             GameEEventId::ECameraSave(e) => Ok(e.into()),
             GameEEventId::ECmd(e) => Ok(e.into()),
             GameEEventId::ECameraUpdate(e) => Ok(e.into()),
+            GameEEventId::ETriggerMouseClicked(e) => Ok(e.into()),
+            GameEEventId::ETriggerMouseMoved(e) => Ok(e.into()),
+            GameEEventId::ETriggerMouseWheel(e) => Ok(e.into()),
+            GameEEventId::ECmdUpdateTargetPoint(e) => Ok(e.into()),
+            GameEEventId::ECmdUpdateTargetUnit(e) => Ok(e.into()),
             _ => Err(GameEventError::UnsupportedEventType),
         }
     }
@@ -176,5 +144,11 @@ impl From<GameSPointMini> for game_events::GameSPointMini {
 impl From<GameTFixedMiniBitsUnsigned> for game_events::GameTFixedMiniBitsUnsigned {
     fn from(source: GameTFixedMiniBitsUnsigned) -> game_events::GameTFixedMiniBitsUnsigned {
         source.value.value as i64
+    }
+}
+
+impl From<GameTFixedMiniBitsSigned> for game_events::GameTFixedMiniBitsSigned {
+    fn from(source: GameTFixedMiniBitsSigned) -> game_events::GameTFixedMiniBitsSigned {
+        source.value.value as i16
     }
 }
