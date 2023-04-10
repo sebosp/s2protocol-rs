@@ -14,6 +14,8 @@ pub mod cmd;
 pub use cmd::*;
 pub mod mouse;
 pub use mouse::*;
+pub mod unit;
+pub use unit::*;
 
 impl GameEEventId {
     /// Reads a delta, GameEvent set
@@ -103,6 +105,12 @@ impl From<Int8> for i8 {
     }
 }
 
+impl From<Uint8> for u8 {
+    fn from(source: Uint8) -> u8 {
+        source.value as u8
+    }
+}
+
 impl From<Uint16> for u16 {
     fn from(source: Uint16) -> u16 {
         source.value as u16
@@ -121,6 +129,8 @@ impl TryFrom<GameEEventId> for ReplayGameEvent {
         match value {
             GameEEventId::ECameraSave(e) => Ok(e.into()),
             GameEEventId::ECmd(e) => Ok(e.into()),
+            GameEEventId::EUnitClick(e) => Ok(e.into()),
+            GameEEventId::EUnitHighlight(e) => Ok(e.into()),
             GameEEventId::ECameraUpdate(e) => Ok(e.into()),
             GameEEventId::ETriggerMouseClicked(e) => Ok(e.into()),
             GameEEventId::ETriggerMouseMoved(e) => Ok(e.into()),
