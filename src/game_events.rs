@@ -38,10 +38,10 @@ pub enum ReplayGameEvent {
     /*SelectionDelta(GameSSelectionDeltaEvent),
     ControlGroupUpdate(GameSControlGroupUpdateEvent),
     SelectionSyncCheck(GameSSelectionSyncCheckEvent),
-    TriggerChatMessage(GameSTriggerChatMessageEvent),
+    TriggerChatMessage(GameSTriggerChatMessageEvent),*/
     UnitClick(GameSUnitClickEvent),
     UnitHighlight(GameSUnitHighlightEvent),
-    TriggerReplySelected(GameSTriggerReplySelectedEvent),*/
+    /*TriggerReplySelected(GameSTriggerReplySelectedEvent),*/
     CameraUpdate(CameraUpdateEvent),
     TriggerMouseClicked(GameSTriggerMouseClickedEvent),
     TriggerMouseMoved(GameSTriggerMouseMovedEvent),
@@ -156,4 +156,15 @@ pub struct GameSuiCoord {
 pub struct GameSTriggerMouseWheelEvent {
     pub m_wheel_spin: GameTFixedMiniBitsSigned,
     pub m_flags: i8,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSUnitClickEvent {
+    pub m_unit_tag: GameTUnitTag,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSUnitHighlightEvent {
+    pub m_unit_tag: GameTUnitTag,
+    pub m_flags: u8,
 }
