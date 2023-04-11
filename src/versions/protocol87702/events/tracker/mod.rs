@@ -1,8 +1,9 @@
 //! Converts Tracker Events from protocol-version specific to protocol-agnostic versions
 use super::byte_aligned::*;
 use crate::tracker_events::{
-    ReplayTrackerEvent, TrackerEvent, TrackerEventError, UnitBornEvent, UnitDiedEvent,
-    UnitDoneEvent, UnitInitEvent, UnitPositionsEvent, UnitTypeChangeEvent,
+    PlayerStats, PlayerStatsEvent, ReplayTrackerEvent, TrackerEvent, TrackerEventError,
+    UnitBornEvent, UnitDiedEvent, UnitDoneEvent, UnitInitEvent, UnitPositionsEvent,
+    UnitTypeChangeEvent,
 };
 use crate::*;
 use nom::*;
@@ -53,8 +54,8 @@ impl TryFrom<ReplayTrackerEEventId> for ReplayTrackerEvent {
 
     fn try_from(value: ReplayTrackerEEventId) -> Result<Self, Self::Error> {
         match value {
-            ReplayTrackerEEventId::EPlayerStats(_)
-            | ReplayTrackerEEventId::EUnitOwnerChange(_)
+            ReplayTrackerEEventId::EPlayerStats(e) => Ok(e.into()),
+            ReplayTrackerEEventId::EUnitOwnerChange(_)
             | ReplayTrackerEEventId::EUpgrade(_)
             | ReplayTrackerEEventId::EPlayerSetup(_) => {
                 Err(TrackerEventError::UnsupportedEventType)
@@ -147,5 +148,64 @@ impl From<ReplayTrackerSUnitPositionsEvent> for ReplayTrackerEvent {
             first_unit_index: source.m_first_unit_index,
             items: source.m_items,
         })
+    }
+}
+
+impl From<ReplayTrackerSPlayerStatsEvent> for ReplayTrackerEvent {
+    fn from(source: ReplayTrackerSPlayerStatsEvent) -> ReplayTrackerEvent {
+        ReplayTrackerEvent::PlayerStats(PlayerStatsEvent {
+            player_id: source.m_player_id,
+            stats: source.m_stats.into(),
+        })
+    }
+}
+
+impl From<ReplayTrackerSPlayerStats> for PlayerStats {
+    fn from(source: ReplayTrackerSPlayerStats) -> PlayerStats {
+        PlayerStats {
+            minerals_current: source.m_score_value_minerals_current,
+            vespene_current: source.m_score_value_vespene_current,
+            minerals_collection_rate: source.m_score_value_minerals_collection_rate,
+            vespene_collection_rate: source.m_score_value_vespene_collection_rate,
+            workers_active_count: source.m_score_value_workers_active_count,
+            minerals_used_in_progress_army: source.m_score_value_minerals_used_in_progress_army,
+            minerals_used_in_progress_economy: source
+                .m_score_value_minerals_used_in_progress_economy,
+            minerals_used_in_progress_technology: source
+                .m_score_value_minerals_used_in_progress_technology,
+            vespene_used_in_progress_army: source.m_score_value_vespene_used_in_progress_army,
+            vespene_used_in_progress_economy: source.m_score_value_vespene_used_in_progress_economy,
+            vespene_used_in_progress_technology: source
+                .m_score_value_vespene_used_in_progress_technology,
+            minerals_used_current_army: source.m_score_value_minerals_used_current_army,
+            minerals_used_current_economy: source.m_score_value_minerals_used_current_economy,
+            minerals_used_current_technology: source.m_score_value_minerals_used_current_technology,
+            vespene_used_current_army: source.m_score_value_vespene_used_current_army,
+            vespene_used_current_economy: source.m_score_value_vespene_used_current_economy,
+            vespene_used_current_technology: source.m_score_value_vespene_used_current_technology,
+            minerals_lost_army: source.m_score_value_minerals_lost_army,
+            minerals_lost_economy: source.m_score_value_minerals_lost_economy,
+            minerals_lost_technology: source.m_score_value_minerals_lost_technology,
+            vespene_lost_army: source.m_score_value_vespene_lost_army,
+            vespene_lost_economy: source.m_score_value_vespene_lost_economy,
+            vespene_lost_technology: source.m_score_value_vespene_lost_technology,
+            minerals_killed_army: source.m_score_value_minerals_killed_army,
+            minerals_killed_economy: source.m_score_value_minerals_killed_economy,
+            minerals_killed_technology: source.m_score_value_minerals_killed_technology,
+            vespene_killed_army: source.m_score_value_vespene_killed_army,
+            vespene_killed_economy: source.m_score_value_vespene_killed_economy,
+            vespene_killed_technology: source.m_score_value_vespene_killed_technology,
+            food_used: source.m_score_value_food_used,
+            food_made: source.m_score_value_food_made,
+            minerals_used_active_forces: source.m_score_value_minerals_used_active_forces,
+            vespene_used_active_forces: source.m_score_value_vespene_used_active_forces,
+            minerals_friendly_fire_army: source.m_score_value_minerals_friendly_fire_army,
+            minerals_friendly_fire_economy: source.m_score_value_minerals_friendly_fire_economy,
+            minerals_friendly_fire_technology: source
+                .m_score_value_minerals_friendly_fire_technology,
+            vespene_friendly_fire_army: source.m_score_value_vespene_friendly_fire_army,
+            vespene_friendly_fire_economy: source.m_score_value_vespene_friendly_fire_economy,
+            vespene_friendly_fire_technology: source.m_score_value_vespene_friendly_fire_technology,
+        }
     }
 }
