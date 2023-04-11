@@ -1,9 +1,9 @@
 //! Converts Tracker Events from protocol-version specific to protocol-agnostic versions
 use super::byte_aligned::*;
 use crate::tracker_events::{
-    PlayerStats, PlayerStatsEvent, ReplayTrackerEvent, TrackerEvent, TrackerEventError,
-    UnitBornEvent, UnitDiedEvent, UnitDoneEvent, UnitInitEvent, UnitPositionsEvent,
-    UnitTypeChangeEvent,
+    PlayerSetupEvent, PlayerStats, PlayerStatsEvent, ReplayTrackerEvent, TrackerEvent,
+    TrackerEventError, UnitBornEvent, UnitDiedEvent, UnitDoneEvent, UnitInitEvent,
+    UnitOwnerChangeEvent, UnitPositionsEvent, UnitTypeChangeEvent, UpgradeEvent,
 };
 use crate::*;
 use nom::*;
@@ -55,21 +55,29 @@ impl TryFrom<ReplayTrackerEEventId> for ReplayTrackerEvent {
     fn try_from(value: ReplayTrackerEEventId) -> Result<Self, Self::Error> {
         match value {
             ReplayTrackerEEventId::EPlayerStats(e) => Ok(e.into()),
-            ReplayTrackerEEventId::EUnitOwnerChange(_)
-            | ReplayTrackerEEventId::EUpgrade(_)
-            | ReplayTrackerEEventId::EPlayerSetup(_) => {
-                Err(TrackerEventError::UnsupportedEventType)
-            }
             ReplayTrackerEEventId::EUnitBorn(e) => Ok(e.try_into()?),
             ReplayTrackerEEventId::EUnitDied(e) => Ok(e.into()),
+            ReplayTrackerEEventId::EUnitOwnerChange(e) => Ok(e.into()),
             ReplayTrackerEEventId::EUnitTypeChange(e) => Ok(e.try_into()?),
+            ReplayTrackerEEventId::EUpgrade(e) => Ok(e.try_into()?),
             ReplayTrackerEEventId::EUnitInit(e) => Ok(e.try_into()?),
             ReplayTrackerEEventId::EUnitDone(e) => Ok(e.into()),
             ReplayTrackerEEventId::EUnitPosition(e) => Ok(e.into()),
+            ReplayTrackerEEventId::EPlayerSetup(e) => Ok(e.into()),
         }
     }
 }
 
+impl TryFrom<ReplayTrackerSUpgradeEvent> for ReplayTrackerEvent {
+    type Error = TrackerEventError;
+    fn try_from(source: ReplayTrackerSUpgradeEvent) -> Result<Self, Self::Error> {
+        Ok(ReplayTrackerEvent::Upgrade(UpgradeEvent {
+            player_id: source.m_player_id,
+            upgrade_type_name: str::from_utf8(&source.m_upgrade_type_name)?.to_string(),
+            count: source.m_count,
+        }))
+    }
+}
 impl TryFrom<ReplayTrackerSUnitBornEvent> for ReplayTrackerEvent {
     type Error = TrackerEventError;
     fn try_from(source: ReplayTrackerSUnitBornEvent) -> Result<Self, Self::Error> {
@@ -90,6 +98,17 @@ impl TryFrom<ReplayTrackerSUnitBornEvent> for ReplayTrackerEvent {
             creator_unit_tag_recycle: source.m_creator_unit_tag_recycle,
             creator_ability_name,
         }))
+    }
+}
+
+impl From<ReplayTrackerSUnitOwnerChangeEvent> for ReplayTrackerEvent {
+    fn from(source: ReplayTrackerSUnitOwnerChangeEvent) -> ReplayTrackerEvent {
+        ReplayTrackerEvent::UnitOwnerChange(UnitOwnerChangeEvent {
+            unit_tag_index: source.m_unit_tag_index,
+            unit_tag_recycle: source.m_unit_tag_recycle,
+            control_player_id: source.m_control_player_id,
+            upkeep_player_id: source.m_upkeep_player_id,
+        })
     }
 }
 
@@ -207,5 +226,16 @@ impl From<ReplayTrackerSPlayerStats> for PlayerStats {
             vespene_friendly_fire_economy: source.m_score_value_vespene_friendly_fire_economy,
             vespene_friendly_fire_technology: source.m_score_value_vespene_friendly_fire_technology,
         }
+    }
+}
+
+impl From<ReplayTrackerSPlayerSetupEvent> for ReplayTrackerEvent {
+    fn from(source: ReplayTrackerSPlayerSetupEvent) -> ReplayTrackerEvent {
+        ReplayTrackerEvent::PlayerSetup(PlayerSetupEvent {
+            player_id: source.m_player_id,
+            m_type: source.m_type,
+            user_id: source.m_user_id,
+            slot_id: source.m_slot_id,
+        })
     }
 }

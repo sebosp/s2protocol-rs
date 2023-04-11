@@ -16,6 +16,8 @@ pub mod mouse;
 pub use mouse::*;
 pub mod unit;
 pub use unit::*;
+pub mod selection;
+pub use selection::*;
 
 impl GameEEventId {
     /// Reads a delta, GameEvent set
@@ -129,6 +131,7 @@ impl TryFrom<GameEEventId> for ReplayGameEvent {
         match value {
             GameEEventId::ECameraSave(e) => Ok(e.into()),
             GameEEventId::ECmd(e) => Ok(e.into()),
+            GameEEventId::ESelectionDelta(e) => Ok(e.try_into()?),
             GameEEventId::EUnitClick(e) => Ok(e.into()),
             GameEEventId::EUnitHighlight(e) => Ok(e.into()),
             GameEEventId::ECameraUpdate(e) => Ok(e.into()),
@@ -160,5 +163,23 @@ impl From<GameTFixedMiniBitsUnsigned> for game_events::GameTFixedMiniBitsUnsigne
 impl From<GameTFixedMiniBitsSigned> for game_events::GameTFixedMiniBitsSigned {
     fn from(source: GameTFixedMiniBitsSigned) -> game_events::GameTFixedMiniBitsSigned {
         source.value.value as i16
+    }
+}
+
+impl From<GameTSelectionIndex> for game_events::GameTSelectionIndex {
+    fn from(source: GameTSelectionIndex) -> game_events::GameTSelectionIndex {
+        source.value as u16
+    }
+}
+
+impl From<GameTUnitLink> for game_events::GameTUnitLink {
+    fn from(source: GameTUnitLink) -> game_events::GameTUnitLink {
+        source.value.value as u16
+    }
+}
+
+impl From<GameTUnitTag> for game_events::GameTUnitTag {
+    fn from(source: GameTUnitTag) -> game_events::GameTUnitTag {
+        source.value.value as u32
     }
 }

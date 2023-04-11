@@ -23,6 +23,11 @@ pub type GameTFixedBits = i32;
 pub type GameTAbilLink = i32;
 pub type GameTFixedMiniBitsSigned = i16;
 pub type GameTFixedMiniBitsUnsigned = i64;
+pub type GameTControlGroupId = u8;
+pub type GameTSubgroupIndex = u16;
+pub type GameTSelectionIndex = u16;
+pub type GameTSubgroupPriority = u8;
+pub type GameTSelectionCount = u16;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GameEvent {
@@ -35,8 +40,8 @@ pub struct GameEvent {
 pub enum ReplayGameEvent {
     CameraSave(CameraSaveEvent),
     Cmd(GameSCmdEvent),
-    /*SelectionDelta(GameSSelectionDeltaEvent),
-    ControlGroupUpdate(GameSControlGroupUpdateEvent),
+    SelectionDelta(GameSSelectionDeltaEvent),
+    /*ControlGroupUpdate(GameSControlGroupUpdateEvent),
     SelectionSyncCheck(GameSSelectionSyncCheckEvent),
     TriggerChatMessage(GameSTriggerChatMessageEvent),*/
     UnitClick(GameSUnitClickEvent),
@@ -167,4 +172,43 @@ pub struct GameSUnitClickEvent {
 pub struct GameSUnitHighlightEvent {
     pub m_unit_tag: GameTUnitTag,
     pub m_flags: u8,
+}
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSSelectionDeltaEvent {
+    pub m_control_group_id: GameTControlGroupId,
+    pub m_delta: GameSSelectionDelta,
+}
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSSelectionDelta {
+    pub m_subgroup_index: GameTSubgroupIndex,
+    pub m_remove_mask: GameSSelectionMask,
+    pub m_add_subgroups: Vec<GameSSelectionDeltaSubgroup>,
+    pub m_add_unit_tags: Vec<GameTUnitTag>,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSSelectionDeltaSubgroup {
+    pub m_unit_link: GameTUnitLink,
+    pub m_subgroup_priority: GameTSubgroupPriority,
+    pub m_intra_subgroup_priority: GameTSubgroupPriority,
+    pub m_count: GameTSelectionCount,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum GameSSelectionMask {
+    None,
+    Mask(GameSelectionMaskType),
+    OneIndices(GameSelectionIndexArrayType),
+    ZeroIndices(GameSelectionIndexArrayType),
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSelectionMaskType {
+    // Maybe needs to be Vec<u8>, trying as String first
+    pub value: String,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSelectionIndexArrayType {
+    pub value: Vec<GameTSelectionIndex>,
 }

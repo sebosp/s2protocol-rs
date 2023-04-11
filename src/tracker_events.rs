@@ -107,10 +107,34 @@ pub enum ReplayTrackerEvent {
     PlayerStats(PlayerStatsEvent),
     UnitBorn(UnitBornEvent),
     UnitDied(UnitDiedEvent),
+    UnitOwnerChange(UnitOwnerChangeEvent),
     UnitTypeChange(UnitTypeChangeEvent),
+    Upgrade(UpgradeEvent),
     UnitInit(UnitInitEvent),
     UnitDone(UnitDoneEvent),
     UnitPosition(UnitPositionsEvent),
+    PlayerSetup(PlayerSetupEvent),
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct UpgradeEvent {
+    pub player_id: u8,
+    pub upgrade_type_name: String,
+    pub count: i32,
+}
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct UnitOwnerChangeEvent {
+    pub unit_tag_index: u32,
+    pub unit_tag_recycle: u32,
+    pub control_player_id: u8,
+    pub upkeep_player_id: u8,
+}
+#[derive(Debug, PartialEq, Clone)]
+pub struct PlayerSetupEvent {
+    pub player_id: u8,
+    pub m_type: u32,
+    pub user_id: Option<u32>,
+    pub slot_id: Option<u32>,
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
