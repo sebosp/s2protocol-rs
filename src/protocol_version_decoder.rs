@@ -7,7 +7,8 @@
 //! the target file. In this verison we are not yet doing that but we should.
 
 use super::*;
-use crate::versions::protocol87702::{ReplaySHeader, SVersion};
+// TODO: Find a way to parse the version with the latest available protocol.
+use crate::versions::protocol87702::byte_aligned::{ReplaySHeader, SVersion};
 use nom::bytes::complete::*;
 use nom::error::dbg_dmp;
 use nom::*;
@@ -15,7 +16,7 @@ use nom_mpq::parser::peek_hex;
 use nom_mpq::MPQ;
 
 /// The S2 Protocol Header
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct ProtocolHeader {
     pub m_signature: Vec<u8>,
     pub m_version: SVersion,

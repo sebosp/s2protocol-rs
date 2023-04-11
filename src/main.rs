@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
 use nom_mpq::parser;
-use s2protocol::generator::generate_code_for_protocol;
+use s2protocol::generator::proto_morphist::ProtoMorphist;
+use s2protocol::versions::read_game_events;
 use s2protocol::versions::read_tracker_events;
 use tracing_subscriber;
 
@@ -14,6 +15,7 @@ enum Commands {
     },
     /// Gets the tracker events from the file
     GetTrackerEvents,
+    GetGameEvents,
 }
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -35,13 +37,22 @@ fn main() {
     let cli = Cli::parse();
     match &cli.command {
         Commands::Generate { output } => {
-            generate_code_for_protocol(&cli.source, &output).unwrap();
+            ProtoMorphist::gen(&cli.source, &output).unwrap();
         }
         Commands::GetTrackerEvents => {
             tracing::info!("Getting tracker events");
             let file_contents = parser::read_file(&cli.source);
             let (_input, mpq) = parser::parse(&file_contents).unwrap();
             let res = read_tracker_events(&mpq, &file_contents);
+            for evt in res {
+                tracing::info!("{:?}", evt);
+            }
+        }
+        Commands::GetGameEvents => {
+            tracing::info!("Getting game events");
+            let file_contents = parser::read_file(&cli.source);
+            let (_input, mpq) = parser::parse(&file_contents).unwrap();
+            let res = read_game_events(&mpq, &file_contents);
             for evt in res {
                 tracing::info!("{:?}", evt);
             }
