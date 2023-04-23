@@ -3,6 +3,7 @@
 pub mod bit_packed_decoder;
 pub mod game_events;
 pub mod generator;
+pub mod message_events;
 pub mod protocol_version_decoder;
 pub mod tracker_events;
 pub mod versioned_decoder;

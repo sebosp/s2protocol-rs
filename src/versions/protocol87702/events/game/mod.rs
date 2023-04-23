@@ -18,6 +18,8 @@ pub mod unit;
 pub use unit::*;
 pub mod selection;
 pub use selection::*;
+pub mod control_group;
+pub use control_group::*;
 
 impl GameEEventId {
     /// Reads a delta, GameEvent set
@@ -125,6 +127,12 @@ impl From<Int16> for i16 {
     }
 }
 
+impl From<Int32> for i32 {
+    fn from(source: Int32) -> i32 {
+        source.value as i32
+    }
+}
+
 impl TryFrom<GameEEventId> for ReplayGameEvent {
     type Error = GameEventError;
     fn try_from(value: GameEEventId) -> Result<Self, Self::Error> {
@@ -132,12 +140,21 @@ impl TryFrom<GameEEventId> for ReplayGameEvent {
             GameEEventId::ECameraSave(e) => Ok(e.into()),
             GameEEventId::ECmd(e) => Ok(e.into()),
             GameEEventId::ESelectionDelta(e) => Ok(e.try_into()?),
+            GameEEventId::EControlGroupUpdate(e) => Ok(e.try_into()?),
+            GameEEventId::ESelectionSyncCheck(e) => Ok(e.into()),
+            GameEEventId::ETriggerChatMessage(e) => Ok(e.try_into()?),
             GameEEventId::EUnitClick(e) => Ok(e.into()),
             GameEEventId::EUnitHighlight(e) => Ok(e.into()),
+            GameEEventId::ETriggerReplySelected(e) => Ok(e.into()),
             GameEEventId::ECameraUpdate(e) => Ok(e.into()),
             GameEEventId::ETriggerMouseClicked(e) => Ok(e.into()),
             GameEEventId::ETriggerMouseMoved(e) => Ok(e.into()),
+            GameEEventId::ETriggerHotkeyPressed(e) => Ok(e.into()),
+            GameEEventId::ETriggerTargetModeUpdate(e) => Ok(e.into()),
+            GameEEventId::ETriggerKeyPressed(e) => Ok(e.into()),
             GameEEventId::ETriggerMouseWheel(e) => Ok(e.into()),
+            GameEEventId::ETriggerButtonPressed(e) => Ok(e.into()),
+            GameEEventId::ECommandManagerState(e) => Ok(e.into()),
             GameEEventId::ECmdUpdateTargetPoint(e) => Ok(e.into()),
             GameEEventId::ECmdUpdateTargetUnit(e) => Ok(e.into()),
             _ => Err(GameEventError::UnsupportedEventType),
@@ -181,5 +198,75 @@ impl From<GameTUnitLink> for game_events::GameTUnitLink {
 impl From<GameTUnitTag> for game_events::GameTUnitTag {
     fn from(source: GameTUnitTag) -> game_events::GameTUnitTag {
         source.value.value as u32
+    }
+}
+
+impl From<GameTControlGroupCount> for game_events::GameTControlGroupCount {
+    fn from(source: GameTControlGroupCount) -> game_events::GameTControlGroupCount {
+        source.value as u8
+    }
+}
+
+impl TryFrom<GameSTriggerChatMessageEvent> for game_events::ReplayGameEvent {
+    type Error = GameEventError;
+    fn try_from(source: GameSTriggerChatMessageEvent) -> Result<Self, Self::Error> {
+        Ok(ReplayGameEvent::TriggerChatMessage(
+            game_events::GameSTriggerChatMessageEvent {
+                m_chat_message: str::from_utf8(&source.m_chat_message.value)?.to_string(),
+            },
+        ))
+    }
+}
+
+impl From<GameSTriggerReplySelectedEvent> for game_events::ReplayGameEvent {
+    fn from(source: GameSTriggerReplySelectedEvent) -> game_events::ReplayGameEvent {
+        game_events::ReplayGameEvent::TriggerReplySelected(
+            game_events::GameSTriggerReplySelectedEvent {
+                m_conversation_id: source.m_conversation_id.into(),
+                m_reply_id: source.m_reply_id.into(),
+            },
+        )
+    }
+}
+
+impl From<GameSTriggerHotkeyPressedEvent> for game_events::ReplayGameEvent {
+    fn from(source: GameSTriggerHotkeyPressedEvent) -> game_events::ReplayGameEvent {
+        game_events::ReplayGameEvent::TriggerHotkeyPressed(
+            game_events::GameSTriggerHotkeyPressedEvent {
+                m_hotkey: source.m_hotkey.into(),
+                m_down: source.m_down,
+            },
+        )
+    }
+}
+
+impl From<GameSTriggerTargetModeUpdateEvent> for game_events::ReplayGameEvent {
+    fn from(source: GameSTriggerTargetModeUpdateEvent) -> game_events::ReplayGameEvent {
+        game_events::ReplayGameEvent::TriggerTargetModeUpdate(
+            game_events::GameSTriggerTargetModeUpdateEvent {
+                m_abil_link: source.m_abil_link.value.into(),
+                m_abil_cmd_index: source.m_abil_cmd_index.into(),
+                m_state: source.m_state.into(),
+            },
+        )
+    }
+}
+
+impl From<GameSTriggerKeyPressedEvent> for game_events::ReplayGameEvent {
+    fn from(source: GameSTriggerKeyPressedEvent) -> game_events::ReplayGameEvent {
+        game_events::ReplayGameEvent::TriggerKeyPressed(game_events::GameSTriggerKeyPressedEvent {
+            m_key: source.m_key.into(),
+            m_flags: source.m_flags.into(),
+        })
+    }
+}
+
+impl From<GameSTriggerButtonPressedEvent> for game_events::ReplayGameEvent {
+    fn from(source: GameSTriggerButtonPressedEvent) -> game_events::ReplayGameEvent {
+        game_events::ReplayGameEvent::TriggerButtonPressed(
+            game_events::GameSTriggerButtonPressedEvent {
+                m_button: source.m_button.value.into(),
+            },
+        )
     }
 }
