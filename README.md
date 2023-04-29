@@ -52,6 +52,7 @@ From time to time as versions come out I will try to generate the files.
 - [x] Replay Tracker and Game Events for protocol88500
 - [x] Replay Tracker and Game Events for protocol89634
 - [x] Replay Tracker and Game Events for protocol89720
+- [x] Replay Tracker and Game Events for protocol90136
 - [x] Parsing unit movement is done.
 - [x] Decoding the tag/recycle done to match Game Events.
 - [x] Game Events are parsed (tho some that seem irrelevant are skipped).
