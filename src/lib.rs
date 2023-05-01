@@ -19,6 +19,13 @@ use std::collections::HashMap;
 use std::str;
 pub use versioned_decoder::*;
 
+// priarity of events, to sort them when they are at the same game loop.
+// In this version, the game_loop will be multiplied by 10 and added the priority.
+// This means 10 max events are supported.
+pub const TRACKER_PRIORITY: i64 = 1;
+pub const GAME_PRIORITY: i64 = 2;
+pub const TRACKER_SPEED_RATIO: f32 = 0.70996;
+
 /// The currently selected units is stored as a group outside of the boundaries of the usable
 /// groups.
 pub const ACTIVE_UNITS_GROUP_IDX: usize = 10usize;
