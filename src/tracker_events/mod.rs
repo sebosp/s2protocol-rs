@@ -1,6 +1,9 @@
 //! Decodes the Tracker Events.
 //! These are stored in an embebdded file in the MPQ file called 'replay.tracker.events'
 
+pub mod state;
+pub use state::*;
+
 use std::str::Utf8Error;
 
 /// A list of errors when handling TrackerEvents

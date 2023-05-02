@@ -19,6 +19,10 @@ use std::collections::HashMap;
 use std::str;
 pub use versioned_decoder::*;
 
+// These many event types (replays, game, attributes, etc) are supported.
+// This should be the real number, but for it's just 10 to help debugging.
+pub const MAX_EVENT_TYPES: i64 = 10;
+
 // priarity of events, to sort them when they are at the same game loop.
 // In this version, the game_loop will be multiplied by 10 and added the priority.
 // This means 10 max events are supported.
@@ -32,8 +36,13 @@ pub const ACTIVE_UNITS_GROUP_IDX: usize = 10usize;
 
 /// Unit position  will be provided like this to match as much as possible the protocols
 /// themselves.
-#[derive(Debug, Display)]
+#[derive(Debug, Default)]
 pub struct Vec3D(pub [i64; 3]);
+impl Vec3D {
+    fn new(x: i64, y: i64, z: i64) -> Self {
+        Self([x, y, z])
+    }
+}
 
 /// Unit Attributes.
 #[derive(Debug, Default)]
@@ -52,7 +61,9 @@ pub struct SC2Unit {
     pub init_game_loop: i64,
     /// The creator ability name.
     pub creator_ability_name: Option<String>,
-    /// The radius of the unit.
+    /// The radius of the unit, this is a parameter that may be stored
+    /// by the client side better, since it's very specific to Swarmy.
+    /// Maybe next version we can move it there.
     pub radius: f32,
     /// Whether the unit is selected
     pub is_selected: bool,
@@ -73,7 +84,7 @@ pub enum SC2EventType {
 }
 
 /// The user state as it's collected through time.
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default)]
 pub struct SC2UserState {
     /// An array of registered control groups per user, the control group indexed as 10th is the
     /// currently selected units.
@@ -92,7 +103,7 @@ impl SC2UserState {
 }
 
 /// A set of filters to apply to the rerun session.
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default)]
 pub struct SC2ReplayFilters {
     /// Filters a specific user id.
     pub user_id: Option<i64>,
@@ -116,7 +127,7 @@ pub struct SC2ReplayFilters {
     pub max_events: Option<usize>,
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default)]
 pub struct SC2ReplayState {
     /// The registered units state as they change through time.
     /// These are with unit index as reference
