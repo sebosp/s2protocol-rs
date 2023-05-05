@@ -9,6 +9,8 @@ pub mod versioned_decoder;
 pub mod versions;
 use crate::game_events::ReplayGameEvent;
 use crate::tracker_events::ReplayTrackerEvent;
+use crate::versions::read_game_events;
+use crate::versions::read_tracker_events;
 pub use bit_packed_decoder::*;
 use colored::*;
 use nom::number::complete::u8;
@@ -163,7 +165,7 @@ impl SC2ReplayState {
         })
     }
 
-    pub fn add_events(&mut self) -> Result<usize, SwarmyError> {
+    pub fn add_events(&mut self) -> usize {
         let filter_event_type = &self.filters.event_type.clone();
         let tracker_events = if let Some(event_type) = filter_event_type {
             if event_type.clone().to_lowercase().contains("tracker") {
@@ -279,7 +281,7 @@ impl SC2ReplayState {
             }
             total_events += 1;
         }
-        Ok(total_events)
+        total_events
     }
 }
 
