@@ -46,20 +46,52 @@ pub fn handle_unit_born(
             return None;
         }
     }
-    if let Some(ref mut sc2_unit) = sc2_replay.units.get_mut(&unit_born.unit_tag_index) {
-        sc2_unit.creator_ability_name = unit_born.creator_ability_name.clone();
-        sc2_unit.last_game_loop = game_loop;
+    if let Some(ref mut unit) = sc2_replay.units.get_mut(&unit_born.unit_tag_index) {
+        unit.creator_ability_name = unit_born.creator_ability_name.clone();
+        unit.last_game_loop = game_loop;
     } else {
         let sc2_unit = SC2Unit {
             last_game_loop: game_loop,
             user_id: Some(unit_born.control_player_id),
             name: unit_born.unit_type_name.clone(),
-            pos: Vec3D::new(unit_born.x as f32, -1. * unit_born.y as f32, 0.),
+            pos: Vec3D::new(unit_born.x as i64, -1i64 * unit_born.y as i64, 0i64),
             init_game_loop: game_loop,
-            radius: unit_size,
             ..Default::default()
         };
         sc2_replay.units.insert(unit_born.unit_tag_index, sc2_unit);
     }
-    Ok(())
+    Some(unit_born.unit_tag_index)
+}
+
+/// Handles a tracker event as it steps through the SC2 State
+pub fn handle_tracker_event(
+    mut sc2_state: &mut SC2UserState,
+    tracker_loop: i64,
+    evt: &ReplayTrackerEvent,
+) -> Result<(), SwarmyError> {
+    match &evt {
+        ReplayTrackerEvent::UnitInit(unit_init) => {
+            handle_unit_init(&mut sc2_state, tracker_loop, unit_init)
+        }
+        ReplayTrackerEvent::UnitBorn(unit_born) => {
+            handle_unit_born(&mut sc2_state, tracker_loop, unit_born)?
+        }
+        ReplayTrackerEvent::UnitDied(unit_died) => {
+            handle_unit_died(&mut sc2_state, tracker_loop, unit_died)?
+        }
+        ReplayTrackerEvent::UnitPosition(unit_pos) => {
+            handle_unit_position(&mut sc2_state, tracker_loop, unit_pos.clone())?
+        }
+        ReplayTrackerEvent::PlayerStats(player_stats) => {
+            handle_player_stats(sc2_state, tracker_loop, player_stats)?
+        }
+        ReplayTrackerEvent::PlayerSetup(player_setup) => {
+            let user_id = player_setup.user_id?;
+            sc2_state
+                .user_state
+                .insert(user_id as i64, SC2UserState::new());
+            Some(user_id)
+        }
+        _ => unimplemented!(),
+    }
 }

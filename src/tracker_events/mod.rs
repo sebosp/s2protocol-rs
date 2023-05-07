@@ -361,37 +361,3 @@ pub fn unit_tag_index(unit_tag: i64) -> u32 {
 pub fn unit_tag_recycle(unit_tag: i64) -> u32 {
     ((unit_tag) & 0x0003ffff) as u32
 }
-
-/// Handles a tracker event as it steps through the SC2 State
-pub fn handle_tracker_event(
-    mut sc2_state: &mut SC2UserState,
-    tracker_loop: i64,
-    evt: &ReplayTrackerEvent,
-) -> Result<(), SwarmyError> {
-    match &evt {
-        ReplayTrackerEvent::UnitInit(unit_init) => {
-            handle_unit_init(&mut sc2_state, tracker_loop, unit_init)?;
-        }
-        ReplayTrackerEvent::UnitBorn(unit_born) => {
-            handle_unit_born(&mut sc2_state, tracker_loop, unit_born)?;
-        }
-        ReplayTrackerEvent::UnitDied(unit_died) => {
-            handle_unit_died(&mut sc2_state, tracker_loop, unit_died)?;
-        }
-        ReplayTrackerEvent::UnitPosition(unit_pos) => {
-            handle_unit_position(&mut sc2_state, tracker_loop, unit_pos.clone())?;
-        }
-        ReplayTrackerEvent::PlayerStats(player_stats) => {
-            handle_player_stats(sc2_state, tracker_loop, player_stats)?;
-        }
-        ReplayTrackerEvent::PlayerSetup(player_setup) => {
-            if let Some(user_id) = player_setup.user_id {
-                sc2_state
-                    .user_state
-                    .insert(user_id as i64, SC2UserState::new());
-            }
-        }
-        _ => {}
-    }
-    Ok(())
-}
