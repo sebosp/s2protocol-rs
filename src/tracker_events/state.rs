@@ -92,7 +92,28 @@ pub fn handle_unit_position(
         None
     }
 }
+#[tracing::instrument(level = "debug", skip(sc2_state))]
+pub fn handle_unit_died(
+    sc2_state: &mut SC2ReplayState,
+    game_loop: i64,
+    unit_dead: &UnitDiedEvent,
+) -> Option<u32> {
+    // Clean up the unit from previous groups where it was selected.
+    for (_idx, state) in sc2_state.user_state.iter_mut() {
+        for group_idx in 0..10 {
+            state.control_groups[group_idx].retain(|&x| x != unit_dead.unit_tag_index);
+        }
+    }
 
+    if let None = sc2_state.units.remove(&unit_dead.unit_tag_index) {
+        // This may happen when a larva is transformed to a unit in zerg. so this is normal.
+        tracing::debug!(
+            "Unit {} reported dead but was not registered before.",
+            unit_dead.unit_tag_index
+        );
+    }
+    None
+}
 /// Handles a tracker event as it steps through the SC2 State
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_tracker_event(
@@ -113,9 +134,7 @@ pub fn handle_tracker_event(
         ReplayTrackerEvent::UnitPosition(unit_pos) => {
             handle_unit_position(&mut sc2_state, tracker_loop, unit_pos)
         }
-        ReplayTrackerEvent::PlayerStats(player_stats) => {
-            handle_player_stats(sc2_state, tracker_loop, player_stats)?
-        }
+        ReplayTrackerEvent::PlayerStats(player_stats) => None,
         ReplayTrackerEvent::PlayerSetup(player_setup) => {
             let user_id = player_setup.user_id?;
             sc2_state
