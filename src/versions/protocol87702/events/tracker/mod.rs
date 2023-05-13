@@ -214,8 +214,10 @@ impl From<ReplayTrackerSPlayerStats> for PlayerStats {
             vespene_killed_army: source.m_score_value_vespene_killed_army,
             vespene_killed_economy: source.m_score_value_vespene_killed_economy,
             vespene_killed_technology: source.m_score_value_vespene_killed_technology,
-            food_used: source.m_score_value_food_used,
-            food_made: source.m_score_value_food_made,
+            // According to s2blizzard repo these values are fixed points values and must be
+            // divided by 4096.
+            food_used: source.m_score_value_food_used / 4096,
+            food_made: source.m_score_value_food_made / 4096,
             minerals_used_active_forces: source.m_score_value_minerals_used_active_forces,
             vespene_used_active_forces: source.m_score_value_vespene_used_active_forces,
             minerals_friendly_fire_army: source.m_score_value_minerals_friendly_fire_army,

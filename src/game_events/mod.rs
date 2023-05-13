@@ -1,5 +1,5 @@
 //! Decodes the Game Events.
-//! These are stored in an embebdded file in the MPQ file called 'replay.game.events'
+//! These are stored in an embedded file in the MPQ file called 'replay.game.events'
 
 pub mod state;
 pub use state::*;
@@ -22,7 +22,7 @@ pub type GameTUnitLink = u16;
 pub type GameTPlayerId = i64;
 pub type GameTMapCoordFixedBits = i64;
 pub type GameTFixedBits = i32;
-pub type GameTAbilLink = i32;
+pub type GameTAbilLink = u16;
 pub type GameTFixedMiniBitsSigned = i16;
 pub type GameTFixedMiniBitsUnsigned = i64;
 pub type GameTControlGroupId = u8;
@@ -30,6 +30,11 @@ pub type GameTSubgroupIndex = u16;
 pub type GameTSelectionIndex = u16;
 pub type GameTSubgroupPriority = u8;
 pub type GameTSelectionCount = u16;
+pub type GameTSubgroupCount = u16;
+pub type GameTControlGroupIndex = u8;
+pub type GameTControlGroupCount = u8;
+pub type GameTSyncChecksum = u32;
+pub type GameTButtonLink = u16;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GameEvent {
@@ -43,23 +48,23 @@ pub enum ReplayGameEvent {
     CameraSave(CameraSaveEvent),
     Cmd(GameSCmdEvent),
     SelectionDelta(GameSSelectionDeltaEvent),
-    /*ControlGroupUpdate(GameSControlGroupUpdateEvent),
+    ControlGroupUpdate(GameSControlGroupUpdateEvent),
     SelectionSyncCheck(GameSSelectionSyncCheckEvent),
-    TriggerChatMessage(GameSTriggerChatMessageEvent),*/
+    TriggerChatMessage(GameSTriggerChatMessageEvent),
     UnitClick(GameSUnitClickEvent),
     UnitHighlight(GameSUnitHighlightEvent),
-    /*TriggerReplySelected(GameSTriggerReplySelectedEvent),*/
+    TriggerReplySelected(GameSTriggerReplySelectedEvent),
     CameraUpdate(CameraUpdateEvent),
     TriggerMouseClicked(GameSTriggerMouseClickedEvent),
     TriggerMouseMoved(GameSTriggerMouseMovedEvent),
-    /*TriggerHotkeyPressed(GameSTriggerHotkeyPressedEvent),
+    TriggerHotkeyPressed(GameSTriggerHotkeyPressedEvent),
     TriggerTargetModeUpdate(GameSTriggerTargetModeUpdateEvent),
-    TriggerKeyPressed(GameSTriggerKeyPressedEvent),*/
+    TriggerKeyPressed(GameSTriggerKeyPressedEvent),
     TriggerMouseWheel(GameSTriggerMouseWheelEvent),
-    /*TriggerButtonPressed(GameSTriggerButtonPressedEvent),
-    GameUserLeave(GameSGameUserLeaveEvent),
-    GameUserJoin(GameSGameUserJoinEvent),
-    CommandManagerState(GameSCommandManagerStateEvent),*/
+    TriggerButtonPressed(GameSTriggerButtonPressedEvent),
+    /*GameUserLeave(GameSGameUserLeaveEvent),
+    GameUserJoin(GameSGameUserJoinEvent),*/
+    CommandManagerState(GameSCommandManagerStateEvent),
     CmdUpdateTargetPoint(GameSCmdUpdateTargetPointEvent),
     CmdUpdateTargetUnit(GameSCmdUpdateTargetUnitEvent),
     /*TriggerAnimLengthQueryByName(GameSTriggerAnimLengthQueryByNameEvent),
@@ -213,4 +218,84 @@ pub struct GameSelectionMaskType {
 #[derive(Debug, PartialEq, Clone)]
 pub struct GameSelectionIndexArrayType {
     pub value: Vec<GameTSelectionIndex>,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSSelectionSyncCheckEvent {
+    pub m_control_group_id: GameTControlGroupId,
+    pub m_selection_sync_data: GameSSelectionSyncData,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSSelectionSyncData {
+    pub m_count: GameTSelectionCount,
+    pub m_subgroup_count: GameTSubgroupCount,
+    pub m_active_subgroup_index: GameTSubgroupIndex,
+    pub m_unit_tags_checksum: GameTSyncChecksum,
+    pub m_subgroup_indices_checksum: GameTSyncChecksum,
+    pub m_subgroups_checksum: GameTSyncChecksum,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSControlGroupUpdateEvent {
+    pub m_control_group_index: GameTControlGroupIndex,
+    pub m_control_group_update: GameEControlGroupUpdate,
+    pub m_mask: GameSSelectionMask,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum GameEControlGroupUpdate {
+    ESet,
+    EAppend,
+    ERecall,
+    EClear,
+    ESetAndSteal,
+    EAppendAndSteal,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSTriggerChatMessageEvent {
+    pub m_chat_message: String,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSTriggerReplySelectedEvent {
+    pub m_conversation_id: i32,
+    pub m_reply_id: i32,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSTriggerHotkeyPressedEvent {
+    pub m_hotkey: u32,
+    pub m_down: bool,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSTriggerTargetModeUpdateEvent {
+    pub m_abil_link: GameTAbilLink,
+    pub m_abil_cmd_index: i64,
+    pub m_state: i8,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSTriggerKeyPressedEvent {
+    pub m_key: i8,
+    pub m_flags: i8,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSTriggerButtonPressedEvent {
+    pub m_button: GameTButtonLink,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GameSCommandManagerStateEvent {
+    pub m_state: GameECommandManagerState,
+    pub m_sequence: Option<i64>,
+}
+#[derive(Debug, PartialEq, Clone)]
+pub enum GameECommandManagerState {
+    EFireDone,
+    EFireOnce,
+    EFireMany,
 }

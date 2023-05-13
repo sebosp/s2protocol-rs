@@ -23,7 +23,7 @@ impl From<GameSCmdEvent> for ReplayGameEvent {
 impl From<GameSCmdAbil> for crate::game_events::GameSCmdAbil {
     fn from(source: GameSCmdAbil) -> crate::game_events::GameSCmdAbil {
         crate::game_events::GameSCmdAbil {
-            m_abil_link: source.m_abil_link.value.value as i32,
+            m_abil_link: source.m_abil_link.value.into(),
             m_abil_cmd_index: source.m_abil_cmd_index,
             m_abil_cmd_data: source.m_abil_cmd_data.map(|d| d.value as u8),
         }
@@ -72,5 +72,30 @@ impl From<GameSCmdUpdateTargetUnitEvent> for ReplayGameEvent {
         ReplayGameEvent::CmdUpdateTargetUnit(crate::game_events::GameSCmdUpdateTargetUnitEvent {
             m_target: source.m_target.into(),
         })
+    }
+}
+
+impl From<GameSCommandManagerStateEvent> for ReplayGameEvent {
+    fn from(source: GameSCommandManagerStateEvent) -> ReplayGameEvent {
+        ReplayGameEvent::CommandManagerState(crate::game_events::GameSCommandManagerStateEvent {
+            m_state: source.m_state.into(),
+            m_sequence: source.m_sequence,
+        })
+    }
+}
+
+impl From<GameECommandManagerState> for crate::game_events::GameECommandManagerState {
+    fn from(source: GameECommandManagerState) -> crate::game_events::GameECommandManagerState {
+        match source {
+            GameECommandManagerState::EFireDone => {
+                crate::game_events::GameECommandManagerState::EFireDone
+            }
+            GameECommandManagerState::EFireOnce => {
+                crate::game_events::GameECommandManagerState::EFireOnce
+            }
+            GameECommandManagerState::EFireMany => {
+                crate::game_events::GameECommandManagerState::EFireMany
+            }
+        }
     }
 }
