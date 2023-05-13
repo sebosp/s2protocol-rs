@@ -1,8 +1,10 @@
 //! Decodes the Game Events.
 //! These are stored in an embebdded file in the MPQ file called 'replay.game.events'
 
-use std::str::Utf8Error;
+pub mod state;
+pub use state::*;
 
+use std::str::Utf8Error;
 /// A list of errors when handling GameEvents
 #[derive(Debug, thiserror::Error)]
 pub enum GameEventError {

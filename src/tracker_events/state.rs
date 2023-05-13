@@ -3,6 +3,10 @@
 use super::*;
 use crate::*;
 
+/// The unit position seems to be 4 times the actual unit position to fit in the map.
+/// So we have to divide the UnitPosition events by this number:
+pub const UNIT_POSITION_RATIO: f32 = 4.;
+
 /// Handles the state management for unit init messages
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_unit_init(
@@ -20,7 +24,7 @@ pub fn handle_unit_init(
         last_game_loop: game_loop,
         user_id: Some(unit_init.control_player_id),
         name: unit_init.unit_type_name.clone(),
-        pos: Vec3D::new(unit_init.x as i64, -1i64 * unit_init.y as i64, 0i64),
+        pos: Vec3D::new(unit_init.x as f32, -1. * unit_init.y as f32, 0.),
         init_game_loop: game_loop,
         ..Default::default()
     };
@@ -54,7 +58,7 @@ pub fn handle_unit_born(
             last_game_loop: game_loop,
             user_id: Some(unit_born.control_player_id),
             name: unit_born.unit_type_name.clone(),
-            pos: Vec3D::new(unit_born.x as i64, -1i64 * unit_born.y as i64, 0i64),
+            pos: Vec3D::new(unit_born.x as f32, -1. * unit_born.y as f32, 0.),
             init_game_loop: game_loop,
             ..Default::default()
         };
@@ -73,9 +77,9 @@ pub fn handle_unit_position(
     for unit_pos_item in &unit_positions {
         if let Some(ref mut sc2_unit) = sc2_state.units.get_mut(&unit_pos_item.tag) {
             sc2_unit.pos = Vec3D::new(
-                unit_pos_item.x as i64 / 4i64,
-                -1i64 * unit_pos_item.y as i64 / 4i64,
-                0i64,
+                unit_pos_item.x as f32 / UNIT_POSITION_RATIO,
+                -1. * unit_pos_item.y as f32 / UNIT_POSITION_RATIO,
+                0.,
             );
             sc2_unit.last_game_loop = game_loop;
         } else {
@@ -134,7 +138,10 @@ pub fn handle_tracker_event(
         ReplayTrackerEvent::UnitPosition(unit_pos) => {
             handle_unit_position(&mut sc2_state, tracker_loop, unit_pos)
         }
-        ReplayTrackerEvent::PlayerStats(player_stats) => None,
+        ReplayTrackerEvent::PlayerStats(player_stats) => {
+            // For now the player stats are not recorded here.
+            None
+        }
         ReplayTrackerEvent::PlayerSetup(player_setup) => {
             let user_id = player_setup.user_id?;
             sc2_state
