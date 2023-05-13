@@ -1,7 +1,6 @@
 //! Handles the state change of units for GameEvents
 
 use super::*;
-use crate::game_events::*;
 use crate::tracker_events::unit_tag_index;
 use crate::*;
 
