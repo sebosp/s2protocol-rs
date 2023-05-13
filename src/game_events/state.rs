@@ -8,6 +8,7 @@ use crate::*;
 /// The game events seem to be at this ratio when compared to Tracker Events.
 pub const GAME_EVENT_POS_RATIO: f32 = 4096f32;
 
+#[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_cmd(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
@@ -30,6 +31,7 @@ pub fn handle_cmd(
     }
 }
 
+#[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_update_target_point(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
@@ -45,8 +47,8 @@ pub fn handle_update_target_point(
     if let Some(state) = sc2_state.user_state.get(&user_id) {
         user_selected_units = state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
     }
-    for selected_unit in user_selected_units {
-        let unit_index = unit_tag_index(selected_unit as i64);
+    for selected_unit in &user_selected_units {
+        let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
             registered_unit.target = Some(unit_target_pos);
         }
@@ -57,6 +59,7 @@ pub fn handle_update_target_point(
 /// Handles the change of target for a unit.
 /// The unit is previously selected and is part of the ACTIVE_UNITS_GROUP_IDX,
 /// then a TargetUnit event is emitted.
+#[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_update_target_unit(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
@@ -72,8 +75,8 @@ pub fn handle_update_target_unit(
     if let Some(state) = sc2_state.user_state.get(&user_id) {
         user_selected_units = state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
     }
-    for selected_unit in user_selected_units {
-        let unit_index = unit_tag_index(selected_unit as i64);
+    for selected_unit in &user_selected_units {
+        let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
             registered_unit.target = Some(unit_target_pos);
         }
@@ -82,6 +85,7 @@ pub fn handle_update_target_unit(
 }
 
 /// Removes the changes to the units that signify they are selected.
+#[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn unmark_previously_selected_units(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
@@ -104,6 +108,7 @@ pub fn unmark_previously_selected_units(
 }
 
 /// Marks a group of units as selected by increasing the radius.
+#[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn mark_selected_units(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
@@ -132,6 +137,7 @@ pub fn mark_selected_units(
 /// then it is born into another unit which triggers a selection delta.
 /// In the rust version we are matching the ACTIVE_UNITS_GROUP_IDX to 10, the last item in the
 /// array of selceted units which seems to match the blizzard UI so far.
+#[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_selection_delta(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
@@ -161,6 +167,7 @@ pub fn handle_selection_delta(
 
 /// Handles control group update events
 /// These may be initializing or recalled
+#[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn update_control_group(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
@@ -243,6 +250,7 @@ pub fn update_control_group(
 }
 
 /// Handles a game event as it steps through the SC2 State.
+#[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_game_event(
     mut sc2_state: &mut SC2ReplayState,
     game_loop: i64,
@@ -250,7 +258,7 @@ pub fn handle_game_event(
     evt: &ReplayGameEvent,
 ) -> Vec<u32> {
     match &evt {
-        ReplayGameEvent::CameraUpdate(camera_update) => {
+        ReplayGameEvent::CameraUpdate(_camera_update) => {
             // Unhandled for now
             // handle_camera_update(&sc2_state, game_loop, user_id, camera_update)?;
             vec![]

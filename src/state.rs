@@ -25,7 +25,7 @@ use super::*;
 
 /// Unit position  will be provided like this to match as much as possible the protocols
 /// themselves.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Vec3D(pub [f32; 3]);
 impl Vec3D {
     pub fn new(x: f32, y: f32, z: f32) -> Self {
