@@ -122,12 +122,6 @@ pub struct SC2ReplayState {
     /// These are with unit index as reference
     pub units: HashMap<u32, SC2Unit>,
 
-    /// The MPQ file being read.
-    pub mpq: MPQ,
-
-    /// The contents of the file
-    pub file_contents: Vec<u8>,
-
     /// The filters to be applied to the collection.
     pub filters: SC2ReplayFilters,
 
@@ -137,31 +131,32 @@ pub struct SC2ReplayState {
     /// The per-user state, the control groups, the supply, units, upgrades, as it progresses
     /// through time.
     pub user_state: HashMap<i64, SC2UserState>,
+
+    /// The events loaded from the MPQ file.
+    pub events: HashMap<i64, Vec<SC2EventType>>,
 }
 
 impl SC2ReplayState {
-    pub fn new(file_path: &str) -> Result<Self, MPQParserError> {
+    /// Reads the MPQ at `file_path` and returns the state handler.
+    /// The state handler can be used to construct a SC2EventIterator
+    pub fn new(file_path: &str) -> Result<Self, S2ProtocolError> {
         let (mpq, file_contents) = read_mpq(file_path);
-        Ok(Self {
+        let mut res = Self {
             units: HashMap::new(),
-            mpq,
-            file_contents,
             filters: SC2ReplayFilters::default(),
             include_stats: false,
             user_state: HashMap::new(),
-        })
-    }
-
-    pub fn add_events(&mut self) -> usize {
-        let filter_event_type = &self.filters.event_type.clone();
+            events: HashMap::new(),
+        };
+        let filter_event_type = &res.filters.event_type.clone();
         let tracker_events = if let Some(event_type) = filter_event_type {
             if event_type.clone().to_lowercase().contains("tracker") {
-                read_tracker_events(&self.mpq, &self.file_contents)
+                read_tracker_events(&mpq, &file_contents)
             } else {
                 vec![]
             }
         } else {
-            read_tracker_events(&self.mpq, &self.file_contents)
+            read_tracker_events(&mpq, &file_contents)
         };
         let mut sc2_events: HashMap<i64, Vec<SC2EventType>> = HashMap::new();
         let mut tracker_loop = 0i64;
@@ -187,12 +182,12 @@ impl SC2ReplayState {
         }
         let game_events = if let Some(event_type) = filter_event_type {
             if event_type.clone().to_lowercase().contains("game") {
-                read_game_events(&self.mpq, &self.file_contents)
+                read_game_events(&mpq, &file_contents)
             } else {
                 vec![]
             }
         } else {
-            read_game_events(&self.mpq, &self.file_contents)
+            read_game_events(&mpq, &file_contents)
         };
         let mut game_loop = 0i64;
         for game_step in game_events {
@@ -215,59 +210,116 @@ impl SC2ReplayState {
                 );
             }
         }
-        let mut total_events = 0usize;
-        let min_filter = self.filters.min_loop.clone();
-        let max_filter = self.filters.max_loop.clone();
-        let user_id_filter = self.filters.user_id.clone();
-        let max_events = self.filters.max_events.clone();
-        let mut ordered_event_loops: Vec<i64> = sc2_events.keys().map(|v| v.clone()).collect();
+        res.events = sc2_events;
+        Ok(res)
+    }
+}
+
+/// An iterator to steps through the loaded events, update the state, apply the filters and
+#[derive(Debug)]
+pub struct SC2EventIterator {
+    pub state: SC2ReplayState,
+    pub idx: usize,
+    // This should be a reference to SC2EventType on the SC2ReplayState but seems like we can't
+    // have the iterator both own the state and have reference to the SC2 state itself.
+    pub items: Vec<(i64, usize)>,
+}
+
+impl SC2EventIterator {
+    /// Creates a new SC2EventIterator from the SC2ReplayState handler.
+    pub fn new(state: SC2ReplayState) -> Self {
+        let mut ordered_event_loops: Vec<i64> = state.events.keys().map(|v| v.clone()).collect();
         ordered_event_loops.sort_unstable();
-        for evt_loop in ordered_event_loops {
-            for evt_type in sc2_events.get(&evt_loop).unwrap() {
-                if let Some(min) = min_filter {
-                    // Skip the events less than the requested filter.
-                    if evt_loop / MAX_EVENT_TYPES < min {
-                        continue;
-                    }
-                }
-                if let Some(max) = max_filter {
-                    // Skip the events greater than the requested filter.
-                    if evt_loop / MAX_EVENT_TYPES > max {
-                        break;
-                    }
-                }
-                if let Some(max) = max_events {
-                    // Cosue these max total events of any type.
-                    if total_events > max {
-                        break;
-                    }
-                }
-                match evt_type {
-                    SC2EventType::Tracker {
-                        tracker_loop,
-                        event,
-                    } => {
-                        tracing::info!("Trac [{:>08}]: {:?}", tracker_loop, event);
-                        crate::tracker_events::handle_tracker_event(self, *tracker_loop, event);
-                    }
-                    SC2EventType::Game {
-                        user_id,
-                        game_loop,
-                        event,
-                    } => {
-                        if let Some(target_user_id) = user_id_filter {
-                            // Skip the events that are not for the requested user.
-                            if target_user_id != *user_id {
-                                continue;
-                            }
-                        }
-                        tracing::info!("Game [{:>08}]: uid: {} {:?}", game_loop, *user_id, event);
-                        crate::game_events::handle_game_event(self, *game_loop, *user_id, event);
-                    }
+        let mut items = vec![];
+        for step in ordered_event_loops {
+            for looped_event_idx in 0..state.events.get(&step).unwrap().len() {
+                items.push((step / MAX_EVENT_TYPES, looped_event_idx));
+            }
+        }
+        Self {
+            idx: 0,
+            state,
+            items,
+        }
+    }
+
+    /// Creates a new SC2EventIterator from an MPQ file path.
+    pub fn from_mpq(file_path: &str) -> Result<Self, S2ProtocolError> {
+        let state = SC2ReplayState::new(file_path)?;
+        Ok(Self::new(state))
+    }
+}
+
+impl Iterator for SC2EventIterator {
+    type Item = SC2EventType;
+    fn next(&mut self) -> Option<Self::Item> {
+        // TODO: These could become .filter, .take, etc.
+        // But still, some of these refer to the internal loop, and since we have a generated
+        // game_loop based on event priorities, maybe it's not that easy.
+        let min_filter = self.state.filters.min_loop.clone();
+        let max_filter = self.state.filters.max_loop.clone();
+        let user_id_filter = self.state.filters.user_id.clone();
+        let max_events = self.state.filters.max_events.clone();
+        loop {
+            if self.idx > self.items.len() {
+                return None;
+            };
+            let (evt_loop, evt_idx) = self.items[self.idx];
+            if let Some(max) = max_filter {
+                // Skip the events greater than the requested filter.
+                if evt_loop > max {
+                    return None;
                 }
             }
-            total_events += 1;
+            if let Some(max) = max_events {
+                // Cosue these max total events of any type.
+                if self.idx > max {
+                    return None;
+                }
+            }
+            let evt_type = self.state.events.get(&evt_loop).unwrap()[evt_idx].clone();
+            match &evt_type {
+                SC2EventType::Tracker {
+                    tracker_loop,
+                    event,
+                } => {
+                    tracing::info!("Trac [{:>08}]: {:?}", tracker_loop, event);
+                    crate::tracker_events::handle_tracker_event(
+                        &mut self.state,
+                        *tracker_loop,
+                        event,
+                    );
+                }
+                SC2EventType::Game {
+                    user_id,
+                    game_loop,
+                    event,
+                } => {
+                    crate::game_events::handle_game_event(
+                        &mut self.state,
+                        *game_loop,
+                        *user_id,
+                        event,
+                    );
+                    if let Some(target_user_id) = user_id_filter {
+                        // Skip the events that are not for the requested user.
+                        if target_user_id != *user_id {
+                            continue;
+                        }
+                    }
+                    tracing::info!("Game [{:>08}]: uid: {} {:?}", game_loop, *user_id, event);
+                }
+            }
+            // Skip events only after stepping through them through the state. Otherwise the state
+            // would be corrupted.
+            if let Some(min) = min_filter {
+                // Skip the events less than the requested filter.
+                if evt_loop / MAX_EVENT_TYPES < min {
+                    continue;
+                }
+            }
+            self.idx += 1;
+            return Some(evt_type);
         }
-        total_events
     }
 }

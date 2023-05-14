@@ -46,7 +46,7 @@ impl GameEEventId {
 
     /// Read the Tracker Events
     pub fn read_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<GameEvent> {
-        // TODO: Make it return an Iterator.
+        // TODO: Make it return an Iterator, remove the unwrap.
         let (_event_tail, game_events) = mpq
             .read_mpq_file_sector("replay.game.events", false, &file_contents)
             .unwrap();
