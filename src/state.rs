@@ -134,6 +134,13 @@ pub struct SC2ReplayState {
 
     /// The events loaded from the MPQ file.
     pub events: HashMap<i64, Vec<SC2EventType>>,
+
+    /// The current index in the events being iterated over
+    pub current_loop_idx: usize,
+
+    /// This should be a reference to the `events`, for now it's a usize pointing the events being
+    /// iterated over
+    pub loop_items: Vec<(i64, usize)>,
 }
 
 impl SC2ReplayState {
@@ -151,6 +158,8 @@ impl SC2ReplayState {
             include_stats,
             user_state: HashMap::new(),
             events: HashMap::new(),
+            current_loop_idx: 0usize,
+            loop_items: vec![],
         };
         let filter_event_type = &res.filters.event_type.clone();
         let tracker_events = if let Some(event_type) = filter_event_type {
@@ -214,55 +223,33 @@ impl SC2ReplayState {
                 );
             }
         }
-        res.events = sc2_events;
-        Ok(res)
-    }
-}
-
-/// An iterator to steps through the loaded events, update the state, apply the filters and
-#[derive(Debug)]
-pub struct SC2EventIterator {
-    pub state: SC2ReplayState,
-    pub idx: usize,
-    // This should be a reference to SC2EventType on the SC2ReplayState but seems like we can't
-    // have the iterator both own the state and have reference to the SC2 state itself.
-    pub items: Vec<(i64, usize)>,
-}
-
-impl SC2EventIterator {
-    /// Creates a new SC2EventIterator from the SC2ReplayState handler.
-    pub fn new(state: SC2ReplayState) -> Self {
-        let mut ordered_event_loops: Vec<i64> = state.events.keys().map(|v| v.clone()).collect();
+        let mut ordered_event_loops: Vec<i64> = sc2_events.keys().map(|v| v.clone()).collect();
         ordered_event_loops.sort_unstable();
         let mut items = vec![];
         for step in ordered_event_loops {
-            for looped_event_idx in 0..state.events.get(&step).unwrap().len() {
+            for looped_event_idx in 0..res.events.get(&step).unwrap().len() {
                 items.push((step / MAX_EVENT_TYPES, looped_event_idx));
             }
         }
-        Self {
-            idx: 0,
-            state,
-            items,
-        }
+        res.events = sc2_events;
+        res.loop_items = items;
+        Ok(res)
     }
-}
 
-impl SC2EventIterator {
-    // An SC2 Event Type and the unit tags that have been updated
-    pub fn transduce<'a>(&'a mut self) -> Option<(&'a SC2EventType, Vec<u32>)> {
+    /// Transduces the state machine moving through the `loop_items`
+    pub fn transduce(&mut self) -> Option<(SC2EventType, Vec<u32>)> {
         // TODO: These could become .filter, .take, etc.
         // But still, some of these refer to the internal loop, and since we have a generated
         // game_loop based on event priorities, maybe it's not that easy.
-        let min_filter = self.state.filters.min_loop.clone();
-        let max_filter = self.state.filters.max_loop.clone();
-        let user_id_filter = self.state.filters.user_id.clone();
-        let max_events = self.state.filters.max_events.clone();
+        let min_filter = self.filters.min_loop.clone();
+        let max_filter = self.filters.max_loop.clone();
+        let user_id_filter = self.filters.user_id.clone();
+        let max_events = self.filters.max_events.clone();
         loop {
-            if self.idx > self.items.len() {
+            if self.current_loop_idx > self.loop_items.len() {
                 return None;
             };
-            let (evt_loop, evt_idx) = self.items[self.idx];
+            let (evt_loop, evt_idx) = self.loop_items[self.current_loop_idx];
             if let Some(max) = max_filter {
                 // Skip the events greater than the requested filter.
                 if evt_loop > max {
@@ -271,34 +258,26 @@ impl SC2EventIterator {
             }
             if let Some(max) = max_events {
                 // Cosue these max total events of any type.
-                if self.idx > max {
+                if self.current_loop_idx > max {
                     return None;
                 }
             }
-            let evt_type = self.state.events.get(&evt_loop).unwrap()[evt_idx].clone();
+            let evt_type = self.events.get(&evt_loop).unwrap()[evt_idx].clone();
             let updated_units = match &evt_type {
                 SC2EventType::Tracker {
                     tracker_loop,
                     event,
                 } => {
                     tracing::info!("Trac [{:>08}]: {:?}", tracker_loop, event);
-                    crate::tracker_events::handle_tracker_event(
-                        &mut self.state,
-                        *tracker_loop,
-                        event,
-                    )
+                    crate::tracker_events::handle_tracker_event(self, *tracker_loop, &event)
                 }
                 SC2EventType::Game {
                     user_id,
                     game_loop,
                     event,
                 } => {
-                    let updated_units = crate::game_events::handle_game_event(
-                        &mut self.state,
-                        *game_loop,
-                        *user_id,
-                        event,
-                    );
+                    let updated_units =
+                        crate::game_events::handle_game_event(self, *game_loop, *user_id, &event);
                     if let Some(target_user_id) = user_id_filter {
                         // Skip the events that are not for the requested user.
                         if target_user_id != *user_id {
@@ -317,8 +296,7 @@ impl SC2EventIterator {
                     continue;
                 }
             }
-            self.idx += 1;
-            let evt_type = &self.state.events.get(&evt_loop).unwrap()[evt_idx];
+            self.current_loop_idx += 1;
             return Some((evt_type, updated_units));
         }
     }
