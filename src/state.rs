@@ -92,7 +92,7 @@ impl SC2UserState {
 }
 
 /// A set of filters to apply to the rerun session.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct SC2ReplayFilters {
     /// Filters a specific user id.
     pub user_id: Option<i64>,
@@ -139,12 +139,16 @@ pub struct SC2ReplayState {
 impl SC2ReplayState {
     /// Reads the MPQ at `file_path` and returns the state handler.
     /// The state handler can be used to construct a SC2EventIterator
-    pub fn new(file_path: &str) -> Result<Self, S2ProtocolError> {
+    pub fn new(
+        file_path: &str,
+        filters: SC2ReplayFilters,
+        include_stats: bool,
+    ) -> Result<Self, S2ProtocolError> {
         let (mpq, file_contents) = read_mpq(file_path);
         let mut res = Self {
             units: HashMap::new(),
-            filters: SC2ReplayFilters::default(),
-            include_stats: false,
+            filters,
+            include_stats,
             user_state: HashMap::new(),
             events: HashMap::new(),
         };
@@ -242,17 +246,11 @@ impl SC2EventIterator {
             items,
         }
     }
-
-    /// Creates a new SC2EventIterator from an MPQ file path.
-    pub fn from_mpq(file_path: &str) -> Result<Self, S2ProtocolError> {
-        let state = SC2ReplayState::new(file_path)?;
-        Ok(Self::new(state))
-    }
 }
 
-impl Iterator for SC2EventIterator {
-    type Item = SC2EventType;
-    fn next(&mut self) -> Option<Self::Item> {
+impl SC2EventIterator {
+    // An SC2 Event Type and the unit tags that have been updated
+    pub fn transduce<'a>(&'a mut self) -> Option<(&'a SC2EventType, Vec<u32>)> {
         // TODO: These could become .filter, .take, etc.
         // But still, some of these refer to the internal loop, and since we have a generated
         // game_loop based on event priorities, maybe it's not that easy.
@@ -278,7 +276,7 @@ impl Iterator for SC2EventIterator {
                 }
             }
             let evt_type = self.state.events.get(&evt_loop).unwrap()[evt_idx].clone();
-            match &evt_type {
+            let updated_units = match &evt_type {
                 SC2EventType::Tracker {
                     tracker_loop,
                     event,
@@ -288,14 +286,14 @@ impl Iterator for SC2EventIterator {
                         &mut self.state,
                         *tracker_loop,
                         event,
-                    );
+                    )
                 }
                 SC2EventType::Game {
                     user_id,
                     game_loop,
                     event,
                 } => {
-                    crate::game_events::handle_game_event(
+                    let updated_units = crate::game_events::handle_game_event(
                         &mut self.state,
                         *game_loop,
                         *user_id,
@@ -308,8 +306,9 @@ impl Iterator for SC2EventIterator {
                         }
                     }
                     tracing::info!("Game [{:>08}]: uid: {} {:?}", game_loop, *user_id, event);
+                    updated_units
                 }
-            }
+            };
             // Skip events only after stepping through them through the state. Otherwise the state
             // would be corrupted.
             if let Some(min) = min_filter {
@@ -319,7 +318,8 @@ impl Iterator for SC2EventIterator {
                 }
             }
             self.idx += 1;
-            return Some(evt_type);
+            let evt_type = &self.state.events.get(&evt_loop).unwrap()[evt_idx];
+            return Some((evt_type, updated_units));
         }
     }
 }
