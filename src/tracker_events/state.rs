@@ -154,6 +154,9 @@ pub fn handle_tracker_event(
                 vec![]
             }
         }
-        _ => unimplemented!(),
+        _ => {
+            tracing::debug!("Skipping event: {:?}", evt);
+            vec![]
+        }
     }
 }

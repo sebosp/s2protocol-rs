@@ -227,8 +227,8 @@ impl SC2ReplayState {
         ordered_event_loops.sort_unstable();
         let mut items = vec![];
         for step in ordered_event_loops {
-            for looped_event_idx in 0..res.events.get(&step).unwrap().len() {
-                items.push((step / MAX_EVENT_TYPES, looped_event_idx));
+            for looped_event_idx in 0..sc2_events.get(&step).unwrap().len() {
+                items.push((step, looped_event_idx));
             }
         }
         res.events = sc2_events;
@@ -246,7 +246,7 @@ impl SC2ReplayState {
         let user_id_filter = self.filters.user_id.clone();
         let max_events = self.filters.max_events.clone();
         loop {
-            if self.current_loop_idx > self.loop_items.len() {
+            if self.current_loop_idx >= self.loop_items.len() {
                 return None;
             };
             let (evt_loop, evt_idx) = self.loop_items[self.current_loop_idx];
