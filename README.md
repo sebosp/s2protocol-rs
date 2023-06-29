@@ -84,6 +84,7 @@ For example, we could read different sections, and return events in different se
 Tho the status below is something to add, the focus is going to be on using the Game and Tracker events to generate visualization.
 From time to time as versions come out I will try to generate the files.
 
+- [x] Replay Tracker and Game Events for protocol75689
 - [x] Replay Tracker and Game Events for protocol87702
 - [x] Replay Tracker and Game Events for protocol88500
 - [x] Replay Tracker and Game Events for protocol89634
