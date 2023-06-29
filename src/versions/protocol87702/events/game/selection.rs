@@ -84,6 +84,12 @@ impl From<GameTSelectionCount> for game_events::GameTSelectionCount {
     }
 }
 
+impl From<GameTSubgroupCount> for game_events::GameTSubgroupCount {
+    fn from(source: GameTSubgroupCount) -> game_events::GameTSubgroupCount {
+        source.value as u16
+    }
+}
+
 impl From<GameSSelectionDeltaSubgroup> for game_events::GameSSelectionDeltaSubgroup {
     fn from(source: GameSSelectionDeltaSubgroup) -> game_events::GameSSelectionDeltaSubgroup {
         game_events::GameSSelectionDeltaSubgroup {
@@ -102,5 +108,35 @@ impl From<GameSelectionIndexArrayType> for game_events::GameSelectionIndexArrayT
             res.push(val.into());
         }
         game_events::GameSelectionIndexArrayType { value: res }
+    }
+}
+
+impl From<GameTSyncChecksum> for game_events::GameTSyncChecksum {
+    fn from(source: GameTSyncChecksum) -> game_events::GameTSyncChecksum {
+        source.value.into()
+    }
+}
+
+impl From<GameSSelectionSyncCheckEvent> for game_events::ReplayGameEvent {
+    fn from(source: GameSSelectionSyncCheckEvent) -> game_events::ReplayGameEvent {
+        game_events::ReplayGameEvent::SelectionSyncCheck(
+            game_events::GameSSelectionSyncCheckEvent {
+                m_control_group_id: source.m_control_group_id.into(),
+                m_selection_sync_data: source.m_selection_sync_data.into(),
+            },
+        )
+    }
+}
+
+impl From<GameSSelectionSyncData> for game_events::GameSSelectionSyncData {
+    fn from(source: GameSSelectionSyncData) -> game_events::GameSSelectionSyncData {
+        game_events::GameSSelectionSyncData {
+            m_count: source.m_count.into(),
+            m_subgroup_count: source.m_subgroup_count.into(),
+            m_active_subgroup_index: source.m_active_subgroup_index.into(),
+            m_unit_tags_checksum: source.m_unit_tags_checksum.value.into(),
+            m_subgroup_indices_checksum: source.m_subgroup_indices_checksum.value.into(),
+            m_subgroups_checksum: source.m_subgroups_checksum.value.into(),
+        }
     }
 }

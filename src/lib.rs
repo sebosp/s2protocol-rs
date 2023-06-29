@@ -3,18 +3,42 @@
 pub mod bit_packed_decoder;
 pub mod game_events;
 pub mod generator;
+pub mod message_events;
 pub mod protocol_version_decoder;
+pub mod state;
 pub mod tracker_events;
 pub mod versioned_decoder;
 pub mod versions;
+
+use crate::game_events::ReplayGameEvent;
+pub use crate::state::*;
+use crate::tracker_events::ReplayTrackerEvent;
+use crate::versions::read_game_events;
+use crate::versions::read_tracker_events;
 pub use bit_packed_decoder::*;
 use colored::*;
 use nom::number::complete::u8;
-use nom::*;
+use nom::IResult;
 use nom_mpq::parser::peek_hex;
+use nom_mpq::{parser, MPQ};
 pub use protocol_version_decoder::read_protocol_header;
+use std::collections::HashMap;
 use std::str;
 pub use versioned_decoder::*;
+
+#[derive(thiserror::Error, Debug)]
+pub enum S2ProtocolError {
+    #[error("MPQ Error")]
+    MPQ(#[from] nom_mpq::MPQParserError),
+}
+
+/// Reads the MPQ file and returns both the MPQ read file and the reference to its contents.
+pub fn read_mpq(path: &str) -> (MPQ, Vec<u8>) {
+    tracing::info!("Processing MPQ file {}", path);
+    let file_contents = parser::read_file(path);
+    let (_, mpq) = parser::parse(&file_contents).unwrap();
+    (mpq, file_contents)
+}
 
 /// Creates a colored binary representation of the input.
 /// The pre-amble bits are set to blue (these are bits previously processed)
