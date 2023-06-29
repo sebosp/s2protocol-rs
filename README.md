@@ -1,7 +1,7 @@
 [![Crates.io](https://img.shields.io/crates/v/s2protocol.svg)](https://crates.io/crates/s2protocol)
 [![Workflow Status](https://github.com/sebosp/s2protocol-rs/workflows/Rust/badge.svg)](https://github.com/sebosp/s2protocol-rs/actions?query=workflow%3A%22Rust%22)
 
-# s2protocol-rs
+# s2protocol-rs 1.1.2
 
 A nom parser for the Starcraft 2 Protocol Replay format.
 
@@ -84,6 +84,7 @@ For example, we could read different sections, and return events in different se
 Tho the status below is something to add, the focus is going to be on using the Game and Tracker events to generate visualization.
 From time to time as versions come out I will try to generate the files.
 
+- [x] Replay Tracker and Game Events for protocol75689
 - [x] Replay Tracker and Game Events for protocol87702
 - [x] Replay Tracker and Game Events for protocol88500
 - [x] Replay Tracker and Game Events for protocol89634

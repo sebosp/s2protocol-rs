@@ -4,6 +4,7 @@ use crate::game_events::GameEvent;
 use crate::tracker_events::TrackerEvent;
 use nom_mpq::MPQ;
 
+pub mod protocol75689;
 pub mod protocol87702;
 pub mod protocol88500;
 pub mod protocol89634;
@@ -16,6 +17,10 @@ pub fn read_tracker_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<TrackerEvent>
     tracing::info!("Header: {:?}", proto_header);
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
+        75689 => protocol75689::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
+            mpq,
+            file_contents,
+        ),
         87702 => protocol87702::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
             mpq,
             file_contents,
@@ -49,6 +54,7 @@ pub fn read_game_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<GameEvent> {
     tracing::info!("Header: {:?}", proto_header);
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
+        75689 => protocol75689::bit_packed::GameEEventId::read_events(mpq, file_contents),
         87702 => protocol87702::bit_packed::GameEEventId::read_events(mpq, file_contents),
         88500 => protocol88500::bit_packed::GameEEventId::read_events(mpq, file_contents),
         89634 => protocol89634::bit_packed::GameEEventId::read_events(mpq, file_contents),
