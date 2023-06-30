@@ -3,6 +3,7 @@
 
 pub mod state;
 pub use state::*;
+use serde::{Serialize, Deserialize};
 
 use std::str::Utf8Error;
 /// A list of errors when handling GameEvents
@@ -36,7 +37,7 @@ pub type GameTControlGroupCount = u8;
 pub type GameTSyncChecksum = u32;
 pub type GameTButtonLink = u16;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameEvent {
     pub delta: i64,
     pub user_id: i64,
@@ -71,13 +72,13 @@ pub enum ReplayGameEvent {
     TriggerAnimLengthQueryByProps(GameSTriggerAnimLengthQueryByPropsEvent),*/
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct CameraSaveEvent {
     pub m_which: i64,
     pub m_target: GameSPointMini,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct CameraUpdateEvent {
     pub m_target: Option<GameSPointMini>,
     pub m_distance: Option<GameTFixedMiniBitsUnsigned>,
@@ -87,13 +88,13 @@ pub struct CameraUpdateEvent {
     pub m_follow: bool,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSPointMini {
     pub x: GameTFixedMiniBitsUnsigned,
     pub y: GameTFixedMiniBitsUnsigned,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSCmdEvent {
     pub m_cmd_flags: i64,
     pub m_abil: Option<GameSCmdAbil>,
@@ -103,7 +104,7 @@ pub struct GameSCmdEvent {
     pub m_unit_group: Option<u32>,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSCmdAbil {
     pub m_abil_link: GameTAbilLink,
     pub m_abil_cmd_index: i64,
@@ -118,14 +119,14 @@ pub enum GameSCmdData {
     Data(u32),
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSMapCoord3D {
     pub x: GameTMapCoordFixedBits,
     pub y: GameTMapCoordFixedBits,
     pub z: GameTFixedBits,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSCmdDataTargetUnit {
     pub m_target_unit_flags: u16,
     pub m_timer: u8,
@@ -136,16 +137,16 @@ pub struct GameSCmdDataTargetUnit {
     pub m_snapshot_point: GameSMapCoord3D,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSCmdUpdateTargetPointEvent {
     pub m_target: GameSMapCoord3D,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSCmdUpdateTargetUnitEvent {
     pub m_target: GameSCmdDataTargetUnit,
 }
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSTriggerMouseClickedEvent {
     pub m_button: u32,
     pub m_down: bool,
@@ -153,39 +154,39 @@ pub struct GameSTriggerMouseClickedEvent {
     pub m_pos_world: GameSMapCoord3D,
     pub m_flags: i8,
 }
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSTriggerMouseMovedEvent {
     pub m_pos_ui: GameSuiCoord,
     pub m_pos_world: GameSMapCoord3D,
     pub m_flags: i8,
 }
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSuiCoord {
     pub x: u16,
     pub y: u16,
 }
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSTriggerMouseWheelEvent {
     pub m_wheel_spin: GameTFixedMiniBitsSigned,
     pub m_flags: i8,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSUnitClickEvent {
     pub m_unit_tag: GameTUnitTag,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSUnitHighlightEvent {
     pub m_unit_tag: GameTUnitTag,
     pub m_flags: u8,
 }
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSSelectionDeltaEvent {
     pub m_control_group_id: GameTControlGroupId,
     pub m_delta: GameSSelectionDelta,
 }
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSSelectionDelta {
     pub m_subgroup_index: GameTSubgroupIndex,
     pub m_remove_mask: GameSSelectionMask,
@@ -193,7 +194,7 @@ pub struct GameSSelectionDelta {
     pub m_add_unit_tags: Vec<GameTUnitTag>,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSSelectionDeltaSubgroup {
     pub m_unit_link: GameTUnitLink,
     pub m_subgroup_priority: GameTSubgroupPriority,
@@ -209,24 +210,24 @@ pub enum GameSSelectionMask {
     ZeroIndices(GameSelectionIndexArrayType),
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSelectionMaskType {
     // Maybe needs to be Vec<u8>, trying as String first
     pub value: String,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSelectionIndexArrayType {
     pub value: Vec<GameTSelectionIndex>,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSSelectionSyncCheckEvent {
     pub m_control_group_id: GameTControlGroupId,
     pub m_selection_sync_data: GameSSelectionSyncData,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSSelectionSyncData {
     pub m_count: GameTSelectionCount,
     pub m_subgroup_count: GameTSubgroupCount,
@@ -236,7 +237,7 @@ pub struct GameSSelectionSyncData {
     pub m_subgroups_checksum: GameTSyncChecksum,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSControlGroupUpdateEvent {
     pub m_control_group_index: GameTControlGroupIndex,
     pub m_control_group_update: GameEControlGroupUpdate,
@@ -253,42 +254,42 @@ pub enum GameEControlGroupUpdate {
     EAppendAndSteal,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSTriggerChatMessageEvent {
     pub m_chat_message: String,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSTriggerReplySelectedEvent {
     pub m_conversation_id: i32,
     pub m_reply_id: i32,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSTriggerHotkeyPressedEvent {
     pub m_hotkey: u32,
     pub m_down: bool,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSTriggerTargetModeUpdateEvent {
     pub m_abil_link: GameTAbilLink,
     pub m_abil_cmd_index: i64,
     pub m_state: i8,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSTriggerKeyPressedEvent {
     pub m_key: i8,
     pub m_flags: i8,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSTriggerButtonPressedEvent {
     pub m_button: GameTButtonLink,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSCommandManagerStateEvent {
     pub m_state: GameECommandManagerState,
     pub m_sequence: Option<i64>,
