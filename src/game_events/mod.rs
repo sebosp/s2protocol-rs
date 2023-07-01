@@ -2,8 +2,8 @@
 //! These are stored in an embedded file in the MPQ file called 'replay.game.events'
 
 pub mod state;
+use serde::{Deserialize, Serialize};
 pub use state::*;
-use serde::{Serialize, Deserialize};
 
 use std::str::Utf8Error;
 /// A list of errors when handling GameEvents
@@ -44,7 +44,7 @@ pub struct GameEvent {
     pub event: ReplayGameEvent,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum ReplayGameEvent {
     CameraSave(CameraSaveEvent),
     Cmd(GameSCmdEvent),
@@ -111,7 +111,7 @@ pub struct GameSCmdAbil {
     pub m_abil_cmd_data: Option<u8>,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum GameSCmdData {
     None,
     TargetPoint(GameSMapCoord3D),
@@ -202,7 +202,7 @@ pub struct GameSSelectionDeltaSubgroup {
     pub m_count: GameTSelectionCount,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum GameSSelectionMask {
     None,
     Mask(GameSelectionMaskType),
@@ -244,7 +244,7 @@ pub struct GameSControlGroupUpdateEvent {
     pub m_mask: GameSSelectionMask,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum GameEControlGroupUpdate {
     ESet,
     EAppend,
@@ -294,7 +294,7 @@ pub struct GameSCommandManagerStateEvent {
     pub m_state: GameECommandManagerState,
     pub m_sequence: Option<i64>,
 }
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum GameECommandManagerState {
     EFireDone,
     EFireOnce,
