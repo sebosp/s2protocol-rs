@@ -2,8 +2,8 @@
 //! These are stored in an embebdded file in the MPQ file called 'replay.tracker.events'
 
 pub mod state;
+use serde::{Deserialize, Serialize};
 pub use state::*;
-use serde::{Serialize, Deserialize};
 use std::str::Utf8Error;
 
 /// A list of errors when handling TrackerEvents
@@ -105,7 +105,7 @@ pub struct UnitPosition {
 /// This should hopefully only add fields to variants to make things backwards compatible
 /// Many of the variants are not supported yet, they will be added as they are considered
 /// relevant  for `swarmy` repo.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum ReplayTrackerEvent {
     PlayerStats(PlayerStatsEvent),
     UnitBorn(UnitBornEvent),
@@ -181,7 +181,7 @@ pub struct PlayerStats {
     pub vespene_used_current_economy: i32,
     pub vespene_used_current_technology: i32,
     pub minerals_lost_army: i32,
-    pub minerals_lost_economy: i33,
+    pub minerals_lost_economy: i32,
     pub minerals_lost_technology: i32,
     pub vespene_lost_army: i32,
     pub vespene_lost_economy: i32,
@@ -207,157 +207,163 @@ pub struct PlayerStats {
 impl PlayerStats {
     ///  Creates a vector of Entity Path to value to be consumed by plots
     pub fn as_prop_name_value_vec(&self) -> Vec<(String, i32)> {
-        let mut res = vec![];
-        res.push((String::from("minerals/current"), self.minerals_current));
-        res.push((String::from("vespene/current"), self.vespene_current));
-        res.push((
-            String::from("minerals/collection_rate"),
-            self.minerals_collection_rate,
-        ));
-        res.push((
-            String::from("vespene/collection_rate"),
-            self.vespene_collection_rate,
-        ));
-        res.push((
-            String::from("workers_active_count"),
-            self.workers_active_count,
-        ));
-        res.push((
-            String::from("minerals/used_in_progress_army"),
-            self.minerals_used_in_progress_army,
-        ));
-        res.push((
-            String::from("minerals/used_in_progress_economy"),
-            self.minerals_used_in_progress_economy,
-        ));
-        res.push((
-            String::from("minerals/used_in_progress_technology"),
-            self.minerals_used_in_progress_technology,
-        ));
-        res.push((
-            String::from("vespene/used_in_progress_army"),
-            self.vespene_used_in_progress_army,
-        ));
-        res.push((
-            String::from("vespene/used_in_progress_economy"),
-            self.vespene_used_in_progress_economy,
-        ));
-        res.push((
-            String::from("vespene/used_in_progress_technology"),
-            self.vespene_used_in_progress_technology,
-        ));
-        res.push((
-            String::from("minerals/used_current_army"),
-            self.minerals_used_current_army,
-        ));
-        res.push((
-            String::from("minerals/used_current_economy"),
-            self.minerals_used_current_economy,
-        ));
-        res.push((
-            String::from("minerals/used_current_technology"),
-            self.minerals_used_current_technology,
-        ));
-        res.push((
-            String::from("vespene/used_current_army"),
-            self.vespene_used_current_army,
-        ));
-        res.push((
-            String::from("vespene/used_current_economy"),
-            self.vespene_used_current_economy,
-        ));
-        res.push((
-            String::from("vespene/used_current_technology"),
-            self.vespene_used_current_technology,
-        ));
-        res.push((String::from("minerals/lost_army"), self.minerals_lost_army));
-        res.push((
-            String::from("minerals/lost_economy"),
-            self.minerals_lost_economy,
-        ));
-        res.push((
-            String::from("minerals/lost_technology"),
-            self.minerals_lost_technology,
-        ));
-        res.push((String::from("vespene/lost_army"), self.vespene_lost_army));
-        res.push((
-            String::from("vespene/lost_economy"),
-            self.vespene_lost_economy,
-        ));
-        res.push((
-            String::from("vespene/lost_technology"),
-            self.vespene_lost_technology,
-        ));
-        res.push((
-            String::from("minerals/killed_army"),
-            self.minerals_killed_army,
-        ));
-        res.push((
-            String::from("minerals/killed_economy"),
-            self.minerals_killed_economy,
-        ));
-        res.push((
-            String::from("minerals/killed_technology"),
-            self.minerals_killed_technology,
-        ));
-        res.push((
-            String::from("vespene/killed_army"),
-            self.vespene_killed_army,
-        ));
-        res.push((
-            String::from("vespene/killed_economy"),
-            self.vespene_killed_economy,
-        ));
-        res.push((
-            String::from("vespene/killed_technology"),
-            self.vespene_killed_technology,
-        ));
-        res.push((String::from("food/used"), self.food_used));
-        res.push((String::from("food/made"), self.food_made));
-        res.push((
-            String::from("minerals/used_active_forces"),
-            self.minerals_used_active_forces,
-        ));
-        res.push((
-            String::from("vespene/used_active_forces"),
-            self.vespene_used_active_forces,
-        ));
-        res.push((
-            String::from("minerals/friendly_fire_army"),
-            self.minerals_friendly_fire_army,
-        ));
-        res.push((
-            String::from("minerals/friendly_fire_economy"),
-            self.minerals_friendly_fire_economy,
-        ));
-        res.push((
-            String::from("minerals/friendly_fire_technology"),
-            self.minerals_friendly_fire_technology,
-        ));
-        res.push((
-            String::from("vespene/friendly_fire_army"),
-            self.vespene_friendly_fire_army,
-        ));
-        res.push((
-            String::from("vespene/friendly_fire_economy"),
-            self.vespene_friendly_fire_economy,
-        ));
-        res.push((
-            String::from("vespene/friendly_fire_technology"),
-            self.vespene_friendly_fire_technology,
-        ));
-        res
+        vec![
+            (String::from("minerals/current"), self.minerals_current),
+            (String::from("vespene/current"), self.vespene_current),
+            (
+                String::from("minerals/collection_rate"),
+                self.minerals_collection_rate,
+            ),
+            (
+                String::from("vespene/collection_rate"),
+                self.vespene_collection_rate,
+            ),
+            (
+                String::from("workers_active_count"),
+                self.workers_active_count,
+            ),
+            (
+                String::from("minerals/used_in_progress_army"),
+                self.minerals_used_in_progress_army,
+            ),
+            (
+                String::from("minerals/used_in_progress_economy"),
+                self.minerals_used_in_progress_economy,
+            ),
+            (
+                String::from("minerals/used_in_progress_technology"),
+                self.minerals_used_in_progress_technology,
+            ),
+            (
+                String::from("vespene/used_in_progress_army"),
+                self.vespene_used_in_progress_army,
+            ),
+            (
+                String::from("vespene/used_in_progress_economy"),
+                self.vespene_used_in_progress_economy,
+            ),
+            (
+                String::from("vespene/used_in_progress_technology"),
+                self.vespene_used_in_progress_technology,
+            ),
+            (
+                String::from("minerals/used_current_army"),
+                self.minerals_used_current_army,
+            ),
+            (
+                String::from("minerals/used_current_economy"),
+                self.minerals_used_current_economy,
+            ),
+            (
+                String::from("minerals/used_current_technology"),
+                self.minerals_used_current_technology,
+            ),
+            (
+                String::from("vespene/used_current_army"),
+                self.vespene_used_current_army,
+            ),
+            (
+                String::from("vespene/used_current_economy"),
+                self.vespene_used_current_economy,
+            ),
+            (
+                String::from("vespene/used_current_technology"),
+                self.vespene_used_current_technology,
+            ),
+            (String::from("minerals/lost_army"), self.minerals_lost_army),
+            (
+                String::from("minerals/lost_economy"),
+                self.minerals_lost_economy,
+            ),
+            (
+                String::from("minerals/lost_technology"),
+                self.minerals_lost_technology,
+            ),
+            (String::from("vespene/lost_army"), self.vespene_lost_army),
+            (
+                String::from("vespene/lost_economy"),
+                self.vespene_lost_economy,
+            ),
+            (
+                String::from("vespene/lost_technology"),
+                self.vespene_lost_technology,
+            ),
+            (
+                String::from("minerals/killed_army"),
+                self.minerals_killed_army,
+            ),
+            (
+                String::from("minerals/killed_economy"),
+                self.minerals_killed_economy,
+            ),
+            (
+                String::from("minerals/killed_technology"),
+                self.minerals_killed_technology,
+            ),
+            (
+                String::from("vespene/killed_army"),
+                self.vespene_killed_army,
+            ),
+            (
+                String::from("vespene/killed_economy"),
+                self.vespene_killed_economy,
+            ),
+            (
+                String::from("vespene/killed_technology"),
+                self.vespene_killed_technology,
+            ),
+            (String::from("food/used"), self.food_used),
+            (String::from("food/made"), self.food_made),
+            (
+                String::from("minerals/used_active_forces"),
+                self.minerals_used_active_forces,
+            ),
+            (
+                String::from("vespene/used_active_forces"),
+                self.vespene_used_active_forces,
+            ),
+            (
+                String::from("minerals/friendly_fire_army"),
+                self.minerals_friendly_fire_army,
+            ),
+            (
+                String::from("minerals/friendly_fire_economy"),
+                self.minerals_friendly_fire_economy,
+            ),
+            (
+                String::from("minerals/friendly_fire_technology"),
+                self.minerals_friendly_fire_technology,
+            ),
+            (
+                String::from("vespene/friendly_fire_army"),
+                self.vespene_friendly_fire_army,
+            ),
+            (
+                String::from("vespene/friendly_fire_economy"),
+                self.vespene_friendly_fire_economy,
+            ),
+            (
+                String::from("vespene/friendly_fire_technology"),
+                self.vespene_friendly_fire_technology,
+            ),
+        ]
     }
 }
 
+/// Translates from a Tracker Event tag_index, tag_recycle pair into the unit tag used in the Game
+/// Events
 pub fn unit_tag(unit_tag_index: u32, unit_tag_recycle: u32) -> i64 {
     ((unit_tag_index as i64) << 18usize) + unit_tag_recycle as i64
 }
 
+/// Extracts the Unit Tag Recycle index from a Game Event Unit Tag
+/// Useful to correlate between Game and Tracker Event units
 pub fn unit_tag_index(unit_tag: i64) -> u32 {
     ((unit_tag >> 18) & 0x00003fff) as u32
 }
 
+/// Extracts the Unit Tag Recycle index from a Game Event Unit Tag
+/// Useful to correlate between Game and Tracker Event units
 pub fn unit_tag_recycle(unit_tag: i64) -> u32 {
     ((unit_tag) & 0x0003ffff) as u32
 }
