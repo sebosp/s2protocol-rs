@@ -3,7 +3,7 @@
 
 pub mod state;
 pub use state::*;
-
+use serde::{Serialize, Deserialize};
 use std::str::Utf8Error;
 
 /// A list of errors when handling TrackerEvents
@@ -19,7 +19,7 @@ pub enum TrackerEventError {
 }
 
 /// A protocol agnostic Unit Born
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct UnitBornEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
@@ -34,7 +34,7 @@ pub struct UnitBornEvent {
 }
 
 /// A protocol agnostic Unit Died
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct UnitDiedEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
@@ -46,7 +46,7 @@ pub struct UnitDiedEvent {
 }
 
 /// A protocol agnostic Unit Init Event
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct UnitInitEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
@@ -58,14 +58,14 @@ pub struct UnitInitEvent {
 }
 
 /// A protocol agnostic Unit Done Event
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct UnitDoneEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
 }
 
 /// A protocol agnostic Unit Done Event
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct UnitPositionsEvent {
     pub first_unit_index: u32,
     pub items: Vec<i32>,
@@ -91,7 +91,7 @@ impl UnitPositionsEvent {
 }
 
 /// A single unit position
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct UnitPosition {
     /// The unit "tag" is the "index"?
     pub tag: u32,
@@ -119,20 +119,20 @@ pub enum ReplayTrackerEvent {
     PlayerSetup(PlayerSetupEvent),
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct UpgradeEvent {
     pub player_id: u8,
     pub upgrade_type_name: String,
     pub count: i32,
 }
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct UnitOwnerChangeEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
     pub control_player_id: u8,
     pub upkeep_player_id: u8,
 }
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct PlayerSetupEvent {
     pub player_id: u8,
     pub m_type: u32,
@@ -140,7 +140,7 @@ pub struct PlayerSetupEvent {
     pub slot_id: Option<u32>,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct UnitTypeChangeEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
@@ -148,20 +148,20 @@ pub struct UnitTypeChangeEvent {
 }
 
 /// A Tracker Event is an event in the gameloop for a specific user id
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct TrackerEvent {
     pub delta: u32,
     pub event: ReplayTrackerEvent,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct PlayerStatsEvent {
     pub player_id: u8,
     pub stats: PlayerStats,
 }
 
 // TODO: Split
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct PlayerStats {
     pub minerals_current: i32,
     pub vespene_current: i32,
@@ -181,7 +181,7 @@ pub struct PlayerStats {
     pub vespene_used_current_economy: i32,
     pub vespene_used_current_technology: i32,
     pub minerals_lost_army: i32,
-    pub minerals_lost_economy: i32,
+    pub minerals_lost_economy: i33,
     pub minerals_lost_technology: i32,
     pub vespene_lost_army: i32,
     pub vespene_lost_economy: i32,
