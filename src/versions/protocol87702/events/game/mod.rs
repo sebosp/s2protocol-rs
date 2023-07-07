@@ -20,6 +20,8 @@ pub mod selection;
 pub use selection::*;
 pub mod control_group;
 pub use control_group::*;
+pub mod user;
+pub use user::*;
 
 impl GameEEventId {
     /// Reads a delta, GameEvent set
@@ -48,7 +50,7 @@ impl GameEEventId {
     pub fn read_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<GameEvent> {
         // TODO: Make it return an Iterator, remove the unwrap.
         let (_event_tail, game_events) = mpq
-            .read_mpq_file_sector("replay.game.events", false, &file_contents)
+            .read_mpq_file_sector("replay.game.events", false, file_contents)
             .unwrap();
         let mut res = vec![];
         let mut count = 1usize;
@@ -133,10 +135,17 @@ impl From<Int32> for i32 {
     }
 }
 
+impl From<TUserId> for u8 {
+    fn from(source: TUserId) -> u8 {
+        source.value as u8
+    }
+}
+
 impl TryFrom<GameEEventId> for ReplayGameEvent {
     type Error = GameEventError;
     fn try_from(value: GameEEventId) -> Result<Self, Self::Error> {
         match value {
+            GameEEventId::EDropUser(e) => Ok(e.into()),
             GameEEventId::ECameraSave(e) => Ok(e.into()),
             GameEEventId::ECmd(e) => Ok(e.into()),
             GameEEventId::ESelectionDelta(e) => Ok(e.try_into()?),
@@ -173,7 +182,7 @@ impl From<GameSPointMini> for game_events::GameSPointMini {
 
 impl From<GameTFixedMiniBitsUnsigned> for game_events::GameTFixedMiniBitsUnsigned {
     fn from(source: GameTFixedMiniBitsUnsigned) -> game_events::GameTFixedMiniBitsUnsigned {
-        source.value.value as i64
+        source.value.value
     }
 }
 

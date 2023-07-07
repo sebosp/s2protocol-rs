@@ -1,16 +1,19 @@
 //! Handling of state of SC2 Replay as it steps trhough time.
 //!
 //!
-//! Events are ordered by their "priority", this is not a guessed priority for now.
+//! Events are ordered by their "priority", this is a guessed priority for now.
 //! For example, if a TrackerEvent and a GameEvent, happen at the same game loop,
 //! the game events take priority (See the const below). This may not be true but
 //! seems to work so far.
+//! In this version, the game_loop will be multiplied by 10 and added the priority.
+//! This means 10 max events types are supported.
 
-// priarity of events, to sort them when they are at the same game loop.
-// In this version, the game_loop will be multiplied by 10 and added the priority.
-// This means 10 max events are supported.
 pub const TRACKER_PRIORITY: i64 = 1;
 pub const GAME_PRIORITY: i64 = 2;
+
+// The game event loops and tracker event loops differ in their units.
+// There seems to be a ratio and the ratio based on initial calculations seems to be:
+// The true ratio should be identified somehow.
 pub const TRACKER_SPEED_RATIO: f32 = 0.70996;
 
 // These many event types (replays, game, attributes, etc) are supported.
