@@ -18,6 +18,7 @@ pub enum GameEventError {
     Utf8Error(#[from] Utf8Error),
 }
 
+pub type TUserId = u8;
 pub type GameTUnitTag = u32;
 pub type GameTUnitLink = u16;
 pub type GameTPlayerId = i64;
@@ -46,6 +47,7 @@ pub struct GameEvent {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum ReplayGameEvent {
+    DropUser(DropUserEvent),
     CameraSave(CameraSaveEvent),
     Cmd(GameSCmdEvent),
     SelectionDelta(GameSSelectionDeltaEvent),
@@ -70,6 +72,32 @@ pub enum ReplayGameEvent {
     CmdUpdateTargetUnit(GameSCmdUpdateTargetUnitEvent),
     /*TriggerAnimLengthQueryByName(GameSTriggerAnimLengthQueryByNameEvent),
     TriggerAnimLengthQueryByProps(GameSTriggerAnimLengthQueryByPropsEvent),*/
+}
+
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub enum ELeaveReason {
+    UserLeft,
+    UserDropped,
+    UserBanned,
+    UserVictory,
+    UserDefeat,
+    UserTied,
+    UserDesynced,
+    UserOutOfTime,
+    WeWereUnresponsive,
+    WeContinuedAlone,
+    ReplayDesynced,
+    UserTimeout,
+    UserDisconnected,
+    Unrecoverable,
+    UserCatchupDesynced,
+    TakeCommandDropped,
+}
+
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub struct DropUserEvent {
+    pub m_drop_session_user_id: TUserId,
+    pub m_reason: ELeaveReason,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
