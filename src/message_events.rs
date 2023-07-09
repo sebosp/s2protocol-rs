@@ -26,8 +26,29 @@ pub struct MessageEvent {
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum ReplayMessageEvent {
-    /*EChat(GameSChatMessage),
-EPing(GameSPingMessage),
-ELoadingProgress(GameSLoadingProgressMessage),
-EServerPing(GameSServerPingMessage),
-EReconnectNotify(GameSReconnectNotifyMessage),*/}
+    EChat(ChatMessage),
+    /*EPing(GameSPingMessage),
+    ELoadingProgress(GameSLoadingProgressMessage),
+    EServerPing(GameSServerPingMessage),
+    EReconnectNotify(GameSReconnectNotifyMessage),*/
+}
+
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub struct ChatMessage {
+    pub m_recipient: GameEMessageRecipient,
+    pub m_string: GameCChatString,
+}
+
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub enum GameEMessageRecipient {
+    EAll,
+    EAllies,
+    EIndividual,
+    EBattlenet,
+    EObservers,
+}
+
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub struct GameCChatString {
+    pub value: Vec<u8>,
+}
