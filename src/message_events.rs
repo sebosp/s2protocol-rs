@@ -3,6 +3,7 @@
 //! Somehow it should 4 bits instead of 3 bits for the GameEMessageId...
 //! In our code it translates to 3 bits needed to represent 5 possible enum variants.
 
+use serde::{Deserialize, Serialize};
 use std::str::Utf8Error;
 
 /// A list of errors when handling MessageEvents
