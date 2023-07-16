@@ -18,14 +18,14 @@ pub enum MessageEventError {
     Utf8Error(#[from] Utf8Error),
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct MessageEvent {
     pub delta: i64,
     pub user_id: i64,
     pub event: ReplayMessageEvent,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum ReplayMessageEvent {
     EChat(ChatMessage),
     /*EPing(GameSPingMessage),
@@ -37,7 +37,7 @@ pub enum ReplayMessageEvent {
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct ChatMessage {
     pub m_recipient: GameEMessageRecipient,
-    pub m_string: GameCChatString,
+    pub m_string: String,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -47,9 +47,4 @@ pub enum GameEMessageRecipient {
     EIndividual,
     EBattlenet,
     EObservers,
-}
-
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-pub struct GameCChatString {
-    pub value: Vec<u8>,
 }
