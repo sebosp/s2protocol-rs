@@ -73,6 +73,7 @@ fn main() {
             for evt in res {
                 println!("{},", serde_json::to_string(&evt).unwrap());
             }
+            println!("]");
         }
     }
 }
