@@ -2,6 +2,7 @@ use clap::{Parser, Subcommand};
 use nom_mpq::parser;
 use s2protocol::generator::proto_morphist::ProtoMorphist;
 use s2protocol::versions::read_game_events;
+use s2protocol::versions::read_message_events;
 use s2protocol::versions::read_tracker_events;
 
 #[derive(Subcommand)]
@@ -12,10 +13,12 @@ enum Commands {
         #[arg(short, long)]
         output: String,
     },
-    /// Gets the tracker events from the file
+    /// Gets the tracker events from the SC2Replay MPQ Archive
     GetTrackerEvents,
-    /// Gets the game events from the file
+    /// Gets the game events from the SC2Replay MPQ Archive
     GetGameEvents,
+    /// Gets the message events from the SC2Replay MPQ Archive
+    GetMessageEvents,
 }
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -55,6 +58,17 @@ fn main() {
             let file_contents = parser::read_file(&cli.source);
             let (_input, mpq) = parser::parse(&file_contents).unwrap();
             let res = read_game_events(&mpq, &file_contents);
+            println!("[");
+            for evt in res {
+                println!("{},", serde_json::to_string(&evt).unwrap());
+            }
+            println!("]");
+        }
+        Commands::GetMessageEvents => {
+            tracing::info!("Getting message events");
+            let file_contents = parser::read_file(&cli.source);
+            let (_input, mpq) = parser::parse(&file_contents).unwrap();
+            let res = read_message_events(&mpq, &file_contents);
             println!("[");
             for evt in res {
                 println!("{},", serde_json::to_string(&evt).unwrap());

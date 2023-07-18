@@ -3,6 +3,7 @@
 //! Somehow it should 4 bits instead of 3 bits for the GameEMessageId...
 //! In our code it translates to 3 bits needed to represent 5 possible enum variants.
 
+use serde::{Deserialize, Serialize};
 use std::str::Utf8Error;
 
 /// A list of errors when handling MessageEvents
@@ -17,17 +18,33 @@ pub enum MessageEventError {
     Utf8Error(#[from] Utf8Error),
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct MessageEvent {
     pub delta: i64,
     pub user_id: i64,
     pub event: ReplayMessageEvent,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum ReplayMessageEvent {
-    /*EChat(GameSChatMessage),
-EPing(GameSPingMessage),
-ELoadingProgress(GameSLoadingProgressMessage),
-EServerPing(GameSServerPingMessage),
-EReconnectNotify(GameSReconnectNotifyMessage),*/}
+    EChat(ChatMessage),
+    /*EPing(GameSPingMessage),
+    ELoadingProgress(GameSLoadingProgressMessage),
+    EServerPing(GameSServerPingMessage),
+    EReconnectNotify(GameSReconnectNotifyMessage),*/
+}
+
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub struct ChatMessage {
+    pub m_recipient: GameEMessageRecipient,
+    pub m_string: String,
+}
+
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub enum GameEMessageRecipient {
+    EAll,
+    EAllies,
+    EIndividual,
+    EBattlenet,
+    EObservers,
+}
