@@ -1,5 +1,6 @@
 //! The known protocol versions
 
+use crate::details::Details;
 use crate::game_events::GameEvent;
 use crate::message_events::MessageEvent;
 use crate::tracker_events::TrackerEvent;
@@ -69,6 +70,25 @@ pub fn read_game_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<GameEvent> {
 }
 
 /// Attempts to read the message events, panics under unknown protocol
+pub fn read_message_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<MessageEvent> {
+    let (_tail, proto_header) = crate::read_protocol_header(&mpq).unwrap();
+    tracing::info!("Header: {:?}", proto_header);
+    assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
+    match proto_header.m_version.m_base_build {
+        75689 => protocol75689::bit_packed::GameEMessageId::read_events(mpq, file_contents),
+        87702 => protocol87702::bit_packed::GameEMessageId::read_events(mpq, file_contents),
+        88500 => protocol88500::bit_packed::GameEMessageId::read_events(mpq, file_contents),
+        89634 => protocol89634::bit_packed::GameEMessageId::read_events(mpq, file_contents),
+        89720 => protocol89720::bit_packed::GameEMessageId::read_events(mpq, file_contents),
+        90136 => protocol90136::bit_packed::GameEMessageId::read_events(mpq, file_contents),
+        _ => panic!(
+            "Unsupported Protocol Version: {}",
+            proto_header.m_version.m_base_build
+        ),
+    }
+}
+
+/// Attempts to read the details, panics under unknown protocol
 pub fn read_message_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<MessageEvent> {
     let (_tail, proto_header) = crate::read_protocol_header(&mpq).unwrap();
     tracing::info!("Header: {:?}", proto_header);
