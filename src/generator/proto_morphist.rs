@@ -170,7 +170,7 @@ impl ProtoMorphist {
             if full_name == "NNet.SMD5" {
                 self.gen_proto_code(proto_mod, DecoderType::ByteAligned)?;
             }
-            if full_name == "NNet.Replay" {
+            if full_name == "NNet.Replay" || full_name == "NNet.Game" {
                 let replay_mods_arr = proto_mod["decls"]
                     .as_array()
                     .expect("NNet.Replay should have '.decls' array");
@@ -192,6 +192,11 @@ impl ProtoMorphist {
                                 self.gen_proto_code(tracker_mod, DecoderType::ByteAligned)?;
                             }
                         }
+                    }
+                    if replay_mod["fullname"] == "NNet.Game.CPlayerDetailsArray"
+                        || replay_mod["fullname"] == "NNet.Game.SDetails"
+                    {
+                        self.gen_proto_code(replay_mod, DecoderType::ByteAligned)?;
                     }
                 }
             }

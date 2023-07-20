@@ -1130,7 +1130,6 @@ impl DecoderType {
          pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
          let (tail, _) = validate_int_tag(input)?;\n\
          let (tail, value) = parse_vlq_int(tail)?;\n\
-         // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
          ",
     )
@@ -1235,7 +1234,6 @@ impl DecoderType {
         "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
          let (tail, value) = {type_info}::parse(input)?;\n\
-         // TODO: UNTESTED. \n\
          Ok((tail, Self {{ value }}))\n\
          ",
     )
@@ -1257,7 +1255,6 @@ impl DecoderType {
             "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
          let (tail, value) = {type_info}::parse(input)?;\n\
-         // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
          ",
         )
@@ -1305,7 +1302,6 @@ impl DecoderType {
          let bitarray_length_bits: usize = {num_bits};
          let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
          let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;\n\
-         // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
          ",
         )
@@ -1351,7 +1347,6 @@ impl DecoderType {
          let (tail, _) = byte_align(input)?;
          let num_bits: usize = {num_bits};
          let (tail, value) = take_bit_array(tail, num_bits)?;\n\
-         // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
          ",
         )
@@ -1403,7 +1398,6 @@ impl DecoderType {
          let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;\n\
          let (tail, _) = byte_align(tail)?;
          let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;\n\
-         // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
          ",
         )
@@ -1422,7 +1416,9 @@ impl DecoderType {
         internal_type: &str,
     ) -> String {
         match self {
-            Self::ByteAligned => panic!("ArrayType not supported for ByteAligned types"),
+            Self::ByteAligned => {
+                Self::open_byte_aligned_array_main_parse_fn(proto_num, name, internal_type)
+            }
             Self::BitPacked => {
                 Self::open_bit_packed_array_main_parse_fn(proto_num, bounds, name, internal_type)
             }
@@ -1431,7 +1427,7 @@ impl DecoderType {
 
     pub fn close_array_main_parse_fn(&self) -> String {
         match self {
-            Self::ByteAligned => panic!("ArrayType not supported for ByteAligned types"),
+            Self::ByteAligned => Self::close_byte_aligned_array_main_parse_fn(),
             Self::BitPacked => Self::close_bit_packed_array_main_parse_fn(),
         }
     }
@@ -1458,13 +1454,35 @@ impl DecoderType {
          let array_length_num_bits: usize = {array_length_num_bits};\n\
          let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;\n\
          let (tail, value) = nom::multi::count({internal_type}::parse, array_length as usize)(tail)?;\n\
-         // TODO: Unsure about this. \n\
          Ok((tail, Self {{ value }}))\n\
          ",
         )
     }
 
     pub fn close_bit_packed_array_main_parse_fn() -> String {
+        format!("}}")
+    }
+
+    /// Opens the bit packed version of the ByteArray parser
+    pub fn open_byte_aligned_array_main_parse_fn(
+        proto_num: u64,
+        name: &str,
+        internal_type: &str,
+    ) -> String {
+        format!(
+        "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
+                 let (tail, _) = validate_array_tag(input)?;\n\
+                 let (tail, array_length) = parse_vlq_int(tail)?;\n\
+                 tracing::debug!(\"Reading array length: {{array_length}}\");\n\
+                 let (tail, value) = nom::multi::count({internal_type}::parse, array_length as usize)(tail)?;\n\
+                 // TODO: Unsure about this. \n\
+                Ok((tail, Self {{ value }}))\n\
+         ",
+        )
+    }
+
+    pub fn close_byte_aligned_array_main_parse_fn() -> String {
         format!("}}")
     }
 
@@ -1507,7 +1525,6 @@ impl DecoderType {
         name: &str,
         num_fields: usize,
     ) -> String {
-        // XXX: untested
         let num_bits = (num_fields as f32).log2().ceil() as usize;
         format!(
         "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
@@ -1636,7 +1653,6 @@ impl DecoderType {
         type_impl_def: &mut String,
     ) {
         // The int_parse_impl_def already contains the int parsing functionality.
-        // XXX: This is untested.
         proto_type_def.push_str(&format!("    pub value: i64,"));
         type_impl_def.push_str(&int_parse_impl_def);
     }
@@ -1791,6 +1807,20 @@ impl DecoderType {
 
     #[tracing::instrument(
         level = "debug",
+        skip(proto_type_def, byte_aligned_parse_impl_def, type_impl_def,)
+    )]
+    pub fn gen_byte_aligned_proto_array_code(
+        proto_type_def: &mut String,
+        byte_aligned_parse_impl_def: String,
+        type_impl_def: &mut String,
+        internal_type: &str,
+    ) {
+        proto_type_def.push_str(&format!("    pub value: Vec<{}>,", internal_type));
+        type_impl_def.push_str(&byte_aligned_parse_impl_def);
+    }
+
+    #[tracing::instrument(
+        level = "debug",
         skip(proto_type_def, bit_packed_parse_impl_def, type_impl_def,)
     )]
     pub fn gen_bit_packed_proto_array_code(
@@ -1817,7 +1847,12 @@ impl DecoderType {
         internal_type: &str,
     ) {
         match self {
-            Self::ByteAligned => panic!("ArrayType is not supported for ByteAligned"),
+            Self::ByteAligned => Self::gen_byte_aligned_proto_array_code(
+                proto_type_def,
+                int_parse_impl_def,
+                type_impl_def,
+                internal_type,
+            ),
             Self::BitPacked => Self::gen_bit_packed_proto_array_code(
                 proto_type_def,
                 int_parse_impl_def,
