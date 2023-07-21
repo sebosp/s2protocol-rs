@@ -170,6 +170,9 @@ impl ProtoMorphist {
             if full_name == "NNet.SMD5" {
                 self.gen_proto_code(proto_mod, DecoderType::ByteAligned)?;
             }
+            if full_name == "NNet.EObserve" {
+                self.gen_proto_code(proto_mod, DecoderType::ByteAligned)?;
+            }
             if full_name == "NNet.Replay" || full_name == "NNet.Game" {
                 let replay_mods_arr = proto_mod["decls"]
                     .as_array()
@@ -195,6 +198,12 @@ impl ProtoMorphist {
                     }
                     if replay_mod["fullname"] == "NNet.Game.CPlayerDetailsArray"
                         || replay_mod["fullname"] == "NNet.Game.SDetails"
+                        || replay_mod["fullname"] == "NNet.Game.SPlayerDetails"
+                        || replay_mod["fullname"] == "NNet.Game.SThumbnail"
+                        || replay_mod["fullname"] == "NNet.Game.EGameSpeed"
+                        || replay_mod["fullname"] == "NNet.Game.EResultDetails"
+                        || replay_mod["fullname"] == "NNet.Game.SToonNameDetails"
+                        || replay_mod["fullname"] == "NNet.Game.SColor"
                     {
                         self.gen_proto_code(replay_mod, DecoderType::ByteAligned)?;
                     }

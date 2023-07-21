@@ -101,13 +101,19 @@ impl DecoderType {
             | "NNet.Replay.EReplayType"
             | "NNet.uint6"
             | "NNet.Game.TPlayerId"
+            | "NNet.Game.TControlId"
+            | "NNet.Game.TTeamId"
             | "NNet.Replay.Tracker.TUIntMiniBits" => ProtoTypeConversion {
                 rust_ty: "u8".to_string(),
                 do_try_from: true,
                 parser: "tagged_vlq_int".to_string(),
                 ..Default::default()
             },
-            "NNet.uint32" | "NNet.uint14" | "NNet.uint22" => ProtoTypeConversion {
+            "NNet.uint32"
+            | "NNet.uint14"
+            | "NNet.uint22"
+            | "NNet.Game.TDifficulty"
+            | "NNet.Game.THandicap" => ProtoTypeConversion {
                 rust_ty: "u32".to_string(),
                 do_try_from: true,
                 parser: "tagged_vlq_int".to_string(),
@@ -124,16 +130,30 @@ impl DecoderType {
                 parser: "SVersion::parse".to_string(),
                 ..Default::default()
             },
-            "NNet.Game.TColorId" => ProtoTypeConversion {
+            "NNet.Game.TColorId" | "NNet.int64" => ProtoTypeConversion {
                 rust_ty: "i64".to_string(),
                 do_try_from: true,
                 parser: "tagged_vlq_int".to_string(),
                 ..Default::default()
             },
+            "NNet.uint64" => ProtoTypeConversion {
+                rust_ty: "u64".to_string(),
+                do_try_from: true,
+                parser: "tagged_vlq_int".to_string(),
+                ..Default::default()
+            },
+            "FourCCType" => ProtoTypeConversion {
+                rust_ty: "u32".to_string(),
+                parser: "tagged_fourcc".to_string(),
+                ..Default::default()
+            },
             "BlobType"
             | "NNet.Replay.CSignature"
             | "StringType"
-            | "NNet.Replay.Tracker.CatalogName" => ProtoTypeConversion {
+            | "NNet.Replay.Tracker.CatalogName"
+            | "NNet.Game.CCacheHandle"
+            | "NNet.CFilePath"
+            | "NNet.CUserName" => ProtoTypeConversion {
                 rust_ty: "Vec<u8>".to_string(),
                 parser: "tagged_blob".to_string(),
                 ..Default::default()
@@ -162,9 +182,57 @@ impl DecoderType {
                 parser: "Smd5::parse".to_string(),
                 ..Default::default()
             },
+            "NNet.EObserve" => ProtoTypeConversion {
+                rust_ty: "EObserve".to_string(),
+                parser: "EObserve::parse".to_string(),
+                ..Default::default()
+            },
+            "NNet.Game.EResultDetails" => ProtoTypeConversion {
+                rust_ty: "GameEResultDetails".to_string(),
+                parser: "GameEResultDetails::parse".to_string(),
+                ..Default::default()
+            },
+            "NNet.Game.CCacheHandles" => ProtoTypeConversion {
+                rust_ty: "Vec<Vec<u8>>".to_string(),
+                parser: "tagged_blob".to_string(),
+                is_vec: true,
+                ..Default::default()
+            },
             "NNet.Replay.Tracker.SPlayerStats" => ProtoTypeConversion {
                 rust_ty: "ReplayTrackerSPlayerStats".to_string(),
                 parser: "ReplayTrackerSPlayerStats::parse".to_string(),
+                ..Default::default()
+            },
+            "NNet.Game.CPlayerDetailsArray" => ProtoTypeConversion {
+                rust_ty: "Vec<GameSPlayerDetails>".to_string(),
+                parser: "GameSPlayerDetails::parse".to_string(),
+                is_vec: true,
+                ..Default::default()
+            },
+            "NNet.Game.SThumbnail" => ProtoTypeConversion {
+                rust_ty: "GameSThumbnail".to_string(),
+                parser: "GameSThumbnail::parse".to_string(),
+                ..Default::default()
+            },
+            "NNet.Game.CModPaths" => ProtoTypeConversion {
+                rust_ty: "Vec<Vec<u8>>".to_string(),
+                parser: "tagged_blob".to_string(),
+                is_vec: true,
+                ..Default::default()
+            },
+            "NNet.Game.EGameSpeed" => ProtoTypeConversion {
+                rust_ty: "GameEGameSpeed".to_string(),
+                parser: "GameEGameSpeed::parse".to_string(),
+                ..Default::default()
+            },
+            "NNet.Game.SToonNameDetails" => ProtoTypeConversion {
+                rust_ty: "GameSToonNameDetails".to_string(),
+                parser: "GameSToonNameDetails::parse".to_string(),
+                ..Default::default()
+            },
+            "NNet.Game.SColor" => ProtoTypeConversion {
+                rust_ty: "GameSColor".to_string(),
+                parser: "GameSColor::parse".to_string(),
                 ..Default::default()
             },
             _ => panic!("Unsupported type: {}", nnet_name),
@@ -421,9 +489,16 @@ impl DecoderType {
                     internal_morph
                 } else {
                     // The enclosed type is wrapped in an additional .type_info field.
-                    let enclosed_type = field["type_info"]["type_info"]["fullname"]
+                    tracing::info!("OptionalType field: {:?}", field);
+                    let enclosed_type = match field["type_info"]["type_info"]["fullname"]
                         .as_str()
-                        .expect("Field should contain .type_info.type_info.fullname");
+                        {
+                            Some(val) => val,
+                            None => {
+                                field["type_info"]["type_info"]["type"].as_str()
+                        .expect("Field should contain .type_info.type_info.fullname or .type_info.type_info.type")
+                            }
+                        };
                     decoder.from_nnet_name(enclosed_type)
                 };
                 morph.rust_ty = morph.rust_ty.replace("{}", &enclosed_morph.rust_ty);
@@ -1488,14 +1563,14 @@ impl DecoderType {
 
     pub fn open_blob_main_parse_fn(&self, proto_num: u64, bounds: &Value, name: &str) -> String {
         match self {
-            Self::ByteAligned => panic!("BitArray not supported for ByteAligned types"),
+            Self::ByteAligned => panic!("BlobType not supported for ByteAligned types"),
             Self::BitPacked => Self::open_bit_packed_blob_main_parse_fn(proto_num, bounds, name),
         }
     }
 
     pub fn close_blob_main_parse_fn(&self) -> String {
         match self {
-            Self::ByteAligned => panic!("BitArray not supported for ByteAligned types"),
+            Self::ByteAligned => panic!("BlobType not supported for ByteAligned types"),
             Self::BitPacked => Self::close_bit_packed_blob_main_parse_fn(),
         }
     }
