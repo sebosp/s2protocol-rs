@@ -3,7 +3,7 @@
 
 use super::*;
 use nom::bytes::complete::{tag, take};
-use nom::number::complete::u8;
+use nom::number::complete::{u32, u8};
 use nom_mpq::parser::peek_hex;
 
 /// Arrays have this tag prepend.
@@ -20,6 +20,8 @@ pub const OPT_TAG: &[u8; 1] = b"\x04";
 pub const STRUCT_TAG: &[u8; 1] = b"\x05";
 /// Bools have this tag prepend.
 pub const BOOL_TAG: &[u8; 1] = b"\x06";
+/// FourCC (Fourc Character Code) and Real32 have this tag prepend.
+pub const FOURCC_TAG: &[u8; 1] = b"\x07";
 /// Ints have this tag prepend.
 pub const INT_TAG: &[u8; 1] = b"\x09";
 
@@ -65,6 +67,12 @@ pub fn validate_bool_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
     dbg_peek_hex(tag(BOOL_TAG), "bool tag")(input)
 }
 
+/// The FourCC and Real32 are prepend by the [`FOURCC_TAG`]
+#[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
+pub fn validate_fourcc_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
+    dbg_peek_hex(tag(FOURCC_TAG), "fourcc tag")(input)
+}
+
 /// The ints are prepend by the [`INT_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_int_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
@@ -105,4 +113,13 @@ pub fn tagged_bool(input: &[u8]) -> IResult<&[u8], bool> {
     let (tail, _) = validate_bool_tag(input)?;
     let (tail, value) = dbg_peek_hex(u8, "bool")(&tail)?;
     Ok((tail, value != 0))
+}
+
+/// Reads a 4 bytes, the FourCC (Four Character Code).
+#[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
+pub fn tagged_fourcc(input: &[u8]) -> IResult<&[u8], u32> {
+    let (tail, _) = validate_fourcc_tag(input)?;
+    // TODO: We don't care much about the Endianness at this point
+    let (tail, value) = dbg_peek_hex(u32(nom::number::Endianness::Big), "fourcc")(&tail)?;
+    Ok((tail, value))
 }
