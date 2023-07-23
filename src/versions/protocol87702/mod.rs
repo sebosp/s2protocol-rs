@@ -707,7 +707,7 @@ pub mod byte_aligned {
                     m_region: m_region.expect("Missing m_region from struct"),
                     m_program_id: m_program_id.expect("Missing m_program_id from struct"),
                     m_realm: m_realm.expect("Missing m_realm from struct"),
-                    m_name: m_name.expect("Missing m_name from struct"),
+                    m_name: m_name.unwrap_or(b""[..].to_vec()),
                     m_id: m_id.expect("Missing m_id from struct"),
                 },
             ))
@@ -1005,6 +1005,7 @@ pub mod byte_aligned {
             tracing::debug!("Reading array length: {array_length}");
             let (tail, value) =
                 nom::multi::count(GameSPlayerDetails::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4408,6 +4409,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4495,6 +4497,7 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 8;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4807,6 +4810,7 @@ pub mod bit_packed {
             let (tail, _) = byte_align(input)?;
             let num_bits: usize = 6;
             let (tail, value) = take_bit_array(tail, num_bits)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4822,6 +4826,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4837,6 +4842,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4852,6 +4858,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4867,6 +4874,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4882,6 +4890,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4897,6 +4906,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4912,6 +4922,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4927,6 +4938,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4975,6 +4987,7 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 2;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -5356,6 +5369,7 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(SUserInitialData::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -5744,6 +5758,7 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 6;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -5889,6 +5904,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTQueryId::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12334,6 +12350,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12349,6 +12366,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12361,6 +12379,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTAchievementLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12373,6 +12392,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTAchievementTermLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12385,6 +12405,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTButtonLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12397,6 +12418,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTUnitLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12409,6 +12431,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTUnitTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12421,6 +12444,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTTriggerThreadTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12433,6 +12457,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTTriggerSoundTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12445,6 +12470,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTAbilLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12457,6 +12483,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTFixedBits::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Int32::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12469,6 +12496,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTFixedMiniBitsUnsigned::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12481,6 +12509,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTFixedMiniBitsSigned::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Int16::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12493,6 +12522,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTPlayerLogoIndex::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12600,6 +12630,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTHeroLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12902,6 +12933,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTHandicap::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12935,6 +12967,7 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 6;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12968,6 +13001,7 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 8;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13475,6 +13509,7 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameSPlayerDetails::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13489,6 +13524,7 @@ pub mod bit_packed {
             let array_length_num_bits: usize = 6;
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) = nom::multi::count(CFilePath::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14415,6 +14451,7 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 8;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14547,6 +14584,7 @@ pub mod bit_packed {
             let (tail, _) = byte_align(input)?;
             let num_bits: usize = 6;
             let (tail, value) = take_bit_array(tail, num_bits)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14562,6 +14600,7 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameCCacheHandle::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14577,6 +14616,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14592,6 +14632,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14607,6 +14648,7 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameSSlotDescription::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15111,6 +15153,7 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(CArtifactHandle::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15125,6 +15168,7 @@ pub mod bit_packed {
             let array_length_num_bits: usize = 3;
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) = nom::multi::count(Uint32::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15139,6 +15183,7 @@ pub mod bit_packed {
             let array_length_num_bits: usize = 3;
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) = nom::multi::count(Uint32::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15151,6 +15196,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTReward::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15165,6 +15211,7 @@ pub mod bit_packed {
             let array_length_num_bits: usize = 17;
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) = nom::multi::count(GameTReward::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15223,6 +15270,7 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameCRewardOverride::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15235,6 +15283,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTLicense::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15250,6 +15299,7 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameTLicense::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15265,6 +15315,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15280,6 +15331,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15295,6 +15347,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15852,6 +15905,7 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameSLobbySlot::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -16377,6 +16431,7 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -16962,6 +17017,7 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameTSelectionIndex::parse, array_length as usize)(tail)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -16976,6 +17032,7 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 9;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -17253,6 +17310,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTSyncChecksum::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -17265,6 +17323,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::GameTSyncValue::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
+            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }

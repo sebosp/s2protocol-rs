@@ -83,11 +83,7 @@ fn main() {
             let file_contents = parser::read_file(&cli.source);
             let (_input, mpq) = parser::parse(&file_contents).unwrap();
             let res = read_details(&mpq, &file_contents);
-            println!("[");
-            for evt in res {
-                println!("{},", serde_json::to_string(&evt).unwrap());
-            }
-            println!("]");
+            println!("{},", serde_json::to_string(&res).unwrap());
         }
     }
 }

@@ -53,6 +53,39 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
+    pub enum EObserve {
+        ENone,
+        ESpectator,
+        EReferee,
+    }
+    impl EObserve {
+        #[tracing::instrument(name="75689::EObserve::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+            let (tail, _) = validate_int_tag(input)?;
+            let (tail, variant_tag) = parse_vlq_int(tail)?;
+            match variant_tag {
+                0 => {
+                    tracing::debug!("Variant ENone for value '0'");
+                    Ok((tail, Self::ENone))
+                }
+                1 => {
+                    tracing::debug!("Variant ESpectator for value '1'");
+                    Ok((tail, Self::ESpectator))
+                }
+                2 => {
+                    tracing::debug!("Variant EReferee for value '2'");
+                    Ok((tail, Self::EReferee))
+                }
+
+                _ => {
+                    tracing::error!("Unknown variant value {variant_tag}");
+                    panic!("Unknown variant value {variant_tag}");
+                }
+            }
+        }
+    }
+
+    #[derive(Debug, PartialEq, Clone)]
     pub struct SVersion {
         pub m_flags: u8,
         pub m_major: u8,
@@ -294,6 +327,1178 @@ pub mod byte_aligned {
                     m_data_deprecated: m_data_deprecated
                         .expect("Missing m_data_deprecated from struct"),
                     m_data: m_data.expect("Missing m_data from struct"),
+                },
+            ))
+        }
+    }
+
+    #[derive(Debug, PartialEq, Clone)]
+    pub enum GameEGameSpeed {
+        ESlower,
+        ESlow,
+        ENormal,
+        EFast,
+        EFaster,
+    }
+    impl GameEGameSpeed {
+        #[tracing::instrument(name="75689::GameEGameSpeed::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+            let (tail, _) = validate_int_tag(input)?;
+            let (tail, variant_tag) = parse_vlq_int(tail)?;
+            match variant_tag {
+                0 => {
+                    tracing::debug!("Variant ESlower for value '0'");
+                    Ok((tail, Self::ESlower))
+                }
+                1 => {
+                    tracing::debug!("Variant ESlow for value '1'");
+                    Ok((tail, Self::ESlow))
+                }
+                2 => {
+                    tracing::debug!("Variant ENormal for value '2'");
+                    Ok((tail, Self::ENormal))
+                }
+                3 => {
+                    tracing::debug!("Variant EFast for value '3'");
+                    Ok((tail, Self::EFast))
+                }
+                4 => {
+                    tracing::debug!("Variant EFaster for value '4'");
+                    Ok((tail, Self::EFaster))
+                }
+
+                _ => {
+                    tracing::error!("Unknown variant value {variant_tag}");
+                    panic!("Unknown variant value {variant_tag}");
+                }
+            }
+        }
+    }
+
+    #[derive(Debug, PartialEq, Clone)]
+    pub struct GameSThumbnail {
+        pub m_file: Vec<u8>,
+    }
+    impl GameSThumbnail {
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_file(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
+            let (tail, m_file) = tagged_blob(input)?;
+
+            tracing::debug!("res: {:?}", m_file);
+            Ok((tail, m_file))
+        }
+        #[tracing::instrument(name="75689::byte_aligned::GameSThumbnail::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+            let (tail, _) = validate_struct_tag(input)?;
+            let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
+            let mut m_file: Option<Vec<u8>> = None;
+            for i in 0..(struct_field_count as usize) {
+                let (new_tail, field_tag) = parse_vlq_int(tail)?;
+                tail = new_tail;
+                match field_tag {
+                    0 => {
+                        tracing::debug!("Field [{i}]: tagged '0' for field m_file");
+                        if m_file.is_none() {
+                            let (new_tail, parsed_m_file) = Self::parse_m_file(tail)?;
+                            tail = new_tail;
+                            m_file = Some(parsed_m_file);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_file with tag 0 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+
+                    _ => {
+                        tracing::error!("Unknown tag {field_tag}");
+                        panic!("Unknown tag {field_tag}");
+                    }
+                }
+            }
+            Ok((
+                tail,
+                Self {
+                    m_file: m_file.expect("Missing m_file from struct"),
+                },
+            ))
+        }
+    }
+
+    #[derive(Debug, PartialEq, Clone)]
+    pub struct GameSColor {
+        pub m_a: u8,
+        pub m_r: u8,
+        pub m_g: u8,
+        pub m_b: u8,
+    }
+    impl GameSColor {
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_a(input: &[u8]) -> IResult<&[u8], u8> {
+            let (tail, m_a) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_a);
+            Ok((tail, u8::try_from(m_a).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_r(input: &[u8]) -> IResult<&[u8], u8> {
+            let (tail, m_r) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_r);
+            Ok((tail, u8::try_from(m_r).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_g(input: &[u8]) -> IResult<&[u8], u8> {
+            let (tail, m_g) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_g);
+            Ok((tail, u8::try_from(m_g).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_b(input: &[u8]) -> IResult<&[u8], u8> {
+            let (tail, m_b) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_b);
+            Ok((tail, u8::try_from(m_b).unwrap()))
+        }
+        #[tracing::instrument(name="75689::byte_aligned::GameSColor::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+            let (tail, _) = validate_struct_tag(input)?;
+            let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
+            let mut m_a: Option<u8> = None;
+            let mut m_r: Option<u8> = None;
+            let mut m_g: Option<u8> = None;
+            let mut m_b: Option<u8> = None;
+            for i in 0..(struct_field_count as usize) {
+                let (new_tail, field_tag) = parse_vlq_int(tail)?;
+                tail = new_tail;
+                match field_tag {
+                    0 => {
+                        tracing::debug!("Field [{i}]: tagged '0' for field m_a");
+                        if m_a.is_none() {
+                            let (new_tail, parsed_m_a) = Self::parse_m_a(tail)?;
+                            tail = new_tail;
+                            m_a = Some(parsed_m_a);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_a with tag 0 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    1 => {
+                        tracing::debug!("Field [{i}]: tagged '1' for field m_r");
+                        if m_r.is_none() {
+                            let (new_tail, parsed_m_r) = Self::parse_m_r(tail)?;
+                            tail = new_tail;
+                            m_r = Some(parsed_m_r);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_r with tag 1 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    2 => {
+                        tracing::debug!("Field [{i}]: tagged '2' for field m_g");
+                        if m_g.is_none() {
+                            let (new_tail, parsed_m_g) = Self::parse_m_g(tail)?;
+                            tail = new_tail;
+                            m_g = Some(parsed_m_g);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_g with tag 2 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    3 => {
+                        tracing::debug!("Field [{i}]: tagged '3' for field m_b");
+                        if m_b.is_none() {
+                            let (new_tail, parsed_m_b) = Self::parse_m_b(tail)?;
+                            tail = new_tail;
+                            m_b = Some(parsed_m_b);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_b with tag 3 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+
+                    _ => {
+                        tracing::error!("Unknown tag {field_tag}");
+                        panic!("Unknown tag {field_tag}");
+                    }
+                }
+            }
+            Ok((
+                tail,
+                Self {
+                    m_a: m_a.expect("Missing m_a from struct"),
+                    m_r: m_r.expect("Missing m_r from struct"),
+                    m_g: m_g.expect("Missing m_g from struct"),
+                    m_b: m_b.expect("Missing m_b from struct"),
+                },
+            ))
+        }
+    }
+
+    #[derive(Debug, PartialEq, Clone)]
+    pub enum GameEResultDetails {
+        EUndecided,
+        EWin,
+        ELoss,
+        ETie,
+    }
+    impl GameEResultDetails {
+        #[tracing::instrument(name="75689::GameEResultDetails::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+            let (tail, _) = validate_int_tag(input)?;
+            let (tail, variant_tag) = parse_vlq_int(tail)?;
+            match variant_tag {
+                0 => {
+                    tracing::debug!("Variant EUndecided for value '0'");
+                    Ok((tail, Self::EUndecided))
+                }
+                1 => {
+                    tracing::debug!("Variant EWin for value '1'");
+                    Ok((tail, Self::EWin))
+                }
+                2 => {
+                    tracing::debug!("Variant ELoss for value '2'");
+                    Ok((tail, Self::ELoss))
+                }
+                3 => {
+                    tracing::debug!("Variant ETie for value '3'");
+                    Ok((tail, Self::ETie))
+                }
+
+                _ => {
+                    tracing::error!("Unknown variant value {variant_tag}");
+                    panic!("Unknown variant value {variant_tag}");
+                }
+            }
+        }
+    }
+
+    #[derive(Debug, PartialEq, Clone)]
+    pub struct GameSToonNameDetails {
+        pub m_region: u8,
+        pub m_program_id: u32,
+        pub m_realm: u32,
+        pub m_name: Vec<u8>,
+        pub m_id: u64,
+    }
+    impl GameSToonNameDetails {
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_region(input: &[u8]) -> IResult<&[u8], u8> {
+            let (tail, m_region) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_region);
+            Ok((tail, u8::try_from(m_region).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_program_id(input: &[u8]) -> IResult<&[u8], u32> {
+            let (tail, m_program_id) = tagged_fourcc(input)?;
+
+            tracing::debug!("res: {:?}", m_program_id);
+            Ok((tail, m_program_id))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_realm(input: &[u8]) -> IResult<&[u8], u32> {
+            let (tail, m_realm) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_realm);
+            Ok((tail, u32::try_from(m_realm).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_name(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
+            let (tail, m_name) = tagged_blob(input)?;
+
+            tracing::debug!("res: {:?}", m_name);
+            Ok((tail, m_name))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_id(input: &[u8]) -> IResult<&[u8], u64> {
+            let (tail, m_id) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_id);
+            Ok((tail, u64::try_from(m_id).unwrap()))
+        }
+        #[tracing::instrument(name="75689::byte_aligned::GameSToonNameDetails::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+            let (tail, _) = validate_struct_tag(input)?;
+            let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
+            let mut m_region: Option<u8> = None;
+            let mut m_program_id: Option<u32> = None;
+            let mut m_realm: Option<u32> = None;
+            let mut m_name: Option<Vec<u8>> = None;
+            let mut m_id: Option<u64> = None;
+            for i in 0..(struct_field_count as usize) {
+                let (new_tail, field_tag) = parse_vlq_int(tail)?;
+                tail = new_tail;
+                match field_tag {
+                    0 => {
+                        tracing::debug!("Field [{i}]: tagged '0' for field m_region");
+                        if m_region.is_none() {
+                            let (new_tail, parsed_m_region) = Self::parse_m_region(tail)?;
+                            tail = new_tail;
+                            m_region = Some(parsed_m_region);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_region with tag 0 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    1 => {
+                        tracing::debug!("Field [{i}]: tagged '1' for field m_program_id");
+                        if m_program_id.is_none() {
+                            let (new_tail, parsed_m_program_id) = Self::parse_m_program_id(tail)?;
+                            tail = new_tail;
+                            m_program_id = Some(parsed_m_program_id);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_program_id with tag 1 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    2 => {
+                        tracing::debug!("Field [{i}]: tagged '2' for field m_realm");
+                        if m_realm.is_none() {
+                            let (new_tail, parsed_m_realm) = Self::parse_m_realm(tail)?;
+                            tail = new_tail;
+                            m_realm = Some(parsed_m_realm);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_realm with tag 2 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    3 => {
+                        tracing::debug!("Field [{i}]: tagged '3' for field m_name");
+                        if m_name.is_none() {
+                            let (new_tail, parsed_m_name) = Self::parse_m_name(tail)?;
+                            tail = new_tail;
+                            m_name = Some(parsed_m_name);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_name with tag 3 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    4 => {
+                        tracing::debug!("Field [{i}]: tagged '4' for field m_id");
+                        if m_id.is_none() {
+                            let (new_tail, parsed_m_id) = Self::parse_m_id(tail)?;
+                            tail = new_tail;
+                            m_id = Some(parsed_m_id);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_id with tag 4 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+
+                    _ => {
+                        tracing::error!("Unknown tag {field_tag}");
+                        panic!("Unknown tag {field_tag}");
+                    }
+                }
+            }
+            Ok((
+                tail,
+                Self {
+                    m_region: m_region.expect("Missing m_region from struct"),
+                    m_program_id: m_program_id.expect("Missing m_program_id from struct"),
+                    m_realm: m_realm.expect("Missing m_realm from struct"),
+                    m_name: m_name.unwrap_or(b""[..].to_vec()),
+                    m_id: m_id.expect("Missing m_id from struct"),
+                },
+            ))
+        }
+    }
+
+    #[derive(Debug, PartialEq, Clone)]
+    pub struct GameSPlayerDetails {
+        pub m_name: Vec<u8>,
+        pub m_toon: GameSToonNameDetails,
+        pub m_race: Vec<u8>,
+        pub m_color: GameSColor,
+        pub m_control: u8,
+        pub m_team_id: u8,
+        pub m_handicap: u32,
+        pub m_observe: EObserve,
+        pub m_result: GameEResultDetails,
+        pub m_working_set_slot_id: Option<u8>,
+        pub m_hero: Vec<u8>,
+    }
+    impl GameSPlayerDetails {
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_name(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
+            let (tail, m_name) = tagged_blob(input)?;
+
+            tracing::debug!("res: {:?}", m_name);
+            Ok((tail, m_name))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_toon(input: &[u8]) -> IResult<&[u8], GameSToonNameDetails> {
+            let (tail, m_toon) = GameSToonNameDetails::parse(input)?;
+
+            tracing::debug!("res: {:?}", m_toon);
+            Ok((tail, m_toon))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_race(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
+            let (tail, m_race) = tagged_blob(input)?;
+
+            tracing::debug!("res: {:?}", m_race);
+            Ok((tail, m_race))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_color(input: &[u8]) -> IResult<&[u8], GameSColor> {
+            let (tail, m_color) = GameSColor::parse(input)?;
+
+            tracing::debug!("res: {:?}", m_color);
+            Ok((tail, m_color))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_control(input: &[u8]) -> IResult<&[u8], u8> {
+            let (tail, m_control) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_control);
+            Ok((tail, u8::try_from(m_control).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_team_id(input: &[u8]) -> IResult<&[u8], u8> {
+            let (tail, m_team_id) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_team_id);
+            Ok((tail, u8::try_from(m_team_id).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_handicap(input: &[u8]) -> IResult<&[u8], u32> {
+            let (tail, m_handicap) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_handicap);
+            Ok((tail, u32::try_from(m_handicap).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_observe(input: &[u8]) -> IResult<&[u8], EObserve> {
+            let (tail, m_observe) = EObserve::parse(input)?;
+
+            tracing::debug!("res: {:?}", m_observe);
+            Ok((tail, m_observe))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_result(input: &[u8]) -> IResult<&[u8], GameEResultDetails> {
+            let (tail, m_result) = GameEResultDetails::parse(input)?;
+
+            tracing::debug!("res: {:?}", m_result);
+            Ok((tail, m_result))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_working_set_slot_id(input: &[u8]) -> IResult<&[u8], Option<u8>> {
+            let (tail, _) = validate_opt_tag(input)?;
+            let (tail, is_provided) = nom::number::complete::u8(tail)?;
+            let (tail, m_working_set_slot_id) = if is_provided != 0 {
+                let (tail, res) = tagged_vlq_int(tail)?;
+                (tail, Some(<_>::try_from(res).unwrap()))
+            } else {
+                (tail, None)
+            };
+            tracing::debug!("res: {:?}", m_working_set_slot_id);
+            Ok((tail, m_working_set_slot_id))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_hero(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
+            let (tail, m_hero) = tagged_blob(input)?;
+
+            tracing::debug!("res: {:?}", m_hero);
+            Ok((tail, m_hero))
+        }
+        #[tracing::instrument(name="75689::byte_aligned::GameSPlayerDetails::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+            let (tail, _) = validate_struct_tag(input)?;
+            let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
+            let mut m_name: Option<Vec<u8>> = None;
+            let mut m_toon: Option<GameSToonNameDetails> = None;
+            let mut m_race: Option<Vec<u8>> = None;
+            let mut m_color: Option<GameSColor> = None;
+            let mut m_control: Option<u8> = None;
+            let mut m_team_id: Option<u8> = None;
+            let mut m_handicap: Option<u32> = None;
+            let mut m_observe: Option<EObserve> = None;
+            let mut m_result: Option<GameEResultDetails> = None;
+            let mut m_working_set_slot_id: Option<Option<u8>> = Some(None);
+            let mut m_hero: Option<Vec<u8>> = None;
+            for i in 0..(struct_field_count as usize) {
+                let (new_tail, field_tag) = parse_vlq_int(tail)?;
+                tail = new_tail;
+                match field_tag {
+                    0 => {
+                        tracing::debug!("Field [{i}]: tagged '0' for field m_name");
+                        if m_name.is_none() {
+                            let (new_tail, parsed_m_name) = Self::parse_m_name(tail)?;
+                            tail = new_tail;
+                            m_name = Some(parsed_m_name);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_name with tag 0 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    1 => {
+                        tracing::debug!("Field [{i}]: tagged '1' for field m_toon");
+                        if m_toon.is_none() {
+                            let (new_tail, parsed_m_toon) = Self::parse_m_toon(tail)?;
+                            tail = new_tail;
+                            m_toon = Some(parsed_m_toon);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_toon with tag 1 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    2 => {
+                        tracing::debug!("Field [{i}]: tagged '2' for field m_race");
+                        if m_race.is_none() {
+                            let (new_tail, parsed_m_race) = Self::parse_m_race(tail)?;
+                            tail = new_tail;
+                            m_race = Some(parsed_m_race);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_race with tag 2 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    3 => {
+                        tracing::debug!("Field [{i}]: tagged '3' for field m_color");
+                        if m_color.is_none() {
+                            let (new_tail, parsed_m_color) = Self::parse_m_color(tail)?;
+                            tail = new_tail;
+                            m_color = Some(parsed_m_color);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_color with tag 3 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    4 => {
+                        tracing::debug!("Field [{i}]: tagged '4' for field m_control");
+                        if m_control.is_none() {
+                            let (new_tail, parsed_m_control) = Self::parse_m_control(tail)?;
+                            tail = new_tail;
+                            m_control = Some(parsed_m_control);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_control with tag 4 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    5 => {
+                        tracing::debug!("Field [{i}]: tagged '5' for field m_team_id");
+                        if m_team_id.is_none() {
+                            let (new_tail, parsed_m_team_id) = Self::parse_m_team_id(tail)?;
+                            tail = new_tail;
+                            m_team_id = Some(parsed_m_team_id);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_team_id with tag 5 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    6 => {
+                        tracing::debug!("Field [{i}]: tagged '6' for field m_handicap");
+                        if m_handicap.is_none() {
+                            let (new_tail, parsed_m_handicap) = Self::parse_m_handicap(tail)?;
+                            tail = new_tail;
+                            m_handicap = Some(parsed_m_handicap);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_handicap with tag 6 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    7 => {
+                        tracing::debug!("Field [{i}]: tagged '7' for field m_observe");
+                        if m_observe.is_none() {
+                            let (new_tail, parsed_m_observe) = Self::parse_m_observe(tail)?;
+                            tail = new_tail;
+                            m_observe = Some(parsed_m_observe);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_observe with tag 7 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    8 => {
+                        tracing::debug!("Field [{i}]: tagged '8' for field m_result");
+                        if m_result.is_none() {
+                            let (new_tail, parsed_m_result) = Self::parse_m_result(tail)?;
+                            tail = new_tail;
+                            m_result = Some(parsed_m_result);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_result with tag 8 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    9 => {
+                        tracing::debug!("Field [{i}]: tagged '9' for field m_working_set_slot_id");
+                        if let Some(None) = m_working_set_slot_id {
+                            let (new_tail, parsed_m_working_set_slot_id) =
+                                Self::parse_m_working_set_slot_id(tail)?;
+                            tail = new_tail;
+                            m_working_set_slot_id = Some(parsed_m_working_set_slot_id);
+                            continue;
+                        } else {
+                            tracing::error!(
+                                "Field m_working_set_slot_id with tag 9 was already provided"
+                            );
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    10 => {
+                        tracing::debug!("Field [{i}]: tagged '10' for field m_hero");
+                        if m_hero.is_none() {
+                            let (new_tail, parsed_m_hero) = Self::parse_m_hero(tail)?;
+                            tail = new_tail;
+                            m_hero = Some(parsed_m_hero);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_hero with tag 10 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+
+                    _ => {
+                        tracing::error!("Unknown tag {field_tag}");
+                        panic!("Unknown tag {field_tag}");
+                    }
+                }
+            }
+            Ok((
+                tail,
+                Self {
+                    m_name: m_name.expect("Missing m_name from struct"),
+                    m_toon: m_toon.expect("Missing m_toon from struct"),
+                    m_race: m_race.expect("Missing m_race from struct"),
+                    m_color: m_color.expect("Missing m_color from struct"),
+                    m_control: m_control.expect("Missing m_control from struct"),
+                    m_team_id: m_team_id.expect("Missing m_team_id from struct"),
+                    m_handicap: m_handicap.expect("Missing m_handicap from struct"),
+                    m_observe: m_observe.expect("Missing m_observe from struct"),
+                    m_result: m_result.expect("Missing m_result from struct"),
+                    m_working_set_slot_id: m_working_set_slot_id
+                        .expect("Missing m_working_set_slot_id from struct"),
+                    m_hero: m_hero.expect("Missing m_hero from struct"),
+                },
+            ))
+        }
+    }
+
+    #[derive(Debug, PartialEq, Clone)]
+    pub struct GameCPlayerDetailsArray {
+        pub value: Vec<GameSPlayerDetails>,
+    }
+    impl GameCPlayerDetailsArray {
+        #[tracing::instrument(name="75689::GameCPlayerDetailsArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+            let (tail, _) = validate_array_tag(input)?;
+            let (tail, array_length) = parse_vlq_int(tail)?;
+            tracing::debug!("Reading array length: {array_length}");
+            let (tail, value) =
+                nom::multi::count(GameSPlayerDetails::parse, array_length as usize)(tail)?;
+            Ok((tail, Self { value }))
+        }
+    }
+
+    #[derive(Debug, PartialEq, Clone)]
+    pub struct GameSDetails {
+        pub m_player_list: Option<Vec<GameSPlayerDetails>>,
+        pub m_title: Vec<u8>,
+        pub m_difficulty: Vec<u8>,
+        pub m_thumbnail: GameSThumbnail,
+        pub m_is_blizzard_map: bool,
+        pub m_time_utc: i64,
+        pub m_time_local_offset: i64,
+        pub m_restart_as_transition_map: Option<bool>,
+        pub m_disable_recover_game: bool,
+        pub m_description: Vec<u8>,
+        pub m_image_file_path: Vec<u8>,
+        pub m_campaign_index: u8,
+        pub m_map_file_name: Vec<u8>,
+        pub m_cache_handles: Option<Vec<Vec<u8>>>,
+        pub m_mini_save: bool,
+        pub m_game_speed: GameEGameSpeed,
+        pub m_default_difficulty: u32,
+        pub m_mod_paths: Option<Vec<Vec<u8>>>,
+    }
+    impl GameSDetails {
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_player_list(
+            input: &[u8],
+        ) -> IResult<&[u8], Option<Vec<GameSPlayerDetails>>> {
+            let (tail, _) = validate_opt_tag(input)?;
+            let (tail, is_provided) = nom::number::complete::u8(tail)?;
+            let (tail, m_player_list) = if is_provided != 0 {
+                let (tail, _) = validate_array_tag(tail)?;
+                let (tail, array_length) = parse_vlq_int(tail)?;
+                tracing::debug!("Reading array length: {array_length}");
+                let (tail, array) =
+                    nom::multi::count(GameSPlayerDetails::parse, array_length as usize)(tail)?;
+                (tail, Some(array))
+            } else {
+                (tail, None)
+            };
+            tracing::debug!("res: {:?}", m_player_list);
+            Ok((tail, m_player_list))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_title(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
+            let (tail, m_title) = tagged_blob(input)?;
+
+            tracing::debug!("res: {:?}", m_title);
+            Ok((tail, m_title))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_difficulty(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
+            let (tail, m_difficulty) = tagged_blob(input)?;
+
+            tracing::debug!("res: {:?}", m_difficulty);
+            Ok((tail, m_difficulty))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_thumbnail(input: &[u8]) -> IResult<&[u8], GameSThumbnail> {
+            let (tail, m_thumbnail) = GameSThumbnail::parse(input)?;
+
+            tracing::debug!("res: {:?}", m_thumbnail);
+            Ok((tail, m_thumbnail))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_is_blizzard_map(input: &[u8]) -> IResult<&[u8], bool> {
+            let (tail, m_is_blizzard_map) = tagged_bool(input)?;
+
+            tracing::debug!("res: {:?}", m_is_blizzard_map);
+            Ok((tail, m_is_blizzard_map))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_time_utc(input: &[u8]) -> IResult<&[u8], i64> {
+            let (tail, m_time_utc) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_time_utc);
+            Ok((tail, i64::try_from(m_time_utc).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_time_local_offset(input: &[u8]) -> IResult<&[u8], i64> {
+            let (tail, m_time_local_offset) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_time_local_offset);
+            Ok((tail, i64::try_from(m_time_local_offset).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_restart_as_transition_map(input: &[u8]) -> IResult<&[u8], Option<bool>> {
+            let (tail, _) = validate_opt_tag(input)?;
+            let (tail, is_provided) = nom::number::complete::u8(tail)?;
+            let (tail, m_restart_as_transition_map) = if is_provided != 0 {
+                let (tail, res) = tagged_bool(tail)?;
+                (tail, Some(res))
+            } else {
+                (tail, None)
+            };
+            tracing::debug!("res: {:?}", m_restart_as_transition_map);
+            Ok((tail, m_restart_as_transition_map))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_disable_recover_game(input: &[u8]) -> IResult<&[u8], bool> {
+            let (tail, m_disable_recover_game) = tagged_bool(input)?;
+
+            tracing::debug!("res: {:?}", m_disable_recover_game);
+            Ok((tail, m_disable_recover_game))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_description(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
+            let (tail, m_description) = tagged_blob(input)?;
+
+            tracing::debug!("res: {:?}", m_description);
+            Ok((tail, m_description))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_image_file_path(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
+            let (tail, m_image_file_path) = tagged_blob(input)?;
+
+            tracing::debug!("res: {:?}", m_image_file_path);
+            Ok((tail, m_image_file_path))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_campaign_index(input: &[u8]) -> IResult<&[u8], u8> {
+            let (tail, m_campaign_index) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_campaign_index);
+            Ok((tail, u8::try_from(m_campaign_index).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_map_file_name(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
+            let (tail, m_map_file_name) = tagged_blob(input)?;
+
+            tracing::debug!("res: {:?}", m_map_file_name);
+            Ok((tail, m_map_file_name))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_cache_handles(input: &[u8]) -> IResult<&[u8], Option<Vec<Vec<u8>>>> {
+            let (tail, _) = validate_opt_tag(input)?;
+            let (tail, is_provided) = nom::number::complete::u8(tail)?;
+            let (tail, m_cache_handles) = if is_provided != 0 {
+                let (tail, _) = validate_array_tag(tail)?;
+                let (tail, array_length) = parse_vlq_int(tail)?;
+                tracing::debug!("Reading array length: {array_length}");
+                let (tail, array) = nom::multi::count(tagged_blob, array_length as usize)(tail)?;
+                (tail, Some(array))
+            } else {
+                (tail, None)
+            };
+            tracing::debug!("res: {:?}", m_cache_handles);
+            Ok((tail, m_cache_handles))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_mini_save(input: &[u8]) -> IResult<&[u8], bool> {
+            let (tail, m_mini_save) = tagged_bool(input)?;
+
+            tracing::debug!("res: {:?}", m_mini_save);
+            Ok((tail, m_mini_save))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_game_speed(input: &[u8]) -> IResult<&[u8], GameEGameSpeed> {
+            let (tail, m_game_speed) = GameEGameSpeed::parse(input)?;
+
+            tracing::debug!("res: {:?}", m_game_speed);
+            Ok((tail, m_game_speed))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_default_difficulty(input: &[u8]) -> IResult<&[u8], u32> {
+            let (tail, m_default_difficulty) = tagged_vlq_int(input)?;
+
+            tracing::debug!("res: {:?}", m_default_difficulty);
+            Ok((tail, u32::try_from(m_default_difficulty).unwrap()))
+        }
+        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse_m_mod_paths(input: &[u8]) -> IResult<&[u8], Option<Vec<Vec<u8>>>> {
+            let (tail, _) = validate_opt_tag(input)?;
+            let (tail, is_provided) = nom::number::complete::u8(tail)?;
+            let (tail, m_mod_paths) = if is_provided != 0 {
+                let (tail, _) = validate_array_tag(tail)?;
+                let (tail, array_length) = parse_vlq_int(tail)?;
+                tracing::debug!("Reading array length: {array_length}");
+                let (tail, array) = nom::multi::count(tagged_blob, array_length as usize)(tail)?;
+                (tail, Some(array))
+            } else {
+                (tail, None)
+            };
+            tracing::debug!("res: {:?}", m_mod_paths);
+            Ok((tail, m_mod_paths))
+        }
+        #[tracing::instrument(name="75689::byte_aligned::GameSDetails::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+            let (tail, _) = validate_struct_tag(input)?;
+            let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
+            let mut m_player_list: Option<Option<Vec<GameSPlayerDetails>>> = Some(None);
+            let mut m_title: Option<Vec<u8>> = None;
+            let mut m_difficulty: Option<Vec<u8>> = None;
+            let mut m_thumbnail: Option<GameSThumbnail> = None;
+            let mut m_is_blizzard_map: Option<bool> = None;
+            let mut m_time_utc: Option<i64> = None;
+            let mut m_time_local_offset: Option<i64> = None;
+            let mut m_restart_as_transition_map: Option<Option<bool>> = Some(None);
+            let mut m_disable_recover_game: Option<bool> = None;
+            let mut m_description: Option<Vec<u8>> = None;
+            let mut m_image_file_path: Option<Vec<u8>> = None;
+            let mut m_campaign_index: Option<u8> = None;
+            let mut m_map_file_name: Option<Vec<u8>> = None;
+            let mut m_cache_handles: Option<Option<Vec<Vec<u8>>>> = Some(None);
+            let mut m_mini_save: Option<bool> = None;
+            let mut m_game_speed: Option<GameEGameSpeed> = None;
+            let mut m_default_difficulty: Option<u32> = None;
+            let mut m_mod_paths: Option<Option<Vec<Vec<u8>>>> = Some(None);
+            for i in 0..(struct_field_count as usize) {
+                let (new_tail, field_tag) = parse_vlq_int(tail)?;
+                tail = new_tail;
+                match field_tag {
+                    0 => {
+                        tracing::debug!("Field [{i}]: tagged '0' for field m_player_list");
+                        if let Some(None) = m_player_list {
+                            let (new_tail, parsed_m_player_list) = Self::parse_m_player_list(tail)?;
+                            tail = new_tail;
+                            m_player_list = Some(parsed_m_player_list);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_player_list with tag 0 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    1 => {
+                        tracing::debug!("Field [{i}]: tagged '1' for field m_title");
+                        if m_title.is_none() {
+                            let (new_tail, parsed_m_title) = Self::parse_m_title(tail)?;
+                            tail = new_tail;
+                            m_title = Some(parsed_m_title);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_title with tag 1 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    2 => {
+                        tracing::debug!("Field [{i}]: tagged '2' for field m_difficulty");
+                        if m_difficulty.is_none() {
+                            let (new_tail, parsed_m_difficulty) = Self::parse_m_difficulty(tail)?;
+                            tail = new_tail;
+                            m_difficulty = Some(parsed_m_difficulty);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_difficulty with tag 2 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    3 => {
+                        tracing::debug!("Field [{i}]: tagged '3' for field m_thumbnail");
+                        if m_thumbnail.is_none() {
+                            let (new_tail, parsed_m_thumbnail) = Self::parse_m_thumbnail(tail)?;
+                            tail = new_tail;
+                            m_thumbnail = Some(parsed_m_thumbnail);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_thumbnail with tag 3 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    4 => {
+                        tracing::debug!("Field [{i}]: tagged '4' for field m_is_blizzard_map");
+                        if m_is_blizzard_map.is_none() {
+                            let (new_tail, parsed_m_is_blizzard_map) =
+                                Self::parse_m_is_blizzard_map(tail)?;
+                            tail = new_tail;
+                            m_is_blizzard_map = Some(parsed_m_is_blizzard_map);
+                            continue;
+                        } else {
+                            tracing::error!(
+                                "Field m_is_blizzard_map with tag 4 was already provided"
+                            );
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    5 => {
+                        tracing::debug!("Field [{i}]: tagged '5' for field m_time_utc");
+                        if m_time_utc.is_none() {
+                            let (new_tail, parsed_m_time_utc) = Self::parse_m_time_utc(tail)?;
+                            tail = new_tail;
+                            m_time_utc = Some(parsed_m_time_utc);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_time_utc with tag 5 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    6 => {
+                        tracing::debug!("Field [{i}]: tagged '6' for field m_time_local_offset");
+                        if m_time_local_offset.is_none() {
+                            let (new_tail, parsed_m_time_local_offset) =
+                                Self::parse_m_time_local_offset(tail)?;
+                            tail = new_tail;
+                            m_time_local_offset = Some(parsed_m_time_local_offset);
+                            continue;
+                        } else {
+                            tracing::error!(
+                                "Field m_time_local_offset with tag 6 was already provided"
+                            );
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    16 => {
+                        tracing::debug!(
+                            "Field [{i}]: tagged '16' for field m_restart_as_transition_map"
+                        );
+                        if let Some(None) = m_restart_as_transition_map {
+                            let (new_tail, parsed_m_restart_as_transition_map) =
+                                Self::parse_m_restart_as_transition_map(tail)?;
+                            tail = new_tail;
+                            m_restart_as_transition_map = Some(parsed_m_restart_as_transition_map);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_restart_as_transition_map with tag 16 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    17 => {
+                        tracing::debug!(
+                            "Field [{i}]: tagged '17' for field m_disable_recover_game"
+                        );
+                        if m_disable_recover_game.is_none() {
+                            let (new_tail, parsed_m_disable_recover_game) =
+                                Self::parse_m_disable_recover_game(tail)?;
+                            tail = new_tail;
+                            m_disable_recover_game = Some(parsed_m_disable_recover_game);
+                            continue;
+                        } else {
+                            tracing::error!(
+                                "Field m_disable_recover_game with tag 17 was already provided"
+                            );
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    7 => {
+                        tracing::debug!("Field [{i}]: tagged '7' for field m_description");
+                        if m_description.is_none() {
+                            let (new_tail, parsed_m_description) = Self::parse_m_description(tail)?;
+                            tail = new_tail;
+                            m_description = Some(parsed_m_description);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_description with tag 7 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    8 => {
+                        tracing::debug!("Field [{i}]: tagged '8' for field m_image_file_path");
+                        if m_image_file_path.is_none() {
+                            let (new_tail, parsed_m_image_file_path) =
+                                Self::parse_m_image_file_path(tail)?;
+                            tail = new_tail;
+                            m_image_file_path = Some(parsed_m_image_file_path);
+                            continue;
+                        } else {
+                            tracing::error!(
+                                "Field m_image_file_path with tag 8 was already provided"
+                            );
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    15 => {
+                        tracing::debug!("Field [{i}]: tagged '15' for field m_campaign_index");
+                        if m_campaign_index.is_none() {
+                            let (new_tail, parsed_m_campaign_index) =
+                                Self::parse_m_campaign_index(tail)?;
+                            tail = new_tail;
+                            m_campaign_index = Some(parsed_m_campaign_index);
+                            continue;
+                        } else {
+                            tracing::error!(
+                                "Field m_campaign_index with tag 15 was already provided"
+                            );
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    9 => {
+                        tracing::debug!("Field [{i}]: tagged '9' for field m_map_file_name");
+                        if m_map_file_name.is_none() {
+                            let (new_tail, parsed_m_map_file_name) =
+                                Self::parse_m_map_file_name(tail)?;
+                            tail = new_tail;
+                            m_map_file_name = Some(parsed_m_map_file_name);
+                            continue;
+                        } else {
+                            tracing::error!(
+                                "Field m_map_file_name with tag 9 was already provided"
+                            );
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    10 => {
+                        tracing::debug!("Field [{i}]: tagged '10' for field m_cache_handles");
+                        if let Some(None) = m_cache_handles {
+                            let (new_tail, parsed_m_cache_handles) =
+                                Self::parse_m_cache_handles(tail)?;
+                            tail = new_tail;
+                            m_cache_handles = Some(parsed_m_cache_handles);
+                            continue;
+                        } else {
+                            tracing::error!(
+                                "Field m_cache_handles with tag 10 was already provided"
+                            );
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    11 => {
+                        tracing::debug!("Field [{i}]: tagged '11' for field m_mini_save");
+                        if m_mini_save.is_none() {
+                            let (new_tail, parsed_m_mini_save) = Self::parse_m_mini_save(tail)?;
+                            tail = new_tail;
+                            m_mini_save = Some(parsed_m_mini_save);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_mini_save with tag 11 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    12 => {
+                        tracing::debug!("Field [{i}]: tagged '12' for field m_game_speed");
+                        if m_game_speed.is_none() {
+                            let (new_tail, parsed_m_game_speed) = Self::parse_m_game_speed(tail)?;
+                            tail = new_tail;
+                            m_game_speed = Some(parsed_m_game_speed);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_game_speed with tag 12 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    13 => {
+                        tracing::debug!("Field [{i}]: tagged '13' for field m_default_difficulty");
+                        if m_default_difficulty.is_none() {
+                            let (new_tail, parsed_m_default_difficulty) =
+                                Self::parse_m_default_difficulty(tail)?;
+                            tail = new_tail;
+                            m_default_difficulty = Some(parsed_m_default_difficulty);
+                            continue;
+                        } else {
+                            tracing::error!(
+                                "Field m_default_difficulty with tag 13 was already provided"
+                            );
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+                    14 => {
+                        tracing::debug!("Field [{i}]: tagged '14' for field m_mod_paths");
+                        if let Some(None) = m_mod_paths {
+                            let (new_tail, parsed_m_mod_paths) = Self::parse_m_mod_paths(tail)?;
+                            tail = new_tail;
+                            m_mod_paths = Some(parsed_m_mod_paths);
+                            continue;
+                        } else {
+                            tracing::error!("Field m_mod_paths with tag 14 was already provided");
+                            panic!("Unhandled duplicate field.");
+                        }
+                    }
+
+                    _ => {
+                        tracing::error!("Unknown tag {field_tag}");
+                        panic!("Unknown tag {field_tag}");
+                    }
+                }
+            }
+            Ok((
+                tail,
+                Self {
+                    m_player_list: m_player_list.expect("Missing m_player_list from struct"),
+                    m_title: m_title.expect("Missing m_title from struct"),
+                    m_difficulty: m_difficulty.expect("Missing m_difficulty from struct"),
+                    m_thumbnail: m_thumbnail.expect("Missing m_thumbnail from struct"),
+                    m_is_blizzard_map: m_is_blizzard_map
+                        .expect("Missing m_is_blizzard_map from struct"),
+                    m_time_utc: m_time_utc.expect("Missing m_time_utc from struct"),
+                    m_time_local_offset: m_time_local_offset
+                        .expect("Missing m_time_local_offset from struct"),
+                    m_restart_as_transition_map: m_restart_as_transition_map
+                        .expect("Missing m_restart_as_transition_map from struct"),
+                    m_disable_recover_game: m_disable_recover_game
+                        .expect("Missing m_disable_recover_game from struct"),
+                    m_description: m_description.expect("Missing m_description from struct"),
+                    m_image_file_path: m_image_file_path
+                        .expect("Missing m_image_file_path from struct"),
+                    m_campaign_index: m_campaign_index
+                        .expect("Missing m_campaign_index from struct"),
+                    m_map_file_name: m_map_file_name.expect("Missing m_map_file_name from struct"),
+                    m_cache_handles: m_cache_handles.expect("Missing m_cache_handles from struct"),
+                    m_mini_save: m_mini_save.expect("Missing m_mini_save from struct"),
+                    m_game_speed: m_game_speed.expect("Missing m_game_speed from struct"),
+                    m_default_difficulty: m_default_difficulty
+                        .expect("Missing m_default_difficulty from struct"),
+                    m_mod_paths: m_mod_paths.expect("Missing m_mod_paths from struct"),
                 },
             ))
         }
@@ -3203,7 +4408,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -3291,7 +4495,6 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 8;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -3604,7 +4807,6 @@ pub mod bit_packed {
             let (tail, _) = byte_align(input)?;
             let num_bits: usize = 6;
             let (tail, value) = take_bit_array(tail, num_bits)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -3620,7 +4822,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -3636,7 +4837,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -3652,7 +4852,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -3668,7 +4867,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -3684,7 +4882,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -3700,7 +4897,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -3716,7 +4912,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -3732,7 +4927,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -3781,7 +4975,6 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 2;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4163,7 +5356,6 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(SUserInitialData::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4552,7 +5744,6 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 6;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -4698,7 +5889,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTQueryId::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11144,7 +12334,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11160,7 +12349,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11173,7 +12361,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTAchievementLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11186,7 +12373,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTAchievementTermLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11199,7 +12385,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTButtonLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11212,7 +12397,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTUnitLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11225,7 +12409,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTUnitTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11238,7 +12421,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTTriggerThreadTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11251,7 +12433,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTTriggerSoundTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11264,7 +12445,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTAbilLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11277,7 +12457,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTFixedBits::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Int32::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11290,7 +12469,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTFixedMiniBitsUnsigned::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11303,7 +12481,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTFixedMiniBitsSigned::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Int16::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11316,7 +12493,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTPlayerLogoIndex::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11424,7 +12600,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTHeroLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11767,7 +12942,6 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 6;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -11801,7 +12975,6 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 8;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12309,7 +13482,6 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameSPlayerDetails::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -12324,7 +13496,6 @@ pub mod bit_packed {
             let array_length_num_bits: usize = 6;
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) = nom::multi::count(CFilePath::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13251,7 +14422,6 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 8;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13384,7 +14554,6 @@ pub mod bit_packed {
             let (tail, _) = byte_align(input)?;
             let num_bits: usize = 6;
             let (tail, value) = take_bit_array(tail, num_bits)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13400,7 +14569,6 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameCCacheHandle::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13416,7 +14584,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13432,7 +14599,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13448,7 +14614,6 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameSSlotDescription::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13953,7 +15118,6 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(CArtifactHandle::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13968,7 +15132,6 @@ pub mod bit_packed {
             let array_length_num_bits: usize = 3;
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) = nom::multi::count(Uint32::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13981,7 +15144,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTReward::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -13996,7 +15158,6 @@ pub mod bit_packed {
             let array_length_num_bits: usize = 17;
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) = nom::multi::count(GameTReward::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14055,7 +15216,6 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameCRewardOverride::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14068,7 +15228,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTLicense::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14084,7 +15243,6 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameTLicense::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14100,7 +15258,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14116,7 +15273,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14132,7 +15288,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -14603,7 +15758,6 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameSLobbySlot::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15094,7 +16248,6 @@ pub mod bit_packed {
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15680,7 +16833,6 @@ pub mod bit_packed {
             let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             let (tail, value) =
                 nom::multi::count(GameTSelectionIndex::parse, array_length as usize)(tail)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15695,7 +16847,6 @@ pub mod bit_packed {
             let bitarray_length_bits: usize = 9;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15973,7 +17124,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTSyncChecksum::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
@@ -15986,7 +17136,6 @@ pub mod bit_packed {
         #[tracing::instrument(name="75689::GameTSyncValue::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
-            // TODO: Unsure about this.
             Ok((tail, Self { value }))
         }
     }
