@@ -79,6 +79,11 @@ while let Some((event, updated_units)) = replay.transduce() {
 Currently we load all events in memory, Perhaps we can try to read batches on events by keeping MPQ nom parser &[u8] reference.
 For example, we could read different sections, and return events in different sections in a batch of evenst through a game loop.
 
+## TODO
+
+We can check that, if some module is exactly the same everywhere, we only create it once and re-use it everywhere.
+This because the compilation time is getting out of hand.
+
 ## Status
 
 Tho the status below is something to add, the focus is going to be on using the Game and Tracker events to generate visualization.
@@ -96,7 +101,7 @@ From time to time as versions come out I will try to generate the files.
 - [x] Read the version and from the version call the correct module so that we can support multiple modules.
 - [ ] Add the remaining Tracker/Game event types.
 - [ ] Support for MPQ embedded file: `replay.gamemetadata.json`
-- [ ] Support for MPQ embedded file: `replay.details`
+- [x] Support for MPQ embedded file: `replay.details`
 - [ ] Support for MPQ embedded file: `replay.initData`
-- [ ] Support for MPQ embedded file: `replay.message.events`
+- [x] Support for MPQ embedded file: `replay.message.events`
 - [ ] Support for MPQ embedded file: `replay.attributes.events`
