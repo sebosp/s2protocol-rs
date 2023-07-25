@@ -4,6 +4,7 @@ version = "1.1.5"
 edition = "2021"
 license = "MIT"
 description = "A reader for Starcraft II - Replay format"
+repository = "https://github.com/sebosp/s2protocol-rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
