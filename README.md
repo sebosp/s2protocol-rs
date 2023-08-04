@@ -59,7 +59,7 @@ let mut replay = SC2ReplayState::new(file_path, SC2ReplayFilters::default(), inc
 // These "units" properties can be looked up in the `replay` state machine further.
 // In this example, the `add_tracker_event` and the `add_game_event` also are sent a reference to the SC2ReplayState
 // For a working example, see the swarmy repo referenced above.
-while let Some((event, updated_units)) = replay.transduce() {
+while let Some((event, updated_units)) = replay.unwrap().transduce() {
     match event {
         SC2EventType::Tracker {
             tracker_loop,
