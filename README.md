@@ -1,7 +1,7 @@
 [![Crates.io](https://img.shields.io/crates/v/s2protocol.svg)](https://crates.io/crates/s2protocol)
 [![Workflow Status](https://github.com/sebosp/s2protocol-rs/workflows/Rust/badge.svg)](https://github.com/sebosp/s2protocol-rs/actions?query=workflow%3A%22Rust%22)
 
-# s2protocol-rs 1.1.6
+# s2protocol-rs 1.1.7
 
 A nom parser for the Starcraft 2 Protocol Replay format.
 
