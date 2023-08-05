@@ -16393,7 +16393,7 @@ pub mod bit_packed {
         #[tracing::instrument(name="90136::GameEMessageId::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {
             // Total fields: 5
-            let num_bits: usize = 3;
+            let num_bits: usize = 4;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
