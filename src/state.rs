@@ -155,6 +155,16 @@ impl SC2ReplayState {
         include_stats: bool,
     ) -> Result<Self, S2ProtocolError> {
         let (mpq, file_contents) = read_mpq(file_path);
+        Self::from_mpq(mpq, file_contents, filters, include_stats)
+    }
+
+    /// Constructs an SC2ReplayState from an MPQ file and its contents.
+    pub fn from_mpq(
+        mpq: MPQ,
+        file_contents: Vec<u8>,
+        filters: SC2ReplayFilters,
+        include_stats: bool,
+    ) -> Result<Self, S2ProtocolError> {
         let mut res = Self {
             units: HashMap::new(),
             filters,
@@ -207,7 +217,7 @@ impl SC2ReplayState {
         };
         let mut game_loop = 0i64;
         for game_step in game_events {
-            game_loop += game_step.delta as i64;
+            game_loop += game_step.delta;
             let adjusted_loop = game_loop * MAX_EVENT_TYPES + GAME_PRIORITY;
             if let Some(step_evt) = sc2_events.get_mut(&adjusted_loop) {
                 step_evt.push(SC2EventType::Game {
@@ -244,10 +254,10 @@ impl SC2ReplayState {
         // TODO: These could become .filter, .take, etc.
         // But still, some of these refer to the internal loop, and since we have a generated
         // game_loop based on event priorities, maybe it's not that easy.
-        let min_filter = self.filters.min_loop.clone();
-        let max_filter = self.filters.max_loop.clone();
-        let user_id_filter = self.filters.user_id.clone();
-        let max_events = self.filters.max_events.clone();
+        let min_filter = self.filters.min_loop;
+        let max_filter = self.filters.max_loop;
+        let user_id_filter = self.filters.user_id;
+        let max_events = self.filters.max_events;
         loop {
             if self.current_loop_idx >= self.loop_items.len() {
                 return None;
@@ -272,7 +282,7 @@ impl SC2ReplayState {
                     event,
                 } => {
                     tracing::info!("Trac [{:>08}]: {:?}", tracker_loop, event);
-                    crate::tracker_events::handle_tracker_event(self, *tracker_loop, &event)
+                    crate::tracker_events::handle_tracker_event(self, *tracker_loop, event)
                 }
                 SC2EventType::Game {
                     user_id,
@@ -280,7 +290,7 @@ impl SC2ReplayState {
                     event,
                 } => {
                     let updated_units =
-                        crate::game_events::handle_game_event(self, *game_loop, *user_id, &event);
+                        crate::game_events::handle_game_event(self, *game_loop, *user_id, event);
                     if let Some(target_user_id) = user_id_filter {
                         // Skip the events that are not for the requested user.
                         if target_user_id != *user_id {
