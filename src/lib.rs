@@ -52,15 +52,13 @@ pub fn peek_bits(input: (&[u8], usize)) -> String {
     let input_str = format!("{:08b}", input.0[0]);
     let mut res = String::from("[0b");
     for (idx, bit_str) in input_str.chars().enumerate() {
-        if idx < input.1 {
-            res.push_str(&format!("{}", bit_str).blue());
-        } else if idx == input.1 {
-            res.push_str(&format!(">{}<", bit_str).green());
-        } else {
-            res.push_str(&format!("{}", bit_str).yellow());
-        }
+        match idx.cmp(&input.1) {
+            std::cmp::Ordering::Less => res.push_str(&format!("{}", bit_str).blue()),
+            std::cmp::Ordering::Equal => res.push_str(&format!(">{}<", bit_str).green()),
+            std::cmp::Ordering::Greater => res.push_str(&format!("{}", bit_str).yellow()),
+        };
     }
-    res.push_str("]");
+    res.push(']');
     res.push_str(&peek_hex(input.0));
     res
 }

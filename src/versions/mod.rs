@@ -12,6 +12,7 @@ pub mod protocol88500;
 pub mod protocol89634;
 pub mod protocol89720;
 pub mod protocol90136;
+pub mod protocol90779;
 
 /// Attempts to read the tracker events, panics under unknown protocol
 pub fn read_tracker_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<TrackerEvent> {
@@ -43,6 +44,10 @@ pub fn read_tracker_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<TrackerEvent>
             mpq,
             file_contents,
         ),
+        90779 => protocol90779::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
+            mpq,
+            file_contents,
+        ),
         _ => panic!(
             "Unsupported Protocol Version: {}",
             proto_header.m_version.m_base_build
@@ -62,6 +67,7 @@ pub fn read_game_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<GameEvent> {
         89634 => protocol89634::bit_packed::GameEEventId::read_events(mpq, file_contents),
         89720 => protocol89720::bit_packed::GameEEventId::read_events(mpq, file_contents),
         90136 => protocol90136::bit_packed::GameEEventId::read_events(mpq, file_contents),
+        90779 => protocol90779::bit_packed::GameEEventId::read_events(mpq, file_contents),
         _ => panic!(
             "Unsupported Protocol Version: {}",
             proto_header.m_version.m_base_build
@@ -81,6 +87,7 @@ pub fn read_message_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<MessageEvent>
         89634 => protocol89634::bit_packed::GameEMessageId::read_events(mpq, file_contents),
         89720 => protocol89720::bit_packed::GameEMessageId::read_events(mpq, file_contents),
         90136 => protocol90136::bit_packed::GameEMessageId::read_events(mpq, file_contents),
+        90779 => protocol90779::bit_packed::GameEMessageId::read_events(mpq, file_contents),
         _ => panic!(
             "Unsupported Protocol Version: {}",
             proto_header.m_version.m_base_build
@@ -100,6 +107,7 @@ pub fn read_details(mpq: &MPQ, file_contents: &[u8]) -> Details {
         89634 => protocol89634::byte_aligned::GameSDetails::read_details(mpq, file_contents),
         89720 => protocol89720::byte_aligned::GameSDetails::read_details(mpq, file_contents),
         90136 => protocol90136::byte_aligned::GameSDetails::read_details(mpq, file_contents),
+        90779 => protocol90779::byte_aligned::GameSDetails::read_details(mpq, file_contents),
         _ => panic!(
             "Unsupported Protocol Version: {}",
             proto_header.m_version.m_base_build
