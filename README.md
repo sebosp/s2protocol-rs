@@ -1,7 +1,7 @@
 [![Crates.io](https://img.shields.io/crates/v/s2protocol.svg)](https://crates.io/crates/s2protocol)
 [![Workflow Status](https://github.com/sebosp/s2protocol-rs/workflows/Rust/badge.svg)](https://github.com/sebosp/s2protocol-rs/actions?query=workflow%3A%22Rust%22)
 
-# s2protocol-rs 1.1.8
+# s2protocol-rs 1.1.9
 
 A nom parser for the Starcraft 2 Protocol Replay format.
 
@@ -34,14 +34,12 @@ information it packs.
 
 From the available data, generative art can be created, for example
 by using 
-- [rerun](https://github.com/rerun-io/rerun)
-- [nannou](https://github.com/nannou-org/nannou) (PoC missing)
+- [rerun](https://github.com/rerun-io/rerun) : See the repo [swarmy](https://github.com/sebosp/swarmy)
+- [lyon](https://github.com/nical/lyon) (PoC in progress in cooper)
+- [yew](https://github.com/yewstack/yew) [cooper](https://github.com/sebosp/cooper)
 - [bevyengine/bevy](https://github.com/bevyengine/bevy) can be used to see:
   - An Enhanced Replay Minimap
   - Additional statistics.
-
-See the repo [sebosp/swarmy](https://github.com/sebosp/swarmy)
-for an example on how this can look like.
 
 ## Consuming events
 
@@ -51,7 +49,7 @@ To consume events, they are currently loaded in memory in a HashMap:
 
 ```rust
 let include_stats = false;
-let mut replay = SC2ReplayState::new(file_path, SC2ReplayFilters::default(), include_stats)?;
+let mut replay = SC2ReplayState::new(file_path, SC2ReplayFilters::default(), include_stats).unwrap();
 // at this point, all events frcom the MPQ file at `file_path` have been loaded to memory.
 // To progress through the game loop, the `replay` state machine transduces from one gameloop to the next one.
 // This means it recycles variables, sets position, maintains active units, etc.
@@ -59,7 +57,7 @@ let mut replay = SC2ReplayState::new(file_path, SC2ReplayFilters::default(), inc
 // These "units" properties can be looked up in the `replay` state machine further.
 // In this example, the `add_tracker_event` and the `add_game_event` also are sent a reference to the SC2ReplayState
 // For a working example, see the swarmy repo referenced above.
-while let Some((event, updated_units)) = replay.unwrap().transduce() {
+while let Some((event, updated_units)) = replay.transduce() {
     match event {
         SC2EventType::Tracker {
             tracker_loop,
@@ -86,22 +84,18 @@ This because the compilation time is getting out of hand.
 
 ## Status
 
-Tho the status below is something to add, the focus is going to be on using the Game and Tracker events to generate visualization.
-From time to time as versions come out I will try to generate the files.
-
-- [x] Replay Tracker and Game Events for protocol75689
-- [x] Replay Tracker and Game Events for protocol87702
-- [x] Replay Tracker and Game Events for protocol88500
-- [x] Replay Tracker and Game Events for protocol89634
-- [x] Replay Tracker and Game Events for protocol89720
-- [x] Replay Tracker and Game Events for protocol90136
+- [x] Replay Tracker, Game Events and Chat Message Events for protocol75689
+- [x] Replay Tracker, Game Events and Chat Message Events for protocol87702
+- [x] Replay Tracker, Game Events and Chat Message Events for protocol88500
+- [x] Replay Tracker, Game Events and Chat Message Events for protocol89634
+- [x] Replay Tracker, Game Events and Chat Message Events for protocol89720
+- [x] Replay Tracker, Game Events and Chat Message Events for protocol90136
+- [x] Replay Tracker, Game Events and Chat Message Events for protocol90779
 - [x] Parsing unit movement is done.
 - [x] Decoding the tag/recycle done to match Game Events.
 - [x] Game Events are parsed (tho some that seem irrelevant are skipped).
 - [x] Read the version and from the version call the correct module so that we can support multiple modules.
 - [ ] Add the remaining Tracker/Game event types.
 - [ ] Support for MPQ embedded file: `replay.gamemetadata.json`
-- [x] Support for MPQ embedded file: `replay.details`
 - [ ] Support for MPQ embedded file: `replay.initData`
-- [x] Support for MPQ embedded file: `replay.message.events`
 - [ ] Support for MPQ embedded file: `replay.attributes.events`

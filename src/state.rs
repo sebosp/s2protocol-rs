@@ -37,7 +37,7 @@ impl Vec3D {
 }
 
 /// Unit Attributes.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct SC2Unit {
     /// The last time the unit was updated
     pub last_game_loop: i64,
@@ -76,7 +76,7 @@ pub enum SC2EventType {
 }
 
 /// The user state as it's collected through time.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct SC2UserState {
     /// An array of registered control groups per user, the control group indexed as 10th is the
     /// currently selected units.
@@ -119,7 +119,7 @@ pub struct SC2ReplayFilters {
     pub max_events: Option<usize>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct SC2ReplayState {
     /// The registered units state as they change through time.
     /// These are with unit index as reference
@@ -236,7 +236,7 @@ impl SC2ReplayState {
                 );
             }
         }
-        let mut ordered_event_loops: Vec<i64> = sc2_events.keys().map(|v| v.clone()).collect();
+        let mut ordered_event_loops: Vec<i64> = sc2_events.keys().cloned().collect();
         ordered_event_loops.sort_unstable();
         let mut items = vec![];
         for step in ordered_event_loops {
