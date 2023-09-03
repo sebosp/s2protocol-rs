@@ -2,6 +2,7 @@
 
 pub mod bit_packed_decoder;
 pub mod details;
+pub mod error;
 pub mod game_events;
 pub mod generator;
 pub mod message_events;
@@ -18,6 +19,7 @@ use crate::versions::read_game_events;
 use crate::versions::read_tracker_events;
 pub use bit_packed_decoder::*;
 use colored::*;
+pub use error::*;
 use nom::number::complete::u8;
 use nom::IResult;
 use nom_mpq::parser::peek_hex;
@@ -27,18 +29,53 @@ use std::collections::HashMap;
 use std::str;
 pub use versioned_decoder::*;
 
-#[derive(thiserror::Error, Debug)]
-pub enum S2ProtocolError {
-    #[error("MPQ Error")]
-    MPQ(#[from] nom_mpq::MPQParserError),
+/// Many fields are optional, this macro will return an Ok for the nom::IResult but the value will
+/// be an Err(S2ProtocolError::MissingField) if the field is not present.
+/// This allows for avoiding panic!() and instead can be ?
+#[macro_export]
+macro_rules! ok_or_return_missing_field_err {
+    ($tail:ident, $req_field:ident) => {
+        match $req_field {
+            Some(v) => v,
+            None => {
+                tracing::error!(
+                    missing_field = stringify!($req_field),
+                    "Required field not provided"
+                );
+                return Ok((
+                    $tail,
+                    Err(S2ProtocolError::MissingField(
+                        stringify!($req_field).to_string(),
+                    )),
+                ));
+            }
+        }
+    };
+}
+
+/// Transforms a field Err value into a nom::IResult::Ok with the S2ProtocolError enclosed, this means
+/// the parsing is not the problem but the field requirements couldn't be met.
+#[macro_export]
+macro_rules! ok_or_s2proto_err {
+    ($tail:ident, $field:ident) => {
+        match $field {
+            Ok(v) => v,
+            Err(err) => {
+                tracing::error!(err = ?err,
+                    error_field = stringify!($field),
+                    "Error parsing field");
+                return Ok(($tail, Err(err)));
+            }
+        }
+    };
 }
 
 /// Reads the MPQ file and returns both the MPQ read file and the reference to its contents.
-pub fn read_mpq(path: &str) -> (MPQ, Vec<u8>) {
+pub fn read_mpq(path: &str) -> Result<(MPQ, Vec<u8>), S2ProtocolError> {
     tracing::info!("Processing MPQ file {}", path);
     let file_contents = parser::read_file(path);
-    let (_, mpq) = parser::parse(&file_contents).unwrap();
-    (mpq, file_contents)
+    let (_, mpq) = parser::parse(&file_contents)?;
+    Ok((mpq, file_contents))
 }
 
 /// Creates a colored binary representation of the input.
@@ -100,12 +137,12 @@ where
 /// Reads a VLQ Int that is prepend by its tag
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn parse_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
-    let (mut tail, mut v_int_value) = dbg_peek_hex(u8, "v_int")(&input)?;
+    let (mut tail, mut v_int_value) = dbg_peek_hex(u8, "v_int")(input)?;
     let is_negative = v_int_value & 1 != 0;
     let mut result: i64 = ((v_int_value >> 1) & 0x3f) as i64;
     let mut bits: i64 = 6;
     while (v_int_value & 0x80) != 0 {
-        let (new_tail, new_v_int_value) = dbg_peek_hex(u8, "v_int")(&tail)?;
+        let (new_tail, new_v_int_value) = dbg_peek_hex(u8, "v_int")(tail)?;
         tail = new_tail;
         result |= ((new_v_int_value as i64 & 0x7fi64) << bits) as i64;
         v_int_value = new_v_int_value;
@@ -128,7 +165,7 @@ mod tests {
         ];
         let (tail, v_int) = parse_vlq_int(&data).unwrap();
         assert_eq!(v_int, 9);
-        let (_tail, v_int) = parse_vlq_int(&tail).unwrap();
+        let (_tail, v_int) = parse_vlq_int(tail).unwrap();
         assert_eq!(v_int, 22);
         let input: Vec<u8> = vec![
             0xac, 0xda, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
