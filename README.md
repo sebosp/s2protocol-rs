@@ -1,13 +1,16 @@
 [![Crates.io](https://img.shields.io/crates/v/s2protocol.svg)](https://crates.io/crates/s2protocol)
 [![Workflow Status](https://github.com/sebosp/s2protocol-rs/workflows/Rust/badge.svg)](https://github.com/sebosp/s2protocol-rs/actions?query=workflow%3A%22Rust%22)
 
-# s2protocol-rs 1.1.9
+# s2protocol-rs
 
 A nom parser for the Starcraft 2 Protocol Replay format.
+Additionally transduces through the replays to provide SC2ReplayState that keeps track of units, players, buildings, movement, units initialized and died.
 
 ## Generating protocol-specific code:
 
 The rust code for the protocols versions available were generated using:
+This would now be compared with ./src/versions/protocol99999.template file and from there we can analyze what has changed.
+Notably, the number of bits used for the Chat Message is still miscalculated to 3 so it needs to be dismissed.
 
 ```bash
 mkdir src/versions/protocol89720/
@@ -19,10 +22,11 @@ RUST_LOG_SPAN_EVENTS=full RUST_LOG=debug cargo watch -i src/versions/protocol897
 ```
 
 ## version compatibility.
-For the current parsed versions, it seems they are compatible enough and so for now a symlink is created for version specific to version 87702.
-Even tho the structs are called the same, the bit/byte sizes may be different.
+After further testing, it seems most of the types are compatible between versions, so only when they differ would they make part of the protocol version.
+Since I started this exercise on protocol87702, all types would be relative to it. That is, most modules would re-use protocol87702 as much as possible.
+This explains why old-er versions such as 75689 would still reference 87702 as much as possible.
 
-In order for this to work, the repo from Blizzard must be cloned at `../s2protocol`.
+The generator above thus would show example code and does not reflect anymore the current `S2ProtoResult` created in favour of unwrapping/panic'ing.
 
 ## JSON Sources
 [Blizzard/s2protocol repo](https://github.com/Blizzard/s2protocol)
@@ -37,6 +41,7 @@ by using
 - [rerun](https://github.com/rerun-io/rerun) : See the repo [swarmy](https://github.com/sebosp/swarmy)
 - [lyon](https://github.com/nical/lyon) (PoC in progress in cooper)
 - [yew](https://github.com/yewstack/yew) [cooper](https://github.com/sebosp/cooper)
+- [eframe/egui](https://github.com/emilk/egui): See repo [eframes-c2](https://github.com/sebosp/eframe-sc2)
 - [bevyengine/bevy](https://github.com/bevyengine/bevy) can be used to see:
   - An Enhanced Replay Minimap
   - Additional statistics.
@@ -85,12 +90,14 @@ This because the compilation time is getting out of hand.
 ## Status
 
 - [x] Replay Tracker, Game Events and Chat Message Events for protocol75689
+- [x] Replay Tracker, Game Events and Chat Message Events for protocol84643
 - [x] Replay Tracker, Game Events and Chat Message Events for protocol87702
 - [x] Replay Tracker, Game Events and Chat Message Events for protocol88500
 - [x] Replay Tracker, Game Events and Chat Message Events for protocol89634
 - [x] Replay Tracker, Game Events and Chat Message Events for protocol89720
 - [x] Replay Tracker, Game Events and Chat Message Events for protocol90136
 - [x] Replay Tracker, Game Events and Chat Message Events for protocol90779
+- [x] Replay Tracker, Game Events and Chat Message Events for protocol90870
 - [x] Parsing unit movement is done.
 - [x] Decoding the tag/recycle done to match Game Events.
 - [x] Game Events are parsed (tho some that seem irrelevant are skipped).

@@ -34,7 +34,7 @@ pub use versioned_decoder::*;
 /// This allows for avoiding panic!() and instead can be ?
 #[macro_export]
 macro_rules! ok_or_return_missing_field_err {
-    ($tail:ident, $req_field:ident) => {
+    ($req_field:ident) => {
         match $req_field {
             Some(v) => v,
             None => {
@@ -42,33 +42,18 @@ macro_rules! ok_or_return_missing_field_err {
                     missing_field = stringify!($req_field),
                     "Required field not provided"
                 );
-                return Ok((
-                    $tail,
-                    Err(S2ProtocolError::MissingField(
-                        stringify!($req_field).to_string(),
-                    )),
+                return Err(S2ProtocolError::MissingField(
+                    stringify!($req_field).to_string(),
                 ));
             }
         }
     };
 }
 
-/// Transforms a field Err value into a nom::IResult::Ok with the S2ProtocolError enclosed, this means
-/// the parsing is not the problem but the field requirements couldn't be met.
-#[macro_export]
-macro_rules! ok_or_s2proto_err {
-    ($tail:ident, $field:ident) => {
-        match $field {
-            Ok(v) => v,
-            Err(err) => {
-                tracing::error!(err = ?err,
-                    error_field = stringify!($field),
-                    "Error parsing field");
-                return Ok(($tail, Err(err)));
-            }
-        }
-    };
-}
+/// Pre-allocating memory is a nice optimization but count fields can't
+/// always be trusted. (Copied from nom::multi source.).
+/// This is used for arrays.
+pub const MAX_INITIAL_CAPACITY_BYTES: usize = 65536;
 
 /// Reads the MPQ file and returns both the MPQ read file and the reference to its contents.
 pub fn read_mpq(path: &str) -> Result<(MPQ, Vec<u8>), S2ProtocolError> {
