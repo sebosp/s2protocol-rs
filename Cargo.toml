@@ -17,8 +17,12 @@ clap = { version = "4.4", features = ["derive"] }
 serde_json = "1.0.91"
 serde = { version = "1.0.164", features = ["derive"] }
 convert_case = "0.6.0"
-nom-mpq = "0.1.4"
+nom-mpq = "2.0.1"
 colored = "2.0.4"
+
+[features]
+# A feature that allows extra tracing, disable by default because of performance
+no_tracing = ["tracing/max_level_off", "tracing/release_max_level_off"]
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }

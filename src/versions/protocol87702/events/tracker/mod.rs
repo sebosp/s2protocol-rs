@@ -13,7 +13,7 @@ use nom_mpq::MPQ;
 impl ReplayTrackerEEventId {
     /// Reads a delta, TrackerEvent pair
     #[tracing::instrument(name="TrackerEvent::parse_event_pair", level = "debug", skip(input), fields(peek = peek_hex(input)))]
-    pub fn parse_event_pair(input: &[u8]) -> IResult<&[u8], (u32, ReplayTrackerEEventId)> {
+    pub fn parse_event_pair(input: &[u8]) -> S2ProtoResult<&[u8], (u32, ReplayTrackerEEventId)> {
         let (tail, delta) = SVarUint32::parse(input)?;
         let (tail, event) = ReplayTrackerEEventId::parse(tail)?;
         let delta = match delta {
@@ -24,16 +24,17 @@ impl ReplayTrackerEEventId {
     }
 
     /// Read the Tracker Events
-    pub fn read_tracker_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<TrackerEvent> {
+    pub fn read_tracker_events(
+        mpq: &MPQ,
+        file_contents: &[u8],
+    ) -> Result<Vec<TrackerEvent>, S2ProtocolError> {
         // TODO: Make it return an Iterator.
-        let (_event_tail, tracker_events) = mpq
-            .read_mpq_file_sector("replay.tracker.events", false, &file_contents)
-            .unwrap();
+        let (_event_tail, tracker_events) =
+            mpq.read_mpq_file_sector("replay.tracker.events", false, &file_contents)?;
         let mut res = vec![];
         let mut event_tail: &[u8] = &tracker_events;
         loop {
-            let (new_event_tail, (delta, event)) =
-                Self::parse_event_pair(&event_tail).expect("Unable to parse TrackerEvents");
+            let (new_event_tail, (delta, event)) = Self::parse_event_pair(&event_tail)?;
             event_tail = new_event_tail;
             match event.try_into() {
                 Ok(val) => res.push(TrackerEvent { delta, event: val }),
@@ -45,7 +46,7 @@ impl ReplayTrackerEEventId {
                 break;
             }
         }
-        res
+        Ok(res)
     }
 }
 

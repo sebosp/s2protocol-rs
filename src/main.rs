@@ -49,7 +49,7 @@ fn main() {
             tracing::info!("Getting tracker events");
             let file_contents = parser::read_file(&cli.source);
             let (_input, mpq) = parser::parse(&file_contents).unwrap();
-            let res = read_tracker_events(&mpq, &file_contents);
+            let res = read_tracker_events(&mpq, &file_contents).unwrap();
             println!("[");
             for evt in res {
                 println!("{},", serde_json::to_string(&evt).unwrap());
@@ -60,7 +60,7 @@ fn main() {
             tracing::info!("Getting game events");
             let file_contents = parser::read_file(&cli.source);
             let (_input, mpq) = parser::parse(&file_contents).unwrap();
-            let res = read_game_events(&mpq, &file_contents);
+            let res = read_game_events(&mpq, &file_contents).unwrap();
             println!("[");
             for evt in res {
                 println!("{},", serde_json::to_string(&evt).unwrap());
@@ -71,7 +71,7 @@ fn main() {
             tracing::info!("Getting message events");
             let file_contents = parser::read_file(&cli.source);
             let (_input, mpq) = parser::parse(&file_contents).unwrap();
-            let res = read_message_events(&mpq, &file_contents);
+            let res = read_message_events(&mpq, &file_contents).unwrap();
             println!("[");
             for evt in res {
                 println!("{},", serde_json::to_string(&evt).unwrap());
@@ -82,7 +82,7 @@ fn main() {
             tracing::info!("Getting details");
             let file_contents = parser::read_file(&cli.source);
             let (_input, mpq) = parser::parse(&file_contents).unwrap();
-            let res = read_details(&mpq, &file_contents);
+            let res = read_details(&mpq, &file_contents).unwrap();
             println!("{},", serde_json::to_string(&res).unwrap());
         }
     }

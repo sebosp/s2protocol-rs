@@ -11,7 +11,6 @@ use super::*;
 use crate::versions::protocol87702::byte_aligned::{ReplaySHeader, SVersion};
 use nom::bytes::complete::*;
 use nom::error::dbg_dmp;
-use nom::*;
 use nom_mpq::parser::peek_hex;
 use nom_mpq::MPQ;
 
@@ -24,7 +23,7 @@ pub struct ProtocolHeader {
 
 impl ProtocolHeader {
     #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
-    pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {
+    pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
         let (tail, _) = dbg_dmp(tag(b"\x12"), "Protocol Header struct size")(tail)?;
         // This 0x12 translates to a 9 decimal, which is the number of fields
@@ -42,7 +41,7 @@ impl ProtocolHeader {
     }
 
     #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
-    pub fn parse_m_signature(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
+    pub fn parse_m_signature(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
         let (tail, _) = dbg_dmp(tag(b"\x00"), "m_signature field tag")(input)?;
         let (tail, m_signature) = tagged_blob(tail)?;
         Ok((tail, m_signature))
@@ -50,7 +49,7 @@ impl ProtocolHeader {
 }
 
 /// Read the protocol header, this can be read with any protocol
-pub fn read_protocol_header<'a>(mpq: &'a MPQ) -> IResult<&'a [u8], ReplaySHeader> {
+pub fn read_protocol_header<'a>(mpq: &'a MPQ) -> S2ProtoResult<&'a [u8], ReplaySHeader> {
     let user_data = mpq
         .user_data
         .as_ref()

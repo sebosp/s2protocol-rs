@@ -28,13 +28,10 @@ impl GameEEventId {
     #[tracing::instrument(name="GameEvents::parse_events", level = "debug", skip(input), fields(peek = peek_bits(input)))]
     pub fn parse_event_triplet(
         input: (&[u8], usize),
-    ) -> IResult<(&[u8], usize), (i64, i64, GameEEventId)> {
+    ) -> S2ProtoResult<(&[u8], usize), (i64, i64, GameEEventId)> {
         let (tail, delta) = SVarUint32::parse(input)?;
-        tracing::debug!("Delta: {:?}", delta);
         let (tail, user_id) = ReplaySGameUserId::parse(tail)?;
-        tracing::debug!("UserId: {:?}", user_id);
         let (tail, event) = GameEEventId::parse(tail)?;
-        tracing::debug!("Event: {:?}", event);
         let delta = match delta {
             SVarUint32::MUint6(val) => val.value,
             SVarUint32::MUint14(val) => val.value,
@@ -47,19 +44,17 @@ impl GameEEventId {
     }
 
     /// Read the Tracker Events
-    pub fn read_events(mpq: &MPQ, file_contents: &[u8]) -> Vec<GameEvent> {
-        // TODO: Make it return an Iterator, remove the unwrap.
-        let (_event_tail, game_events) = mpq
-            .read_mpq_file_sector("replay.game.events", false, file_contents)
-            .unwrap();
+    pub fn read_events(mpq: &MPQ, file_contents: &[u8]) -> Result<Vec<GameEvent>, S2ProtocolError> {
+        // TODO: Make it return an Iterator.
+        let (_event_tail, game_events) =
+            mpq.read_mpq_file_sector("replay.game.events", false, file_contents)?;
         let mut res = vec![];
         let mut count = 1usize;
         let mut event_tail: (&[u8], usize) = (&game_events, 0usize);
         loop {
             tracing::debug!("-----------------------------------------------");
             tracing::debug!("Event number: {}", count);
-            let (new_event_tail, (delta, user_id, event)) =
-                Self::parse_event_triplet(event_tail).expect("Unable to parse GameEvents");
+            let (new_event_tail, (delta, user_id, event)) = Self::parse_event_triplet(event_tail)?;
             count += 1;
             event_tail = new_event_tail;
             match event.try_into() {
@@ -76,7 +71,7 @@ impl GameEEventId {
                 break;
             }
         }
-        res
+        Ok(res)
     }
 }
 
