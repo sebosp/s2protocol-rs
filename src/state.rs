@@ -154,7 +154,7 @@ impl SC2ReplayState {
         filters: SC2ReplayFilters,
         include_stats: bool,
     ) -> Result<Self, S2ProtocolError> {
-        let (mpq, file_contents) = read_mpq(file_path);
+        let (mpq, file_contents) = read_mpq(file_path)?;
         Self::from_mpq(mpq, file_contents, filters, include_stats)
     }
 
@@ -177,12 +177,12 @@ impl SC2ReplayState {
         let filter_event_type = &res.filters.event_type.clone();
         let tracker_events = if let Some(event_type) = filter_event_type {
             if event_type.clone().to_lowercase().contains("tracker") {
-                read_tracker_events(&mpq, &file_contents)
+                read_tracker_events(&mpq, &file_contents)?
             } else {
                 vec![]
             }
         } else {
-            read_tracker_events(&mpq, &file_contents)
+            read_tracker_events(&mpq, &file_contents)?
         };
         let mut sc2_events: HashMap<i64, Vec<SC2EventType>> = HashMap::new();
         let mut tracker_loop = 0i64;
@@ -208,12 +208,12 @@ impl SC2ReplayState {
         }
         let game_events = if let Some(event_type) = filter_event_type {
             if event_type.clone().to_lowercase().contains("game") {
-                read_game_events(&mpq, &file_contents)
+                read_game_events(&mpq, &file_contents)?
             } else {
                 vec![]
             }
         } else {
-            read_game_events(&mpq, &file_contents)
+            read_game_events(&mpq, &file_contents)?
         };
         let mut game_loop = 0i64;
         for game_step in game_events {

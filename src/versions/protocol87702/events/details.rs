@@ -12,15 +12,14 @@ use nom_mpq::MPQ;
 
 impl GameSDetails {
     /// Read the Tracker Events
-    pub fn read_details(mpq: &MPQ, file_contents: &[u8]) -> Details {
+    pub fn read_details(mpq: &MPQ, file_contents: &[u8]) -> Result<Details, S2ProtocolError> {
         // TODO: Make it return an Iterator.
-        let (_, details_sector) = mpq
-            .read_mpq_file_sector("replay.details", false, &file_contents)
-            .unwrap();
-        tracing::info!("Read mpq file sector, going to parse");
-        let (_, game_sdetails) = GameSDetails::parse(&details_sector).unwrap();
-        tracing::debug!("So far: {:?}", game_sdetails);
-        game_sdetails.try_into().unwrap()
+        let (_, details_sector) =
+            mpq.read_mpq_file_sector("replay.details", false, &file_contents)?;
+        let (_, game_sdetails) = GameSDetails::parse(&details_sector)?;
+        game_sdetails
+            .try_into()
+            .map_err(|err: DetailsError| err.into())
     }
 }
 

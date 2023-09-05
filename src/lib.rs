@@ -2,6 +2,7 @@
 
 pub mod bit_packed_decoder;
 pub mod details;
+pub mod error;
 pub mod game_events;
 pub mod generator;
 pub mod message_events;
@@ -18,6 +19,7 @@ use crate::versions::read_game_events;
 use crate::versions::read_tracker_events;
 pub use bit_packed_decoder::*;
 use colored::*;
+pub use error::*;
 use nom::number::complete::u8;
 use nom::IResult;
 use nom_mpq::parser::peek_hex;
@@ -27,11 +29,31 @@ use std::collections::HashMap;
 use std::str;
 pub use versioned_decoder::*;
 
-#[derive(thiserror::Error, Debug)]
-pub enum S2ProtocolError {
-    #[error("MPQ Error")]
-    MPQ(#[from] nom_mpq::MPQParserError),
+/// Many fields are optional, this macro will return an Ok for the nom::IResult but the value will
+/// be an Err(S2ProtocolError::MissingField) if the field is not present.
+/// This allows for avoiding panic!() and instead can be ?
+#[macro_export]
+macro_rules! ok_or_return_missing_field_err {
+    ($req_field:ident) => {
+        match $req_field {
+            Some(v) => v,
+            None => {
+                tracing::error!(
+                    missing_field = stringify!($req_field),
+                    "Required field not provided"
+                );
+                return Err(S2ProtocolError::MissingField(
+                    stringify!($req_field).to_string(),
+                ));
+            }
+        }
+    };
 }
+
+/// Pre-allocating memory is a nice optimization but count fields can't
+/// always be trusted. (Copied from nom::multi source.).
+/// This is used for arrays.
+pub const MAX_INITIAL_CAPACITY_BYTES: usize = 65536;
 
 /// Reads the MPQ file and returns both the MPQ read file and the reference to its contents.
 pub fn read_mpq(path: &str) -> (MPQ, Vec<u8>) {
