@@ -1,6 +1,9 @@
 //! Decodes the Tracker Events.
 //! These are stored in an embebdded file in the MPQ file called 'replay.tracker.events'
 
+#[cfg(feature = "arrow")]
+use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+
 pub mod state;
 use serde::{Deserialize, Serialize};
 pub use state::*;
@@ -20,6 +23,10 @@ pub enum TrackerEventError {
 
 /// A protocol agnostic Unit Born
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct UnitBornEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
@@ -35,6 +42,10 @@ pub struct UnitBornEvent {
 
 /// A protocol agnostic Unit Died
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct UnitDiedEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
@@ -47,6 +58,10 @@ pub struct UnitDiedEvent {
 
 /// A protocol agnostic Unit Init Event
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct UnitInitEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
@@ -59,6 +74,10 @@ pub struct UnitInitEvent {
 
 /// A protocol agnostic Unit Done Event
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct UnitDoneEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
@@ -66,6 +85,10 @@ pub struct UnitDoneEvent {
 
 /// A protocol agnostic Unit Done Event
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct UnitPositionsEvent {
     pub first_unit_index: u32,
     pub items: Vec<i32>,
@@ -92,6 +115,10 @@ impl UnitPositionsEvent {
 
 /// A single unit position
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct UnitPosition {
     /// The unit "tag" is the "index"?
     pub tag: u32,
@@ -106,6 +133,11 @@ pub struct UnitPosition {
 /// Many of the variants are not supported yet, they will be added as they are considered
 /// relevant  for `swarmy` repo.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
+#[cfg_attr(feature = "arrow", arrow_field(type = "sparse"))]
 pub enum ReplayTrackerEvent {
     PlayerStats(PlayerStatsEvent),
     UnitBorn(UnitBornEvent),
@@ -120,12 +152,20 @@ pub enum ReplayTrackerEvent {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct UpgradeEvent {
     pub player_id: u8,
     pub upgrade_type_name: String,
     pub count: i32,
 }
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct UnitOwnerChangeEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
@@ -133,6 +173,10 @@ pub struct UnitOwnerChangeEvent {
     pub upkeep_player_id: u8,
 }
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct PlayerSetupEvent {
     pub player_id: u8,
     pub m_type: u32,
@@ -141,6 +185,10 @@ pub struct PlayerSetupEvent {
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct UnitTypeChangeEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
@@ -149,12 +197,20 @@ pub struct UnitTypeChangeEvent {
 
 /// A Tracker Event is an event in the gameloop for a specific user id
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct TrackerEvent {
     pub delta: u32,
     pub event: ReplayTrackerEvent,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct PlayerStatsEvent {
     pub player_id: u8,
     pub stats: PlayerStats,
@@ -162,6 +218,10 @@ pub struct PlayerStatsEvent {
 
 // TODO: Split
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct PlayerStats {
     pub minerals_current: i32,
     pub vespene_current: i32,

@@ -1,5 +1,8 @@
 //! Decodes the Details.
 
+#[cfg(feature = "arrow")]
+use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+
 use serde::{Deserialize, Serialize};
 use std::str::Utf8Error;
 
@@ -12,6 +15,10 @@ pub enum DetailsError {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct Details {
     pub player_list: Vec<PlayerDetails>,
     pub title: String,
@@ -34,6 +41,10 @@ pub struct Details {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct PlayerDetails {
     pub name: String,
     pub toon: ToonNameDetails,
@@ -49,6 +60,10 @@ pub struct PlayerDetails {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct ToonNameDetails {
     pub region: u8,
     pub program_id: u32,
@@ -57,6 +72,10 @@ pub struct ToonNameDetails {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct Color {
     pub a: u8,
     pub r: u8,
@@ -65,6 +84,11 @@ pub struct Color {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
+#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
 pub enum EObserve {
     ENone,
     ESpectator,
@@ -72,6 +96,11 @@ pub enum EObserve {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
+#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
 pub enum ResultDetails {
     EUndecided,
     EWin,
@@ -80,11 +109,20 @@ pub enum ResultDetails {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
 pub struct Thumbnail {
     pub file: String,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
+#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
 pub enum GameSpeed {
     ESlower,
     ESlow,
