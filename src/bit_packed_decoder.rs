@@ -22,6 +22,7 @@ pub struct BitArray {
 /// It returns the original input as if had not been processed.
 /// The caller must call the normal take process afterwards.
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
+#[allow(clippy::let_and_return)]
 pub fn rtake_n_bits(input: (&[u8], usize), count: usize) -> IResult<(&[u8], usize), u8> {
     let res = if input.1 + count > 8usize {
         // We need to process the current left-over bits (from the left)
@@ -45,11 +46,12 @@ pub fn rtake_n_bits(input: (&[u8], usize), count: usize) -> IResult<(&[u8], usiz
 /// Takes n total bits from the current u8 slice at the current offset and transforms the data into
 /// an u64, this works with Big Endian
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
+#[allow(clippy::precedence)]
 pub fn take_n_bits_into_i64(
     input: (&[u8], usize),
     total_bits: usize,
 ) -> IResult<(&[u8], usize), i64> {
-    assert!(total_bits < 64);
+    assert!(total_bits <= 64);
     let mut res = 0i64;
     let mut remaining_bits = total_bits;
     let mut tail = input;
@@ -67,6 +69,7 @@ pub fn take_n_bits_into_i64(
         let (_, bits) = rtake_n_bits(tail, count)?;
         let (new_tail, _) =
             dbg_peek_bits(take::<&[u8], u8, usize, _>(count), "take_n_bits_into_i64")(tail)?;
+        // clippy::precedence is disabled, when I tried to apply the proposed fix we can't parse.
         res |= (bits as i64) << remaining_bits - count;
         // copy << (total_bits - resultbits - copybits)
         tail = new_tail;
