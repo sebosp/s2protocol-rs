@@ -26,6 +26,8 @@ pub enum S2ProtocolError {
     GameEvent(#[from] crate::game_events::GameEventError),
     #[error("MessageEvent parsing error")]
     MessageEvent(#[from] crate::message_events::MessageEventError),
+    #[error("InitData parsing error")]
+    InitData(#[from] crate::init_data::InitDataError),
     #[error("Unexpected Tag: {0}")]
     UnknownTag(i64),
     #[error("Duplicate field {0} with tag {1}")]

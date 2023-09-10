@@ -3,19 +3,18 @@
 //!
 
 use super::byte_aligned::*;
+use crate::common::GameSpeed;
 use crate::details::{
-    Color, Details, DetailsError, GameSpeed, PlayerDetails, ResultDetails, Thumbnail,
-    ToonNameDetails,
+    Color, Details, DetailsError, PlayerDetails, ResultDetails, Thumbnail, ToonNameDetails,
 };
 use crate::*;
 use nom_mpq::MPQ;
 
 impl GameSDetails {
-    /// Read the Tracker Events
+    /// Read the Details MPQ sector.
     pub fn read_details(mpq: &MPQ, file_contents: &[u8]) -> Result<Details, S2ProtocolError> {
-        // TODO: Make it return an Iterator.
         let (_, details_sector) =
-            mpq.read_mpq_file_sector("replay.details", false, &file_contents)?;
+            mpq.read_mpq_file_sector("replay.details", false, file_contents)?;
         let (_, game_sdetails) = GameSDetails::parse(&details_sector)?;
         game_sdetails
             .try_into()
@@ -99,16 +98,6 @@ impl From<GameSColor> for Color {
             r: value.m_r,
             g: value.m_g,
             b: value.m_b,
-        }
-    }
-}
-
-impl From<super::byte_aligned::EObserve> for crate::details::EObserve {
-    fn from(value: super::byte_aligned::EObserve) -> Self {
-        match value {
-            super::byte_aligned::EObserve::ENone => Self::ENone,
-            super::byte_aligned::EObserve::ESpectator => Self::ESpectator,
-            super::byte_aligned::EObserve::EReferee => Self::EReferee,
         }
     }
 }

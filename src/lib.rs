@@ -1,10 +1,12 @@
 //! S2 Protocol use of the MPQ archive
 
 pub mod bit_packed_decoder;
+pub mod common;
 pub mod details;
 pub mod error;
 pub mod game_events;
 pub mod generator;
+pub mod init_data;
 pub mod message_events;
 pub mod protocol_version_decoder;
 pub mod state;
@@ -19,7 +21,9 @@ use crate::versions::read_game_events;
 use crate::versions::read_tracker_events;
 pub use bit_packed_decoder::*;
 use colored::*;
+pub use common::*;
 pub use error::*;
+pub use init_data::*;
 use nom::number::complete::u8;
 use nom::IResult;
 use nom_mpq::parser::peek_hex;
@@ -121,6 +125,7 @@ where
 
 /// Reads a VLQ Int that is prepend by its tag
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
+#[allow(clippy::unnecessary_cast)]
 pub fn parse_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
     let (mut tail, mut v_int_value) = dbg_peek_hex(u8, "v_int")(input)?;
     let is_negative = v_int_value & 1 != 0;
@@ -137,6 +142,11 @@ pub fn parse_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
         result = -result;
     }
     Ok((tail, result))
+}
+
+/// returns the offset for the timezone the replay was played in (users local timezone)
+pub fn transform_time(time_utc: u64, time_local_offset: u64) -> u64 {
+    time_utc / (10 * 1000 * 1000) - 11644473600 - (time_local_offset / 10000000)
 }
 
 #[cfg(test)]

@@ -94,48 +94,6 @@ impl From<GameSuiCoord> for crate::game_events::GameSuiCoord {
     }
 }
 
-impl From<Uint32> for u32 {
-    fn from(source: Uint32) -> u32 {
-        source.value as u32
-    }
-}
-
-impl From<Int8> for i8 {
-    fn from(source: Int8) -> i8 {
-        source.value as i8
-    }
-}
-
-impl From<Uint8> for u8 {
-    fn from(source: Uint8) -> u8 {
-        source.value as u8
-    }
-}
-
-impl From<Uint16> for u16 {
-    fn from(source: Uint16) -> u16 {
-        source.value as u16
-    }
-}
-
-impl From<Int16> for i16 {
-    fn from(source: Int16) -> i16 {
-        source.value as i16
-    }
-}
-
-impl From<Int32> for i32 {
-    fn from(source: Int32) -> i32 {
-        source.value as i32
-    }
-}
-
-impl From<TUserId> for u8 {
-    fn from(source: TUserId) -> u8 {
-        source.value as u8
-    }
-}
-
 impl TryFrom<GameEEventId> for ReplayGameEvent {
     type Error = GameEventError;
     fn try_from(value: GameEEventId) -> Result<Self, Self::Error> {

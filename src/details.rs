@@ -3,6 +3,7 @@
 #[cfg(feature = "arrow")]
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
+use crate::common::*;
 use serde::{Deserialize, Serialize};
 use std::str::Utf8Error;
 
@@ -89,18 +90,6 @@ pub struct Color {
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 #[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
-pub enum EObserve {
-    ENone,
-    ESpectator,
-    EReferee,
-}
-
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
 pub enum ResultDetails {
     EUndecided,
     EWin,
@@ -115,18 +104,4 @@ pub enum ResultDetails {
 )]
 pub struct Thumbnail {
     pub file: String,
-}
-
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
-pub enum GameSpeed {
-    ESlower,
-    ESlow,
-    ENormal,
-    EFast,
-    EFaster,
 }

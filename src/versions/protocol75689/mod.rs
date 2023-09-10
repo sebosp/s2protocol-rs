@@ -296,6 +296,7 @@ pub mod bit_packed {
     pub use crate::versions::protocol87702::bit_packed::Int8;
     pub use crate::versions::protocol87702::bit_packed::MEventData;
     pub use crate::versions::protocol87702::bit_packed::ReplaySGameUserId;
+    pub use crate::versions::protocol87702::bit_packed::ReplaySInitData;
     pub use crate::versions::protocol87702::bit_packed::SUserInitialData;
     pub use crate::versions::protocol87702::bit_packed::SVarUint32;
     pub use crate::versions::protocol87702::bit_packed::SVersion;

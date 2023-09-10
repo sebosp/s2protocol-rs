@@ -89,7 +89,7 @@ pub struct GameDescription {
     pub slot_descriptions: Vec<SlotDescription>,
     pub default_difficulty: i64,
     pub default_ai_build: i64,
-    pub cache_handles: Vec<String>,
+    pub cache_handles: Vec<Vec<u8>>,
     pub has_extension_mod: bool,
     pub has_non_blizzard_extension_mod: bool,
     pub is_blizzard_map: bool,
@@ -145,11 +145,11 @@ pub enum GameType {
 )]
 #[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
 pub struct SlotDescription {
-    pub allowed_colors: Vec<u8>,
-    pub allowed_races: Vec<u8>,
-    pub allowed_difficulty: Vec<u8>,
+    pub allowed_colors: i64,
+    pub allowed_races: i64,
+    pub allowed_difficulty: i64,
     pub allowed_controls: Vec<u8>,
-    pub allowed_observe_types: Vec<u8>,
+    pub allowed_observe_types: i64,
     pub allowed_ai_builds: Vec<u8>,
 }
 
