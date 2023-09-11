@@ -1,7 +1,9 @@
 use std::path::PathBuf;
 
+use arrow2_convert::serialize::FlattenChunk;
 use clap::{Parser, Subcommand};
 use nom_mpq::parser;
+use rayon::prelude::*;
 use s2protocol::generator::proto_morphist::ProtoMorphist;
 use s2protocol::versions::read_details;
 use s2protocol::versions::read_game_events;
@@ -26,6 +28,8 @@ enum ArrowIpcTypes {
     MessageEvents,
     /// Writes the details to an Arrow IPC file
     Details,
+    /// Writes the initData to an Arrow IPC file
+    InitData,
 }
 
 #[derive(Subcommand)]
@@ -49,6 +53,7 @@ enum Commands {
     /// Gets a specific event type from the SC2Replay MPQ Archive
     #[command(subcommand)]
     Get(ReadTypes),
+    #[cfg(feature = "arrow")]
     #[command(subcommand)]
     WriteArrowIpc(ArrowIpcTypes),
 }
@@ -68,6 +73,20 @@ struct Cli {
 
     #[arg(short, long)]
     output: Option<String>,
+}
+
+#[cfg(feature = "arrow")]
+fn write_batches(path: &str, schema: arrow2::datatypes::Schema, chunks: &[Chunk<Box<dyn Array>>]) {
+    let file = std::fs::File::create(path).unwrap();
+
+    let options = arrow2::io::ipc::write::WriteOptions { compression: None };
+    let mut writer = arrow2::io::ipc::write::FileWriter::new(file, schema, None, options);
+
+    writer.start().unwrap();
+    for chunk in chunks {
+        writer.write(chunk, None).unwrap()
+    }
+    writer.finish().unwrap();
 }
 
 fn main() {
@@ -143,7 +162,8 @@ fn main() {
                 for entry in std::fs::read_dir(&cli.source).unwrap() {
                     let entry = entry.unwrap();
                     let path = entry.path();
-                    if path.is_file() {
+                    // the filename must end in .SC2Replay
+                    if path.is_file() && path.extension().unwrap() == "SC2Replay" {
                         sources.push(path);
                     }
                 }
@@ -151,27 +171,47 @@ fn main() {
             } else {
                 vec![cli.source.clone().into()]
             };
-            for source in sources {
-                let file_contents = parser::read_file(source.display().to_string().as_str());
-                let (_input, mpq) = parser::parse(&file_contents).unwrap();
-                let res: Box<dyn Array> = read_details(&mpq, &file_contents)
-                    .unwrap()
-                    .player_list
-                    .try_into_arrow()
-                    .unwrap();
-                // Make a sha of the file and add it to the Vec<s>
-                #[cfg(feature = "arrow")]
-                {
-                    if let DataType::Struct(fields) = res.data_type() {
-                        // let df = DataFrame::from_rows_and_schema(&[Chunk::new([res].to_vec())], &fields);
-                        // println!("{}", df.head(Some(3)));
-                        let fields = fields.iter().map(|f| f.name.clone()).collect::<Vec<_>>();
-                        println!(
-                            "{},",
-                            arrow2::io::print::write(&[Chunk::new([res].to_vec())], &fields)
-                        );
+            if sources.is_empty() {
+                panic!("No files found");
+            }
+            println!("Found {} files", sources.len());
+            // process the sources in parallel consuming into the batch variable
+            let batch: Vec<s2protocol::details::Details> = sources
+                .par_iter()
+                .filter_map(|source| {
+                    let file_contents = parser::read_file(source.display().to_string().as_str());
+                    let (_input, mpq) = parser::parse(&file_contents).unwrap();
+                    match read_details(&mpq, &file_contents) {
+                        Ok(details) => Some(details.set_metadata(
+                            source.file_name().unwrap().to_str().unwrap(),
+                            &file_contents,
+                        )),
+                        Err(_) => None,
                     }
-                }
+                })
+                .collect();
+            println!("Loaded {} files", sources.len());
+            let res: Box<dyn Array> = batch.try_into_arrow().unwrap();
+            if let DataType::Struct(fields) = res.data_type() {
+                /*println!(
+                    "{},",
+                    arrow2::io::print::write(
+                        &[Chunk::new([res.clone()].to_vec())],
+                        &fields.iter().map(|f| f.name.clone()).collect::<Vec<_>>()
+                    )
+                );*/
+                let chunk = Chunk::new([res.clone()].to_vec()).flatten().unwrap();
+                write_batches(
+                    &cli.output.expect("Requires --output"),
+                    arrow2::datatypes::Schema::from(fields.clone()),
+                    &[chunk],
+                );
+                /*let df = DataFrame::from_rows_and_schema(
+                    &[Chunk::new([res].to_vec())],
+                    &polars::datatypes::Schema::from(fields.clone()),
+                )
+                .unwrap();
+                println!("{}", df.head(Some(3)));*/
             }
         }
     }

@@ -22,12 +22,14 @@ colored = "2.0.4"
 arrow2 = { version = "0.17.0", features = ["io_print", "io_ipc"], optional = true }
 arrow2_convert = { version = "0.5.0", optional = true }
 polars = { version = "0.32", features = ["lazy", "describe", "ipc", "sql"], optional = true }
+sha256 = { version = "1.4.0", optional = true }
+rayon = "1.7.0"
 
 [features]
 default = ["tracing_off", "arrow"]
 # A feature that allows extra tracing, disable by default because of performance
 tracing_off = ["tracing/max_level_off", "tracing/release_max_level_off"]
-arrow = ["arrow2", "arrow2_convert", "polars"]
+arrow = ["arrow2", "arrow2_convert", "polars", "sha256"]
 
 
 [dev-dependencies]

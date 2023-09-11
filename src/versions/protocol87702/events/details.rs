@@ -68,6 +68,9 @@ impl TryFrom<GameSDetails> for Details {
             game_speed: source.m_game_speed.into(),
             default_difficulty: source.m_default_difficulty,
             mod_paths,
+            sha256: String::from(""),
+            file_name: String::from(""),
+            epoch: 0,
         })
     }
 }

@@ -145,7 +145,7 @@ pub fn parse_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
 }
 
 /// returns the offset for the timezone the replay was played in (users local timezone)
-pub fn transform_time(time_utc: u64, time_local_offset: u64) -> u64 {
+pub fn transform_time(time_utc: i64, time_local_offset: i64) -> i64 {
     time_utc / (10 * 1000 * 1000) - 11644473600 - (time_local_offset / 10000000)
 }
 
