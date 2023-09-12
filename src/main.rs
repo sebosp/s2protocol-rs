@@ -14,9 +14,9 @@ use s2protocol::versions::read_tracker_events;
 #[cfg(feature = "arrow")]
 use arrow2::{array::Array, chunk::Chunk, datatypes::DataType};
 #[cfg(feature = "arrow")]
-use arrow2_convert::serialize::TryIntoArrow;
-#[cfg(feature = "arrow")]
-use polars::prelude::*;
+use arrow2_convert::{field::ArrowField, serialize::TryIntoArrow};
+/*#[cfg(feature = "arrow")]
+use polars::prelude::*;*/
 
 #[derive(Subcommand)]
 enum ArrowIpcTypes {
@@ -30,6 +30,8 @@ enum ArrowIpcTypes {
     Details,
     /// Writes the initData to an Arrow IPC file
     InitData,
+    /// Writes the Stats to an Arrow IPC file
+    Stats,
 }
 
 #[derive(Subcommand)]
@@ -87,6 +89,24 @@ fn write_batches(path: &str, schema: arrow2::datatypes::Schema, chunks: &[Chunk<
         writer.write(chunk, None).unwrap()
     }
     writer.finish().unwrap();
+}
+
+/// Matches a list of files in case the cli.source param is a directory
+fn get_matching_files(source: &str) -> Vec<PathBuf> {
+    if PathBuf::from(&source).is_dir() {
+        let mut sources = Vec::new();
+        for entry in std::fs::read_dir(source).unwrap() {
+            let entry = entry.unwrap();
+            let path = entry.path();
+            // the filename must end in .SC2Replay
+            if path.is_file() && path.extension().unwrap() == "SC2Replay" {
+                sources.push(path);
+            }
+        }
+        sources
+    } else {
+        vec![source.clone().into()]
+    }
 }
 
 fn main() {
@@ -155,43 +175,117 @@ fn main() {
                 }
             }
         }
-        Commands::WriteArrowIpc(_cmd) => {
-            tracing::info!("Getting details");
-            let sources: Vec<PathBuf> = if PathBuf::from(&cli.source).is_dir() {
-                let mut sources = Vec::new();
-                for entry in std::fs::read_dir(&cli.source).unwrap() {
-                    let entry = entry.unwrap();
-                    let path = entry.path();
-                    // the filename must end in .SC2Replay
-                    if path.is_file() && path.extension().unwrap() == "SC2Replay" {
-                        sources.push(path);
-                    }
-                }
-                sources
-            } else {
-                vec![cli.source.clone().into()]
-            };
+        Commands::WriteArrowIpc(cmd) => {
+            let file =
+                std::fs::File::create(&cli.output.clone().expect("Requires --output")).unwrap();
+
+            let options = arrow2::io::ipc::write::WriteOptions { compression: None };
+            tracing::info!("Processing write request");
+            let sources = get_matching_files(&cli.source);
             if sources.is_empty() {
                 panic!("No files found");
+            } else {
+                println!("Found {} files", sources.len());
             }
-            println!("Found {} files", sources.len());
-            // process the sources in parallel consuming into the batch variable
-            let batch: Vec<s2protocol::details::Details> = sources
-                .par_iter()
-                .filter_map(|source| {
-                    let file_contents = parser::read_file(source.display().to_string().as_str());
-                    let (_input, mpq) = parser::parse(&file_contents).unwrap();
-                    match read_details(&mpq, &file_contents) {
-                        Ok(details) => Some(details.set_metadata(
-                            source.file_name().unwrap().to_str().unwrap(),
-                            &file_contents,
-                        )),
-                        Err(_) => None,
+            let res: Box<dyn Array> = match cmd {
+                ArrowIpcTypes::Details => {
+                    // process the sources in parallel consuming into the batch variable
+                    let batch: Vec<s2protocol::details::Details> = sources
+                        .par_iter()
+                        .filter_map(|source| {
+                            let file_contents =
+                                parser::read_file(source.display().to_string().as_str());
+                            let (_input, mpq) = parser::parse(&file_contents).unwrap();
+                            match read_details(&mpq, &file_contents) {
+                                Ok(details) => Some(details.set_metadata(
+                                    source.file_name().unwrap().to_str().unwrap(),
+                                    &file_contents,
+                                )),
+                                Err(_) => None,
+                            }
+                        })
+                        .collect();
+                    batch.try_into_arrow().unwrap()
+                }
+                ArrowIpcTypes::Stats => {
+                    // process the sources serially avoiding filling the entires structure in
+                    // memory
+                    let mut writer = if let DataType::Struct(fields) =
+                        s2protocol::tracker_events::PlayerStatsFlatRow::data_type()
+                    {
+                        let schema = arrow2::datatypes::Schema::from(fields.clone());
+                        arrow2::io::ipc::write::FileWriter::new(file, schema, None, options)
+                    } else {
+                        panic!("Invalid schema");
+                    };
+                    writer.start().unwrap();
+                    for source in sources.iter() {
+                        println!("Processing {}", source.display());
+                        let file_contents =
+                            parser::read_file(source.display().to_string().as_str());
+                        let (_input, mpq) = parser::parse(&file_contents).unwrap();
+                        let mut batch = vec![];
+                        if let Ok(details) = read_details(&mpq, &file_contents) {
+                            let sha256 = sha256::digest(&file_contents);
+                            let epoch = s2protocol::transform_time(
+                                details.time_utc,
+                                details.time_local_offset,
+                            );
+                            let mut replay = match s2protocol::state::SC2ReplayState::from_mpq(
+                                mpq,
+                                file_contents,
+                                Default::default(),
+                                true,
+                            ) {
+                                Ok(replay) => replay,
+                                Err(_) => continue,
+                            };
+                            while let Some((event, _updated_units)) = replay.transduce() {
+                                if let s2protocol::state::SC2EventType::Tracker {
+                                    tracker_loop,
+                                    event,
+                                } = event
+                                {
+                                    if let s2protocol::tracker_events::ReplayTrackerEvent::PlayerStats(
+                                    stat_event,
+                                ) = event
+                                {
+                                    batch.push(s2protocol::tracker_events::PlayerStatsFlatRow::new(
+                                        stat_event.stats,
+                                        stat_event.player_id,
+                                        tracker_loop,
+                                        source.file_name().unwrap().to_str().unwrap().to_string(),
+                                        sha256.clone(),
+                                        epoch,
+                                    ));
+                                }
+                                }
+                            }
+                        }
+                        let res: Box<dyn Array> = batch.try_into_arrow().unwrap();
+                        let chunks: &[Chunk<Box<dyn Array>>] =
+                            &[Chunk::new([res].to_vec()).flatten().unwrap()];
+                        for chunk in chunks {
+                            writer.write(chunk, None).unwrap()
+                        }
                     }
-                })
-                .collect();
-            println!("Loaded {} files", sources.len());
-            let res: Box<dyn Array> = batch.try_into_arrow().unwrap();
+                    writer.finish().unwrap();
+                    panic!("Huh?");
+                }
+                ArrowIpcTypes::TrackerEvents => {
+                    panic!("TrackerEvents not supported. Use Stats instead");
+                }
+                ArrowIpcTypes::GameEvents => {
+                    panic!("GameEvents not supported. Use Stats instead");
+                }
+                ArrowIpcTypes::MessageEvents => {
+                    panic!("MessageEvents not supported. Use Stats instead");
+                }
+                ArrowIpcTypes::InitData => {
+                    panic!("InitData not supported. Use Stats instead");
+                }
+            };
+            println!("Loaded {} files", res.len());
             if let DataType::Struct(fields) = res.data_type() {
                 /*println!(
                     "{},",
