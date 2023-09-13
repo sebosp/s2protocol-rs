@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
     feature = "arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "arrow", arrow_field(type = "sparse"))]
 pub enum GameSpeed {
     ESlower,
     ESlow,
@@ -24,7 +24,7 @@ pub enum GameSpeed {
     feature = "arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "arrow", arrow_field(type = "sparse"))]
 pub enum EObserve {
     ENone,
     ESpectator,

@@ -15,8 +15,6 @@ use s2protocol::versions::read_tracker_events;
 use arrow2::{array::Array, chunk::Chunk, datatypes::DataType};
 #[cfg(feature = "arrow")]
 use arrow2_convert::{field::ArrowField, serialize::TryIntoArrow};
-/*#[cfg(feature = "arrow")]
-use polars::prelude::*;*/
 
 #[derive(Subcommand)]
 enum ArrowIpcTypes {

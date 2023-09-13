@@ -6,37 +6,12 @@
 A nom parser for the Starcraft 2 Protocol Replay format.
 Additionally transduces through the replays to provide SC2ReplayState that keeps track of units, players, buildings, movement, units initialized and died.
 
-## Generating protocol-specific code:
-
-The rust code for the protocols versions available were generated using:
-This would now be compared with ./src/versions/protocol99999.template file and from there we can analyze what has changed.
-Notably, the number of bits used for the Chat Message is still miscalculated to 3 so it needs to be dismissed.
-
-```bash
-mkdir src/versions/protocol89720/
-RUST_LOG_SPAN_EVENTS=full RUST_LOG=debug cargo watch -i src/versions/protocol89720/mod.rs -x 'run -- --source ../s2protocol/json/protocol89720.json generate --output src/versions/protocol89720/mod.rs'
-# Add the new module to src/versions/mod.rs
-# Run rust format on the new src/versions/protocol87702/mod.rs file
-# cargo check, cargo build, etc
-# Additionally some code to transform from Protocol-Specific to Protocol-Agnostic was added, TODO: Add to generator.rs
-```
-
-## version compatibility.
-After further testing, it seems most of the types are compatible between versions, so only when they differ would they make part of the protocol version.
-Since I started this exercise on protocol87702, all types would be relative to it. That is, most modules would re-use protocol87702 as much as possible.
-This explains why old-er versions such as 75689 would still reference 87702 as much as possible.
-
-The generator above thus would show example code and does not reflect anymore the current `S2ProtoResult` created in favour of unwrapping/panic'ing.
-
-## JSON Sources
-[Blizzard/s2protocol repo](https://github.com/Blizzard/s2protocol)
-
 ## Motivation
 The goal is to learn how to parse binary files format with `nom` and to learn
 how the Starcraft 2 Replay file is so incredibly small for the amount of
 information it packs.
 
-From the available data, generative art can be created, for example
+From the available data, analytics, visualizations and generative art can be created, for example
 by using 
 - [rerun](https://github.com/rerun-io/rerun) : See the repo [swarmy](https://github.com/sebosp/swarmy)
 - [lyon](https://github.com/nical/lyon) (PoC in progress in cooper)
@@ -77,15 +52,38 @@ while let Some((event, updated_units)) = replay.transduce() {
 }
 ```
 
-## Current issues
+## Interacting with polars
+```bash
+# Generate a file stats.ipc that contains all the Statistic Evenst in Arrow IPC format, This will take a while and it will load all files it could support.
+$ cargo run -r -- --source "/mnt/windows/Users/sebos/Documents/StarCraft II/Accounts/51504154/2-S2-1-8459957/Replays/Multiplayer/" --output stats.ipc write-arrow-ipc stats
+$ # List the number of loaded files.
+$ echo "SELECT COUNT(DISTINCT(file_name)) FROM read_ipc('/home/seb/git/s2protocol-rs/stats.ipc') LIMIT 10;"|polars
+┌───────────┐
+│ file_name │
+│ ---       │
+│ u32       │
+╞═══════════╡
+│ 3352      │
+└───────────┘⏎
+$ # List the max number of minerals that were lost in per map when the army was killed.
+$ echo "SELECT file_name, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s2protocol-rs/stats.ipc') GROUP BY file_name ORDER BY minerals_lost_army DESC;"|polars
+┌───────────────────────────────────┬────────────────────┐
+│ file_name                         ┆ minerals_lost_army │
+│ ---                               ┆ ---                │
+│ str                               ┆ i32                │
+╞═══════════════════════════════════╪════════════════════╡
+│ Heavy Artillery LE (349).SC2Repl… ┆ 71362              │
+│ Arctic Dream LE (398).SC2Replay   ┆ 59375              │
+│ Nightscape LE (52).SC2Replay      ┆ 54846              │
+│ Heavy Artillery LE (333).SC2Repl… ┆ 54175              │
+│ …                                 ┆ …                  │
+│ Emerald City LE (223).SC2Replay   ┆ 43450              │
+│ Rhoskallian LE (101).SC2Replay    ┆ 41614              │
+│ Fields of Death (345).SC2Replay   ┆ 41529              │
+│ Rhoskallian LE (346).SC2Replay    ┆ 41425              │
+└───────────────────────────────────┴────────────────────┘⏎
+```
 
-Currently we load all events in memory, Perhaps we can try to read batches on events by keeping MPQ nom parser &[u8] reference.
-For example, we could read different sections, and return events in different sections in a batch of evenst through a game loop.
-
-## TODO
-
-We can check that, if some module is exactly the same everywhere, we only create it once and re-use it everywhere.
-This because the compilation time is getting out of hand.
 
 ## Status
 
@@ -102,7 +100,39 @@ This because the compilation time is getting out of hand.
 - [x] Decoding the tag/recycle done to match Game Events.
 - [x] Game Events are parsed (tho some that seem irrelevant are skipped).
 - [x] Read the version and from the version call the correct module so that we can support multiple modules.
+- [x] Support for MPQ embedded file: `replay.initData`
 - [ ] Add the remaining Tracker/Game event types.
 - [ ] Support for MPQ embedded file: `replay.gamemetadata.json`
-- [ ] Support for MPQ embedded file: `replay.initData`
 - [ ] Support for MPQ embedded file: `replay.attributes.events`
+
+## Current issues
+
+Currently we load all events in memory, Perhaps we can try to read batches on events by keeping MPQ nom parser &[u8] reference.
+For example, we could read different sections, and return events in different sections in a batch of evenst through a game loop.
+
+## version compatibility.
+
+After a bit of testing, it seems most of the types are compatible between versions, so only when they differ would they make part of the protocol version.
+Since I started this exercise on protocol87702, all types would be relative to it. That is, most modules would re-use protocol87702 as much as possible.
+This explains why old-er versions such as 75689 would still reference 87702 as much as possible.
+
+The generator above thus would show example code `S2ProtoResult` created in favour of unwrapping/panic'ing.
+
+## Generating protocol-specific code:
+
+The rust code for the protocols versions available were generated using:
+This would now be compared with ./src/versions/protocol99999.template file and from there we can analyze what has changed.
+Notably, the number of bits used for the Chat Message is still miscalculated to 3 so it needs to be dismissed.
+
+```bash
+mkdir src/versions/protocol89720/
+RUST_LOG_SPAN_EVENTS=full RUST_LOG=debug cargo watch -i src/versions/protocol89720/mod.rs -x 'run -- --source ../s2protocol/json/protocol89720.json generate --output src/versions/protocol89720/mod.rs'
+# Add the new module to src/versions/mod.rs
+# Run rust format on the new src/versions/protocol87702/mod.rs file
+# cargo check, cargo build, etc
+# Additionally some code to transform from Protocol-Specific to Protocol-Agnostic was added, TODO: Add to generator.rs
+```
+
+## JSON Sources
+[Blizzard/s2protocol repo](https://github.com/Blizzard/s2protocol)
+

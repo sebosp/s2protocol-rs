@@ -102,7 +102,7 @@ pub struct Color {
     feature = "arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "arrow", arrow_field(type = "sparse"))]
 pub enum ResultDetails {
     EUndecided,
     EWin,
