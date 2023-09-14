@@ -22,6 +22,17 @@ pub enum InitDataError {
 )]
 pub struct InitData {
     pub sync_lobby_state: LobbySyncState,
+    pub sha256: String,
+    pub file_name: String,
+}
+
+impl InitData {
+    #[cfg(feature = "arrow")]
+    pub fn set_metadata(mut self, file_name: &str, file_contents: &[u8]) -> Self {
+        self.sha256 = sha256::digest(file_contents);
+        self.file_name = file_name.to_string();
+        self
+    }
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]

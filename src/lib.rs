@@ -1,6 +1,9 @@
 //! S2 Protocol use of the MPQ archive
 
+#[cfg(feature = "arrow")]
+pub mod arrow;
 pub mod bit_packed_decoder;
+pub mod cli;
 pub mod common;
 pub mod details;
 pub mod error;
@@ -17,9 +20,15 @@ pub mod versions;
 use crate::game_events::ReplayGameEvent;
 pub use crate::state::*;
 use crate::tracker_events::ReplayTrackerEvent;
-use crate::versions::read_game_events;
-use crate::versions::read_tracker_events;
+pub use crate::versions::read_details;
+pub use crate::versions::read_game_events;
+pub use crate::versions::read_init_data;
+pub use crate::versions::read_message_events;
+pub use crate::versions::read_tracker_events;
+#[cfg(feature = "arrow")]
+pub use arrow::*;
 pub use bit_packed_decoder::*;
+pub use cli::*;
 use colored::*;
 pub use common::*;
 pub use error::*;
