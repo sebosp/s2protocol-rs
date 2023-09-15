@@ -1,8 +1,6 @@
 //! Experimenting with Arrow integration
-//! The types here contain player_id, game_loop, sha256, file_name, and epoch fields
-//! These are fiedls that come from the Details MPQ sector.
-//! The rest of the fields are from the TrackerEvent.
-//! The row can then be stored in .ipc file and loaded from polars.
+//! The rows can then be stored in .ipc file and loaded from polars without joins or needing to
+//! unnest complex structs
 
 #[cfg(feature = "arrow")]
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
@@ -11,6 +9,8 @@ use super::*;
 use serde::{Deserialize, Serialize};
 
 /// An experiment creating a flat row of PlayerStats for Arrow usage
+/// Fields that start with ext_ are foreign fields collected from the Details MPQ sector
+/// and the file system (fs) itself.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "arrow",
@@ -18,10 +18,6 @@ use serde::{Deserialize, Serialize};
 )]
 pub struct PlayerStatsFlatRow {
     pub player_id: u8,
-    pub game_loop: i64,
-    pub sha256: String,
-    pub file_name: String,
-    pub epoch: i64,
     pub minerals_current: i32,
     pub vespene_current: i32,
     pub minerals_collection_rate: i32,
@@ -61,23 +57,24 @@ pub struct PlayerStatsFlatRow {
     pub vespene_friendly_fire_army: i32,
     pub vespene_friendly_fire_economy: i32,
     pub vespene_friendly_fire_technology: i32,
+    pub ext_replay_loop: i64,
+    pub ext_fs_replay_file_name: String,
+    pub ext_fs_replay_sha256: String,
+    pub ext_replay_detail_epoch: i64,
 }
 
 impl PlayerStatsFlatRow {
+    /// Create a new PlayerStatsFlatRow from a PlayerStats and the fields from the Details MPQ sector
     pub fn new(
-        stats: PlayerStats,
-        player_id: u8,
-        game_loop: i64,
-        file_name: String,
-        sha256: String,
-        epoch: i64,
+        event: PlayerStatsEvent,
+        ext_replay_loop: i64,
+        ext_fs_replay_file_name: String,
+        ext_fs_replay_sha256: String,
+        ext_replay_detail_epoch: i64,
     ) -> Self {
+        let stats = event.stats;
         Self {
-            player_id,
-            game_loop,
-            sha256,
-            file_name,
-            epoch,
+            player_id: event.player_id,
             minerals_current: stats.minerals_current,
             vespene_current: stats.vespene_current,
             minerals_collection_rate: stats.minerals_collection_rate,
@@ -117,6 +114,46 @@ impl PlayerStatsFlatRow {
             vespene_friendly_fire_army: stats.vespene_friendly_fire_army,
             vespene_friendly_fire_economy: stats.vespene_friendly_fire_economy,
             vespene_friendly_fire_technology: stats.vespene_friendly_fire_technology,
+            ext_replay_loop,
+            ext_fs_replay_file_name,
+            ext_fs_replay_sha256,
+            ext_replay_detail_epoch,
+        }
+    }
+}
+
+/// An experiment creating a flat row of PlayerStats for Arrow usage
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
+pub struct UpgradeEventFlatRow {
+    pub player_id: u8,
+    pub name: String,
+    pub count: i32, // TODO: What is this for? Maybe remove?
+    pub ext_replay_loop: i64,
+    pub ext_fs_replay_file_name: String,
+    pub ext_fs_replay_sha256: String,
+    pub ext_replay_detail_epoch: i64,
+}
+impl UpgradeEventFlatRow {
+    /// Create a new UpgradeEventFlatRow from a UpgradeEvent and the fields from the Details MPQ sector
+    pub fn new(
+        event: UpgradeEvent,
+        ext_replay_loop: i64,
+        ext_fs_replay_file_name: String,
+        ext_fs_replay_sha256: String,
+        ext_replay_detail_epoch: i64,
+    ) -> Self {
+        Self {
+            player_id: event.player_id,
+            name: event.upgrade_type_name,
+            count: event.count,
+            ext_replay_loop,
+            ext_fs_replay_file_name,
+            ext_fs_replay_sha256,
+            ext_replay_detail_epoch,
         }
     }
 }

@@ -64,14 +64,14 @@ pub fn get_matching_files(source: PathBuf) -> Result<Vec<PathBuf>, Box<dyn std::
             let path = entry.path();
             // the filename must end in .SC2Replay
             if let Some(ext) = path.extension() {
-                if ext == "SC2Replay" && path.is_dir() {
+                if ext == "SC2Replay" && path.is_file() {
                     sources.push(path);
                 }
             }
         }
         Ok(sources)
     } else {
-        Ok(vec![source.clone().into()])
+        Ok(vec![source.clone()])
     }
 }
 

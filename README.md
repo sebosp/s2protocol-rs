@@ -54,34 +54,32 @@ while let Some((event, updated_units)) = replay.transduce() {
 
 ## Interacting with polars
 ```bash
-# Generate a file stats.ipc that contains all the Statistic Evenst in Arrow IPC format, This will take a while and it will load all files it could support.
+$ cargo install polars-cli
+# Generate a file stats.ipc that contains all the Statistic Evenst in Arrow IPC format, This is running in parallel mode, but for 3600 files needs 1.5 GBs RAM
 $ cargo run -r -- --source "/mnt/windows/Users/sebos/Documents/StarCraft II/Accounts/51504154/2-S2-1-8459957/Replays/Multiplayer/" --output stats.ipc write-arrow-ipc stats
-$ # List the number of loaded files.
-$ echo "SELECT COUNT(DISTINCT(file_name)) FROM read_ipc('/home/seb/git/s2protocol-rs/stats.ipc') LIMIT 10;"|polars
-┌───────────┐
-│ file_name │
-│ ---       │
-│ u32       │
-╞═══════════╡
-│ 3352      │
-└───────────┘⏎
+Found 3600 files
+Loaded 1579177 files
+
+________________________________________________________
+Executed in    6.21 secs    fish           external
+   usr time   64.09 secs  439.00 micros   64.09 secs
+   sys time    1.53 secs  133.00 micros    1.53 secs
 $ # List the max number of minerals that were lost in per map when the army was killed.
-$ echo "SELECT file_name, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s2protocol-rs/stats.ipc') GROUP BY file_name ORDER BY minerals_lost_army DESC;"|polars
+❯ echo "SELECT ext_fs_replay_file_name, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s2protocol-rs/stats.ipc') GROUP BY ext_fs_replay_file_name ORDER BY minerals_lost_army DESC;"|polars
 ┌───────────────────────────────────┬────────────────────┐
-│ file_name                         ┆ minerals_lost_army │
+│ ext_fs_replay_file_name           ┆ minerals_lost_army │
 │ ---                               ┆ ---                │
 │ str                               ┆ i32                │
 ╞═══════════════════════════════════╪════════════════════╡
 │ Heavy Artillery LE (349).SC2Repl… ┆ 71362              │
 │ Arctic Dream LE (398).SC2Replay   ┆ 59375              │
 │ Nightscape LE (52).SC2Replay      ┆ 54846              │
-│ Heavy Artillery LE (333).SC2Repl… ┆ 54175              │
 │ …                                 ┆ …                  │
 │ Emerald City LE (223).SC2Replay   ┆ 43450              │
 │ Rhoskallian LE (101).SC2Replay    ┆ 41614              │
 │ Fields of Death (345).SC2Replay   ┆ 41529              │
 │ Rhoskallian LE (346).SC2Replay    ┆ 41425              │
-└───────────────────────────────────┴────────────────────┘⏎
+└───────────────────────────────────┴────────────────────┘
 ```
 
 
