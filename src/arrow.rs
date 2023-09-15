@@ -257,8 +257,11 @@ pub fn handle_upgrades_ipc_cmd(
     Ok(())
 }
 
-pub fn handle_stats_ipc_cmd() -> Result<(), Box<dyn std::error::Error>> {
-    unimplemented!()
+pub fn handle_stats_ipc_cmd_serially(
+    sources: Vec<PathBuf>,
+    output: PathBuf,
+) -> Result<(), Box<dyn std::error::Error>> {
+    unimplemented!();
 }
 
 pub fn handle_arrow_ipc_cmd(
