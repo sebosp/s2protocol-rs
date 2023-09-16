@@ -22,13 +22,14 @@ colored = "2.0.4"
 arrow2 = { version = "0.17.0", features = ["io_print", "io_ipc"], optional = true }
 arrow2_convert = { version = "0.5.0", optional = true }
 sha256 = { version = "1.4.0", optional = true }
-rayon = "1.7.0"
+rayon = { version = "1.7.0", optional = true }
+chrono = { version = "0.4.31", features = ["serde"] }
 
 [features]
 default = ["tracing_off", "arrow"]
 # A feature that allows extra tracing, disable by default because of performance
 tracing_off = ["tracing/max_level_off", "tracing/release_max_level_off"]
-arrow = ["arrow2", "arrow2_convert", "sha256"]
+arrow = ["arrow2", "arrow2_convert", "sha256", "rayon"]
 
 
 [dev-dependencies]

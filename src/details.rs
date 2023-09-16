@@ -39,17 +39,18 @@ pub struct Details {
     pub game_speed: GameSpeed,
     pub default_difficulty: u32,
     pub mod_paths: Vec<String>,
-    pub sha256: String,
-    pub file_name: String,
-    pub epoch: i64,
+    pub ext_fs_replay_file_name: String,
+    pub ext_fs_replay_sha256: String,
+    pub ext_datetime: chrono::NaiveDateTime,
 }
 
 impl Details {
     #[cfg(feature = "arrow")]
     pub fn set_metadata(mut self, file_name: &str, file_contents: &[u8]) -> Self {
-        self.sha256 = sha256::digest(file_contents);
-        self.file_name = file_name.to_string();
-        self.epoch = crate::transform_time(self.time_utc, self.time_local_offset);
+        self.ext_fs_replay_file_name = file_name.to_string();
+        self.ext_fs_replay_sha256 = sha256::digest(file_contents);
+        self.ext_datetime = crate::transform_to_naivetime(self.time_utc, self.time_local_offset)
+            .unwrap_or_default();
         self
     }
 }

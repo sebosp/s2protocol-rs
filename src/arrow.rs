@@ -164,10 +164,11 @@ pub fn handle_stats_ipc_cmd(
                     return None;
                 }
             };
-            let sha256 = sha256::digest(&file_contents);
             // At this point we have already verified the filename is valid utf8
             let file_name = source.file_name().unwrap().to_str().unwrap().to_string();
-            let epoch = transform_time(details.time_utc, details.time_local_offset);
+            let sha256 = sha256::digest(&file_contents);
+            let datetime = transform_to_naivetime(details.time_utc, details.time_local_offset)
+                .unwrap_or_default();
             let tracker_events = match read_tracker_events(&mpq, &file_contents) {
                 Ok(tracker_events) => tracker_events,
                 Err(err) => {
@@ -186,7 +187,7 @@ pub fn handle_stats_ipc_cmd(
                         game_loop,
                         file_name.clone(),
                         sha256.clone(),
-                        epoch,
+                        datetime,
                     ));
                 }
             }
@@ -223,7 +224,8 @@ pub fn handle_upgrades_ipc_cmd(
             let sha256 = sha256::digest(&file_contents);
             // At this point we have already verified the filename is valid utf8
             let file_name = source.file_name().unwrap().to_str().unwrap().to_string();
-            let epoch = transform_time(details.time_utc, details.time_local_offset);
+            let epoch = transform_to_naivetime(details.time_utc, details.time_local_offset)
+                .unwrap_or_default();
             let tracker_events = match read_tracker_events(&mpq, &file_contents) {
                 Ok(tracker_events) => tracker_events,
                 Err(err) => {
@@ -237,6 +239,7 @@ pub fn handle_upgrades_ipc_cmd(
                 tracker_loop += game_step.delta as i64;
                 let game_loop = (tracker_loop as f32 / TRACKER_SPEED_RATIO) as i64;
                 if let tracker_events::ReplayTrackerEvent::Upgrade(event) = game_step.event {
+                    println!("Upgrade: {}", event.upgrade_type_name);
                     batch.push(tracker_events::UpgradeEventFlatRow::new(
                         event,
                         game_loop,
@@ -253,15 +256,26 @@ pub fn handle_upgrades_ipc_cmd(
         .try_into_arrow()?;
     println!("Loaded {} files", res.len());
     let chunk = Chunk::new([res].to_vec()).flatten()?;
-    write_batches(output, ArrowIpcTypes::Stats.schema(), &[chunk])?;
+    write_batches(output, ArrowIpcTypes::Upgrades.schema(), &[chunk])?;
     Ok(())
 }
 
 pub fn handle_stats_ipc_cmd_serially(
-    sources: Vec<PathBuf>,
+    _sources: Vec<PathBuf>,
     output: PathBuf,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    unimplemented!();
+    let file = std::fs::File::create(output)?;
+
+    let options = arrow2::io::ipc::write::WriteOptions { compression: None };
+    let mut writer =
+        arrow2::io::ipc::write::FileWriter::new(file, ArrowIpcTypes::Stats.schema(), None, options);
+
+    writer.start()?;
+    //let chunk = Chunk::new([res].to_vec()).flatten()?;
+    //chunks: &[Chunk<Box<dyn Array>>],
+    // writer.write(chunk, None)?
+    writer.finish()?;
+    Ok(())
 }
 
 pub fn handle_arrow_ipc_cmd(

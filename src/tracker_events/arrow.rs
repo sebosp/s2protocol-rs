@@ -60,7 +60,7 @@ pub struct PlayerStatsFlatRow {
     pub ext_replay_loop: i64,
     pub ext_fs_replay_file_name: String,
     pub ext_fs_replay_sha256: String,
-    pub ext_replay_detail_epoch: i64,
+    pub ext_replay_detail_datetime: chrono::NaiveDateTime,
 }
 
 impl PlayerStatsFlatRow {
@@ -70,7 +70,7 @@ impl PlayerStatsFlatRow {
         ext_replay_loop: i64,
         ext_fs_replay_file_name: String,
         ext_fs_replay_sha256: String,
-        ext_replay_detail_epoch: i64,
+        ext_replay_detail_datetime: chrono::NaiveDateTime,
     ) -> Self {
         let stats = event.stats;
         Self {
@@ -117,7 +117,7 @@ impl PlayerStatsFlatRow {
             ext_replay_loop,
             ext_fs_replay_file_name,
             ext_fs_replay_sha256,
-            ext_replay_detail_epoch,
+            ext_replay_detail_datetime,
         }
     }
 }
@@ -135,7 +135,7 @@ pub struct UpgradeEventFlatRow {
     pub ext_replay_loop: i64,
     pub ext_fs_replay_file_name: String,
     pub ext_fs_replay_sha256: String,
-    pub ext_replay_detail_epoch: i64,
+    pub ext_replay_detail_datetime: chrono::NaiveDateTime,
 }
 impl UpgradeEventFlatRow {
     /// Create a new UpgradeEventFlatRow from a UpgradeEvent and the fields from the Details MPQ sector
@@ -144,7 +144,7 @@ impl UpgradeEventFlatRow {
         ext_replay_loop: i64,
         ext_fs_replay_file_name: String,
         ext_fs_replay_sha256: String,
-        ext_replay_detail_epoch: i64,
+        ext_replay_detail_datetime: chrono::NaiveDateTime,
     ) -> Self {
         Self {
             player_id: event.player_id,
@@ -153,7 +153,7 @@ impl UpgradeEventFlatRow {
             ext_replay_loop,
             ext_fs_replay_file_name,
             ext_fs_replay_sha256,
-            ext_replay_detail_epoch,
+            ext_replay_detail_datetime,
         }
     }
 }

@@ -68,9 +68,9 @@ impl TryFrom<GameSDetails> for Details {
             game_speed: source.m_game_speed.into(),
             default_difficulty: source.m_default_difficulty,
             mod_paths,
-            sha256: String::from(""),
-            file_name: String::from(""),
-            epoch: 0,
+            ext_fs_replay_file_name: String::from(""),
+            ext_fs_replay_sha256: String::from(""),
+            ext_datetime: Default::default(),
         })
     }
 }

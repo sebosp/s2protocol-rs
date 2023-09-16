@@ -153,9 +153,23 @@ pub fn parse_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
     Ok((tail, result))
 }
 
-/// returns the offset for the timezone the replay was played in (users local timezone)
-pub fn transform_time(time_utc: i64, time_local_offset: i64) -> i64 {
-    time_utc / (10 * 1000 * 1000) - 11644473600 - (time_local_offset / 10000000)
+/// Transforms the details MPQ sector time utc and local offset into possibly chrono::NaiveDateTime
+pub fn transform_to_naivetime(
+    time_utc: i64,
+    time_local_offset: i64,
+) -> Option<chrono::NaiveDateTime> {
+    let micros = time_utc / 100 - 1_164_447_360 - (time_local_offset / 100);
+    let secs = micros.div_euclid(1_000_000);
+    let nsecs = micros.rem_euclid(1_000_000) as u32 * 1000;
+    tracing::debug!(
+        "time_utc: {}, time_local_offset {}, micros: {}, secs: {}, nsecs: {} ",
+        time_utc,
+        time_local_offset,
+        micros,
+        secs,
+        nsecs
+    );
+    chrono::NaiveDateTime::from_timestamp_opt(secs, nsecs)
 }
 
 #[cfg(test)]
