@@ -21,7 +21,7 @@ nom-mpq = "2.0.1"
 colored = "2.0.4"
 arrow2 = { version = "0.17.0", features = ["io_print", "io_ipc"], optional = true }
 arrow2_convert = { version = "0.5.0", optional = true }
-sha256 = { version = "1.4.0", optional = true }
+sha256 = { version = "1.4.0", optional = true, default-features = false }
 rayon = { version = "1.7.0", optional = true }
 chrono = { version = "0.4.31", features = ["serde"] }
 

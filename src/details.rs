@@ -53,6 +53,27 @@ impl Details {
             .unwrap_or_default();
         self
     }
+
+    /// Attempts to find the player id from the player_list vector.
+    /// The player_id in this vector is off by one on the player_id in the tracker events.
+    pub fn get_player_name(&self, event_player_id: u8) -> String {
+        self.player_list
+            .iter()
+            .find(|player| player.working_set_slot_id == Some(event_player_id - 1))
+            .map(|player| {
+                // The player name may be prepend by its clan.
+                // The clan seems to be URL encoded like "&lt&CLAN&gt<sp/>PLAYERNAME"
+                // Remove up to <sp/> if it exists from the player name
+                // This should be a different field and maybe we can consider removing
+                // it, this is because we change player names/tags through time.
+                let player_name = player.name.split("<sp/>").last().unwrap_or_default();
+                format!(
+                    "{}-{}-{}-{}",
+                    player.toon.region, player.toon.realm, player.toon.id, player_name
+                )
+            })
+            .unwrap_or("".to_string())
+    }
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]

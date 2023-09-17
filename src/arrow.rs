@@ -38,7 +38,7 @@ pub enum ArrowIpcTypes {
 impl ArrowIpcTypes {
     pub fn schema(&self) -> arrow2::datatypes::Schema {
         match self {
-            Self::Stats => {
+            Self::Stats | Self::SerialStats => {
                 if let DataType::Struct(fields) = tracker_events::PlayerStatsFlatRow::data_type() {
                     arrow2::datatypes::Schema::from(fields.clone())
                 } else {
@@ -182,11 +182,13 @@ pub fn handle_stats_ipc_cmd(
                 tracker_loop += game_step.delta as i64;
                 let game_loop = (tracker_loop as f32 / TRACKER_SPEED_RATIO) as i64;
                 if let tracker_events::ReplayTrackerEvent::PlayerStats(event) = game_step.event {
+                    let player_name = details.get_player_name(event.player_id - 1);
                     batch.push(tracker_events::PlayerStatsFlatRow::new(
                         event,
                         game_loop,
                         file_name.clone(),
                         sha256.clone(),
+                        player_name,
                         datetime,
                     ));
                 }
@@ -196,7 +198,7 @@ pub fn handle_stats_ipc_cmd(
         .flatten()
         .collect::<Vec<tracker_events::PlayerStatsFlatRow>>()
         .try_into_arrow()?;
-    println!("Loaded {} files", res.len());
+    println!("Loaded {} records", res.len());
     let chunk = Chunk::new([res].to_vec()).flatten()?;
     write_batches(output, ArrowIpcTypes::Stats.schema(), &[chunk])?;
     Ok(())
@@ -239,12 +241,13 @@ pub fn handle_upgrades_ipc_cmd(
                 tracker_loop += game_step.delta as i64;
                 let game_loop = (tracker_loop as f32 / TRACKER_SPEED_RATIO) as i64;
                 if let tracker_events::ReplayTrackerEvent::Upgrade(event) = game_step.event {
-                    println!("Upgrade: {}", event.upgrade_type_name);
+                    let player_name = details.get_player_name(event.player_id - 1);
                     batch.push(tracker_events::UpgradeEventFlatRow::new(
                         event,
                         game_loop,
                         file_name.clone(),
                         sha256.clone(),
+                        player_name,
                         epoch,
                     ));
                 }
@@ -254,7 +257,7 @@ pub fn handle_upgrades_ipc_cmd(
         .flatten()
         .collect::<Vec<tracker_events::UpgradeEventFlatRow>>()
         .try_into_arrow()?;
-    println!("Loaded {} files", res.len());
+    println!("Loaded {} records", res.len());
     let chunk = Chunk::new([res].to_vec()).flatten()?;
     write_batches(output, ArrowIpcTypes::Upgrades.schema(), &[chunk])?;
     Ok(())

@@ -58,8 +58,10 @@ pub struct PlayerStatsFlatRow {
     pub vespene_friendly_fire_economy: i32,
     pub vespene_friendly_fire_technology: i32,
     pub ext_replay_loop: i64,
+    pub ext_replay_seconds: u32,
     pub ext_fs_replay_file_name: String,
     pub ext_fs_replay_sha256: String,
+    pub ext_replay_detail_player_name: String,
     pub ext_replay_detail_datetime: chrono::NaiveDateTime,
 }
 
@@ -70,8 +72,10 @@ impl PlayerStatsFlatRow {
         ext_replay_loop: i64,
         ext_fs_replay_file_name: String,
         ext_fs_replay_sha256: String,
+        ext_replay_detail_player_name: String,
         ext_replay_detail_datetime: chrono::NaiveDateTime,
     ) -> Self {
+        let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
         let stats = event.stats;
         Self {
             player_id: event.player_id,
@@ -115,8 +119,10 @@ impl PlayerStatsFlatRow {
             vespene_friendly_fire_economy: stats.vespene_friendly_fire_economy,
             vespene_friendly_fire_technology: stats.vespene_friendly_fire_technology,
             ext_replay_loop,
+            ext_replay_seconds,
             ext_fs_replay_file_name,
             ext_fs_replay_sha256,
+            ext_replay_detail_player_name,
             ext_replay_detail_datetime,
         }
     }
@@ -131,10 +137,13 @@ impl PlayerStatsFlatRow {
 pub struct UpgradeEventFlatRow {
     pub player_id: u8,
     pub name: String,
-    pub count: i32, // TODO: What is this for? Maybe remove?
+    pub count: i32,
+    // TODO: consider deprecating the replay loop and just using seconds
     pub ext_replay_loop: i64,
+    pub ext_replay_seconds: u32,
     pub ext_fs_replay_file_name: String,
     pub ext_fs_replay_sha256: String,
+    pub ext_replay_detail_player_name: String,
     pub ext_replay_detail_datetime: chrono::NaiveDateTime,
 }
 impl UpgradeEventFlatRow {
@@ -144,15 +153,19 @@ impl UpgradeEventFlatRow {
         ext_replay_loop: i64,
         ext_fs_replay_file_name: String,
         ext_fs_replay_sha256: String,
+        ext_replay_detail_player_name: String,
         ext_replay_detail_datetime: chrono::NaiveDateTime,
     ) -> Self {
+        let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
         Self {
             player_id: event.player_id,
             name: event.upgrade_type_name,
             count: event.count,
             ext_replay_loop,
+            ext_replay_seconds,
             ext_fs_replay_file_name,
             ext_fs_replay_sha256,
+            ext_replay_detail_player_name,
             ext_replay_detail_datetime,
         }
     }
