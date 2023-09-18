@@ -158,18 +158,23 @@ pub fn transform_to_naivetime(
     time_utc: i64,
     time_local_offset: i64,
 ) -> Option<chrono::NaiveDateTime> {
-    let micros = time_utc / 100 - 1_164_447_360 - (time_local_offset / 100);
+    let micros = time_utc / 10 - 11_644_473_600_000_000 - time_local_offset / 10;
     let secs = micros.div_euclid(1_000_000);
     let nsecs = micros.rem_euclid(1_000_000) as u32 * 1000;
-    tracing::debug!(
-        "time_utc: {}, time_local_offset {}, micros: {}, secs: {}, nsecs: {} ",
-        time_utc,
-        time_local_offset,
-        micros,
-        secs,
-        nsecs
-    );
     chrono::NaiveDateTime::from_timestamp_opt(secs, nsecs)
+}
+
+/// Converts the tracker loop to milliseconds,
+/// First scale the tracker loop to the same unit as the game loops.
+/// We also need to transform the adjusted game loop to seconds.
+/// This was observed in a game with max game_loop = 13735 and a duration of 15:42 = 942 seconds.
+/// 942000 / 13735 = 68.58391 loops in a second
+/// This will only work for the Faster speed.
+pub fn convert_tracker_loop_to_seconds(tracker_replay_loop: i64) -> u32 {
+    // TODO: For now let's use seconds, we'll move this to milliseconds as we need more precision.
+    let ext_replay_milliseconds =
+        crate::TRACKER_SPEED_RATIO * tracker_replay_loop as f32 * 68.58391;
+    (ext_replay_milliseconds / 1000.0) as u32
 }
 
 #[cfg(test)]

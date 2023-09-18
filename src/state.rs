@@ -12,8 +12,8 @@ pub const TRACKER_PRIORITY: i64 = 1;
 pub const GAME_PRIORITY: i64 = 2;
 
 // The game event loops and tracker event loops differ in their units.
-// There seems to be a ratio and the ratio based on initial calculations seems to be:
 // The true ratio should be identified somehow.
+// There seems to be a ratio and the ratio based on initial calculations seems to be:
 pub const TRACKER_SPEED_RATIO: f32 = 0.70996;
 
 // These many event types (replays, game, attributes, etc) are supported.

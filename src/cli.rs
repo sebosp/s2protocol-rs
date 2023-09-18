@@ -29,9 +29,12 @@ enum ReadTypes {
 enum Commands {
     /// Generates Rust code for a specific protocol.
     Generate,
+
     /// Gets a specific event type from the SC2Replay MPQ Archive
     #[command(subcommand)]
     Get(ReadTypes),
+
+    /// Writes Arrow IPC files for a specific event type from the SC2Replay MPQ Archive
     #[cfg(feature = "arrow")]
     #[command(subcommand)]
     WriteArrowIpc(ArrowIpcTypes),
@@ -40,7 +43,7 @@ enum Commands {
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
-    /// Sets a custom config file
+    /// Sets the source of the data, can be a file or directory.
     #[arg(short, long, value_name = "PATH")]
     source: String,
 
@@ -51,6 +54,7 @@ struct Cli {
     #[command(subcommand)]
     command: Commands,
 
+    /// The output file to write to
     #[arg(short, long)]
     output: Option<String>,
 }
@@ -77,6 +81,7 @@ pub fn get_matching_files(source: PathBuf) -> Result<Vec<PathBuf>, Box<dyn std::
 
 /// Handles the request from the CLI when used as a binary
 pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
+    let init_time = std::time::Instant::now();
     let cli = Cli::parse();
     match &cli.command {
         Commands::Generate => {
@@ -155,5 +160,6 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             )?;
         }
     }
+    println!("Total time: {:?}", init_time.elapsed());
     Ok(())
 }

@@ -210,8 +210,21 @@ pub fn handle_upgrades_ipc_cmd(
     sources: Vec<PathBuf>,
     output: PathBuf,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    let file = std::fs::File::create(output)?;
+
+    let options = arrow2::io::ipc::write::WriteOptions { compression: None };
+    let mut writer = arrow2::io::ipc::write::FileWriter::new(
+        file,
+        ArrowIpcTypes::Upgrades.schema(),
+        None,
+        options,
+    );
+
+    writer.start()?;
+    let writer = std::sync::Mutex::new(writer);
+
     // process the sources in parallel consuming into the batch variable
-    let res: Box<dyn Array> = sources
+    let total_records = sources
         .par_iter()
         .filter_map(|source| {
             let file_contents = parser::read_file(source.display().to_string().as_str());
@@ -252,15 +265,42 @@ pub fn handle_upgrades_ipc_cmd(
                     ));
                 }
             }
-            Some(batch)
+            let batch_len = batch.len();
+            let res: Box<dyn Array> = batch.try_into_arrow().ok()?;
+            let mut file_lock = match writer.lock() {
+                Ok(lock) => lock,
+                Err(err) => {
+                    tracing::error!("Error locking file: {:?}", err);
+                    return None;
+                }
+            };
+            let chunk = match Chunk::new([res].to_vec()).flatten() {
+                Ok(chunk) => chunk,
+                Err(err) => {
+                    tracing::error!("Error converting to arrow: {:?}", err);
+                    return None;
+                }
+            };
+            match file_lock.write(&chunk, None) {
+                Ok(_) => Some(batch_len),
+                Err(err) => {
+                    // At this point maybe we should fail because the lock write
+                    // should fail for any other attempt?
+                    tracing::error!("Error writing chunk: {:?}", err);
+                    None
+                }
+            }
         })
-        .flatten()
-        .collect::<Vec<tracker_events::UpgradeEventFlatRow>>()
-        .try_into_arrow()?;
-    println!("Loaded {} records", res.len());
-    let chunk = Chunk::new([res].to_vec()).flatten()?;
-    write_batches(output, ArrowIpcTypes::Upgrades.schema(), &[chunk])?;
-    Ok(())
+        .sum::<usize>();
+    println!("Loaded {} records", total_records);
+    let mut writer = match writer.lock() {
+        Ok(writer) => writer,
+        Err(err) => {
+            tracing::error!("Error locking file: {:?}", err);
+            return Err("Lock error".into());
+        }
+    };
+    Ok(writer.finish()?)
 }
 
 pub fn handle_stats_ipc_cmd_serially(
