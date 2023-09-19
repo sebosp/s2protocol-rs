@@ -27,10 +27,8 @@ pub enum ArrowIpcTypes {
     Details,
     /// Writes the initData to an Arrow IPC file
     InitData,
-    /// Writes the Stats to an Arrow IPC file, Parallel mode, may not fit in RAM, if error, try SerialStats
+    /// Writes the Stats to an Arrow IPC file
     Stats,
-    /// Writes the Stats to an Arrow IPC file, Serial mode, needs less RAM but more time.
-    SerialStats,
     /// Writes the UpgradeEvents to an Arrow IPC file
     Upgrades,
 }
@@ -38,7 +36,7 @@ pub enum ArrowIpcTypes {
 impl ArrowIpcTypes {
     pub fn schema(&self) -> arrow2::datatypes::Schema {
         match self {
-            Self::Stats | Self::SerialStats => {
+            Self::Stats => {
                 if let DataType::Struct(fields) = tracker_events::PlayerStatsFlatRow::data_type() {
                     arrow2::datatypes::Schema::from(fields.clone())
                 } else {
@@ -155,20 +153,10 @@ pub fn handle_stats_ipc_cmd(
     let res: Box<dyn Array> = sources
         .par_iter()
         .filter_map(|source| {
-            let file_contents = parser::read_file(source.display().to_string().as_str());
+            let file_name = source.file_name()?.to_str()?.to_string();
+            let file_contents = crate::read_file(&file_name).ok()?;
             let (_input, mpq) = parser::parse(&file_contents).ok()?;
-            let details = match read_details(&mpq, &file_contents) {
-                Ok(details) => details,
-                Err(err) => {
-                    tracing::error!("Error reading details: {:?}", err);
-                    return None;
-                }
-            };
-            // At this point we have already verified the filename is valid utf8
-            let file_name = source.file_name().unwrap().to_str().unwrap().to_string();
-            let sha256 = sha256::digest(&file_contents);
-            let datetime = transform_to_naivetime(details.time_utc, details.time_local_offset)
-                .unwrap_or_default();
+            let details = details::Details::new(&file_name, &mpq, &file_contents).ok()?;
             let tracker_events = match read_tracker_events(&mpq, &file_contents) {
                 Ok(tracker_events) => tracker_events,
                 Err(err) => {
@@ -182,14 +170,10 @@ pub fn handle_stats_ipc_cmd(
                 tracker_loop += game_step.delta as i64;
                 let game_loop = (tracker_loop as f32 / TRACKER_SPEED_RATIO) as i64;
                 if let tracker_events::ReplayTrackerEvent::PlayerStats(event) = game_step.event {
-                    let player_name = details.get_player_name(event.player_id - 1);
                     batch.push(tracker_events::PlayerStatsFlatRow::new(
                         event,
                         game_loop,
-                        file_name.clone(),
-                        sha256.clone(),
-                        player_name,
-                        datetime,
+                        details.clone(),
                     ));
                 }
             }
@@ -303,24 +287,6 @@ pub fn handle_upgrades_ipc_cmd(
     Ok(writer.finish()?)
 }
 
-pub fn handle_stats_ipc_cmd_serially(
-    _sources: Vec<PathBuf>,
-    output: PathBuf,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let file = std::fs::File::create(output)?;
-
-    let options = arrow2::io::ipc::write::WriteOptions { compression: None };
-    let mut writer =
-        arrow2::io::ipc::write::FileWriter::new(file, ArrowIpcTypes::Stats.schema(), None, options);
-
-    writer.start()?;
-    //let chunk = Chunk::new([res].to_vec()).flatten()?;
-    //chunks: &[Chunk<Box<dyn Array>>],
-    // writer.write(chunk, None)?
-    writer.finish()?;
-    Ok(())
-}
-
 pub fn handle_arrow_ipc_cmd(
     cmd: &ArrowIpcTypes,
     source: PathBuf,
@@ -346,7 +312,6 @@ pub fn handle_arrow_ipc_cmd(
             panic!("MessageEvents not supported. Use Stats instead");
         }
         ArrowIpcTypes::Stats => handle_stats_ipc_cmd(sources, output),
-        ArrowIpcTypes::SerialStats => handle_stats_ipc_cmd_serially(sources, output),
         ArrowIpcTypes::Upgrades => handle_upgrades_ipc_cmd(sources, output),
     }
 }

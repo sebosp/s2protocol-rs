@@ -2,8 +2,10 @@
 
 #[cfg(feature = "arrow")]
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use nom_mpq::MPQ;
 
 use crate::common::*;
+use crate::error::S2ProtocolError;
 use serde::{Deserialize, Serialize};
 use std::str::Utf8Error;
 
@@ -45,6 +47,19 @@ pub struct Details {
 }
 
 impl Details {
+    /// Calls the per-protocol parser for the Details and sets the metadadata.
+    pub fn new(file_name: &str, mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
+        let details = match crate::versions::read_details(mpq, file_contents) {
+            Ok(details) => details,
+            Err(err) => {
+                tracing::error!("Error reading details: {:?}", err);
+                return Err(err);
+            }
+        };
+        Ok(details.set_metadata(file_name, file_contents))
+    }
+
+    /// Sets the metadata related to the filesystem entry and the replay time
     #[cfg(feature = "arrow")]
     pub fn set_metadata(mut self, file_name: &str, file_contents: &[u8]) -> Self {
         self.ext_fs_replay_file_name = file_name.to_string();

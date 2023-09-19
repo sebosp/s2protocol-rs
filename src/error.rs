@@ -36,6 +36,8 @@ pub enum S2ProtocolError {
     MissingField(String),
     #[error("TryFromIntError")]
     ValueError(#[from] TryFromIntError),
+    #[error("IO Error")]
+    IoError(#[from] std::io::Error),
 }
 
 /// Conversion of errors from byte aligned parser
