@@ -12,19 +12,6 @@ pub use arrow::*;
 pub mod state;
 use serde::{Deserialize, Serialize};
 pub use state::*;
-use std::str::Utf8Error;
-
-/// A list of errors when handling TrackerEvents
-#[derive(Debug, thiserror::Error)]
-pub enum TrackerEventError {
-    /// An error to be used in TryFrom, when converting from protocol-specific types into our
-    /// consolidated-types
-    #[error("Unsupported Event Type")]
-    UnsupportedEventType,
-    /// Conversion to UTF-8 failed, from the Vec<u8> _name fields in the proto fields
-    #[error("Utf8 conversion error")]
-    Utf8Error(#[from] Utf8Error),
-}
 
 /// A protocol agnostic Unit Born
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]

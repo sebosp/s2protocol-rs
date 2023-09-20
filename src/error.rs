@@ -10,34 +10,43 @@ pub type S2ProtoResult<I, O> = Result<(I, O), S2ProtocolError>;
 
 #[derive(thiserror::Error, Debug)]
 pub enum S2ProtocolError {
+    /// Unable to parse the MPQ file, could be corrupted or not a replay file
     #[error("MPQ Error")]
     MPQ(#[from] nom_mpq::MPQParserError),
+    /// The protocol version is not yet supported.
     #[error("Unsupported Protocol Version: {0}")]
     UnsupportedProtocolVersion(u32),
+    /// Unable to parse the byte aligned data types
     #[error("Nom ByteAligned Error {0}")]
     ByteAligned(String),
+    /// Unable to parse the bit packed data types
     #[error("Nom BitPacked Error {0}")]
     BitPacked(String),
-    #[error("Details parsing error")]
-    Details(#[from] crate::details::DetailsError),
-    #[error("TrackerEvent parsing error")]
-    TrackerEvent(#[from] crate::tracker_events::TrackerEventError),
-    #[error("GameEvent parsing error")]
-    GameEvent(#[from] crate::game_events::GameEventError),
-    #[error("MessageEvent parsing error")]
-    MessageEvent(#[from] crate::message_events::MessageEventError),
-    #[error("InitData parsing error")]
-    InitData(#[from] crate::init_data::InitDataError),
+    /// The data structure tag is not recognized
     #[error("Unexpected Tag: {0}")]
     UnknownTag(i64),
+    /// The data structure tag was already parsed
     #[error("Duplicate field {0} with tag {1}")]
     DuplicateTag(String, i64),
+    /// A required field was not found
     #[error("Missing field {0}")]
     MissingField(String),
+    /// Unable to parse a value that should have been an integer
     #[error("TryFromIntError")]
     ValueError(#[from] TryFromIntError),
     #[error("IO Error")]
+    /// An I/O Error
     IoError(#[from] std::io::Error),
+    /// The path provided was not a file
+    #[error("Expected a file, but got a directory")]
+    PathNotADir,
+    /// An error to be used in TryFrom, when converting from protocol-specific types into our
+    /// consolidated-types
+    #[error("Unsupported Event Type")]
+    UnsupportedEventType,
+    /// Conversion to UTF-8 failed, from the Vec<u8> _name fields in the proto fields
+    #[error("Utf8 conversion error")]
+    Utf8Error(#[from] std::str::Utf8Error),
 }
 
 /// Conversion of errors from byte aligned parser

@@ -4,9 +4,7 @@
 
 use super::byte_aligned::*;
 use crate::common::GameSpeed;
-use crate::details::{
-    Color, Details, DetailsError, PlayerDetails, ResultDetails, Thumbnail, ToonNameDetails,
-};
+use crate::details::{Color, Details, PlayerDetails, ResultDetails, Thumbnail, ToonNameDetails};
 use crate::*;
 use nom_mpq::MPQ;
 
@@ -18,12 +16,12 @@ impl GameSDetails {
         let (_, game_sdetails) = GameSDetails::parse(&details_sector)?;
         game_sdetails
             .try_into()
-            .map_err(|err: DetailsError| err.into())
+            .map_err(|err: S2ProtocolError| err.into())
     }
 }
 
 impl TryFrom<GameSDetails> for Details {
-    type Error = DetailsError;
+    type Error = S2ProtocolError;
     fn try_from(source: GameSDetails) -> Result<Self, Self::Error> {
         let mut player_list = vec![];
         // Into the Optional
@@ -76,7 +74,7 @@ impl TryFrom<GameSDetails> for Details {
 }
 
 impl TryFrom<GameSPlayerDetails> for PlayerDetails {
-    type Error = DetailsError;
+    type Error = S2ProtocolError;
     fn try_from(source: GameSPlayerDetails) -> Result<Self, Self::Error> {
         Ok(PlayerDetails {
             name: str::from_utf8(&source.m_name)?.to_string(),
@@ -117,7 +115,7 @@ impl From<GameEResultDetails> for ResultDetails {
 }
 
 impl TryFrom<GameSThumbnail> for Thumbnail {
-    type Error = DetailsError;
+    type Error = S2ProtocolError;
     fn try_from(value: GameSThumbnail) -> Result<Self, Self::Error> {
         Ok(Self {
             file: str::from_utf8(&value.m_file)?.to_string(),
@@ -138,7 +136,7 @@ impl From<GameEGameSpeed> for GameSpeed {
 }
 
 impl TryFrom<GameSToonNameDetails> for ToonNameDetails {
-    type Error = DetailsError;
+    type Error = S2ProtocolError;
     fn try_from(value: GameSToonNameDetails) -> Result<Self, Self::Error> {
         Ok(Self {
             region: value.m_region,

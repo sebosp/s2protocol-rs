@@ -14,12 +14,12 @@ impl ReplaySInitData {
         let (_, replay_sinitdata) = ReplaySInitData::parse((&init_data_sector, 0usize))?;
         replay_sinitdata
             .try_into()
-            .map_err(|err: InitDataError| err.into())
+            .map_err(|err: S2ProtocolError| err.into())
     }
 }
 
 impl TryFrom<ReplaySInitData> for InitData {
-    type Error = InitDataError;
+    type Error = S2ProtocolError;
     fn try_from(source: ReplaySInitData) -> Result<Self, Self::Error> {
         let sync_lobby_state = source.m_sync_lobby_state.try_into()?;
         Ok(InitData {
@@ -31,7 +31,7 @@ impl TryFrom<ReplaySInitData> for InitData {
 }
 
 impl TryFrom<GameSLobbySyncState> for LobbySyncState {
-    type Error = InitDataError;
+    type Error = S2ProtocolError;
     fn try_from(source: GameSLobbySyncState) -> Result<Self, Self::Error> {
         let mut user_initial_data = vec![];
         for data in source.m_user_initial_data.value {
@@ -48,7 +48,7 @@ impl TryFrom<GameSLobbySyncState> for LobbySyncState {
 }
 
 impl TryFrom<SUserInitialData> for UserInitialData {
-    type Error = InitDataError;
+    type Error = S2ProtocolError;
     fn try_from(source: SUserInitialData) -> Result<Self, Self::Error> {
         // tranforms from SUserInitialData into UserInitialData casting into internal types
         let name = str::from_utf8(&source.m_name.value)?.to_string();
@@ -121,7 +121,7 @@ impl From<super::bit_packed::GameEGameType> for crate::init_data::GameType {
 }
 
 impl TryFrom<super::bit_packed::GameSGameDescription> for crate::init_data::GameDescription {
-    type Error = InitDataError;
+    type Error = S2ProtocolError;
     fn try_from(source: super::bit_packed::GameSGameDescription) -> Result<Self, Self::Error> {
         let random_value = source.m_random_value.into();
         let game_cache_name = str::from_utf8(&source.m_game_cache_name.value)?.to_string();
@@ -298,7 +298,7 @@ impl From<super::bit_packed::GameEGameSpeed> for GameSpeed {
 }
 
 impl TryFrom<super::bit_packed::GameSLobbyState> for LobbyState {
-    type Error = InitDataError;
+    type Error = S2ProtocolError;
     fn try_from(value: super::bit_packed::GameSLobbyState) -> Result<Self, Self::Error> {
         let phase = value.m_phase.into();
         let max_users = value.m_max_users.value;
@@ -346,7 +346,7 @@ impl From<super::bit_packed::GameEPhase> for GamePhase {
 }
 
 impl TryFrom<super::bit_packed::GameSLobbySlot> for LobbySlot {
-    type Error = InitDataError;
+    type Error = S2ProtocolError;
     fn try_from(value: super::bit_packed::GameSLobbySlot) -> Result<Self, Self::Error> {
         let control = value.m_control.value;
         let user_id = value.m_user_id.map(|v| v.value);

@@ -3,7 +3,7 @@
 use super::*;
 
 impl TryFrom<GameSSelectionDeltaEvent> for game_events::ReplayGameEvent {
-    type Error = GameEventError;
+    type Error = S2ProtocolError;
     fn try_from(source: GameSSelectionDeltaEvent) -> Result<Self, Self::Error> {
         Ok(ReplayGameEvent::SelectionDelta(
             game_events::GameSSelectionDeltaEvent {
@@ -14,7 +14,7 @@ impl TryFrom<GameSSelectionDeltaEvent> for game_events::ReplayGameEvent {
     }
 }
 impl TryFrom<GameSelectionMaskType> for game_events::GameSelectionMaskType {
-    type Error = GameEventError;
+    type Error = S2ProtocolError;
     fn try_from(source: GameSelectionMaskType) -> Result<Self, Self::Error> {
         Ok(Self {
             value: str::from_utf8(&source.value)?.to_string(),
@@ -23,7 +23,7 @@ impl TryFrom<GameSelectionMaskType> for game_events::GameSelectionMaskType {
 }
 
 impl TryFrom<GameSSelectionDelta> for game_events::GameSSelectionDelta {
-    type Error = GameEventError;
+    type Error = S2ProtocolError;
     fn try_from(source: GameSSelectionDelta) -> Result<Self, Self::Error> {
         let mut m_add_subgroups = vec![];
         for group in source.m_add_subgroups {
@@ -43,7 +43,7 @@ impl TryFrom<GameSSelectionDelta> for game_events::GameSSelectionDelta {
 }
 
 impl TryFrom<GameSSelectionMask> for game_events::GameSSelectionMask {
-    type Error = GameEventError;
+    type Error = S2ProtocolError;
     fn try_from(source: GameSSelectionMask) -> Result<Self, Self::Error> {
         match source {
             GameSSelectionMask::None(()) => Ok(game_events::GameSSelectionMask::None),

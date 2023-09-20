@@ -5,15 +5,6 @@ use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::common::*;
 use serde::{Deserialize, Serialize};
-use std::str::Utf8Error;
-
-/// A list of errors when handling MessageEvents
-#[derive(Debug, thiserror::Error)]
-pub enum InitDataError {
-    /// Conversion to UTF-8 failed, from the Vec<u8> _name fields in the proto fields
-    #[error("Utf8 conversion error")]
-    Utf8Error(#[from] Utf8Error),
-}
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(

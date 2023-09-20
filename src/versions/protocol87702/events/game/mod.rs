@@ -2,7 +2,6 @@
 
 use super::bit_packed::*;
 use crate::game_events::GameEvent;
-use crate::game_events::GameEventError;
 use crate::game_events::ReplayGameEvent;
 use crate::*;
 use nom::*;
@@ -95,7 +94,7 @@ impl From<GameSuiCoord> for crate::game_events::GameSuiCoord {
 }
 
 impl TryFrom<GameEEventId> for ReplayGameEvent {
-    type Error = GameEventError;
+    type Error = S2ProtocolError;
     fn try_from(value: GameEEventId) -> Result<Self, Self::Error> {
         match value {
             GameEEventId::EDropUser(e) => Ok(e.into()),
@@ -119,7 +118,7 @@ impl TryFrom<GameEEventId> for ReplayGameEvent {
             GameEEventId::ECommandManagerState(e) => Ok(e.into()),
             GameEEventId::ECmdUpdateTargetPoint(e) => Ok(e.into()),
             GameEEventId::ECmdUpdateTargetUnit(e) => Ok(e.into()),
-            _ => Err(GameEventError::UnsupportedEventType),
+            _ => Err(S2ProtocolError::UnsupportedEventType),
         }
     }
 }
@@ -170,7 +169,7 @@ impl From<GameTControlGroupCount> for game_events::GameTControlGroupCount {
 }
 
 impl TryFrom<GameSTriggerChatMessageEvent> for game_events::ReplayGameEvent {
-    type Error = GameEventError;
+    type Error = S2ProtocolError;
     fn try_from(source: GameSTriggerChatMessageEvent) -> Result<Self, Self::Error> {
         Ok(ReplayGameEvent::TriggerChatMessage(
             game_events::GameSTriggerChatMessageEvent {
