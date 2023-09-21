@@ -40,6 +40,7 @@ use nom_mpq::{parser, MPQ};
 pub use protocol_version_decoder::read_protocol_header;
 use std::collections::HashMap;
 use std::io::Read;
+use std::path::PathBuf;
 use std::str;
 pub use versioned_decoder::*;
 
@@ -65,7 +66,7 @@ macro_rules! ok_or_return_missing_field_err {
 }
 
 /// Reads a file into memory.
-pub fn read_file(path: &str) -> Result<Vec<u8>, S2ProtocolError> {
+pub fn read_file(path: PathBuf) -> Result<Vec<u8>, S2ProtocolError> {
     let mut f = std::fs::File::open(path)?;
     let mut buffer: Vec<u8> = vec![];
     f.read_to_end(&mut buffer)?;

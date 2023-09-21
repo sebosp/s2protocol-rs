@@ -149,22 +149,20 @@ impl UpgradeEventFlatRow {
     pub fn new(
         event: UpgradeEvent,
         ext_replay_loop: i64,
-        ext_fs_replay_file_name: String,
-        ext_fs_replay_sha256: String,
-        ext_replay_detail_player_name: String,
-        ext_replay_detail_datetime: chrono::NaiveDateTime,
+        details: crate::details::Details,
     ) -> Self {
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
+        let ext_replay_detail_player_name = details.get_player_name(event.player_id - 1);
         Self {
             player_id: event.player_id,
             name: event.upgrade_type_name,
             count: event.count,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_replay_file_name,
-            ext_fs_replay_sha256,
+            ext_fs_replay_file_name: details.ext_fs_replay_file_name,
+            ext_fs_replay_sha256: details.ext_fs_replay_sha256,
             ext_replay_detail_player_name,
-            ext_replay_detail_datetime,
+            ext_replay_detail_datetime: details.ext_datetime,
         }
     }
 }

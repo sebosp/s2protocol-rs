@@ -10,6 +10,7 @@ use arrow2_convert::{field::ArrowField, serialize::TryIntoArrow};
 use clap::Subcommand;
 use nom_mpq::parser;
 use rayon::prelude::*;
+use std::io::Write;
 use std::path::PathBuf;
 
 use crate::cli::get_matching_files;
@@ -96,12 +97,11 @@ pub fn handle_details_ipc_cmd(
     let res: Box<dyn Array> = sources
         .par_iter()
         .filter_map(|source| {
-            let file_contents = parser::read_file(source.display().to_string().as_str());
+            let file_name = source.file_name()?.to_str()?.to_string();
+            let file_contents = crate::read_file(source).ok()?;
             let (_input, mpq) = parser::parse(&file_contents).ok()?;
             match read_details(&mpq, &file_contents) {
-                Ok(details) => {
-                    Some(details.set_metadata(source.file_name()?.to_str()?, &file_contents))
-                }
+                Ok(details) => Some(details.set_metadata(file_name, &file_contents)),
                 Err(err) => {
                     tracing::error!("Error reading details: {:?}", err);
                     None
@@ -124,7 +124,7 @@ pub fn handle_init_data_ipc_cmd(
     let res: Box<dyn Array> = sources
         .par_iter()
         .filter_map(|source| {
-            let file_contents = parser::read_file(source.display().to_string().as_str());
+            let file_contents = crate::read_file(source).ok()?;
             let (_input, mpq) = parser::parse(&file_contents).ok()?;
             match read_init_data(&mpq, &file_contents) {
                 Ok(init_data) => Some(init_data),
@@ -149,12 +149,14 @@ pub fn handle_stats_ipc_cmd(
     sources: Vec<PathBuf>,
     output: PathBuf,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // process the sources in parallel consuming into the batch variable
-    let res: Box<dyn Array> = sources
+    let writer = open_arrow_mutex_writer(output, ArrowIpcTypes::Stats.schema())?;
+
+    // process files in parallel, the internal iterators will fight for the lock
+    let total_records = sources
         .par_iter()
         .filter_map(|source| {
             let file_name = source.file_name()?.to_str()?.to_string();
-            let file_contents = crate::read_file(&file_name).ok()?;
+            let file_contents = crate::read_file(source).ok()?;
             let (_input, mpq) = parser::parse(&file_contents).ok()?;
             let details = details::Details::new(&file_name, &mpq, &file_contents).ok()?;
             let tracker_events = match read_tracker_events(&mpq, &file_contents) {
@@ -179,12 +181,37 @@ pub fn handle_stats_ipc_cmd(
             }
             Some(batch)
         })
-        .flatten()
-        .collect::<Vec<tracker_events::PlayerStatsFlatRow>>()
-        .try_into_arrow()?;
-    println!("Loaded {} records", res.len());
-    let chunk = Chunk::new([res].to_vec()).flatten()?;
-    write_batches(output, ArrowIpcTypes::Stats.schema(), &[chunk])?;
+        .sum::<usize>();
+    println!("Loaded {} records", total_records);
+    Ok(close_arrow_mutex_writer(writer)?)
+}
+
+fn open_arrow_mutex_writer<W: Write>(
+    output: PathBuf,
+    schema: arrow2::datatypes::Schema,
+) -> Result<
+    std::sync::Mutex<arrow2::io::ipc::write::FileWriter<std::fs::File>>,
+    Box<dyn std::error::Error>,
+> {
+    let file = std::fs::File::create(output)?;
+
+    let options = arrow2::io::ipc::write::WriteOptions { compression: None };
+    let mut writer = arrow2::io::ipc::write::FileWriter::new(file, schema, None, options);
+    writer.start()?;
+    Ok(std::sync::Mutex::new(writer))
+}
+
+fn close_arrow_mutex_writer<W: Write>(
+    writer: std::sync::Mutex<arrow2::io::ipc::write::FileWriter<W>>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let mut writer = match writer.lock() {
+        Ok(writer) => writer,
+        Err(err) => {
+            tracing::error!("Error locking file: {:?}", err);
+            return Err("Lock error".into());
+        }
+    };
+    writer.finish()?;
     Ok(())
 }
 
@@ -194,37 +221,17 @@ pub fn handle_upgrades_ipc_cmd(
     sources: Vec<PathBuf>,
     output: PathBuf,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let file = std::fs::File::create(output)?;
+    let writer =
+        open_arrow_mutex_writer::<std::fs::File>(output, ArrowIpcTypes::Upgrades.schema())?;
 
-    let options = arrow2::io::ipc::write::WriteOptions { compression: None };
-    let mut writer = arrow2::io::ipc::write::FileWriter::new(
-        file,
-        ArrowIpcTypes::Upgrades.schema(),
-        None,
-        options,
-    );
-
-    writer.start()?;
-    let writer = std::sync::Mutex::new(writer);
-
-    // process the sources in parallel consuming into the batch variable
+    // process files in parallel, the internal iterators will fight for the lock
     let total_records = sources
         .par_iter()
         .filter_map(|source| {
-            let file_contents = parser::read_file(source.display().to_string().as_str());
+            let file_name = source.file_name()?.to_str()?.to_string();
+            let file_contents = crate::read_file(source).ok()?;
             let (_input, mpq) = parser::parse(&file_contents).ok()?;
-            let details = match read_details(&mpq, &file_contents) {
-                Ok(details) => details,
-                Err(err) => {
-                    tracing::error!("Error reading details: {:?}", err);
-                    return None;
-                }
-            };
-            let sha256 = sha256::digest(&file_contents);
-            // At this point we have already verified the filename is valid utf8
-            let file_name = source.file_name().unwrap().to_str().unwrap().to_string();
-            let epoch = transform_to_naivetime(details.time_utc, details.time_local_offset)
-                .unwrap_or_default();
+            let details = details::Details::new(&file_name, &mpq, &file_contents).ok()?;
             let tracker_events = match read_tracker_events(&mpq, &file_contents) {
                 Ok(tracker_events) => tracker_events,
                 Err(err) => {
@@ -238,14 +245,10 @@ pub fn handle_upgrades_ipc_cmd(
                 tracker_loop += game_step.delta as i64;
                 let game_loop = (tracker_loop as f32 / TRACKER_SPEED_RATIO) as i64;
                 if let tracker_events::ReplayTrackerEvent::Upgrade(event) = game_step.event {
-                    let player_name = details.get_player_name(event.player_id - 1);
                     batch.push(tracker_events::UpgradeEventFlatRow::new(
                         event,
                         game_loop,
-                        file_name.clone(),
-                        sha256.clone(),
-                        player_name,
-                        epoch,
+                        details.clone(),
                     ));
                 }
             }
@@ -277,14 +280,7 @@ pub fn handle_upgrades_ipc_cmd(
         })
         .sum::<usize>();
     println!("Loaded {} records", total_records);
-    let mut writer = match writer.lock() {
-        Ok(writer) => writer,
-        Err(err) => {
-            tracing::error!("Error locking file: {:?}", err);
-            return Err("Lock error".into());
-        }
-    };
-    Ok(writer.finish()?)
+    Ok(close_arrow_mutex_writer(writer)?)
 }
 
 pub fn handle_arrow_ipc_cmd(
