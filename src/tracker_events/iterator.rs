@@ -1,6 +1,5 @@
 //! Iterator for the ReplayTrackerEEventId
 
-use super::super::byte_aligned::*;
 use crate::error::S2ProtocolError;
 use crate::tracker_events::TrackerEvent;
 use crate::versions::protocol75689::byte_aligned::ReplayTrackerEEventId as Protocol75689ReplayTrackerEEventId;
@@ -16,14 +15,14 @@ pub struct TrackerEventIterator {
     /// The MPQ file sector content
     pub data: Vec<u8>,
     /// The delta between loops
-    pub tracker_loop: u32,
+    pub tracker_loop: i64,
     /// The current index consumed by nom
     pub index: usize,
 }
 
 impl TrackerEventIterator {
     /// Creates a new TrackerEventIterator from a PathBuf
-    pub fn new(source: PathBuf) -> Result<Self, S2ProtocolError> {
+    pub fn new(source: &PathBuf) -> Result<Self, S2ProtocolError> {
         let file_contents = crate::read_file(source)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
         let (_tail, proto_header) = crate::read_protocol_header(&mpq)?;
@@ -45,14 +44,9 @@ impl TrackerEventIterator {
                     Protocol75689ReplayTrackerEEventId::parse_event_pair(&self.data[self.index..])?;
                 let event = match event.try_into() {
                     Ok(event) => event,
-                    Err(S2ProtocolError::UnsupportedEventType) => {
-                        // A bit ugly but would be good to show that the event is skipped
-                        tracing::debug!("Skipping Unsupported Event {:?}", event);
-                        return Err(S2ProtocolError::UnsupportedEventType);
-                    }
                     Err(err) => return Err(err),
                 };
-                (new_event_tail, delta, event.try_into()?)
+                (new_event_tail, delta, event)
             }
             83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89720 | 90136 | 90779 | 90870 => {
                 let (new_event_tail, (delta, event)) =
@@ -65,14 +59,14 @@ impl TrackerEventIterator {
                 ))
             }
         };
-        self.index = new_event_tail.as_ptr() as usize;
-        self.tracker_loop += delta;
+        self.index += new_event_tail.as_ptr() as usize - self.data[self.index..].as_ptr() as usize;
+        self.tracker_loop += delta as i64;
         Ok(TrackerEvent { delta, event })
     }
 }
 
 impl Iterator for TrackerEventIterator {
-    type Item = TrackerEvent;
+    type Item = (TrackerEvent, i64);
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
@@ -82,7 +76,7 @@ impl Iterator for TrackerEventIterator {
             }
 
             match self.read_versioned_tracker_event() {
-                Ok(val) => return Some(val),
+                Ok(val) => return Some((val, self.tracker_loop)),
                 Err(S2ProtocolError::UnsupportedEventType) => {}
                 Err(err) => {
                     tracing::error!("Error reading tracker event: {:?}", err);

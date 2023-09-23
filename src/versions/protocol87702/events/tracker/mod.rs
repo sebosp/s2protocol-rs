@@ -9,8 +9,6 @@ use crate::*;
 use nom::*;
 use nom_mpq::parser::peek_hex;
 use nom_mpq::MPQ;
-pub mod iterator;
-pub use iterator::*;
 
 impl ReplayTrackerEEventId {
     /// Reads a delta, TrackerEvent pair
