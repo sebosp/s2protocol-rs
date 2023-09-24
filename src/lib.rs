@@ -66,7 +66,7 @@ macro_rules! ok_or_return_missing_field_err {
 }
 
 /// Reads a file into memory.
-pub fn read_file(path: PathBuf) -> Result<Vec<u8>, S2ProtocolError> {
+pub fn read_file(path: &PathBuf) -> Result<Vec<u8>, S2ProtocolError> {
     let mut f = std::fs::File::open(path)?;
     let mut buffer: Vec<u8> = vec![];
     f.read_to_end(&mut buffer)?;

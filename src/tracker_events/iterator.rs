@@ -4,6 +4,7 @@ use crate::error::S2ProtocolError;
 use crate::tracker_events::TrackerEvent;
 use crate::versions::protocol75689::byte_aligned::ReplayTrackerEEventId as Protocol75689ReplayTrackerEEventId;
 use crate::versions::protocol87702::byte_aligned::ReplayTrackerEEventId as Protocol87702ReplayTrackerEEventId;
+use crate::TRACKER_SPEED_RATIO;
 use nom::*;
 use std::iter::Iterator;
 use std::path::PathBuf;
@@ -48,7 +49,8 @@ impl TrackerEventIterator {
                 };
                 (new_event_tail, delta, event)
             }
-            83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89720 | 90136 | 90779 | 90870 => {
+            83830 | 84643 | 88500 | 86383 | 87702 | 89165 | 89634 | 89720 | 90136 | 90779
+            | 90870 => {
                 let (new_event_tail, (delta, event)) =
                     Protocol87702ReplayTrackerEEventId::parse_event_pair(&self.data[self.index..])?;
                 (new_event_tail, delta, event.try_into()?)
@@ -66,6 +68,8 @@ impl TrackerEventIterator {
 }
 
 impl Iterator for TrackerEventIterator {
+    /// The item is a tuple of the TrackerEvent and the adjusted game loop
+    /// An adjusted game loop is the `tracker_loop` adjusted to be in the same units as the game loops.
     type Item = (TrackerEvent, i64);
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -75,8 +79,12 @@ impl Iterator for TrackerEventIterator {
                 return None;
             }
 
+            // After the event is collected, the loop is adjusted to be in the same units as the
+            // game loops.
             match self.read_versioned_tracker_event() {
-                Ok(val) => return Some((val, self.tracker_loop)),
+                Ok(val) => {
+                    return Some((val, (self.tracker_loop as f32 / TRACKER_SPEED_RATIO) as i64))
+                }
                 Err(S2ProtocolError::UnsupportedEventType) => {}
                 Err(err) => {
                     tracing::error!("Error reading tracker event: {:?}", err);

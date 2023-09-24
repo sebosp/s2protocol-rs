@@ -4,7 +4,11 @@
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::common::*;
+use crate::S2ProtocolError;
+use nom_mpq::MPQ;
 use serde::{Deserialize, Serialize};
+use std::convert::TryFrom;
+use std::path::PathBuf;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
@@ -18,11 +22,47 @@ pub struct InitData {
 }
 
 impl InitData {
+    /// Calls the per-protocol parser for the InitData and sets the metadadata.
+    pub fn new(file_name: &str, mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
+        let init_data = match crate::versions::read_init_data(mpq, file_contents) {
+            Ok(init_data) => init_data,
+            Err(err) => {
+                tracing::error!("Error reading init_data: {:?}", err);
+                return Err(err);
+            }
+        };
+        Ok(init_data.set_metadata(file_name, file_contents))
+    }
+
+    #[tracing::instrument(level = "debug")]
     #[cfg(feature = "arrow")]
     pub fn set_metadata(mut self, file_name: &str, file_contents: &[u8]) -> Self {
         self.sha256 = sha256::digest(file_contents);
         self.file_name = file_name.to_string();
         self
+    }
+}
+
+impl TryFrom<PathBuf> for InitData {
+    type Error = S2ProtocolError;
+
+    /// Reads the file from the path and calls the per-protocol parser for the InitData.
+    /// Sets the metadata if successful.
+    /// Returns an error if the file cannot be read or the parser fails.
+    #[tracing::instrument(level = "debug")]
+    fn try_from(path: PathBuf) -> Result<Self, Self::Error> {
+        tracing::info!("Reading InitData from {:?}", path);
+        let file_contents = crate::read_file(&path)?;
+        let (_input, mpq) = crate::parser::parse(&file_contents)?;
+        match Self::new(path.to_str().unwrap_or_default(), &mpq, &file_contents) {
+            Ok(init_data) => {
+                Ok(init_data.set_metadata(path.to_str().unwrap_or_default(), &file_contents))
+            }
+            Err(err) => {
+                tracing::error!("Error reading initdata: {:?}", err);
+                Err(err)
+            }
+        }
     }
 }
 
@@ -45,7 +85,7 @@ pub struct LobbySyncState {
 pub struct UserInitialData {
     pub name: String,
     pub clan_tag: Option<String>,
-    pub clan_logo: Option<String>,
+    pub clan_logo: Option<Vec<u8>>,
     pub highest_league: Option<u8>,
     pub combined_race_levels: Option<u32>,
     pub random_seed: u32,
@@ -278,4 +318,31 @@ pub struct LobbySlot {
 pub struct RewardOverride {
     pub key: u32,
     pub rewards: Vec<u32>,
+}
+
+// Tests
+#[cfg(test)]
+mod tests {
+    use crate::versions::protocol87702::bit_packed::EObserve;
+    use crate::versions::protocol87702::bit_packed::GameSLobbySlot;
+
+    #[test_log::test]
+    fn basic_tests() {
+        // Part of the init data that was not being parsed properly.
+        let data: Vec<u8> = vec![
+            0x00, 0x00, 0x00, 0x03, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+        ];
+        // In the example snippet, three bits had already been consumed by a previous region.
+        // Take three bits from the head, since we read in reverse we set to 3.
+        let tail = (&data[..], 5usize);
+        let (tail, handicap) = GameSLobbySlot::parse_m_handicap(tail).unwrap();
+        assert_eq!(handicap.value.value, 100);
+        let (tail, observe) = GameSLobbySlot::parse_m_observe(tail).unwrap();
+        assert_eq!(observe, EObserve::ENone);
+        let (tail, logo) = GameSLobbySlot::parse_m_logo_index(tail).unwrap();
+        assert_eq!(logo.value.value, 0);
+        let (_tail, hero) = GameSLobbySlot::parse_m_hero(tail).unwrap();
+        assert_eq!(hero.value, vec![0]);
+    }
 }

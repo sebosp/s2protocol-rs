@@ -1,5 +1,7 @@
 //! Decodes the Details.
 
+use std::path::PathBuf;
+
 #[cfg(feature = "arrow")]
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 use nom_mpq::MPQ;
@@ -79,6 +81,24 @@ impl Details {
                 )
             })
             .unwrap_or("".to_string())
+    }
+}
+
+impl TryFrom<PathBuf> for Details {
+    type Error = S2ProtocolError;
+
+    fn try_from(path: PathBuf) -> Result<Self, Self::Error> {
+        let file_contents = crate::read_file(&path)?;
+        let (_input, mpq) = crate::parser::parse(&file_contents)?;
+        match Self::new(path.to_str().unwrap_or_default(), &mpq, &file_contents) {
+            Ok(details) => {
+                Ok(details.set_metadata(path.to_str().unwrap_or_default(), &file_contents))
+            }
+            Err(err) => {
+                tracing::error!("Error reading details: {:?}", err);
+                Err(err)
+            }
+        }
     }
 }
 

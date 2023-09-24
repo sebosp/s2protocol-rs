@@ -39,7 +39,6 @@ enum Commands {
     #[command(subcommand)]
     WriteArrowIpc(ArrowIpcTypes),
 }
-
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
@@ -80,6 +79,7 @@ pub fn get_matching_files(source: PathBuf) -> Result<Vec<PathBuf>, Box<dyn std::
 }
 
 /// Handles the request from the CLI when used as a binary
+#[tracing::instrument(level = "debug")]
 pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
     let init_time = std::time::Instant::now();
     let cli = Cli::parse();
@@ -102,7 +102,8 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                 vec![cli.source.clone().into()]
             };
             for source in sources {
-                let file_contents = parser::read_file(source.display().to_string().as_str());
+                tracing::info!("Processing {:?}", source);
+                let file_contents = crate::read_file(&source).unwrap();
                 let (_input, mpq) = match parser::parse(&file_contents) {
                     Ok(res) => res,
                     Err(e) => {
@@ -153,8 +154,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         Commands::WriteArrowIpc(cmd) => {
-            arrow::handle_arrow_ipc_cmd(
-                cmd,
+            cmd.handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),
                 PathBuf::from(&cli.output.expect("Requires --output")),
             )?;

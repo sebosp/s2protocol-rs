@@ -11,19 +11,20 @@ pub mod protocol75689;
 pub mod protocol87702;
 
 /// Attempts to read the tracker events, panics under unknown protocol
+#[tracing::instrument(level = "debug", skip(mpq, file_contents))]
 pub fn read_tracker_events(
     mpq: &MPQ,
     file_contents: &[u8],
 ) -> Result<Vec<TrackerEvent>, S2ProtocolError> {
     let (_tail, proto_header) = crate::read_protocol_header(mpq)?;
-    tracing::info!("Header: {:?}", proto_header);
+    tracing::debug!("Header: {:?}", proto_header);
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         75689 => protocol75689::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
             mpq,
             file_contents,
         ),
-        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89720 | 90136 | 90779 | 90870 => {
+        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870 => {
             protocol87702::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
                 mpq,
                 file_contents,
@@ -36,16 +37,17 @@ pub fn read_tracker_events(
 }
 
 /// Attempts to read the game events, panics under unknown protocol
+#[tracing::instrument(level = "debug", skip(mpq, file_contents))]
 pub fn read_game_events(
     mpq: &MPQ,
     file_contents: &[u8],
 ) -> Result<Vec<GameEvent>, S2ProtocolError> {
     let (_tail, proto_header) = crate::read_protocol_header(mpq)?;
-    tracing::info!("Header: {:?}", proto_header);
+    tracing::debug!("Header: {:?}", proto_header);
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         75689 => protocol75689::bit_packed::GameEEventId::read_events(mpq, file_contents),
-        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89720 | 90136 | 90779 | 90870 => {
+        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870 => {
             protocol87702::bit_packed::GameEEventId::read_events(mpq, file_contents)
         }
         _ => Err(S2ProtocolError::UnsupportedProtocolVersion(
@@ -55,16 +57,17 @@ pub fn read_game_events(
 }
 
 /// Attempts to read the message events, panics under unknown protocol
+#[tracing::instrument(level = "debug", skip(mpq, file_contents))]
 pub fn read_message_events(
     mpq: &MPQ,
     file_contents: &[u8],
 ) -> Result<Vec<MessageEvent>, S2ProtocolError> {
     let (_tail, proto_header) = crate::read_protocol_header(mpq)?;
-    tracing::info!("Header: {:?}", proto_header);
+    tracing::debug!("Header: {:?}", proto_header);
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         75689 => protocol75689::bit_packed::GameEMessageId::read_events(mpq, file_contents),
-        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89720 | 90136 | 90779 | 90870 => {
+        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870 => {
             protocol87702::bit_packed::GameEMessageId::read_events(mpq, file_contents)
         }
         _ => Err(S2ProtocolError::UnsupportedProtocolVersion(
@@ -74,13 +77,14 @@ pub fn read_message_events(
 }
 
 /// Attempts to read the details, panics under unknown protocol
+#[tracing::instrument(level = "debug", skip(mpq, file_contents))]
 pub fn read_details(mpq: &MPQ, file_contents: &[u8]) -> Result<Details, S2ProtocolError> {
     let (_tail, proto_header) = crate::read_protocol_header(mpq)?;
-    tracing::info!("Header: {:?}", proto_header);
+    tracing::debug!("Header: {:?}", proto_header);
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         75689 => protocol75689::byte_aligned::GameSDetails::read_details(mpq, file_contents),
-        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89720 | 90136 | 90779 | 90870 => {
+        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870 => {
             protocol87702::byte_aligned::GameSDetails::read_details(mpq, file_contents)
         }
         _ => Err(S2ProtocolError::UnsupportedProtocolVersion(
@@ -90,13 +94,14 @@ pub fn read_details(mpq: &MPQ, file_contents: &[u8]) -> Result<Details, S2Protoc
 }
 
 /// Attempts to read the initData, panics under unknown protocol
+#[tracing::instrument(level = "debug", skip(mpq, file_contents))]
 pub fn read_init_data(mpq: &MPQ, file_contents: &[u8]) -> Result<InitData, S2ProtocolError> {
     let (_tail, proto_header) = crate::read_protocol_header(mpq)?;
-    tracing::info!("Header: {:?}", proto_header);
+    tracing::info!("Version: {:?}", proto_header.m_version.m_base_build);
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         75689 => protocol75689::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),
-        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89720 | 90136 | 90779 | 90870 => {
+        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870 => {
             protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents)
         }
         _ => Err(S2ProtocolError::UnsupportedProtocolVersion(
@@ -106,7 +111,7 @@ pub fn read_init_data(mpq: &MPQ, file_contents: &[u8]) -> Result<InitData, S2Pro
 }
 #[cfg(test)]
 mod tests {
-    use crate::versions::protocol89634::byte_aligned::ReplayTrackerEEventId;
+    use crate::versions::protocol87702::byte_aligned::ReplayTrackerEEventId;
 
     #[test_log::test]
     fn it_reads_tracker_events() {

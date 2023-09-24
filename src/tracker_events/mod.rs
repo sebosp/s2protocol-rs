@@ -9,6 +9,9 @@ pub mod arrow;
 #[cfg(feature = "arrow")]
 pub use arrow::*;
 
+pub mod iterator;
+pub use iterator::*;
+
 pub mod state;
 use serde::{Deserialize, Serialize};
 pub use state::*;

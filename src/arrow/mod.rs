@@ -5,34 +5,32 @@ use arrow2::{array::Array, chunk::Chunk, datatypes::DataType};
 use arrow2_convert::serialize::FlattenChunk;
 #[cfg(feature = "arrow")]
 use arrow2_convert::{field::ArrowField, serialize::TryIntoArrow};
+#[cfg(feature = "arrow")]
+use rayon::prelude::*;
 
 use crate::cli::get_matching_files;
-use crate::state::*;
 use crate::tracker_events::{self, TrackerEventIterator};
 use crate::*;
 use clap::Subcommand;
-use rayon::prelude::*;
 use std::path::PathBuf;
 pub mod ipc_writer;
 use ipc_writer::*;
 
 #[derive(Debug, Subcommand)]
 pub enum ArrowIpcTypes {
-    /// Writes the tracker events to an Arrow IPC file
-    TrackerEvents,
-    /// Writes the game events to an Arrow IPC file
-    GameEvents,
-    /// Writes the message events to an Arrow IPC file
-    MessageEvents,
-    /// Writes the details to an Arrow IPC file
-    Details,
-    /// Writes the initData to an Arrow IPC file
+    /// Writes the [`crate::init_data::InitData`] flat row to an Arrow IPC file
     InitData,
-    /// Writes the Stats to an Arrow IPC file
+    /// Writes the [`crate::details::Details`] flat row to an Arrow IPC file
+    Details,
+    /// Writes the [`crate::tracker_events::PlayerStatsEvent`] to an Arrow IPC file
     Stats,
-    /// Writes the UpgradeEvents to an Arrow IPC file
+    /// Writes the [`crate::tracker_events::UpgradeEvents`] to an Arrow IPC file
     Upgrades,
-    /// Write all the supported data types to Arrow IPC files inside the output directory
+    /// Writes the [`crate::tracker_events::UnitBornEvent`] to an Arrow IPC file
+    UnitBorn,
+    /// Writes the [`crate::message_events::MessageEvent`] to an Arrow IPC file
+    MessageEvents,
+    /// Writes all the implemented flat row types to Arrow IPC files inside the output directory
     All,
 }
 
@@ -40,6 +38,20 @@ impl ArrowIpcTypes {
     /// Returns the schema for the chosen output type
     pub fn schema(&self) -> arrow2::datatypes::Schema {
         match self {
+            Self::InitData => {
+                if let DataType::Struct(fields) = init_data::InitData::data_type() {
+                    arrow2::datatypes::Schema::from(fields.clone())
+                } else {
+                    panic!("Invalid schema, expected struct");
+                }
+            }
+            Self::Details => {
+                if let DataType::Struct(fields) = details::Details::data_type() {
+                    arrow2::datatypes::Schema::from(fields.clone())
+                } else {
+                    panic!("Invalid schema, expected struct");
+                }
+            }
             Self::Stats => {
                 if let DataType::Struct(fields) = tracker_events::PlayerStatsFlatRow::data_type() {
                     arrow2::datatypes::Schema::from(fields.clone())
@@ -54,15 +66,9 @@ impl ArrowIpcTypes {
                     panic!("Invalid schema, expected struct");
                 }
             }
-            Self::Details => {
-                if let DataType::Struct(fields) = details::Details::data_type() {
-                    arrow2::datatypes::Schema::from(fields.clone())
-                } else {
-                    panic!("Invalid schema, expected struct");
-                }
-            }
-            Self::InitData => {
-                if let DataType::Struct(fields) = init_data::InitData::data_type() {
+            Self::UnitBorn => {
+                if let DataType::Struct(fields) = tracker_events::UnitBornEventFlatRow::data_type()
+                {
                     arrow2::datatypes::Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
@@ -82,17 +88,9 @@ impl ArrowIpcTypes {
         match self {
             Self::InitData => self.handle_init_data_ipc_cmd(sources, output),
             Self::Details => self.handle_details_ipc_cmd(sources, output),
-            Self::TrackerEvents => {
-                panic!("TrackerEvents not supported. Use Stats instead");
-            }
-            Self::GameEvents => {
-                panic!("GameEvents not supported. Use Stats instead");
-            }
-            Self::MessageEvents => {
-                panic!("MessageEvents not supported. Use Stats instead");
-            }
             Self::Stats => self.handle_stats_ipc_cmd(sources, output),
             Self::Upgrades => self.handle_upgrades_ipc_cmd(sources, output),
+            Self::UnitBorn => self.handle_unit_born_ipc_cmd(sources, output),
             Self::All => {
                 if !output.is_dir() {
                     panic!("Output must be a directory for types all");
@@ -101,11 +99,22 @@ impl ArrowIpcTypes {
                 // init_data.ipc
                 // details.ipc
                 // stats.ipc
-                self.handle_init_data_ipc_cmd(sources.clone(), output.join("init_data.ipc"))?;
-                self.handle_details_ipc_cmd(sources.clone(), output.join("details.ipc"))?;
-                self.handle_stats_ipc_cmd(sources.clone(), output.join("stats.ipc$"))?;
-                self.handle_upgrades_ipc_cmd(sources.clone(), output.join("upgrades.ipc"))
+                // upgrades.ipc
+                // unit_born.ipc
+                let init_data = Self::InitData;
+                init_data
+                    .handle_init_data_ipc_cmd(sources.clone(), output.join("init_data.ipc"))?;
+                let details = Self::Details;
+                details.handle_details_ipc_cmd(sources.clone(), output.join("details.ipc"))?;
+                let stats = Self::Stats;
+                stats.handle_stats_ipc_cmd(sources.clone(), output.join("stats.ipc"))?;
+                let upgrades = Self::Upgrades;
+                upgrades.handle_upgrades_ipc_cmd(sources.clone(), output.join("upgrades.ipc"))?;
+                Self::UnitBorn
+                    .handle_unit_born_ipc_cmd(sources.clone(), output.join("unit_born.ipc"))?;
+                Ok(())
             }
+            _ => todo!(),
         }
     }
 
@@ -148,8 +157,7 @@ impl ArrowIpcTypes {
                 let details = crate::details::Details::try_from(source.clone()).ok()?;
                 let tracker_events = TrackerEventIterator::new(source).ok()?;
                 let mut batch = vec![];
-                for (game_step, tracker_loop) in tracker_events {
-                    let game_loop = (tracker_loop as f32 / TRACKER_SPEED_RATIO) as i64;
+                for (game_step, game_loop) in tracker_events {
                     if let tracker_events::ReplayTrackerEvent::PlayerStats(event) = game_step.event
                     {
                         batch.push(tracker_events::PlayerStatsFlatRow::new(
@@ -178,25 +186,24 @@ impl ArrowIpcTypes {
         tracing::info!("Processing Details IPC write request");
         // process the sources in parallel consuming into the batch variable
         let res: Box<dyn Array> = sources
-            .par_iter()
+            .iter()
             .filter_map(|source| crate::details::Details::try_from(source.clone()).ok())
             .collect::<Vec<details::Details>>()
             .try_into_arrow()?;
         tracing::info!("Loaded {} records", res.len());
         let chunk = Chunk::new([res].to_vec()).flatten()?;
-        write_batches(output, ArrowIpcTypes::Details.schema(), &[chunk])?;
+        write_batches(output, self.schema(), &[chunk])?;
         Ok(())
     }
 
-    /// Creates a new Arrow IPC file with the stats data
-    /// This seems to be small enough to not need to be chunked and is done in parallel
+    /// Creates a new Arrow IPC file with the upgrades data
     pub fn handle_upgrades_ipc_cmd(
         &self,
         sources: Vec<PathBuf>,
         output: PathBuf,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing Upgrades IPC write request");
-        let writer = open_arrow_mutex_writer(output, ArrowIpcTypes::Upgrades.schema())?;
+        let writer = open_arrow_mutex_writer(output, self.schema())?;
 
         // process files in parallel, the internal iterators will fight for the lock
         let total_records = sources
@@ -205,8 +212,7 @@ impl ArrowIpcTypes {
                 let details = crate::details::Details::try_from(source.clone()).ok()?;
                 let tracker_events = TrackerEventIterator::new(source).ok()?;
                 let mut batch = vec![];
-                for (game_step, tracker_loop) in tracker_events {
-                    let game_loop = (tracker_loop as f32 / TRACKER_SPEED_RATIO) as i64;
+                for (game_step, game_loop) in tracker_events {
                     if let tracker_events::ReplayTrackerEvent::Upgrade(event) = game_step.event {
                         batch.push(tracker_events::UpgradeEventFlatRow::new(
                             event,
@@ -224,6 +230,39 @@ impl ArrowIpcTypes {
         close_arrow_mutex_writer(writer)
     }
 
+    /// Creates a new Arrow IPC file with the unit born data
+    pub fn handle_unit_born_ipc_cmd(
+        &self,
+        sources: Vec<PathBuf>,
+        output: PathBuf,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        tracing::info!("Processing Unit Born IPC write request");
+        let writer = open_arrow_mutex_writer(output, self.schema())?;
+
+        // process files in parallel, the internal iterators will fight for the lock
+        let total_records = sources
+            .par_iter()
+            .filter_map(|source| {
+                let details = crate::details::Details::try_from(source.clone()).ok()?;
+                let tracker_events = TrackerEventIterator::new(source).ok()?;
+                let mut batch = vec![];
+                for (game_step, game_loop) in tracker_events {
+                    if let tracker_events::ReplayTrackerEvent::UnitBorn(event) = game_step.event {
+                        batch.push(tracker_events::UnitBornEventFlatRow::new(
+                            event,
+                            game_loop,
+                            details.clone(),
+                        ));
+                    }
+                }
+                let batch_len = batch.len();
+                let res: Box<dyn Array> = batch.try_into_arrow().ok()?;
+                write_to_arrow_mutex_writer(&writer, res, batch_len)
+            })
+            .sum::<usize>();
+        tracing::info!("Loaded {} records", total_records);
+        close_arrow_mutex_writer(writer)
+    }
     /// Handles the Arrow IPC command variants
     #[tracing::instrument(level = "debug")]
     pub fn handle_arrow_ipc_cmd(
