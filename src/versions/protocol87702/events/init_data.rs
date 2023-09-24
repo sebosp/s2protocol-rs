@@ -49,6 +49,7 @@ impl TryFrom<GameSLobbySyncState> for LobbySyncState {
 
 impl TryFrom<SUserInitialData> for UserInitialData {
     type Error = S2ProtocolError;
+    #[tracing::instrument(level = "debug")]
     fn try_from(source: SUserInitialData) -> Result<Self, Self::Error> {
         // tranforms from SUserInitialData into UserInitialData casting into internal types
         let name = str::from_utf8(&source.m_name.value)?.to_string();
@@ -56,8 +57,9 @@ impl TryFrom<SUserInitialData> for UserInitialData {
             Some(clan_tag) => Some(str::from_utf8(&clan_tag.value)?.to_string()),
             None => None,
         };
+        // Found some instances of non valid UTF8
         let clan_logo = match source.m_clan_logo {
-            Some(clan_logo) => Some(str::from_utf8(&clan_logo.value)?.to_string()),
+            Some(clan_logo) => Some(clan_logo.value),
             None => None,
         };
         let highest_league = source.m_highest_league.map(|v| v.into());
@@ -122,6 +124,7 @@ impl From<super::bit_packed::GameEGameType> for crate::init_data::GameType {
 
 impl TryFrom<super::bit_packed::GameSGameDescription> for crate::init_data::GameDescription {
     type Error = S2ProtocolError;
+    #[tracing::instrument(level = "debug")]
     fn try_from(source: super::bit_packed::GameSGameDescription) -> Result<Self, Self::Error> {
         let random_value = source.m_random_value.into();
         let game_cache_name = str::from_utf8(&source.m_game_cache_name.value)?.to_string();
@@ -314,8 +317,8 @@ impl TryFrom<super::bit_packed::GameSLobbyState> for LobbyState {
         let is_single_player = value.m_is_single_player;
         let picked_map_tag = value.m_picked_map_tag.value as u8;
         let game_duration = value.m_game_duration.value as u32;
-        let default_difficulty = value.m_default_difficulty.value.into();
-        let default_ai_build = value.m_default_ai_build.value.into();
+        let default_difficulty = value.m_default_difficulty.value;
+        let default_ai_build = value.m_default_ai_build.value;
         Ok(Self {
             phase,
             max_users,
@@ -347,6 +350,7 @@ impl From<super::bit_packed::GameEPhase> for GamePhase {
 
 impl TryFrom<super::bit_packed::GameSLobbySlot> for LobbySlot {
     type Error = S2ProtocolError;
+    #[tracing::instrument(level = "debug")]
     fn try_from(value: super::bit_packed::GameSLobbySlot) -> Result<Self, Self::Error> {
         let control = value.m_control.value;
         let user_id = value.m_user_id.map(|v| v.value);

@@ -5257,7 +5257,10 @@ pub mod bit_packed {
         #[tracing::instrument(name="87702::CCacheHandle::BlobType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, _) = byte_align(input)?;
-            let num_bits: usize = 6;
+            let num_bits: usize = 40 * 8;
+            // TODO: The generator for open_bit_packed_blob_main_parse_fn
+            // does not work for this case. It should literally 40 bits.
+            // Not 40 maximum integer value that fits in 6 bits
             let (tail, value) = take_bit_array(tail, num_bits)?;
             Ok((tail, Self { value }))
         }
@@ -5300,7 +5303,7 @@ pub mod bit_packed {
     impl CHeroHandle {
         #[tracing::instrument(name="87702::CHeroHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
-            let str_size_num_bits: usize = 10;
+            let str_size_num_bits: usize = 9;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
@@ -5315,7 +5318,7 @@ pub mod bit_packed {
     impl CSkinHandle {
         #[tracing::instrument(name="87702::CSkinHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
-            let str_size_num_bits: usize = 10;
+            let str_size_num_bits: usize = 9;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
@@ -5330,7 +5333,7 @@ pub mod bit_packed {
     impl CMountHandle {
         #[tracing::instrument(name="87702::CMountHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
-            let str_size_num_bits: usize = 10;
+            let str_size_num_bits: usize = 9;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
@@ -5345,7 +5348,7 @@ pub mod bit_packed {
     impl CArtifactHandle {
         #[tracing::instrument(name="87702::CArtifactHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
-            let str_size_num_bits: usize = 10;
+            let str_size_num_bits: usize = 9;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
@@ -5375,7 +5378,7 @@ pub mod bit_packed {
     impl CCommanderHandle {
         #[tracing::instrument(name="87702::CCommanderHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
-            let str_size_num_bits: usize = 10;
+            let str_size_num_bits: usize = 9;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
             let (tail, _) = byte_align(tail)?;
             let (tail, value) = take_bit_array(tail, str_size as usize * 8usize)?;
