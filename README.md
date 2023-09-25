@@ -53,17 +53,27 @@ while let Some((event, updated_units)) = replay.transduce() {
 ```
 
 ## Interacting with polars
+
+### Generating the IPC Arrow datasets
+
+In the directory ipcs/ one .ipc file will be created per implemented data type.
+The `--source` is the directory that contains the replay of interest.
+Files are processed using parallel operations. For 3600 files (500 MBs) it takes 30 seconds to transform/split them.
+
+```bash
+$ mkdir ipcs/
+$ cargo run -r -- --source "/mnt/windows/Users/sebos/Documents/StarCraft II/Accounts/51504154/2-S2-1-8459957/Replays/Multiplayer/" --output ipcs/ write-arrow-ipc all
+Total time: 29.83001854s
+```
+
+### Jupyter Notebooks
+
+[Basic UnitBorn Queries](./jupyter_notebooks/Basic-UnitBorn-Queries.ipynb)
+
+### polars-cli
+
 ```bash
 $ cargo install polars-cli
-# Generate a file stats.ipc that contains all the Statistic Evenst in Arrow IPC format, This is running in parallel mode, but for 3600 files needs 1.5 GBs RAM
-$ cargo run -r -- --source "/mnt/windows/Users/sebos/Documents/StarCraft II/Accounts/51504154/2-S2-1-8459957/Replays/Multiplayer/" --output stats.ipc write-arrow-ipc stats
-Found 3600 files
-Loaded 1579177 files
-
-________________________________________________________
-Executed in    6.21 secs    fish           external
-   usr time   64.09 secs  439.00 micros   64.09 secs
-   sys time    1.53 secs  133.00 micros    1.53 secs
 $ # List the max number of minerals that were lost in per map when the army was killed.
 ❯ echo "SELECT ext_fs_replay_file_name, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s2protocol-rs/stats.ipc') GROUP BY ext_fs_replay_file_name ORDER BY minerals_lost_army DESC;"|polars
 ┌───────────────────────────────────┬────────────────────┐
@@ -105,8 +115,9 @@ $ # List the max number of minerals that were lost in per map when the army was 
 
 ## Current issues
 
-Currently we load all events in memory, Perhaps we can try to read batches on events by keeping MPQ nom parser &[u8] reference.
-For example, we could read different sections, and return events in different sections in a batch of evenst through a game loop.
+Currently we load the file contents in memory.
+Since the replays are a few hundred KBs size, this seems not be an issue. (Maybe for AI ladder this is different).
+Future iterators will work with `nom::streaming` to be able to avoid loading too much stuff into memory.
 
 ## version compatibility.
 
