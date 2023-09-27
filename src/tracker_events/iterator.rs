@@ -1,7 +1,7 @@
 //! Iterator for the ReplayTrackerEEventId
 
 use crate::error::S2ProtocolError;
-use crate::tracker_events::TrackerEvent;
+use crate::tracker_events::{self, TrackerEvent};
 use crate::versions::protocol75689::byte_aligned::ReplayTrackerEEventId as Protocol75689ReplayTrackerEEventId;
 use crate::versions::protocol87702::byte_aligned::ReplayTrackerEEventId as Protocol87702ReplayTrackerEEventId;
 use crate::TRACKER_SPEED_RATIO;
@@ -64,6 +64,86 @@ impl TrackerEventIterator {
         self.index += new_event_tail.as_ptr() as usize - self.data[self.index..].as_ptr() as usize;
         self.tracker_loop += delta as i64;
         Ok(TrackerEvent { delta, event })
+    }
+
+    /// Consumes the Iterator collecting only the PlayerStats events into a vector of PlayerStatsFlatRow
+    pub fn collect_into_player_stats_flat_rows(
+        self,
+        details: &crate::details::Details,
+    ) -> Vec<tracker_events::PlayerStatsFlatRow> {
+        self.into_iter()
+            .filter_map(|(game_step, game_loop)| {
+                if let tracker_events::ReplayTrackerEvent::PlayerStats(event) = game_step.event {
+                    Some(tracker_events::PlayerStatsFlatRow::new(
+                        event,
+                        game_loop,
+                        details.clone(),
+                    ))
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
+
+    /// Consumes the Iterator collecting only the Upgrade events into a vector of UpgradeEventFlatRow
+    pub fn collect_into_upgrades_flat_rows(
+        self,
+        details: &crate::details::Details,
+    ) -> Vec<tracker_events::UpgradeEventFlatRow> {
+        self.into_iter()
+            .filter_map(|(game_step, game_loop)| {
+                if let tracker_events::ReplayTrackerEvent::Upgrade(event) = game_step.event {
+                    Some(tracker_events::UpgradeEventFlatRow::new(
+                        event,
+                        game_loop,
+                        details.clone(),
+                    ))
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
+
+    /// Consumes the Iterator collecting only the UnitBorn events into a vector of UnitBornEventFlatRow
+    pub fn collect_into_unit_born_flat_rows(
+        self,
+        details: &crate::details::Details,
+    ) -> Vec<tracker_events::UnitBornEventFlatRow> {
+        self.into_iter()
+            .filter_map(|(game_step, game_loop)| {
+                if let tracker_events::ReplayTrackerEvent::UnitBorn(event) = game_step.event {
+                    Some(tracker_events::UnitBornEventFlatRow::new(
+                        event,
+                        game_loop,
+                        details.clone(),
+                    ))
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
+
+    /// Consumes the Iterator collecting only the UnitDied events into a vector of UnitBornEventFlatRow
+    pub fn collect_into_unit_died_flat_rows(
+        self,
+        details: &crate::details::Details,
+    ) -> Vec<tracker_events::UnitDiedEventFlatRow> {
+        self.into_iter()
+            .filter_map(|(game_step, game_loop)| {
+                if let tracker_events::ReplayTrackerEvent::UnitDied(event) = game_step.event {
+                    Some(tracker_events::UnitDiedEventFlatRow::new(
+                        event,
+                        game_loop,
+                        details.clone(),
+                    ))
+                } else {
+                    None
+                }
+            })
+            .collect()
     }
 }
 
