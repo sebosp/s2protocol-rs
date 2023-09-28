@@ -3,8 +3,7 @@
 //!
 
 use super::byte_aligned::*;
-use crate::common::GameSpeed;
-use crate::details::{Color, Details, PlayerDetails, ResultDetails, Thumbnail, ToonNameDetails};
+use crate::details::{Color, Details, PlayerDetails, Thumbnail, ToonNameDetails};
 use crate::*;
 use nom_mpq::MPQ;
 
@@ -14,9 +13,7 @@ impl GameSDetails {
         let (_, details_sector) =
             mpq.read_mpq_file_sector("replay.details", false, file_contents)?;
         let (_, game_sdetails) = GameSDetails::parse(&details_sector)?;
-        game_sdetails
-            .try_into()
-            .map_err(|err: S2ProtocolError| err.into())
+        game_sdetails.try_into()
     }
 }
 
@@ -103,13 +100,13 @@ impl From<GameSColor> for Color {
     }
 }
 
-impl From<GameEResultDetails> for ResultDetails {
+impl From<GameEResultDetails> for u8 {
     fn from(value: GameEResultDetails) -> Self {
         match value {
-            GameEResultDetails::EUndecided => Self::EUndecided,
-            GameEResultDetails::EWin => Self::EWin,
-            GameEResultDetails::ELoss => Self::ELoss,
-            GameEResultDetails::ETie => Self::ETie,
+            GameEResultDetails::EUndecided => crate::common::GAME_RESULT_UNDECIDED,
+            GameEResultDetails::EWin => crate::common::GAME_RESULT_WIN,
+            GameEResultDetails::ELoss => crate::common::GAME_RESULT_DEFEAT,
+            GameEResultDetails::ETie => crate::common::GAME_RESULT_TIE,
         }
     }
 }
@@ -123,14 +120,14 @@ impl TryFrom<GameSThumbnail> for Thumbnail {
     }
 }
 
-impl From<GameEGameSpeed> for GameSpeed {
+impl From<GameEGameSpeed> for u8 {
     fn from(value: GameEGameSpeed) -> Self {
         match value {
-            GameEGameSpeed::ESlower => Self::ESlower,
-            GameEGameSpeed::ESlow => Self::ESlow,
-            GameEGameSpeed::ENormal => Self::ENormal,
-            GameEGameSpeed::EFast => Self::EFast,
-            GameEGameSpeed::EFaster => Self::EFaster,
+            GameEGameSpeed::ESlower => crate::common::GAME_SPEED_SLOWER,
+            GameEGameSpeed::ESlow => crate::common::GAME_SPEED_SLOW,
+            GameEGameSpeed::ENormal => crate::common::GAME_SPEED_NORMAL,
+            GameEGameSpeed::EFast => crate::common::GAME_SPEED_FAST,
+            GameEGameSpeed::EFaster => crate::common::GAME_SPEED_FASTER,
         }
     }
 }

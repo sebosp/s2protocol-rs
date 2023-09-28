@@ -1,21 +1,21 @@
 //! Common utilities and transformations between different message types
 
-impl From<super::bit_packed::EObserve> for crate::common::EObserve {
+impl From<super::bit_packed::EObserve> for u8 {
     fn from(value: super::bit_packed::EObserve) -> Self {
         match value {
-            super::bit_packed::EObserve::ENone => Self::ENone,
-            super::bit_packed::EObserve::ESpectator => Self::ESpectator,
-            super::bit_packed::EObserve::EReferee => Self::EReferee,
+            super::bit_packed::EObserve::ENone => crate::common::OBSERVE_NONE,
+            super::bit_packed::EObserve::ESpectator => crate::common::OBSERVE_SPECTATOR,
+            super::bit_packed::EObserve::EReferee => crate::common::OBSERVE_REFEREE,
         }
     }
 }
 
-impl From<super::byte_aligned::EObserve> for crate::common::EObserve {
+impl From<super::byte_aligned::EObserve> for u8 {
     fn from(value: super::byte_aligned::EObserve) -> Self {
         match value {
-            super::byte_aligned::EObserve::ENone => Self::ENone,
-            super::byte_aligned::EObserve::ESpectator => Self::ESpectator,
-            super::byte_aligned::EObserve::EReferee => Self::EReferee,
+            super::byte_aligned::EObserve::ENone => crate::common::OBSERVE_NONE,
+            super::byte_aligned::EObserve::ESpectator => crate::common::OBSERVE_SPECTATOR,
+            super::byte_aligned::EObserve::EReferee => crate::common::OBSERVE_REFEREE,
         }
     }
 }

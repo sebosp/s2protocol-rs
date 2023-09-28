@@ -3,7 +3,6 @@
 #[cfg(feature = "arrow")]
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
-use crate::common::*;
 use crate::S2ProtocolError;
 use nom_mpq::MPQ;
 use serde::{Deserialize, Serialize};
@@ -96,7 +95,7 @@ pub struct UserInitialData {
     pub examine: bool,
     pub custom_interface: bool,
     pub test_type: u32,
-    pub observe: EObserve,
+    pub observe: u8,
     pub hero: String,
     pub skin: String,
     pub mount: String,
@@ -113,7 +112,7 @@ pub struct GameDescription {
     pub random_value: u32,
     pub game_cache_name: String,
     pub game_options: GameOptions,
-    pub game_speed: GameSpeed,
+    pub game_speed: u8,
     pub game_type: GameType,
     pub max_users: i64,
     pub max_observers: i64,
@@ -283,7 +282,7 @@ pub struct LobbySlot {
     pub difficulty: i64,
     pub ai_build: i64,
     pub handicap: u32,
-    pub observe: EObserve,
+    pub observe: u8,
     pub logo_index: u32,
     pub hero: String,
     pub skin: String,
@@ -323,7 +322,6 @@ pub struct RewardOverride {
 // Tests
 #[cfg(test)]
 mod tests {
-    use crate::versions::protocol87702::bit_packed::EObserve;
     use crate::versions::protocol87702::bit_packed::GameSLobbySlot;
 
     #[test_log::test]
@@ -339,7 +337,7 @@ mod tests {
         let (tail, handicap) = GameSLobbySlot::parse_m_handicap(tail).unwrap();
         assert_eq!(handicap.value.value, 100);
         let (tail, observe) = GameSLobbySlot::parse_m_observe(tail).unwrap();
-        assert_eq!(observe, EObserve::ENone);
+        assert_eq!(observe.into::<u8>(), crate::common::OBSERVE_NONE);
         let (tail, logo) = GameSLobbySlot::parse_m_logo_index(tail).unwrap();
         assert_eq!(logo.value.value, 0);
         let (_tail, hero) = GameSLobbySlot::parse_m_hero(tail).unwrap();

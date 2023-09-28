@@ -1,7 +1,6 @@
 //! Returns the players data at the initial state of the game.
 
 use super::bit_packed::*;
-use crate::common::*;
 use crate::init_data::*;
 use crate::*;
 use nom_mpq::MPQ;
@@ -12,9 +11,7 @@ impl ReplaySInitData {
         let (_, init_data_sector) =
             mpq.read_mpq_file_sector("replay.initData", false, file_contents)?;
         let (_, replay_sinitdata) = ReplaySInitData::parse((&init_data_sector, 0usize))?;
-        replay_sinitdata
-            .try_into()
-            .map_err(|err: S2ProtocolError| err.into())
+        replay_sinitdata.try_into()
     }
 }
 
@@ -288,14 +285,14 @@ impl From<super::bit_packed::GameSGameOptions> for GameOptions {
     }
 }
 
-impl From<super::bit_packed::GameEGameSpeed> for GameSpeed {
+impl From<super::bit_packed::GameEGameSpeed> for u8 {
     fn from(value: super::bit_packed::GameEGameSpeed) -> Self {
         match value {
-            GameEGameSpeed::ESlower => Self::ESlower,
-            GameEGameSpeed::ESlow => Self::ESlow,
-            GameEGameSpeed::ENormal => Self::ENormal,
-            GameEGameSpeed::EFast => Self::EFast,
-            GameEGameSpeed::EFaster => Self::EFaster,
+            GameEGameSpeed::ESlower => crate::common::GAME_SPEED_SLOWER,
+            GameEGameSpeed::ESlow => crate::common::GAME_SPEED_SLOW,
+            GameEGameSpeed::ENormal => crate::common::GAME_SPEED_NORMAL,
+            GameEGameSpeed::EFast => crate::common::GAME_SPEED_FAST,
+            GameEGameSpeed::EFaster => crate::common::GAME_SPEED_FASTER,
         }
     }
 }

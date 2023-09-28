@@ -6,7 +6,6 @@ use std::path::PathBuf;
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 use nom_mpq::MPQ;
 
-use crate::common::*;
 use crate::error::S2ProtocolError;
 use serde::{Deserialize, Serialize};
 
@@ -31,7 +30,7 @@ pub struct Details {
     pub map_file_name: String,
     pub cache_handles: Vec<String>,
     pub mini_save: bool,
-    pub game_speed: GameSpeed,
+    pub game_speed: u8,
     pub default_difficulty: u32,
     pub mod_paths: Vec<String>,
     pub ext_fs_replay_file_name: String,
@@ -115,8 +114,8 @@ pub struct PlayerDetails {
     pub control: u8,
     pub team_id: u8,
     pub handicap: u32,
-    pub observe: EObserve,
-    pub result: ResultDetails,
+    pub observe: u8,
+    pub result: u8,
     pub working_set_slot_id: Option<u8>,
     pub hero: String,
 }
@@ -143,19 +142,6 @@ pub struct Color {
     pub r: u8,
     pub g: u8,
     pub b: u8,
-}
-
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-#[cfg_attr(feature = "arrow", arrow_field(type = "sparse"))]
-pub enum ResultDetails {
-    EUndecided,
-    EWin,
-    ELoss,
-    ETie,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
