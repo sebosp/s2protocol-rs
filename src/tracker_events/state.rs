@@ -129,16 +129,16 @@ pub fn handle_tracker_event(
 ) -> Vec<u32> {
     match &evt {
         ReplayTrackerEvent::UnitInit(unit_init) => {
-            handle_unit_init(&mut sc2_state, tracker_loop, unit_init)
+            handle_unit_init(sc2_state, tracker_loop, unit_init)
         }
         ReplayTrackerEvent::UnitBorn(unit_born) => {
-            handle_unit_born(&mut sc2_state, tracker_loop, unit_born)
+            handle_unit_born(sc2_state, tracker_loop, unit_born)
         }
         ReplayTrackerEvent::UnitDied(unit_died) => {
-            handle_unit_died(&mut sc2_state, tracker_loop, unit_died)
+            handle_unit_died(sc2_state, tracker_loop, unit_died)
         }
         ReplayTrackerEvent::UnitPosition(unit_pos) => {
-            handle_unit_position(&mut sc2_state, tracker_loop, unit_pos)
+            handle_unit_position(sc2_state, tracker_loop, unit_pos)
         }
         ReplayTrackerEvent::PlayerStats(_player_stats) => {
             // For now the player stats are not recorded here.
