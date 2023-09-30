@@ -13,11 +13,11 @@ pub fn handle_unit_init(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     unit_init: &UnitInitEvent,
-) -> Vec<u32> {
+) -> UnitChangeHint {
     let unit_name_filter = &sc2_state.filters.unit_name;
     if let Some(unit_name_filter) = unit_name_filter {
         if unit_name_filter != &unit_init.unit_type_name {
-            return vec![];
+            return UnitChangeHint::None;
         }
     }
     let sc2_unit = SC2Unit {
@@ -28,13 +28,13 @@ pub fn handle_unit_init(
         init_game_loop: game_loop,
         ..Default::default()
     };
-    tracing::info!("Initializing unit: {:?}", sc2_unit);
+    tracing::debug!("Initializing unit: {:?}", sc2_unit);
     if let Some(unit) = sc2_state.units.get(&unit_init.unit_tag_index) {
         // Hmm no idea if this is normal.
         tracing::warn!("Re-initializing unit: {:?}", unit);
     }
     sc2_state.units.insert(unit_init.unit_tag_index, sc2_unit);
-    vec![unit_init.unit_tag_index]
+    UnitChangeHint::Registered(unit_init.unit_tag_index)
 }
 
 /// Handles the state management for unit born messages
@@ -43,11 +43,11 @@ pub fn handle_unit_born(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     unit_born: &UnitBornEvent,
-) -> Vec<u32> {
+) -> UnitChangeHint {
     let unit_name_filter = &sc2_state.filters.unit_name;
     if let Some(unit_name_filter) = unit_name_filter {
         if unit_name_filter != &unit_born.unit_type_name {
-            return vec![];
+            return UnitChangeHint::None;
         }
     }
     if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_born.unit_tag_index) {
@@ -64,7 +64,7 @@ pub fn handle_unit_born(
         };
         sc2_state.units.insert(unit_born.unit_tag_index, sc2_unit);
     }
-    vec![unit_born.unit_tag_index]
+    UnitChangeHint::Registered(unit_born.unit_tag_index)
 }
 
 #[tracing::instrument(level = "debug", skip(sc2_state))]
@@ -72,7 +72,7 @@ pub fn handle_unit_position(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     unit_pos: &UnitPositionsEvent,
-) -> Vec<u32> {
+) -> UnitChangeHint {
     let mut updated_units = vec![];
     let unit_positions = unit_pos.clone().to_unit_positions_vec();
     for unit_pos_item in &unit_positions {
@@ -91,14 +91,14 @@ pub fn handle_unit_position(
             );
         }
     }
-    updated_units
+    UnitChangeHint::Batch(updated_units)
 }
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_unit_died(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     unit_dead: &UnitDiedEvent,
-) -> Vec<u32> {
+) -> UnitChangeHint {
     // Clean up the unit from previous groups where it was selected.
     for (_idx, state) in sc2_state.user_state.iter_mut() {
         for group_idx in 0..10 {
@@ -108,15 +108,22 @@ pub fn handle_unit_died(
     match sc2_state.units.remove(&unit_dead.unit_tag_index) {
         None => {
             // This may happen when a larva is transformed to a unit in zerg. so this is normal.
-            tracing::debug!(
+            tracing::warn!(
                 "Unit {} reported dead but was not registered before.",
                 unit_dead.unit_tag_index
             );
-            vec![]
+            UnitChangeHint::None
         }
         Some(val) => {
             tracing::debug!("Unit died: {:?}", val);
-            vec![unit_dead.unit_tag_index]
+            let killer_unit: Option<SC2Unit> = match unit_dead.killer_unit_tag_index {
+                Some(killer_unit_tag_index) => sc2_state.units.get(&killer_unit_tag_index).cloned(),
+                None => None,
+            };
+            UnitChangeHint::Unregistered {
+                killer: killer_unit,
+                killed: val,
+            }
         }
     }
 }
@@ -126,7 +133,7 @@ pub fn handle_tracker_event(
     mut sc2_state: &mut SC2ReplayState,
     tracker_loop: i64,
     evt: &ReplayTrackerEvent,
-) -> Vec<u32> {
+) -> UnitChangeHint {
     match &evt {
         ReplayTrackerEvent::UnitInit(unit_init) => {
             handle_unit_init(sc2_state, tracker_loop, unit_init)
@@ -142,21 +149,20 @@ pub fn handle_tracker_event(
         }
         ReplayTrackerEvent::PlayerStats(_player_stats) => {
             // For now the player stats are not recorded here.
-            vec![]
+            UnitChangeHint::None
         }
         ReplayTrackerEvent::PlayerSetup(player_setup) => {
             if let Some(user_id) = player_setup.user_id {
                 sc2_state
                     .user_state
                     .insert(user_id as i64, SC2UserState::new());
-                vec![user_id]
-            } else {
-                vec![]
+                // TODO: Should we return the user_id to the consumer?
             }
+            UnitChangeHint::None
         }
         _ => {
             tracing::debug!("Skipping event: {:?}", evt);
-            vec![]
+            UnitChangeHint::None
         }
     }
 }

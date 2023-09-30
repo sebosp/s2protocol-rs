@@ -75,6 +75,28 @@ pub enum SC2EventType {
     },
 }
 
+/// When a unit changes in the state, certain information is provided back.
+/// For example, if the unit dies, it is deleted from the state, but all its information is
+/// returned back for reporting purposes.
+#[derive(Debug, Clone)]
+pub enum UnitChangeHint {
+    /// A unit has been added, the index in the state registry is returned.
+    /// This would return both for UnitBorn and InitInit
+    Registered(u32),
+    /// Unit positions are being reported, the indexes in the unit registry are returned.
+    Batch(Vec<u32>),
+    /// Selected units in the first item of the tuple (.0) are targetting the unit on the second item of the tuple (.1)
+    BatchWithTarget(Vec<u32>, u32),
+    /// A unit has been deleted from the state registry, the full killer unit information and the
+    /// killed unit is returned. Killer is cloned and may be expensive.
+    Unregistered {
+        killer: Option<SC2Unit>,
+        killed: SC2Unit,
+    },
+    /// No units have changed, for example, PlayerStats are generated, so nothing to inspect
+    None,
+}
+
 /// The user state as it's collected through time.
 #[derive(Debug, Default, Clone)]
 pub struct SC2UserState {
@@ -250,7 +272,7 @@ impl SC2ReplayState {
     }
 
     /// Transduces the state machine moving through the `loop_items`
-    pub fn transduce(&mut self) -> Option<(SC2EventType, Vec<u32>)> {
+    pub fn transduce(&mut self) -> Option<(SC2EventType, UnitChangeHint)> {
         // TODO: These could become .filter, .take, etc.
         // But still, some of these refer to the internal loop, and since we have a generated
         // game_loop based on event priorities, maybe it's not that easy.
@@ -276,7 +298,7 @@ impl SC2ReplayState {
                 }
             }
             let evt_type = self.events.get(&evt_loop).unwrap()[evt_idx].clone();
-            let updated_units = match &evt_type {
+            let updated_hint = match &evt_type {
                 SC2EventType::Tracker {
                     tracker_loop,
                     event,
@@ -289,7 +311,7 @@ impl SC2ReplayState {
                     game_loop,
                     event,
                 } => {
-                    let updated_units =
+                    let updated_hint =
                         crate::game_events::handle_game_event(self, *game_loop, *user_id, event);
                     if let Some(target_user_id) = user_id_filter {
                         // Skip the events that are not for the requested user.
@@ -298,7 +320,7 @@ impl SC2ReplayState {
                         }
                     }
                     tracing::info!("Game [{:>08}]: uid: {} {:?}", game_loop, *user_id, event);
-                    updated_units
+                    updated_hint
                 }
             };
             // Skip events only after stepping through them through the state. Otherwise the state
@@ -310,7 +332,7 @@ impl SC2ReplayState {
                 }
             }
             self.current_loop_idx += 1;
-            return Some((evt_type, updated_units));
+            return Some((evt_type, updated_hint));
         }
     }
 }

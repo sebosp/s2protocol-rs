@@ -39,7 +39,7 @@ impl UnitBornEventFlatRow {
         details: crate::details::Details,
     ) -> Self {
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        let ext_replay_detail_player_name = details.get_player_name(event.control_player_id - 1);
+        let ext_replay_detail_player_name = details.get_player_name(event.control_player_id);
         Self {
             unit_tag_index: event.unit_tag_index,
             unit_tag_recycle: event.unit_tag_recycle,

@@ -4,21 +4,28 @@ use crate::error::S2ProtocolError;
 use crate::tracker_events::{self, TrackerEvent};
 use crate::versions::protocol75689::byte_aligned::ReplayTrackerEEventId as Protocol75689ReplayTrackerEEventId;
 use crate::versions::protocol87702::byte_aligned::ReplayTrackerEEventId as Protocol87702ReplayTrackerEEventId;
-use crate::TRACKER_SPEED_RATIO;
+use crate::{SC2EventType, SC2ReplayState, UnitChangeHint, TRACKER_SPEED_RATIO};
 use nom::*;
 use std::iter::Iterator;
 use std::path::PathBuf;
+
+// TODO:
+//  - Details does not need to be cloned now that we only use the sha256.
+
+use super::handle_tracker_event;
 
 /// Creates an iterator over the TrackerEvents
 pub struct TrackerEventIterator {
     /// The protocol version
     pub protocol_version: u32,
-    /// The MPQ file sector content
-    pub data: Vec<u8>,
-    /// The delta between loops
-    pub tracker_loop: i64,
-    /// The current index consumed by nom
-    pub index: usize,
+    /// The replay state machine transducer
+    pub sc2_state: SC2ReplayState,
+    /// The MPQ replay.tracker.events sector bytes
+    pub event_data: Vec<u8>,
+    /// The accumulated tracker event delta
+    pub event_loop: i64,
+    /// The current byte index consumed by nom
+    pub byte_index: usize,
 }
 
 impl TrackerEventIterator {
@@ -29,11 +36,13 @@ impl TrackerEventIterator {
         let (_tail, proto_header) = crate::read_protocol_header(&mpq)?;
         let (_event_tail, tracker_events) =
             mpq.read_mpq_file_sector("replay.tracker.events", false, &file_contents)?;
+        let sc2_state: SC2ReplayState = Default::default();
         Ok(Self {
             protocol_version: proto_header.m_version.m_base_build,
-            data: tracker_events,
-            tracker_loop: 0,
-            index: 0,
+            sc2_state,
+            event_data: tracker_events,
+            event_loop: 0,
+            byte_index: 0,
         })
     }
 
@@ -42,7 +51,9 @@ impl TrackerEventIterator {
         let (new_event_tail, delta, event) = match self.protocol_version {
             75689 => {
                 let (new_event_tail, (delta, event)) =
-                    Protocol75689ReplayTrackerEEventId::parse_event_pair(&self.data[self.index..])?;
+                    Protocol75689ReplayTrackerEEventId::parse_event_pair(
+                        &self.event_data[self.byte_index..],
+                    )?;
                 let event = match event.try_into() {
                     Ok(event) => event,
                     Err(err) => return Err(err),
@@ -51,18 +62,29 @@ impl TrackerEventIterator {
             }
             83830 | 84643 | 88500 | 86383 | 87702 | 89165 | 89634 | 89720 | 90136 | 90779
             | 90870 => {
+                // The protocol is known to be compatible with these versions
                 let (new_event_tail, (delta, event)) =
-                    Protocol87702ReplayTrackerEEventId::parse_event_pair(&self.data[self.index..])?;
+                    Protocol87702ReplayTrackerEEventId::parse_event_pair(
+                        &self.event_data[self.byte_index..],
+                    )?;
                 (new_event_tail, delta, event.try_into()?)
             }
             _ => {
-                return Err(S2ProtocolError::UnsupportedProtocolVersion(
-                    self.protocol_version,
-                ))
+                tracing::warn!(
+                    "Unknown protocol version: {}, will attempt to use 87702",
+                    self.protocol_version
+                );
+                // The protocol is known to be compatible with these versions
+                let (new_event_tail, (delta, event)) =
+                    Protocol87702ReplayTrackerEEventId::parse_event_pair(
+                        &self.event_data[self.byte_index..],
+                    )?;
+                (new_event_tail, delta, event.try_into()?)
             }
         };
-        self.index += new_event_tail.as_ptr() as usize - self.data[self.index..].as_ptr() as usize;
-        self.tracker_loop += delta as i64;
+        self.byte_index +=
+            new_event_tail.as_ptr() as usize - self.event_data[self.byte_index..].as_ptr() as usize;
+        self.event_loop += delta as i64;
         Ok(TrackerEvent { delta, event })
     }
 
@@ -72,16 +94,22 @@ impl TrackerEventIterator {
         details: &crate::details::Details,
     ) -> Vec<tracker_events::PlayerStatsFlatRow> {
         self.into_iter()
-            .filter_map(|(game_step, game_loop)| {
-                if let tracker_events::ReplayTrackerEvent::PlayerStats(event) = game_step.event {
-                    Some(tracker_events::PlayerStatsFlatRow::new(
-                        event,
-                        game_loop,
-                        details.clone(),
-                    ))
-                } else {
-                    None
+            .filter_map(|(sc2_event, updated_units)| match sc2_event {
+                SC2EventType::Tracker {
+                    tracker_loop,
+                    event,
+                } => {
+                    if let tracker_events::ReplayTrackerEvent::PlayerStats(event) = event {
+                        Some(tracker_events::PlayerStatsFlatRow::new(
+                            event,
+                            tracker_loop,
+                            details.clone(),
+                        ))
+                    } else {
+                        None
+                    }
                 }
+                _ => None,
             })
             .collect()
     }
@@ -92,16 +120,22 @@ impl TrackerEventIterator {
         details: &crate::details::Details,
     ) -> Vec<tracker_events::UpgradeEventFlatRow> {
         self.into_iter()
-            .filter_map(|(game_step, game_loop)| {
-                if let tracker_events::ReplayTrackerEvent::Upgrade(event) = game_step.event {
-                    Some(tracker_events::UpgradeEventFlatRow::new(
-                        event,
-                        game_loop,
-                        details.clone(),
-                    ))
-                } else {
-                    None
+            .filter_map(|(sc2_event, updated_units)| match sc2_event {
+                SC2EventType::Tracker {
+                    tracker_loop,
+                    event,
+                } => {
+                    if let tracker_events::ReplayTrackerEvent::Upgrade(event) = event {
+                        Some(tracker_events::UpgradeEventFlatRow::new(
+                            event,
+                            tracker_loop,
+                            details.clone(),
+                        ))
+                    } else {
+                        None
+                    }
                 }
+                _ => None,
             })
             .collect()
     }
@@ -112,16 +146,22 @@ impl TrackerEventIterator {
         details: &crate::details::Details,
     ) -> Vec<tracker_events::UnitBornEventFlatRow> {
         self.into_iter()
-            .filter_map(|(game_step, game_loop)| {
-                if let tracker_events::ReplayTrackerEvent::UnitBorn(event) = game_step.event {
-                    Some(tracker_events::UnitBornEventFlatRow::new(
-                        event,
-                        game_loop,
-                        details.clone(),
-                    ))
-                } else {
-                    None
+            .filter_map(|(sc2_event, updated_units)| match sc2_event {
+                SC2EventType::Tracker {
+                    tracker_loop,
+                    event,
+                } => {
+                    if let tracker_events::ReplayTrackerEvent::UnitBorn(event) = event {
+                        Some(tracker_events::UnitBornEventFlatRow::new(
+                            event,
+                            tracker_loop,
+                            details.clone(),
+                        ))
+                    } else {
+                        None
+                    }
                 }
+                _ => None,
             })
             .collect()
     }
@@ -132,29 +172,39 @@ impl TrackerEventIterator {
         details: &crate::details::Details,
     ) -> Vec<tracker_events::UnitDiedEventFlatRow> {
         self.into_iter()
-            .filter_map(|(game_step, game_loop)| {
-                if let tracker_events::ReplayTrackerEvent::UnitDied(event) = game_step.event {
-                    Some(tracker_events::UnitDiedEventFlatRow::new(
-                        event,
-                        game_loop,
-                        details.clone(),
-                    ))
-                } else {
-                    None
+            .filter_map(|(sc2_event, change_hint)| match sc2_event {
+                SC2EventType::Tracker {
+                    tracker_loop,
+                    event,
+                } => {
+                    if let tracker_events::ReplayTrackerEvent::UnitDied(event) = event {
+                        Some(tracker_events::UnitDiedEventFlatRow::new(
+                            &details,
+                            event,
+                            tracker_loop,
+                            change_hint,
+                        ))
+                    } else {
+                        None
+                    }
                 }
+                _ => None,
             })
             .collect()
     }
 }
 
 impl Iterator for TrackerEventIterator {
-    /// The item is a tuple of the TrackerEvent and the adjusted game loop
-    /// An adjusted game loop is the `tracker_loop` adjusted to be in the same units as the game loops.
-    type Item = (TrackerEvent, i64);
+    /// The item is a tuple of the SC2EventType with the accumulated (adjusted) game loop, and the updated
+    /// units. An adjusted game loop is the `event_loop` adjusted to be in the same units as the game loops.
+    /// For now this only works with the Tracker events. When we start adding GameType events, we will need
+    /// to find a way to peak into the next events and keep track of the events in both Game and
+    /// Tracker sectors.
+    type Item = (SC2EventType, UnitChangeHint);
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
-            let current_slice: &[u8] = &self.data[self.index..];
+            let current_slice: &[u8] = &self.event_data[self.byte_index..];
             if current_slice.input_len() == 0 {
                 return None;
             }
@@ -163,7 +213,16 @@ impl Iterator for TrackerEventIterator {
             // game loops.
             match self.read_versioned_tracker_event() {
                 Ok(val) => {
-                    return Some((val, (self.tracker_loop as f32 / TRACKER_SPEED_RATIO) as i64))
+                    let adjusted_loop = (self.event_loop as f32 / TRACKER_SPEED_RATIO) as i64;
+                    let updated_hint =
+                        handle_tracker_event(&mut self.sc2_state, adjusted_loop, &val.event);
+                    return Some((
+                        SC2EventType::Tracker {
+                            tracker_loop: adjusted_loop,
+                            event: val.event,
+                        },
+                        updated_hint,
+                    ));
                 }
                 Err(S2ProtocolError::UnsupportedEventType) => {}
                 Err(err) => {
