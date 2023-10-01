@@ -23,7 +23,7 @@ pub struct InitData {
 impl InitData {
     /// Calls the per-protocol parser for the InitData and sets the metadadata.
     pub fn new(file_name: &str, mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
-        let init_data = match crate::versions::read_init_data(mpq, file_contents) {
+        let init_data = match crate::versions::read_init_data(file_name, mpq, file_contents) {
             Ok(init_data) => init_data,
             Err(err) => {
                 tracing::error!("Error reading init_data: {:?}", err);
@@ -50,7 +50,6 @@ impl TryFrom<PathBuf> for InitData {
     /// Returns an error if the file cannot be read or the parser fails.
     #[tracing::instrument(level = "debug")]
     fn try_from(path: PathBuf) -> Result<Self, Self::Error> {
-        tracing::info!("Reading InitData from {:?}", path);
         let file_contents = crate::read_file(&path)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
         match Self::new(path.to_str().unwrap_or_default(), &mpq, &file_contents) {

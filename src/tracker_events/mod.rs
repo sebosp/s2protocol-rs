@@ -52,6 +52,7 @@ pub struct UnitDiedEvent {
 }
 
 /// A protocol agnostic Unit Init Event
+/// Emitted when a unit takes time to be created and may be cancelled.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "arrow",
@@ -68,6 +69,7 @@ pub struct UnitInitEvent {
 }
 
 /// A protocol agnostic Unit Done Event
+/// Emitted when a unit that is previously in progress is completed.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "arrow",
@@ -90,6 +92,7 @@ pub struct UnitPositionsEvent {
 }
 
 impl UnitPositionsEvent {
+    /// Transforms the internal unit positions into a vector of UnitPosition
     pub fn to_unit_positions_vec(self) -> Vec<UnitPosition> {
         let mut unit_index = self.first_unit_index as i32;
         let mut res = vec![];

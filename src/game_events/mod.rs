@@ -1,9 +1,11 @@
 //! Decodes the Game Events.
 //! These are stored in an embedded file in the MPQ file called 'replay.game.events'
 
-pub mod state;
 use serde::{Deserialize, Serialize};
+pub mod state;
 pub use state::*;
+pub mod iterator;
+pub use iterator::*;
 
 #[cfg(feature = "arrow")]
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};

@@ -47,8 +47,8 @@ struct Cli {
     source: String,
 
     /// Turn debugging information on
-    #[arg(short, long, action = clap::ArgAction::Count)]
-    debug: u8,
+    #[arg(short, long, default_value = "info")]
+    verbosity_level: String,
 
     #[command(subcommand)]
     command: Commands,
@@ -56,9 +56,14 @@ struct Cli {
     /// The output file to write to
     #[arg(short, long)]
     output: Option<String>,
+
+    /// Show basic performance metrics
+    #[arg(short, long, default_value = "false")]
+    timing: bool,
 }
 
 /// Matches a list of files in case the cli.source param is a directory
+#[tracing::instrument(level = "debug")]
 pub fn get_matching_files(source: PathBuf) -> Result<Vec<PathBuf>, Box<dyn std::error::Error>> {
     if source.is_dir() {
         let mut sources = Vec::new();
@@ -79,10 +84,22 @@ pub fn get_matching_files(source: PathBuf) -> Result<Vec<PathBuf>, Box<dyn std::
 }
 
 /// Handles the request from the CLI when used as a binary
-#[tracing::instrument(level = "debug")]
 pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
     let init_time = std::time::Instant::now();
     let cli = Cli::parse();
+    // use the cli verbosity level to set the tracing level
+    let level = match cli.verbosity_level.as_str() {
+        "error" => tracing::Level::ERROR,
+        "warn" => tracing::Level::WARN,
+        "info" => tracing::Level::INFO,
+        "debug" => tracing::Level::DEBUG,
+        "trace" => tracing::Level::TRACE,
+        _ => tracing::Level::INFO,
+    };
+    tracing_subscriber::fmt()
+        .with_max_level(level)
+        .with_env_filter("info")
+        .init();
     match &cli.command {
         Commands::Generate => {
             ProtoMorphist::gen(&cli.source, &cli.output.expect("Requires --output"))?;
@@ -111,10 +128,16 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         continue;
                     }
                 };
+                let source_path: String = source
+                    .file_name()
+                    .expect("Failed to get file name")
+                    .to_str()
+                    .expect("Failed to convert file name to str")
+                    .to_string();
                 match read_type {
                     ReadTypes::TrackerEvents => {
                         tracing::info!("Getting tracker events");
-                        let res = read_tracker_events(&mpq, &file_contents)?;
+                        let res = read_tracker_events(&source_path, &mpq, &file_contents)?;
                         println!("[");
                         for evt in res {
                             println!("{},", serde_json::to_string(&evt)?);
@@ -124,7 +147,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
 
                     ReadTypes::GameEvents => {
                         tracing::info!("Getting game events");
-                        let res = read_game_events(&mpq, &file_contents)?;
+                        let res = read_game_events(&source_path, &mpq, &file_contents)?;
                         println!("[");
                         for evt in res {
                             println!("{},", serde_json::to_string(&evt)?);
@@ -133,7 +156,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     ReadTypes::MessageEvents => {
                         tracing::info!("Getting message events");
-                        let res = read_message_events(&mpq, &file_contents)?;
+                        let res = read_message_events(&source_path, &mpq, &file_contents)?;
                         println!("[");
                         for evt in res {
                             println!("{},", serde_json::to_string(&evt)?);
@@ -142,12 +165,12 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     ReadTypes::Details => {
                         tracing::info!("Getting details");
-                        let res = read_details(&mpq, &file_contents)?;
+                        let res = read_details(&source_path, &mpq, &file_contents)?;
                         println!("{},", serde_json::to_string(&res)?);
                     }
                     ReadTypes::InitData => {
                         tracing::info!("Getting initData");
-                        let res = read_init_data(&mpq, &file_contents)?;
+                        let res = read_init_data(&source_path, &mpq, &file_contents)?;
                         println!("{},", serde_json::to_string(&res)?);
                     }
                 }
@@ -160,6 +183,8 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             )?;
         }
     }
-    println!("Total time: {:?}", init_time.elapsed());
+    if cli.timing {
+        println!("Total time: {:?}", init_time.elapsed());
+    }
     Ok(())
 }

@@ -57,10 +57,8 @@ pub struct PlayerStatsFlatRow {
     pub vespene_friendly_fire_technology: i32,
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
-    pub ext_fs_replay_file_name: String,
     pub ext_fs_replay_sha256: String,
     pub ext_replay_detail_player_name: String,
-    pub ext_replay_detail_datetime: chrono::NaiveDateTime,
 }
 
 impl PlayerStatsFlatRow {
@@ -116,10 +114,8 @@ impl PlayerStatsFlatRow {
             vespene_friendly_fire_technology: stats.vespene_friendly_fire_technology,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_replay_file_name: details.ext_fs_replay_file_name,
             ext_fs_replay_sha256: details.ext_fs_replay_sha256,
             ext_replay_detail_player_name,
-            ext_replay_detail_datetime: details.ext_datetime,
         }
     }
 }

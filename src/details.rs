@@ -41,7 +41,7 @@ pub struct Details {
 impl Details {
     /// Calls the per-protocol parser for the Details and sets the metadadata.
     pub fn new(file_name: &str, mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
-        let details = match crate::versions::read_details(mpq, file_contents) {
+        let details = match crate::versions::read_details(file_name, mpq, file_contents) {
             Ok(details) => details,
             Err(err) => {
                 tracing::error!("Error reading details: {:?}", err);

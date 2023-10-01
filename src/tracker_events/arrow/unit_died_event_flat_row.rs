@@ -5,11 +5,8 @@ use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::details::Details;
 use crate::tracker_events::UnitDiedEvent;
-use crate::SC2ReplayState;
 use crate::UnitChangeHint;
 use serde::{Deserialize, Serialize};
-
-// TODO: Get the unit name that was killed and the unit name that killed it
 
 /// A protocol agnostic Unit Died
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
@@ -24,7 +21,7 @@ pub struct UnitDiedEventFlatRow {
     pub killer_player_id: Option<u8>,
     pub x: u8,
     pub y: u8,
-    pub killer_unit_name: String,
+    pub unit_killer_name: String,
     pub killer_unit_tag_index: Option<u32>,
     pub killer_unit_tag_recycle: Option<u32>,
     // TODO: Tho these fields should be equivalent, they were observed in a couple of games.
@@ -43,13 +40,13 @@ impl UnitDiedEventFlatRow {
         ext_replay_loop: i64,
         change_hint: UnitChangeHint,
     ) -> Self {
-        let (killer_unit_name, unit_died_name) = match change_hint {
+        let (unit_killer_name, unit_died_name) = match change_hint {
             UnitChangeHint::Unregistered { killer, killed } => {
-                let killer_unit_name = match killer {
+                let unit_killer_name = match killer {
                     Some(killer) => killer.name.clone(),
                     None => String::new(),
                 };
-                (killer_unit_name, killed.name)
+                (unit_killer_name, killed.name)
             }
             _ => unreachable!(),
         };
@@ -65,7 +62,7 @@ impl UnitDiedEventFlatRow {
             killer_player_id: event.killer_player_id,
             x: event.x,
             y: event.y,
-            killer_unit_name,
+            unit_killer_name,
             killer_unit_tag_index: event.killer_unit_tag_index,
             killer_unit_tag_recycle: event.killer_unit_tag_recycle,
             ext_replay_loop,

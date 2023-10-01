@@ -13,28 +13,28 @@ pub mod byte_aligned {
         MUint32(u32),
     }
     impl SVarUint32 {
-        #[tracing::instrument(name="87702::SVarUint32::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::SVarUint32::ChoiceType::parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_choice_tag(input)?;
             let (tail, variant_tag) = parse_vlq_int(tail)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant tagged '0' for MUint6");
+                    tracing::trace!("Variant tagged '0' for MUint6");
                     let (tail, res) = tagged_vlq_int(tail)?;
                     Ok((tail, Self::MUint6(u8::try_from(res)?)))
                 }
                 1 => {
-                    tracing::debug!("Variant tagged '1' for MUint14");
+                    tracing::trace!("Variant tagged '1' for MUint14");
                     let (tail, res) = tagged_vlq_int(tail)?;
                     Ok((tail, Self::MUint14(u32::try_from(res)?)))
                 }
                 2 => {
-                    tracing::debug!("Variant tagged '2' for MUint22");
+                    tracing::trace!("Variant tagged '2' for MUint22");
                     let (tail, res) = tagged_vlq_int(tail)?;
                     Ok((tail, Self::MUint22(u32::try_from(res)?)))
                 }
                 3 => {
-                    tracing::debug!("Variant tagged '3' for MUint32");
+                    tracing::trace!("Variant tagged '3' for MUint32");
                     let (tail, res) = tagged_vlq_int(tail)?;
                     Ok((tail, Self::MUint32(u32::try_from(res)?)))
                 }
@@ -54,21 +54,21 @@ pub mod byte_aligned {
         EReferee,
     }
     impl EObserve {
-        #[tracing::instrument(name="87702::EObserve::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::EObserve::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_int_tag(input)?;
             let (tail, variant_tag) = parse_vlq_int(tail)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ENone for value '0'");
+                    tracing::trace!("Variant ENone for value '0'");
                     Ok((tail, Self::ENone))
                 }
                 1 => {
-                    tracing::debug!("Variant ESpectator for value '1'");
+                    tracing::trace!("Variant ESpectator for value '1'");
                     Ok((tail, Self::ESpectator))
                 }
                 2 => {
-                    tracing::debug!("Variant EReferee for value '2'");
+                    tracing::trace!("Variant EReferee for value '2'");
                     Ok((tail, Self::EReferee))
                 }
 
@@ -90,49 +90,49 @@ pub mod byte_aligned {
         pub m_base_build: u32,
     }
     impl SVersion {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_flags(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_flags) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_flags: {:?}", m_flags);
+            tracing::trace!("m_flags: {:?}", m_flags);
             Ok((tail, u8::try_from(m_flags)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_major(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_major) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_major: {:?}", m_major);
+            tracing::trace!("m_major: {:?}", m_major);
             Ok((tail, u8::try_from(m_major)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_minor(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_minor) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_minor: {:?}", m_minor);
+            tracing::trace!("m_minor: {:?}", m_minor);
             Ok((tail, u8::try_from(m_minor)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_revision(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_revision) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_revision: {:?}", m_revision);
+            tracing::trace!("m_revision: {:?}", m_revision);
             Ok((tail, u8::try_from(m_revision)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_build(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_build) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_build: {:?}", m_build);
+            tracing::trace!("m_build: {:?}", m_build);
             Ok((tail, u32::try_from(m_build)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_base_build(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_base_build) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_base_build: {:?}", m_base_build);
+            tracing::trace!("m_base_build: {:?}", m_base_build);
             Ok((tail, u32::try_from(m_base_build)?))
         }
-        #[tracing::instrument(name="87702::byte_aligned::SVersion::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::SVersion::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -147,7 +147,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_flags");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_flags");
                         if m_flags.is_none() {
                             let (new_tail, parsed_m_flags) = Self::parse_m_flags(tail)?;
                             tail = new_tail;
@@ -159,7 +159,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_major");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_major");
                         if m_major.is_none() {
                             let (new_tail, parsed_m_major) = Self::parse_m_major(tail)?;
                             tail = new_tail;
@@ -171,7 +171,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_minor");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_minor");
                         if m_minor.is_none() {
                             let (new_tail, parsed_m_minor) = Self::parse_m_minor(tail)?;
                             tail = new_tail;
@@ -183,7 +183,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_revision");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_revision");
                         if m_revision.is_none() {
                             let (new_tail, parsed_m_revision) = Self::parse_m_revision(tail)?;
                             tail = new_tail;
@@ -198,7 +198,7 @@ pub mod byte_aligned {
                         }
                     }
                     4 => {
-                        tracing::debug!("Field [{i}]: tagged '4' for field m_build");
+                        tracing::trace!("Field [{i}]: tagged '4' for field m_build");
                         if m_build.is_none() {
                             let (new_tail, parsed_m_build) = Self::parse_m_build(tail)?;
                             tail = new_tail;
@@ -210,7 +210,7 @@ pub mod byte_aligned {
                         }
                     }
                     5 => {
-                        tracing::debug!("Field [{i}]: tagged '5' for field m_base_build");
+                        tracing::trace!("Field [{i}]: tagged '5' for field m_base_build");
                         if m_base_build.is_none() {
                             let (new_tail, parsed_m_base_build) = Self::parse_m_base_build(tail)?;
                             tail = new_tail;
@@ -249,14 +249,14 @@ pub mod byte_aligned {
         pub m_data: Vec<u8>,
     }
     impl Smd5 {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_data_deprecated(input: &[u8]) -> S2ProtoResult<&[u8], Option<Vec<u8>>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
             let (tail, m_data_deprecated) = if is_provided != 0 {
                 let (tail, _) = validate_array_tag(tail)?;
                 let (mut tail, array_length) = parse_vlq_int(tail)?;
-                tracing::debug!("Reading array length: {array_length}");
+                tracing::trace!("Reading array length: {array_length}");
 
                 let array_length = array_length as usize;
                 let max_initial_capacity =
@@ -271,17 +271,17 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_data_deprecated: {:?}", m_data_deprecated);
+            tracing::trace!("m_data_deprecated: {:?}", m_data_deprecated);
             Ok((tail, m_data_deprecated))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_data(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_data) = tagged_blob(input)?;
 
-            tracing::debug!("m_data: {:?}", m_data);
+            tracing::trace!("m_data: {:?}", m_data);
             Ok((tail, m_data))
         }
-        #[tracing::instrument(name="87702::byte_aligned::Smd5::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::Smd5::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -292,7 +292,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_data_deprecated");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_data_deprecated");
                         if let Some(None) = m_data_deprecated {
                             let (new_tail, parsed_m_data_deprecated) =
                                 Self::parse_m_data_deprecated(tail)?;
@@ -310,7 +310,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_data");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_data");
                         if m_data.is_none() {
                             let (new_tail, parsed_m_data) = Self::parse_m_data(tail)?;
                             tail = new_tail;
@@ -347,29 +347,29 @@ pub mod byte_aligned {
         EFaster,
     }
     impl GameEGameSpeed {
-        #[tracing::instrument(name="87702::GameEGameSpeed::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::GameEGameSpeed::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_int_tag(input)?;
             let (tail, variant_tag) = parse_vlq_int(tail)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ESlower for value '0'");
+                    tracing::trace!("Variant ESlower for value '0'");
                     Ok((tail, Self::ESlower))
                 }
                 1 => {
-                    tracing::debug!("Variant ESlow for value '1'");
+                    tracing::trace!("Variant ESlow for value '1'");
                     Ok((tail, Self::ESlow))
                 }
                 2 => {
-                    tracing::debug!("Variant ENormal for value '2'");
+                    tracing::trace!("Variant ENormal for value '2'");
                     Ok((tail, Self::ENormal))
                 }
                 3 => {
-                    tracing::debug!("Variant EFast for value '3'");
+                    tracing::trace!("Variant EFast for value '3'");
                     Ok((tail, Self::EFast))
                 }
                 4 => {
-                    tracing::debug!("Variant EFaster for value '4'");
+                    tracing::trace!("Variant EFaster for value '4'");
                     Ok((tail, Self::EFaster))
                 }
 
@@ -386,14 +386,14 @@ pub mod byte_aligned {
         pub m_file: Vec<u8>,
     }
     impl GameSThumbnail {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_file(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_file) = tagged_blob(input)?;
 
-            tracing::debug!("m_file: {:?}", m_file);
+            tracing::trace!("m_file: {:?}", m_file);
             Ok((tail, m_file))
         }
-        #[tracing::instrument(name="87702::byte_aligned::GameSThumbnail::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::GameSThumbnail::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -403,7 +403,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_file");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_file");
                         if m_file.is_none() {
                             let (new_tail, parsed_m_file) = Self::parse_m_file(tail)?;
                             tail = new_tail;
@@ -438,35 +438,35 @@ pub mod byte_aligned {
         pub m_b: u8,
     }
     impl GameSColor {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_a(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_a) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_a: {:?}", m_a);
+            tracing::trace!("m_a: {:?}", m_a);
             Ok((tail, u8::try_from(m_a)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_r(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_r) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_r: {:?}", m_r);
+            tracing::trace!("m_r: {:?}", m_r);
             Ok((tail, u8::try_from(m_r)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_g(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_g) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_g: {:?}", m_g);
+            tracing::trace!("m_g: {:?}", m_g);
             Ok((tail, u8::try_from(m_g)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_b(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_b) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_b: {:?}", m_b);
+            tracing::trace!("m_b: {:?}", m_b);
             Ok((tail, u8::try_from(m_b)?))
         }
-        #[tracing::instrument(name="87702::byte_aligned::GameSColor::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::GameSColor::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -479,7 +479,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_a");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_a");
                         if m_a.is_none() {
                             let (new_tail, parsed_m_a) = Self::parse_m_a(tail)?;
                             tail = new_tail;
@@ -491,7 +491,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_r");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_r");
                         if m_r.is_none() {
                             let (new_tail, parsed_m_r) = Self::parse_m_r(tail)?;
                             tail = new_tail;
@@ -503,7 +503,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_g");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_g");
                         if m_g.is_none() {
                             let (new_tail, parsed_m_g) = Self::parse_m_g(tail)?;
                             tail = new_tail;
@@ -515,7 +515,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_b");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_b");
                         if m_b.is_none() {
                             let (new_tail, parsed_m_b) = Self::parse_m_b(tail)?;
                             tail = new_tail;
@@ -553,25 +553,25 @@ pub mod byte_aligned {
         ETie,
     }
     impl GameEResultDetails {
-        #[tracing::instrument(name="87702::GameEResultDetails::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::GameEResultDetails::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_int_tag(input)?;
             let (tail, variant_tag) = parse_vlq_int(tail)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EUndecided for value '0'");
+                    tracing::trace!("Variant EUndecided for value '0'");
                     Ok((tail, Self::EUndecided))
                 }
                 1 => {
-                    tracing::debug!("Variant EWin for value '1'");
+                    tracing::trace!("Variant EWin for value '1'");
                     Ok((tail, Self::EWin))
                 }
                 2 => {
-                    tracing::debug!("Variant ELoss for value '2'");
+                    tracing::trace!("Variant ELoss for value '2'");
                     Ok((tail, Self::ELoss))
                 }
                 3 => {
-                    tracing::debug!("Variant ETie for value '3'");
+                    tracing::trace!("Variant ETie for value '3'");
                     Ok((tail, Self::ETie))
                 }
 
@@ -592,42 +592,42 @@ pub mod byte_aligned {
         pub m_id: u64,
     }
     impl GameSToonNameDetails {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_region(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_region) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_region: {:?}", m_region);
+            tracing::trace!("m_region: {:?}", m_region);
             Ok((tail, u8::try_from(m_region)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_program_id(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_program_id) = tagged_fourcc(input)?;
 
-            tracing::debug!("m_program_id: {:?}", m_program_id);
+            tracing::trace!("m_program_id: {:?}", m_program_id);
             Ok((tail, m_program_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_realm(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_realm) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_realm: {:?}", m_realm);
+            tracing::trace!("m_realm: {:?}", m_realm);
             Ok((tail, u32::try_from(m_realm)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_name(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_name) = tagged_blob(input)?;
 
-            tracing::debug!("m_name: {:?}", str::from_utf8(&m_name));
+            tracing::trace!("m_name: {:?}", str::from_utf8(&m_name));
             Ok((tail, m_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_id(input: &[u8]) -> S2ProtoResult<&[u8], u64> {
             let (tail, m_id) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_id: {:?}", m_id);
+            tracing::trace!("m_id: {:?}", m_id);
             Ok((tail, u64::try_from(m_id)?))
         }
-        #[tracing::instrument(name="87702::byte_aligned::GameSToonNameDetails::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::GameSToonNameDetails::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -641,7 +641,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_region");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_region");
                         if m_region.is_none() {
                             let (new_tail, parsed_m_region) = Self::parse_m_region(tail)?;
                             tail = new_tail;
@@ -653,7 +653,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_program_id");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_program_id");
                         if m_program_id.is_none() {
                             let (new_tail, parsed_m_program_id) = Self::parse_m_program_id(tail)?;
                             tail = new_tail;
@@ -668,7 +668,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_realm");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_realm");
                         if m_realm.is_none() {
                             let (new_tail, parsed_m_realm) = Self::parse_m_realm(tail)?;
                             tail = new_tail;
@@ -680,7 +680,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_name");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_name");
                         if m_name.is_none() {
                             let (new_tail, parsed_m_name) = Self::parse_m_name(tail)?;
                             tail = new_tail;
@@ -692,7 +692,7 @@ pub mod byte_aligned {
                         }
                     }
                     4 => {
-                        tracing::debug!("Field [{i}]: tagged '4' for field m_id");
+                        tracing::trace!("Field [{i}]: tagged '4' for field m_id");
                         if m_id.is_none() {
                             let (new_tail, parsed_m_id) = Self::parse_m_id(tail)?;
                             tail = new_tail;
@@ -738,70 +738,70 @@ pub mod byte_aligned {
         pub m_hero: Vec<u8>,
     }
     impl GameSPlayerDetails {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_name(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_name) = tagged_blob(input)?;
 
-            tracing::debug!("m_name: {:?}", str::from_utf8(&m_name));
+            tracing::trace!("m_name: {:?}", str::from_utf8(&m_name));
             Ok((tail, m_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_toon(input: &[u8]) -> S2ProtoResult<&[u8], GameSToonNameDetails> {
             let (tail, m_toon) = GameSToonNameDetails::parse(input)?;
 
-            tracing::debug!("m_toon: {:?}", m_toon);
+            tracing::trace!("m_toon: {:?}", m_toon);
             Ok((tail, m_toon))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_race(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_race) = tagged_blob(input)?;
 
-            tracing::debug!("m_race: {:?}", m_race);
+            tracing::trace!("m_race: {:?}", m_race);
             Ok((tail, m_race))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_color(input: &[u8]) -> S2ProtoResult<&[u8], GameSColor> {
             let (tail, m_color) = GameSColor::parse(input)?;
 
-            tracing::debug!("m_color: {:?}", m_color);
+            tracing::trace!("m_color: {:?}", m_color);
             Ok((tail, m_color))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_control(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_control) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_control: {:?}", m_control);
+            tracing::trace!("m_control: {:?}", m_control);
             Ok((tail, u8::try_from(m_control)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_team_id(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_team_id) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_team_id: {:?}", m_team_id);
+            tracing::trace!("m_team_id: {:?}", m_team_id);
             Ok((tail, u8::try_from(m_team_id)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_handicap(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_handicap) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_handicap: {:?}", m_handicap);
+            tracing::trace!("m_handicap: {:?}", m_handicap);
             Ok((tail, u32::try_from(m_handicap)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_observe(input: &[u8]) -> S2ProtoResult<&[u8], EObserve> {
             let (tail, m_observe) = EObserve::parse(input)?;
 
-            tracing::debug!("m_observe: {:?}", m_observe);
+            tracing::trace!("m_observe: {:?}", m_observe);
             Ok((tail, m_observe))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_result(input: &[u8]) -> S2ProtoResult<&[u8], GameEResultDetails> {
             let (tail, m_result) = GameEResultDetails::parse(input)?;
 
-            tracing::debug!("m_result: {:?}", m_result);
+            tracing::trace!("m_result: {:?}", m_result);
             Ok((tail, m_result))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_working_set_slot_id(input: &[u8]) -> S2ProtoResult<&[u8], Option<u8>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
@@ -811,17 +811,17 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_working_set_slot_id: {:?}", m_working_set_slot_id);
+            tracing::trace!("m_working_set_slot_id: {:?}", m_working_set_slot_id);
             Ok((tail, m_working_set_slot_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_hero(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_hero) = tagged_blob(input)?;
 
-            tracing::debug!("m_hero: {:?}", m_hero);
+            tracing::trace!("m_hero: {:?}", m_hero);
             Ok((tail, m_hero))
         }
-        #[tracing::instrument(name="87702::byte_aligned::GameSPlayerDetails::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::GameSPlayerDetails::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -841,7 +841,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_name");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_name");
                         if m_name.is_none() {
                             let (new_tail, parsed_m_name) = Self::parse_m_name(tail)?;
                             tail = new_tail;
@@ -853,7 +853,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_toon");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_toon");
                         if m_toon.is_none() {
                             let (new_tail, parsed_m_toon) = Self::parse_m_toon(tail)?;
                             tail = new_tail;
@@ -865,7 +865,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_race");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_race");
                         if m_race.is_none() {
                             let (new_tail, parsed_m_race) = Self::parse_m_race(tail)?;
                             tail = new_tail;
@@ -877,7 +877,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_color");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_color");
                         if m_color.is_none() {
                             let (new_tail, parsed_m_color) = Self::parse_m_color(tail)?;
                             tail = new_tail;
@@ -889,7 +889,7 @@ pub mod byte_aligned {
                         }
                     }
                     4 => {
-                        tracing::debug!("Field [{i}]: tagged '4' for field m_control");
+                        tracing::trace!("Field [{i}]: tagged '4' for field m_control");
                         if m_control.is_none() {
                             let (new_tail, parsed_m_control) = Self::parse_m_control(tail)?;
                             tail = new_tail;
@@ -904,7 +904,7 @@ pub mod byte_aligned {
                         }
                     }
                     5 => {
-                        tracing::debug!("Field [{i}]: tagged '5' for field m_team_id");
+                        tracing::trace!("Field [{i}]: tagged '5' for field m_team_id");
                         if m_team_id.is_none() {
                             let (new_tail, parsed_m_team_id) = Self::parse_m_team_id(tail)?;
                             tail = new_tail;
@@ -919,7 +919,7 @@ pub mod byte_aligned {
                         }
                     }
                     6 => {
-                        tracing::debug!("Field [{i}]: tagged '6' for field m_handicap");
+                        tracing::trace!("Field [{i}]: tagged '6' for field m_handicap");
                         if m_handicap.is_none() {
                             let (new_tail, parsed_m_handicap) = Self::parse_m_handicap(tail)?;
                             tail = new_tail;
@@ -934,7 +934,7 @@ pub mod byte_aligned {
                         }
                     }
                     7 => {
-                        tracing::debug!("Field [{i}]: tagged '7' for field m_observe");
+                        tracing::trace!("Field [{i}]: tagged '7' for field m_observe");
                         if m_observe.is_none() {
                             let (new_tail, parsed_m_observe) = Self::parse_m_observe(tail)?;
                             tail = new_tail;
@@ -949,7 +949,7 @@ pub mod byte_aligned {
                         }
                     }
                     8 => {
-                        tracing::debug!("Field [{i}]: tagged '8' for field m_result");
+                        tracing::trace!("Field [{i}]: tagged '8' for field m_result");
                         if m_result.is_none() {
                             let (new_tail, parsed_m_result) = Self::parse_m_result(tail)?;
                             tail = new_tail;
@@ -961,7 +961,7 @@ pub mod byte_aligned {
                         }
                     }
                     9 => {
-                        tracing::debug!("Field [{i}]: tagged '9' for field m_working_set_slot_id");
+                        tracing::trace!("Field [{i}]: tagged '9' for field m_working_set_slot_id");
                         if let Some(None) = m_working_set_slot_id {
                             let (new_tail, parsed_m_working_set_slot_id) =
                                 Self::parse_m_working_set_slot_id(tail)?;
@@ -979,7 +979,7 @@ pub mod byte_aligned {
                         }
                     }
                     10 => {
-                        tracing::debug!("Field [{i}]: tagged '10' for field m_hero");
+                        tracing::trace!("Field [{i}]: tagged '10' for field m_hero");
                         if m_hero.is_none() {
                             let (new_tail, parsed_m_hero) = Self::parse_m_hero(tail)?;
                             tail = new_tail;
@@ -1021,14 +1021,14 @@ pub mod byte_aligned {
         pub value: Vec<GameSPlayerDetails>,
     }
     impl GameCPlayerDetailsArray {
-        #[tracing::instrument(name="87702::GameCPlayerDetailsArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::GameCPlayerDetailsArray::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_array_tag(input)?;
             let (mut tail, array_length) = parse_vlq_int(tail)?;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             // compat_count(GameSPlayerDetails::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<GameSPlayerDetails>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -1063,7 +1063,7 @@ pub mod byte_aligned {
         pub m_mod_paths: Option<Vec<Vec<u8>>>,
     }
     impl GameSDetails {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_player_list(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], Option<Vec<GameSPlayerDetails>>> {
@@ -1072,10 +1072,10 @@ pub mod byte_aligned {
             let (tail, m_player_list) = if is_provided != 0 {
                 let (tail, _) = validate_array_tag(tail)?;
                 let (mut tail, array_length) = parse_vlq_int(tail)?;
-                tracing::debug!("Reading array length: {array_length}");
+                tracing::trace!("Reading array length: {array_length}");
                 // compat_count(GameSPlayerDetails::parse, array_length as usize)(tail)?;
                 let array_length = array_length as usize;
-                tracing::debug!("Reading array length: {array_length}");
+                tracing::trace!("Reading array length: {array_length}");
                 let max_initial_capacity =
                     MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<GameSPlayerDetails>().max(1);
                 let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -1088,52 +1088,52 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_player_list: {:?}", m_player_list);
+            tracing::trace!("m_player_list: {:?}", m_player_list);
             Ok((tail, m_player_list))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_title(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_title) = tagged_blob(input)?;
 
-            tracing::debug!("m_title: {:?}", m_title);
+            tracing::trace!("m_title: {:?}", m_title);
             Ok((tail, m_title))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_difficulty(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_difficulty) = tagged_blob(input)?;
 
-            tracing::debug!("m_difficulty: {:?}", m_difficulty);
+            tracing::trace!("m_difficulty: {:?}", m_difficulty);
             Ok((tail, m_difficulty))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_thumbnail(input: &[u8]) -> S2ProtoResult<&[u8], GameSThumbnail> {
             let (tail, m_thumbnail) = GameSThumbnail::parse(input)?;
 
-            tracing::debug!("m_thumbnail: {:?}", m_thumbnail);
+            tracing::trace!("m_thumbnail: {:?}", m_thumbnail);
             Ok((tail, m_thumbnail))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_is_blizzard_map(input: &[u8]) -> S2ProtoResult<&[u8], bool> {
             let (tail, m_is_blizzard_map) = tagged_bool(input)?;
 
-            tracing::debug!("m_is_blizzard_map: {:?}", m_is_blizzard_map);
+            tracing::trace!("m_is_blizzard_map: {:?}", m_is_blizzard_map);
             Ok((tail, m_is_blizzard_map))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_time_utc(input: &[u8]) -> S2ProtoResult<&[u8], i64> {
             let (tail, m_time_utc) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_time_utc: {:?}", m_time_utc);
+            tracing::trace!("m_time_utc: {:?}", m_time_utc);
             Ok((tail, m_time_utc))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_time_local_offset(input: &[u8]) -> S2ProtoResult<&[u8], i64> {
             let (tail, m_time_local_offset) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_time_local_offset: {:?}", m_time_local_offset);
+            tracing::trace!("m_time_local_offset: {:?}", m_time_local_offset);
             Ok((tail, m_time_local_offset))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_restart_as_transition_map(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], Option<bool>> {
@@ -1145,58 +1145,58 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!(
+            tracing::trace!(
                 "m_restart_as_transition_map: {:?}",
                 m_restart_as_transition_map
             );
             Ok((tail, m_restart_as_transition_map))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_disable_recover_game(input: &[u8]) -> S2ProtoResult<&[u8], bool> {
             let (tail, m_disable_recover_game) = tagged_bool(input)?;
 
-            tracing::debug!("m_disable_recover_game: {:?}", m_disable_recover_game);
+            tracing::trace!("m_disable_recover_game: {:?}", m_disable_recover_game);
             Ok((tail, m_disable_recover_game))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_description(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_description) = tagged_blob(input)?;
 
-            tracing::debug!("m_description: {:?}", m_description);
+            tracing::trace!("m_description: {:?}", m_description);
             Ok((tail, m_description))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_image_file_path(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_image_file_path) = tagged_blob(input)?;
 
-            tracing::debug!("m_image_file_path: {:?}", m_image_file_path);
+            tracing::trace!("m_image_file_path: {:?}", m_image_file_path);
             Ok((tail, m_image_file_path))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_campaign_index(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_campaign_index) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_campaign_index: {:?}", m_campaign_index);
+            tracing::trace!("m_campaign_index: {:?}", m_campaign_index);
             Ok((tail, u8::try_from(m_campaign_index)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_map_file_name(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_map_file_name) = tagged_blob(input)?;
 
-            tracing::debug!("m_map_file_name: {:?}", str::from_utf8(&m_map_file_name));
+            tracing::trace!("m_map_file_name: {:?}", str::from_utf8(&m_map_file_name));
             Ok((tail, m_map_file_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_cache_handles(input: &[u8]) -> S2ProtoResult<&[u8], Option<Vec<Vec<u8>>>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
             let (tail, m_cache_handles) = if is_provided != 0 {
                 let (tail, _) = validate_array_tag(tail)?;
                 let (mut tail, array_length) = parse_vlq_int(tail)?;
-                tracing::debug!("Reading array length: {array_length}");
+                tracing::trace!("Reading array length: {array_length}");
                 // compat_count(tagged_blob, array_length as usize)(tail)?;
                 let array_length = array_length as usize;
-                tracing::debug!("Reading array length: {array_length}");
+                tracing::trace!("Reading array length: {array_length}");
                 let max_initial_capacity =
                     MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<u8>().max(1);
                 let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -1209,41 +1209,41 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_cache_handles: {:?}", m_cache_handles);
+            tracing::trace!("m_cache_handles: {:?}", m_cache_handles);
             Ok((tail, m_cache_handles))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_mini_save(input: &[u8]) -> S2ProtoResult<&[u8], bool> {
             let (tail, m_mini_save) = tagged_bool(input)?;
 
-            tracing::debug!("m_mini_save: {:?}", m_mini_save);
+            tracing::trace!("m_mini_save: {:?}", m_mini_save);
             Ok((tail, m_mini_save))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_game_speed(input: &[u8]) -> S2ProtoResult<&[u8], GameEGameSpeed> {
             let (tail, m_game_speed) = GameEGameSpeed::parse(input)?;
 
-            tracing::debug!("m_game_speed: {:?}", m_game_speed);
+            tracing::trace!("m_game_speed: {:?}", m_game_speed);
             Ok((tail, m_game_speed))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_default_difficulty(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_default_difficulty) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_default_difficulty: {:?}", m_default_difficulty);
+            tracing::trace!("m_default_difficulty: {:?}", m_default_difficulty);
             Ok((tail, u32::try_from(m_default_difficulty)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_mod_paths(input: &[u8]) -> S2ProtoResult<&[u8], Option<Vec<Vec<u8>>>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
             let (tail, m_mod_paths) = if is_provided != 0 {
                 let (tail, _) = validate_array_tag(tail)?;
                 let (mut tail, array_length) = parse_vlq_int(tail)?;
-                tracing::debug!("Reading array length: {array_length}");
+                tracing::trace!("Reading array length: {array_length}");
                 // compat_count(tagged_blob, array_length as usize)(tail)?;
                 let array_length = array_length as usize;
-                tracing::debug!("Reading array length: {array_length}");
+                tracing::trace!("Reading array length: {array_length}");
                 let max_initial_capacity =
                     MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<u8>().max(1);
                 let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -1256,10 +1256,10 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_mod_paths: {:?}", m_mod_paths);
+            tracing::trace!("m_mod_paths: {:?}", m_mod_paths);
             Ok((tail, m_mod_paths))
         }
-        #[tracing::instrument(name="87702::byte_aligned::GameSDetails::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::GameSDetails::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -1286,7 +1286,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_player_list");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_player_list");
                         if let Some(None) = m_player_list {
                             let (new_tail, parsed_m_player_list) = Self::parse_m_player_list(tail)?;
                             tail = new_tail;
@@ -1301,7 +1301,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_title");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_title");
                         if m_title.is_none() {
                             let (new_tail, parsed_m_title) = Self::parse_m_title(tail)?;
                             tail = new_tail;
@@ -1313,7 +1313,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_difficulty");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_difficulty");
                         if m_difficulty.is_none() {
                             let (new_tail, parsed_m_difficulty) = Self::parse_m_difficulty(tail)?;
                             tail = new_tail;
@@ -1328,7 +1328,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_thumbnail");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_thumbnail");
                         if m_thumbnail.is_none() {
                             let (new_tail, parsed_m_thumbnail) = Self::parse_m_thumbnail(tail)?;
                             tail = new_tail;
@@ -1343,7 +1343,7 @@ pub mod byte_aligned {
                         }
                     }
                     4 => {
-                        tracing::debug!("Field [{i}]: tagged '4' for field m_is_blizzard_map");
+                        tracing::trace!("Field [{i}]: tagged '4' for field m_is_blizzard_map");
                         if m_is_blizzard_map.is_none() {
                             let (new_tail, parsed_m_is_blizzard_map) =
                                 Self::parse_m_is_blizzard_map(tail)?;
@@ -1361,7 +1361,7 @@ pub mod byte_aligned {
                         }
                     }
                     5 => {
-                        tracing::debug!("Field [{i}]: tagged '5' for field m_time_utc");
+                        tracing::trace!("Field [{i}]: tagged '5' for field m_time_utc");
                         if m_time_utc.is_none() {
                             let (new_tail, parsed_m_time_utc) = Self::parse_m_time_utc(tail)?;
                             tail = new_tail;
@@ -1376,7 +1376,7 @@ pub mod byte_aligned {
                         }
                     }
                     6 => {
-                        tracing::debug!("Field [{i}]: tagged '6' for field m_time_local_offset");
+                        tracing::trace!("Field [{i}]: tagged '6' for field m_time_local_offset");
                         if m_time_local_offset.is_none() {
                             let (new_tail, parsed_m_time_local_offset) =
                                 Self::parse_m_time_local_offset(tail)?;
@@ -1394,7 +1394,7 @@ pub mod byte_aligned {
                         }
                     }
                     16 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '16' for field m_restart_as_transition_map"
                         );
                         if let Some(None) = m_restart_as_transition_map {
@@ -1412,7 +1412,7 @@ pub mod byte_aligned {
                         }
                     }
                     17 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '17' for field m_disable_recover_game"
                         );
                         if m_disable_recover_game.is_none() {
@@ -1432,7 +1432,7 @@ pub mod byte_aligned {
                         }
                     }
                     7 => {
-                        tracing::debug!("Field [{i}]: tagged '7' for field m_description");
+                        tracing::trace!("Field [{i}]: tagged '7' for field m_description");
                         if m_description.is_none() {
                             let (new_tail, parsed_m_description) = Self::parse_m_description(tail)?;
                             tail = new_tail;
@@ -1447,7 +1447,7 @@ pub mod byte_aligned {
                         }
                     }
                     8 => {
-                        tracing::debug!("Field [{i}]: tagged '8' for field m_image_file_path");
+                        tracing::trace!("Field [{i}]: tagged '8' for field m_image_file_path");
                         if m_image_file_path.is_none() {
                             let (new_tail, parsed_m_image_file_path) =
                                 Self::parse_m_image_file_path(tail)?;
@@ -1465,7 +1465,7 @@ pub mod byte_aligned {
                         }
                     }
                     15 => {
-                        tracing::debug!("Field [{i}]: tagged '15' for field m_campaign_index");
+                        tracing::trace!("Field [{i}]: tagged '15' for field m_campaign_index");
                         if m_campaign_index.is_none() {
                             let (new_tail, parsed_m_campaign_index) =
                                 Self::parse_m_campaign_index(tail)?;
@@ -1483,7 +1483,7 @@ pub mod byte_aligned {
                         }
                     }
                     9 => {
-                        tracing::debug!("Field [{i}]: tagged '9' for field m_map_file_name");
+                        tracing::trace!("Field [{i}]: tagged '9' for field m_map_file_name");
                         if m_map_file_name.is_none() {
                             let (new_tail, parsed_m_map_file_name) =
                                 Self::parse_m_map_file_name(tail)?;
@@ -1501,7 +1501,7 @@ pub mod byte_aligned {
                         }
                     }
                     10 => {
-                        tracing::debug!("Field [{i}]: tagged '10' for field m_cache_handles");
+                        tracing::trace!("Field [{i}]: tagged '10' for field m_cache_handles");
                         if let Some(None) = m_cache_handles {
                             let (new_tail, parsed_m_cache_handles) =
                                 Self::parse_m_cache_handles(tail)?;
@@ -1519,7 +1519,7 @@ pub mod byte_aligned {
                         }
                     }
                     11 => {
-                        tracing::debug!("Field [{i}]: tagged '11' for field m_mini_save");
+                        tracing::trace!("Field [{i}]: tagged '11' for field m_mini_save");
                         if m_mini_save.is_none() {
                             let (new_tail, parsed_m_mini_save) = Self::parse_m_mini_save(tail)?;
                             tail = new_tail;
@@ -1534,7 +1534,7 @@ pub mod byte_aligned {
                         }
                     }
                     12 => {
-                        tracing::debug!("Field [{i}]: tagged '12' for field m_game_speed");
+                        tracing::trace!("Field [{i}]: tagged '12' for field m_game_speed");
                         if m_game_speed.is_none() {
                             let (new_tail, parsed_m_game_speed) = Self::parse_m_game_speed(tail)?;
                             tail = new_tail;
@@ -1549,7 +1549,7 @@ pub mod byte_aligned {
                         }
                     }
                     13 => {
-                        tracing::debug!("Field [{i}]: tagged '13' for field m_default_difficulty");
+                        tracing::trace!("Field [{i}]: tagged '13' for field m_default_difficulty");
                         if m_default_difficulty.is_none() {
                             let (new_tail, parsed_m_default_difficulty) =
                                 Self::parse_m_default_difficulty(tail)?;
@@ -1567,7 +1567,7 @@ pub mod byte_aligned {
                         }
                     }
                     14 => {
-                        tracing::debug!("Field [{i}]: tagged '14' for field m_mod_paths");
+                        tracing::trace!("Field [{i}]: tagged '14' for field m_mod_paths");
                         if let Some(None) = m_mod_paths {
                             let (new_tail, parsed_m_mod_paths) = Self::parse_m_mod_paths(tail)?;
                             tail = new_tail;
@@ -1629,76 +1629,76 @@ pub mod byte_aligned {
         pub m_ngdp_root_key_is_dev_data: bool,
     }
     impl ReplaySHeader {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_signature(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_signature) = tagged_blob(input)?;
 
-            tracing::debug!("m_signature: {:?}", m_signature);
+            tracing::trace!("m_signature: {:?}", m_signature);
             Ok((tail, m_signature))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_version(input: &[u8]) -> S2ProtoResult<&[u8], SVersion> {
             let (tail, m_version) = SVersion::parse(input)?;
 
-            tracing::debug!("m_version: {:?}", m_version);
+            tracing::trace!("m_version: {:?}", m_version);
             Ok((tail, m_version))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_type(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_type) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_type: {:?}", m_type);
+            tracing::trace!("m_type: {:?}", m_type);
             Ok((tail, u8::try_from(m_type)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_elapsed_game_loops(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_elapsed_game_loops) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_elapsed_game_loops: {:?}", m_elapsed_game_loops);
+            tracing::trace!("m_elapsed_game_loops: {:?}", m_elapsed_game_loops);
             Ok((tail, u32::try_from(m_elapsed_game_loops)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_use_scaled_time(input: &[u8]) -> S2ProtoResult<&[u8], bool> {
             let (tail, m_use_scaled_time) = tagged_bool(input)?;
 
-            tracing::debug!("m_use_scaled_time: {:?}", m_use_scaled_time);
+            tracing::trace!("m_use_scaled_time: {:?}", m_use_scaled_time);
             Ok((tail, m_use_scaled_time))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_ngdp_root_key(input: &[u8]) -> S2ProtoResult<&[u8], Smd5> {
             let (tail, m_ngdp_root_key) = Smd5::parse(input)?;
 
-            tracing::debug!("m_ngdp_root_key: {:?}", m_ngdp_root_key);
+            tracing::trace!("m_ngdp_root_key: {:?}", m_ngdp_root_key);
             Ok((tail, m_ngdp_root_key))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_data_build_num(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_data_build_num) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_data_build_num: {:?}", m_data_build_num);
+            tracing::trace!("m_data_build_num: {:?}", m_data_build_num);
             Ok((tail, u32::try_from(m_data_build_num)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_replay_compatibility_hash(input: &[u8]) -> S2ProtoResult<&[u8], Smd5> {
             let (tail, m_replay_compatibility_hash) = Smd5::parse(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_replay_compatibility_hash: {:?}",
                 m_replay_compatibility_hash
             );
             Ok((tail, m_replay_compatibility_hash))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_ngdp_root_key_is_dev_data(input: &[u8]) -> S2ProtoResult<&[u8], bool> {
             let (tail, m_ngdp_root_key_is_dev_data) = tagged_bool(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_ngdp_root_key_is_dev_data: {:?}",
                 m_ngdp_root_key_is_dev_data
             );
             Ok((tail, m_ngdp_root_key_is_dev_data))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplaySHeader::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplaySHeader::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -1716,7 +1716,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_signature");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_signature");
                         if m_signature.is_none() {
                             let (new_tail, parsed_m_signature) = Self::parse_m_signature(tail)?;
                             tail = new_tail;
@@ -1731,7 +1731,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_version");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_version");
                         if m_version.is_none() {
                             let (new_tail, parsed_m_version) = Self::parse_m_version(tail)?;
                             tail = new_tail;
@@ -1746,7 +1746,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_type");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_type");
                         if m_type.is_none() {
                             let (new_tail, parsed_m_type) = Self::parse_m_type(tail)?;
                             tail = new_tail;
@@ -1758,7 +1758,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_elapsed_game_loops");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_elapsed_game_loops");
                         if m_elapsed_game_loops.is_none() {
                             let (new_tail, parsed_m_elapsed_game_loops) =
                                 Self::parse_m_elapsed_game_loops(tail)?;
@@ -1776,7 +1776,7 @@ pub mod byte_aligned {
                         }
                     }
                     4 => {
-                        tracing::debug!("Field [{i}]: tagged '4' for field m_use_scaled_time");
+                        tracing::trace!("Field [{i}]: tagged '4' for field m_use_scaled_time");
                         if m_use_scaled_time.is_none() {
                             let (new_tail, parsed_m_use_scaled_time) =
                                 Self::parse_m_use_scaled_time(tail)?;
@@ -1794,7 +1794,7 @@ pub mod byte_aligned {
                         }
                     }
                     5 => {
-                        tracing::debug!("Field [{i}]: tagged '5' for field m_ngdp_root_key");
+                        tracing::trace!("Field [{i}]: tagged '5' for field m_ngdp_root_key");
                         if m_ngdp_root_key.is_none() {
                             let (new_tail, parsed_m_ngdp_root_key) =
                                 Self::parse_m_ngdp_root_key(tail)?;
@@ -1812,7 +1812,7 @@ pub mod byte_aligned {
                         }
                     }
                     6 => {
-                        tracing::debug!("Field [{i}]: tagged '6' for field m_data_build_num");
+                        tracing::trace!("Field [{i}]: tagged '6' for field m_data_build_num");
                         if m_data_build_num.is_none() {
                             let (new_tail, parsed_m_data_build_num) =
                                 Self::parse_m_data_build_num(tail)?;
@@ -1830,7 +1830,7 @@ pub mod byte_aligned {
                         }
                     }
                     7 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '7' for field m_replay_compatibility_hash"
                         );
                         if m_replay_compatibility_hash.is_none() {
@@ -1850,7 +1850,7 @@ pub mod byte_aligned {
                         }
                     }
                     8 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '8' for field m_ngdp_root_key_is_dev_data"
                         );
                         if m_ngdp_root_key_is_dev_data.is_none() {
@@ -1911,67 +1911,67 @@ pub mod byte_aligned {
         EPlayerSetup(ReplayTrackerSPlayerSetupEvent),
     }
     impl ReplayTrackerEEventId {
-        #[tracing::instrument(name="87702::ReplayTrackerEEventId::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::ReplayTrackerEEventId::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_int_tag(input)?;
             let (tail, variant_tag) = parse_vlq_int(tail)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EPlayerStats for value '0'");
+                    tracing::trace!("Variant EPlayerStats for value '0'");
 
                     let (tail, res) = ReplayTrackerSPlayerStatsEvent::parse(tail)?;
                     Ok((tail, Self::EPlayerStats(res)))
                 }
                 1 => {
-                    tracing::debug!("Variant EUnitBorn for value '1'");
+                    tracing::trace!("Variant EUnitBorn for value '1'");
 
                     let (tail, res) = ReplayTrackerSUnitBornEvent::parse(tail)?;
                     Ok((tail, Self::EUnitBorn(res)))
                 }
                 2 => {
-                    tracing::debug!("Variant EUnitDied for value '2'");
+                    tracing::trace!("Variant EUnitDied for value '2'");
 
                     let (tail, res) = ReplayTrackerSUnitDiedEvent::parse(tail)?;
                     Ok((tail, Self::EUnitDied(res)))
                 }
                 3 => {
-                    tracing::debug!("Variant EUnitOwnerChange for value '3'");
+                    tracing::trace!("Variant EUnitOwnerChange for value '3'");
 
                     let (tail, res) = ReplayTrackerSUnitOwnerChangeEvent::parse(tail)?;
                     Ok((tail, Self::EUnitOwnerChange(res)))
                 }
                 4 => {
-                    tracing::debug!("Variant EUnitTypeChange for value '4'");
+                    tracing::trace!("Variant EUnitTypeChange for value '4'");
 
                     let (tail, res) = ReplayTrackerSUnitTypeChangeEvent::parse(tail)?;
                     Ok((tail, Self::EUnitTypeChange(res)))
                 }
                 5 => {
-                    tracing::debug!("Variant EUpgrade for value '5'");
+                    tracing::trace!("Variant EUpgrade for value '5'");
 
                     let (tail, res) = ReplayTrackerSUpgradeEvent::parse(tail)?;
                     Ok((tail, Self::EUpgrade(res)))
                 }
                 6 => {
-                    tracing::debug!("Variant EUnitInit for value '6'");
+                    tracing::trace!("Variant EUnitInit for value '6'");
 
                     let (tail, res) = ReplayTrackerSUnitInitEvent::parse(tail)?;
                     Ok((tail, Self::EUnitInit(res)))
                 }
                 7 => {
-                    tracing::debug!("Variant EUnitDone for value '7'");
+                    tracing::trace!("Variant EUnitDone for value '7'");
 
                     let (tail, res) = ReplayTrackerSUnitDoneEvent::parse(tail)?;
                     Ok((tail, Self::EUnitDone(res)))
                 }
                 8 => {
-                    tracing::debug!("Variant EUnitPosition for value '8'");
+                    tracing::trace!("Variant EUnitPosition for value '8'");
 
                     let (tail, res) = ReplayTrackerSUnitPositionsEvent::parse(tail)?;
                     Ok((tail, Self::EUnitPosition(res)))
                 }
                 9 => {
-                    tracing::debug!("Variant EPlayerSetup for value '9'");
+                    tracing::trace!("Variant EPlayerSetup for value '9'");
 
                     let (tail, res) = ReplayTrackerSPlayerSetupEvent::parse(tail)?;
                     Ok((tail, Self::EPlayerSetup(res)))
@@ -2028,67 +2028,67 @@ pub mod byte_aligned {
         pub m_score_value_vespene_friendly_fire_technology: i32,
     }
     impl ReplayTrackerSPlayerStats {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_current(input: &[u8]) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_current) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_current: {:?}",
                 m_score_value_minerals_current
             );
             Ok((tail, i32::try_from(m_score_value_minerals_current)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_current(input: &[u8]) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_current) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_current: {:?}",
                 m_score_value_vespene_current
             );
             Ok((tail, i32::try_from(m_score_value_vespene_current)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_collection_rate(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_collection_rate) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_collection_rate: {:?}",
                 m_score_value_minerals_collection_rate
             );
             Ok((tail, i32::try_from(m_score_value_minerals_collection_rate)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_collection_rate(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_collection_rate) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_collection_rate: {:?}",
                 m_score_value_vespene_collection_rate
             );
             Ok((tail, i32::try_from(m_score_value_vespene_collection_rate)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_workers_active_count(input: &[u8]) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_workers_active_count) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_workers_active_count: {:?}",
                 m_score_value_workers_active_count
             );
             Ok((tail, i32::try_from(m_score_value_workers_active_count)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_used_in_progress_army(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_used_in_progress_army) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_used_in_progress_army: {:?}",
                 m_score_value_minerals_used_in_progress_army
             );
@@ -2097,13 +2097,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_minerals_used_in_progress_army)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_used_in_progress_economy(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_used_in_progress_economy) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_used_in_progress_economy: {:?}",
                 m_score_value_minerals_used_in_progress_economy
             );
@@ -2112,13 +2112,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_minerals_used_in_progress_economy)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_used_in_progress_technology(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_used_in_progress_technology) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "res: {:?}",
                 m_score_value_minerals_used_in_progress_technology
             );
@@ -2127,13 +2127,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_minerals_used_in_progress_technology)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_used_in_progress_army(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_used_in_progress_army) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_used_in_progress_army: {:?}",
                 m_score_value_vespene_used_in_progress_army
             );
@@ -2142,13 +2142,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_vespene_used_in_progress_army)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_used_in_progress_economy(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_used_in_progress_economy) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_used_in_progress_economy: {:?}",
                 m_score_value_vespene_used_in_progress_economy
             );
@@ -2157,13 +2157,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_vespene_used_in_progress_economy)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_used_in_progress_technology(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_used_in_progress_technology) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "res: {:?}",
                 m_score_value_vespene_used_in_progress_technology
             );
@@ -2172,13 +2172,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_vespene_used_in_progress_technology)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_used_current_army(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_used_current_army) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_used_current_army: {:?}",
                 m_score_value_minerals_used_current_army
             );
@@ -2187,13 +2187,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_minerals_used_current_army)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_used_current_economy(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_used_current_economy) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_used_current_economy: {:?}",
                 m_score_value_minerals_used_current_economy
             );
@@ -2202,13 +2202,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_minerals_used_current_economy)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_used_current_technology(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_used_current_technology) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_used_current_technology: {:?}",
                 m_score_value_minerals_used_current_technology
             );
@@ -2217,13 +2217,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_minerals_used_current_technology)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_used_current_army(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_used_current_army) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_used_current_army: {:?}",
                 m_score_value_vespene_used_current_army
             );
@@ -2232,13 +2232,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_vespene_used_current_army)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_used_current_economy(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_used_current_economy) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_used_current_economy: {:?}",
                 m_score_value_vespene_used_current_economy
             );
@@ -2247,13 +2247,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_vespene_used_current_economy)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_used_current_technology(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_used_current_technology) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_used_current_technology: {:?}",
                 m_score_value_vespene_used_current_technology
             );
@@ -2262,101 +2262,101 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_vespene_used_current_technology)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_lost_army(input: &[u8]) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_lost_army) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_lost_army: {:?}",
                 m_score_value_minerals_lost_army
             );
             Ok((tail, i32::try_from(m_score_value_minerals_lost_army)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_lost_economy(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_lost_economy) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_lost_economy: {:?}",
                 m_score_value_minerals_lost_economy
             );
             Ok((tail, i32::try_from(m_score_value_minerals_lost_economy)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_lost_technology(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_lost_technology) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_lost_technology: {:?}",
                 m_score_value_minerals_lost_technology
             );
             Ok((tail, i32::try_from(m_score_value_minerals_lost_technology)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_lost_army(input: &[u8]) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_lost_army) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_lost_army: {:?}",
                 m_score_value_vespene_lost_army
             );
             Ok((tail, i32::try_from(m_score_value_vespene_lost_army)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_lost_economy(input: &[u8]) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_lost_economy) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_lost_economy: {:?}",
                 m_score_value_vespene_lost_economy
             );
             Ok((tail, i32::try_from(m_score_value_vespene_lost_economy)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_lost_technology(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_lost_technology) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_lost_technology: {:?}",
                 m_score_value_vespene_lost_technology
             );
             Ok((tail, i32::try_from(m_score_value_vespene_lost_technology)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_killed_army(input: &[u8]) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_killed_army) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_killed_army: {:?}",
                 m_score_value_minerals_killed_army
             );
             Ok((tail, i32::try_from(m_score_value_minerals_killed_army)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_killed_economy(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_killed_economy) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_killed_economy: {:?}",
                 m_score_value_minerals_killed_economy
             );
             Ok((tail, i32::try_from(m_score_value_minerals_killed_economy)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_killed_technology(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_killed_technology) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_killed_technology: {:?}",
                 m_score_value_minerals_killed_technology
             );
@@ -2365,35 +2365,35 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_minerals_killed_technology)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_killed_army(input: &[u8]) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_killed_army) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_killed_army: {:?}",
                 m_score_value_vespene_killed_army
             );
             Ok((tail, i32::try_from(m_score_value_vespene_killed_army)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_killed_economy(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_killed_economy) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_killed_economy: {:?}",
                 m_score_value_vespene_killed_economy
             );
             Ok((tail, i32::try_from(m_score_value_vespene_killed_economy)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_killed_technology(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_killed_technology) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_killed_technology: {:?}",
                 m_score_value_vespene_killed_technology
             );
@@ -2402,27 +2402,27 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_vespene_killed_technology)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_food_used(input: &[u8]) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_food_used) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_score_value_food_used: {:?}", m_score_value_food_used);
+            tracing::trace!("m_score_value_food_used: {:?}", m_score_value_food_used);
             Ok((tail, i32::try_from(m_score_value_food_used)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_food_made(input: &[u8]) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_food_made) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_score_value_food_made: {:?}", m_score_value_food_made);
+            tracing::trace!("m_score_value_food_made: {:?}", m_score_value_food_made);
             Ok((tail, i32::try_from(m_score_value_food_made)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_used_active_forces(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_used_active_forces) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_used_active_forces: {:?}",
                 m_score_value_minerals_used_active_forces
             );
@@ -2431,13 +2431,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_minerals_used_active_forces)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_used_active_forces(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_used_active_forces) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_used_active_forces: {:?}",
                 m_score_value_vespene_used_active_forces
             );
@@ -2446,13 +2446,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_vespene_used_active_forces)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_friendly_fire_army(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_friendly_fire_army) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_friendly_fire_army: {:?}",
                 m_score_value_minerals_friendly_fire_army
             );
@@ -2461,13 +2461,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_minerals_friendly_fire_army)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_friendly_fire_economy(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_friendly_fire_economy) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_friendly_fire_economy: {:?}",
                 m_score_value_minerals_friendly_fire_economy
             );
@@ -2476,13 +2476,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_minerals_friendly_fire_economy)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_minerals_friendly_fire_technology(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_minerals_friendly_fire_technology) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_minerals_friendly_fire_technology: {:?}",
                 m_score_value_minerals_friendly_fire_technology
             );
@@ -2491,13 +2491,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_minerals_friendly_fire_technology)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_friendly_fire_army(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_friendly_fire_army) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_friendly_fire_army: {:?}",
                 m_score_value_vespene_friendly_fire_army
             );
@@ -2506,13 +2506,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_vespene_friendly_fire_army)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_friendly_fire_economy(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_friendly_fire_economy) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_friendly_fire_economy: {:?}",
                 m_score_value_vespene_friendly_fire_economy
             );
@@ -2521,13 +2521,13 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_vespene_friendly_fire_economy)?,
             ))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_score_value_vespene_friendly_fire_technology(
             input: &[u8],
         ) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_score_value_vespene_friendly_fire_technology) = tagged_vlq_int(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_score_value_vespene_friendly_fire_technology: {:?}",
                 m_score_value_vespene_friendly_fire_technology
             );
@@ -2536,7 +2536,7 @@ pub mod byte_aligned {
                 i32::try_from(m_score_value_vespene_friendly_fire_technology)?,
             ))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSPlayerStats::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSPlayerStats::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -2584,7 +2584,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '0' for field m_score_value_minerals_current"
                         );
                         if m_score_value_minerals_current.is_none() {
@@ -2603,7 +2603,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '1' for field m_score_value_vespene_current"
                         );
                         if m_score_value_vespene_current.is_none() {
@@ -2622,7 +2622,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_score_value_minerals_collection_rate");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_score_value_minerals_collection_rate");
                         if m_score_value_minerals_collection_rate.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_collection_rate) =
                                 Self::parse_m_score_value_minerals_collection_rate(tail)?;
@@ -2639,7 +2639,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_score_value_vespene_collection_rate");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_score_value_vespene_collection_rate");
                         if m_score_value_vespene_collection_rate.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_collection_rate) =
                                 Self::parse_m_score_value_vespene_collection_rate(tail)?;
@@ -2656,7 +2656,7 @@ pub mod byte_aligned {
                         }
                     }
                     4 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '4' for field m_score_value_workers_active_count"
                         );
                         if m_score_value_workers_active_count.is_none() {
@@ -2675,7 +2675,7 @@ pub mod byte_aligned {
                         }
                     }
                     5 => {
-                        tracing::debug!("Field [{i}]: tagged '5' for field m_score_value_minerals_used_in_progress_army");
+                        tracing::trace!("Field [{i}]: tagged '5' for field m_score_value_minerals_used_in_progress_army");
                         if m_score_value_minerals_used_in_progress_army.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_in_progress_army) =
                                 Self::parse_m_score_value_minerals_used_in_progress_army(tail)?;
@@ -2692,7 +2692,7 @@ pub mod byte_aligned {
                         }
                     }
                     6 => {
-                        tracing::debug!("Field [{i}]: tagged '6' for field m_score_value_minerals_used_in_progress_economy");
+                        tracing::trace!("Field [{i}]: tagged '6' for field m_score_value_minerals_used_in_progress_economy");
                         if m_score_value_minerals_used_in_progress_economy.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_in_progress_economy) =
                                 Self::parse_m_score_value_minerals_used_in_progress_economy(tail)?;
@@ -2709,7 +2709,7 @@ pub mod byte_aligned {
                         }
                     }
                     7 => {
-                        tracing::debug!("Field [{i}]: tagged '7' for field m_score_value_minerals_used_in_progress_technology");
+                        tracing::trace!("Field [{i}]: tagged '7' for field m_score_value_minerals_used_in_progress_technology");
                         if m_score_value_minerals_used_in_progress_technology.is_none() {
                             let (
                                 new_tail,
@@ -2730,7 +2730,7 @@ pub mod byte_aligned {
                         }
                     }
                     8 => {
-                        tracing::debug!("Field [{i}]: tagged '8' for field m_score_value_vespene_used_in_progress_army");
+                        tracing::trace!("Field [{i}]: tagged '8' for field m_score_value_vespene_used_in_progress_army");
                         if m_score_value_vespene_used_in_progress_army.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_in_progress_army) =
                                 Self::parse_m_score_value_vespene_used_in_progress_army(tail)?;
@@ -2747,7 +2747,7 @@ pub mod byte_aligned {
                         }
                     }
                     9 => {
-                        tracing::debug!("Field [{i}]: tagged '9' for field m_score_value_vespene_used_in_progress_economy");
+                        tracing::trace!("Field [{i}]: tagged '9' for field m_score_value_vespene_used_in_progress_economy");
                         if m_score_value_vespene_used_in_progress_economy.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_in_progress_economy) =
                                 Self::parse_m_score_value_vespene_used_in_progress_economy(tail)?;
@@ -2764,7 +2764,7 @@ pub mod byte_aligned {
                         }
                     }
                     10 => {
-                        tracing::debug!("Field [{i}]: tagged '10' for field m_score_value_vespene_used_in_progress_technology");
+                        tracing::trace!("Field [{i}]: tagged '10' for field m_score_value_vespene_used_in_progress_technology");
                         if m_score_value_vespene_used_in_progress_technology.is_none() {
                             let (
                                 new_tail,
@@ -2785,7 +2785,7 @@ pub mod byte_aligned {
                         }
                     }
                     11 => {
-                        tracing::debug!("Field [{i}]: tagged '11' for field m_score_value_minerals_used_current_army");
+                        tracing::trace!("Field [{i}]: tagged '11' for field m_score_value_minerals_used_current_army");
                         if m_score_value_minerals_used_current_army.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_current_army) =
                                 Self::parse_m_score_value_minerals_used_current_army(tail)?;
@@ -2802,7 +2802,7 @@ pub mod byte_aligned {
                         }
                     }
                     12 => {
-                        tracing::debug!("Field [{i}]: tagged '12' for field m_score_value_minerals_used_current_economy");
+                        tracing::trace!("Field [{i}]: tagged '12' for field m_score_value_minerals_used_current_economy");
                         if m_score_value_minerals_used_current_economy.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_current_economy) =
                                 Self::parse_m_score_value_minerals_used_current_economy(tail)?;
@@ -2819,7 +2819,7 @@ pub mod byte_aligned {
                         }
                     }
                     13 => {
-                        tracing::debug!("Field [{i}]: tagged '13' for field m_score_value_minerals_used_current_technology");
+                        tracing::trace!("Field [{i}]: tagged '13' for field m_score_value_minerals_used_current_technology");
                         if m_score_value_minerals_used_current_technology.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_current_technology) =
                                 Self::parse_m_score_value_minerals_used_current_technology(tail)?;
@@ -2836,7 +2836,7 @@ pub mod byte_aligned {
                         }
                     }
                     14 => {
-                        tracing::debug!("Field [{i}]: tagged '14' for field m_score_value_vespene_used_current_army");
+                        tracing::trace!("Field [{i}]: tagged '14' for field m_score_value_vespene_used_current_army");
                         if m_score_value_vespene_used_current_army.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_current_army) =
                                 Self::parse_m_score_value_vespene_used_current_army(tail)?;
@@ -2853,7 +2853,7 @@ pub mod byte_aligned {
                         }
                     }
                     15 => {
-                        tracing::debug!("Field [{i}]: tagged '15' for field m_score_value_vespene_used_current_economy");
+                        tracing::trace!("Field [{i}]: tagged '15' for field m_score_value_vespene_used_current_economy");
                         if m_score_value_vespene_used_current_economy.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_current_economy) =
                                 Self::parse_m_score_value_vespene_used_current_economy(tail)?;
@@ -2870,7 +2870,7 @@ pub mod byte_aligned {
                         }
                     }
                     16 => {
-                        tracing::debug!("Field [{i}]: tagged '16' for field m_score_value_vespene_used_current_technology");
+                        tracing::trace!("Field [{i}]: tagged '16' for field m_score_value_vespene_used_current_technology");
                         if m_score_value_vespene_used_current_technology.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_current_technology) =
                                 Self::parse_m_score_value_vespene_used_current_technology(tail)?;
@@ -2887,7 +2887,7 @@ pub mod byte_aligned {
                         }
                     }
                     17 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '17' for field m_score_value_minerals_lost_army"
                         );
                         if m_score_value_minerals_lost_army.is_none() {
@@ -2906,7 +2906,7 @@ pub mod byte_aligned {
                         }
                     }
                     18 => {
-                        tracing::debug!("Field [{i}]: tagged '18' for field m_score_value_minerals_lost_economy");
+                        tracing::trace!("Field [{i}]: tagged '18' for field m_score_value_minerals_lost_economy");
                         if m_score_value_minerals_lost_economy.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_lost_economy) =
                                 Self::parse_m_score_value_minerals_lost_economy(tail)?;
@@ -2923,7 +2923,7 @@ pub mod byte_aligned {
                         }
                     }
                     19 => {
-                        tracing::debug!("Field [{i}]: tagged '19' for field m_score_value_minerals_lost_technology");
+                        tracing::trace!("Field [{i}]: tagged '19' for field m_score_value_minerals_lost_technology");
                         if m_score_value_minerals_lost_technology.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_lost_technology) =
                                 Self::parse_m_score_value_minerals_lost_technology(tail)?;
@@ -2940,7 +2940,7 @@ pub mod byte_aligned {
                         }
                     }
                     20 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '20' for field m_score_value_vespene_lost_army"
                         );
                         if m_score_value_vespene_lost_army.is_none() {
@@ -2959,7 +2959,7 @@ pub mod byte_aligned {
                         }
                     }
                     21 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '21' for field m_score_value_vespene_lost_economy"
                         );
                         if m_score_value_vespene_lost_economy.is_none() {
@@ -2978,7 +2978,7 @@ pub mod byte_aligned {
                         }
                     }
                     22 => {
-                        tracing::debug!("Field [{i}]: tagged '22' for field m_score_value_vespene_lost_technology");
+                        tracing::trace!("Field [{i}]: tagged '22' for field m_score_value_vespene_lost_technology");
                         if m_score_value_vespene_lost_technology.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_lost_technology) =
                                 Self::parse_m_score_value_vespene_lost_technology(tail)?;
@@ -2995,7 +2995,7 @@ pub mod byte_aligned {
                         }
                     }
                     23 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '23' for field m_score_value_minerals_killed_army"
                         );
                         if m_score_value_minerals_killed_army.is_none() {
@@ -3014,7 +3014,7 @@ pub mod byte_aligned {
                         }
                     }
                     24 => {
-                        tracing::debug!("Field [{i}]: tagged '24' for field m_score_value_minerals_killed_economy");
+                        tracing::trace!("Field [{i}]: tagged '24' for field m_score_value_minerals_killed_economy");
                         if m_score_value_minerals_killed_economy.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_killed_economy) =
                                 Self::parse_m_score_value_minerals_killed_economy(tail)?;
@@ -3031,7 +3031,7 @@ pub mod byte_aligned {
                         }
                     }
                     25 => {
-                        tracing::debug!("Field [{i}]: tagged '25' for field m_score_value_minerals_killed_technology");
+                        tracing::trace!("Field [{i}]: tagged '25' for field m_score_value_minerals_killed_technology");
                         if m_score_value_minerals_killed_technology.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_killed_technology) =
                                 Self::parse_m_score_value_minerals_killed_technology(tail)?;
@@ -3048,7 +3048,7 @@ pub mod byte_aligned {
                         }
                     }
                     26 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '26' for field m_score_value_vespene_killed_army"
                         );
                         if m_score_value_vespene_killed_army.is_none() {
@@ -3067,7 +3067,7 @@ pub mod byte_aligned {
                         }
                     }
                     27 => {
-                        tracing::debug!("Field [{i}]: tagged '27' for field m_score_value_vespene_killed_economy");
+                        tracing::trace!("Field [{i}]: tagged '27' for field m_score_value_vespene_killed_economy");
                         if m_score_value_vespene_killed_economy.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_killed_economy) =
                                 Self::parse_m_score_value_vespene_killed_economy(tail)?;
@@ -3084,7 +3084,7 @@ pub mod byte_aligned {
                         }
                     }
                     28 => {
-                        tracing::debug!("Field [{i}]: tagged '28' for field m_score_value_vespene_killed_technology");
+                        tracing::trace!("Field [{i}]: tagged '28' for field m_score_value_vespene_killed_technology");
                         if m_score_value_vespene_killed_technology.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_killed_technology) =
                                 Self::parse_m_score_value_vespene_killed_technology(tail)?;
@@ -3101,7 +3101,7 @@ pub mod byte_aligned {
                         }
                     }
                     29 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '29' for field m_score_value_food_used"
                         );
                         if m_score_value_food_used.is_none() {
@@ -3121,7 +3121,7 @@ pub mod byte_aligned {
                         }
                     }
                     30 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '30' for field m_score_value_food_made"
                         );
                         if m_score_value_food_made.is_none() {
@@ -3141,7 +3141,7 @@ pub mod byte_aligned {
                         }
                     }
                     31 => {
-                        tracing::debug!("Field [{i}]: tagged '31' for field m_score_value_minerals_used_active_forces");
+                        tracing::trace!("Field [{i}]: tagged '31' for field m_score_value_minerals_used_active_forces");
                         if m_score_value_minerals_used_active_forces.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_active_forces) =
                                 Self::parse_m_score_value_minerals_used_active_forces(tail)?;
@@ -3158,7 +3158,7 @@ pub mod byte_aligned {
                         }
                     }
                     32 => {
-                        tracing::debug!("Field [{i}]: tagged '32' for field m_score_value_vespene_used_active_forces");
+                        tracing::trace!("Field [{i}]: tagged '32' for field m_score_value_vespene_used_active_forces");
                         if m_score_value_vespene_used_active_forces.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_active_forces) =
                                 Self::parse_m_score_value_vespene_used_active_forces(tail)?;
@@ -3175,7 +3175,7 @@ pub mod byte_aligned {
                         }
                     }
                     33 => {
-                        tracing::debug!("Field [{i}]: tagged '33' for field m_score_value_minerals_friendly_fire_army");
+                        tracing::trace!("Field [{i}]: tagged '33' for field m_score_value_minerals_friendly_fire_army");
                         if m_score_value_minerals_friendly_fire_army.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_friendly_fire_army) =
                                 Self::parse_m_score_value_minerals_friendly_fire_army(tail)?;
@@ -3192,7 +3192,7 @@ pub mod byte_aligned {
                         }
                     }
                     34 => {
-                        tracing::debug!("Field [{i}]: tagged '34' for field m_score_value_minerals_friendly_fire_economy");
+                        tracing::trace!("Field [{i}]: tagged '34' for field m_score_value_minerals_friendly_fire_economy");
                         if m_score_value_minerals_friendly_fire_economy.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_friendly_fire_economy) =
                                 Self::parse_m_score_value_minerals_friendly_fire_economy(tail)?;
@@ -3209,7 +3209,7 @@ pub mod byte_aligned {
                         }
                     }
                     35 => {
-                        tracing::debug!("Field [{i}]: tagged '35' for field m_score_value_minerals_friendly_fire_technology");
+                        tracing::trace!("Field [{i}]: tagged '35' for field m_score_value_minerals_friendly_fire_technology");
                         if m_score_value_minerals_friendly_fire_technology.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_friendly_fire_technology) =
                                 Self::parse_m_score_value_minerals_friendly_fire_technology(tail)?;
@@ -3226,7 +3226,7 @@ pub mod byte_aligned {
                         }
                     }
                     36 => {
-                        tracing::debug!("Field [{i}]: tagged '36' for field m_score_value_vespene_friendly_fire_army");
+                        tracing::trace!("Field [{i}]: tagged '36' for field m_score_value_vespene_friendly_fire_army");
                         if m_score_value_vespene_friendly_fire_army.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_friendly_fire_army) =
                                 Self::parse_m_score_value_vespene_friendly_fire_army(tail)?;
@@ -3243,7 +3243,7 @@ pub mod byte_aligned {
                         }
                     }
                     37 => {
-                        tracing::debug!("Field [{i}]: tagged '37' for field m_score_value_vespene_friendly_fire_economy");
+                        tracing::trace!("Field [{i}]: tagged '37' for field m_score_value_vespene_friendly_fire_economy");
                         if m_score_value_vespene_friendly_fire_economy.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_friendly_fire_economy) =
                                 Self::parse_m_score_value_vespene_friendly_fire_economy(tail)?;
@@ -3260,7 +3260,7 @@ pub mod byte_aligned {
                         }
                     }
                     38 => {
-                        tracing::debug!("Field [{i}]: tagged '38' for field m_score_value_vespene_friendly_fire_technology");
+                        tracing::trace!("Field [{i}]: tagged '38' for field m_score_value_vespene_friendly_fire_technology");
                         if m_score_value_vespene_friendly_fire_technology.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_friendly_fire_technology) =
                                 Self::parse_m_score_value_vespene_friendly_fire_technology(tail)?;
@@ -3414,21 +3414,21 @@ pub mod byte_aligned {
         pub m_stats: ReplayTrackerSPlayerStats,
     }
     impl ReplayTrackerSPlayerStatsEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_player_id(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_player_id) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_player_id: {:?}", m_player_id);
+            tracing::trace!("m_player_id: {:?}", m_player_id);
             Ok((tail, u8::try_from(m_player_id)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_stats(input: &[u8]) -> S2ProtoResult<&[u8], ReplayTrackerSPlayerStats> {
             let (tail, m_stats) = ReplayTrackerSPlayerStats::parse(input)?;
 
-            tracing::debug!("m_stats: {:?}", m_stats);
+            tracing::trace!("m_stats: {:?}", m_stats);
             Ok((tail, m_stats))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSPlayerStatsEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSPlayerStatsEvent::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -3439,7 +3439,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_player_id");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_player_id");
                         if m_player_id.is_none() {
                             let (new_tail, parsed_m_player_id) = Self::parse_m_player_id(tail)?;
                             tail = new_tail;
@@ -3454,7 +3454,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_stats");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_stats");
                         if m_stats.is_none() {
                             let (new_tail, parsed_m_stats) = Self::parse_m_stats(tail)?;
                             tail = new_tail;
@@ -3496,56 +3496,56 @@ pub mod byte_aligned {
         pub m_creator_ability_name: Option<Vec<u8>>,
     }
     impl ReplayTrackerSUnitBornEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_index(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_index) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_index: {:?}", m_unit_tag_index);
+            tracing::trace!("m_unit_tag_index: {:?}", m_unit_tag_index);
             Ok((tail, u32::try_from(m_unit_tag_index)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_recycle(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_recycle) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
+            tracing::trace!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
             Ok((tail, u32::try_from(m_unit_tag_recycle)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_type_name(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_unit_type_name) = tagged_blob(input)?;
 
-            tracing::debug!("m_unit_type_name: {:?}", str::from_utf8(&m_unit_type_name));
+            tracing::trace!("m_unit_type_name: {:?}", str::from_utf8(&m_unit_type_name));
             Ok((tail, m_unit_type_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_control_player_id(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_control_player_id) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_control_player_id: {:?}", m_control_player_id);
+            tracing::trace!("m_control_player_id: {:?}", m_control_player_id);
             Ok((tail, u8::try_from(m_control_player_id)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_upkeep_player_id(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_upkeep_player_id) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_upkeep_player_id: {:?}", m_upkeep_player_id);
+            tracing::trace!("m_upkeep_player_id: {:?}", m_upkeep_player_id);
             Ok((tail, u8::try_from(m_upkeep_player_id)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_x(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_x) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_x: {:?}", m_x);
+            tracing::trace!("m_x: {:?}", m_x);
             Ok((tail, u8::try_from(m_x)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_y(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_y) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_y: {:?}", m_y);
+            tracing::trace!("m_y: {:?}", m_y);
             Ok((tail, u8::try_from(m_y)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_creator_unit_tag_index(input: &[u8]) -> S2ProtoResult<&[u8], Option<u32>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
@@ -3555,10 +3555,10 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_creator_unit_tag_index: {:?}", m_creator_unit_tag_index);
+            tracing::trace!("m_creator_unit_tag_index: {:?}", m_creator_unit_tag_index);
             Ok((tail, m_creator_unit_tag_index))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_creator_unit_tag_recycle(input: &[u8]) -> S2ProtoResult<&[u8], Option<u32>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
@@ -3568,13 +3568,13 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!(
+            tracing::trace!(
                 "m_creator_unit_tag_recycle: {:?}",
                 m_creator_unit_tag_recycle
             );
             Ok((tail, m_creator_unit_tag_recycle))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_creator_ability_name(input: &[u8]) -> S2ProtoResult<&[u8], Option<Vec<u8>>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
@@ -3584,13 +3584,13 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!(
+            tracing::trace!(
                 "m_creator_ability_name: {:?}",
                 str::from_utf8(m_creator_ability_name.as_ref().unwrap_or(&vec![]))
             );
             Ok((tail, m_creator_ability_name))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitBornEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitBornEvent::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -3609,7 +3609,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_unit_tag_index");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_unit_tag_index");
                         if m_unit_tag_index.is_none() {
                             let (new_tail, parsed_m_unit_tag_index) =
                                 Self::parse_m_unit_tag_index(tail)?;
@@ -3627,7 +3627,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
                         if m_unit_tag_recycle.is_none() {
                             let (new_tail, parsed_m_unit_tag_recycle) =
                                 Self::parse_m_unit_tag_recycle(tail)?;
@@ -3645,7 +3645,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_unit_type_name");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_unit_type_name");
                         if m_unit_type_name.is_none() {
                             let (new_tail, parsed_m_unit_type_name) =
                                 Self::parse_m_unit_type_name(tail)?;
@@ -3663,7 +3663,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_control_player_id");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_control_player_id");
                         if m_control_player_id.is_none() {
                             let (new_tail, parsed_m_control_player_id) =
                                 Self::parse_m_control_player_id(tail)?;
@@ -3681,7 +3681,7 @@ pub mod byte_aligned {
                         }
                     }
                     4 => {
-                        tracing::debug!("Field [{i}]: tagged '4' for field m_upkeep_player_id");
+                        tracing::trace!("Field [{i}]: tagged '4' for field m_upkeep_player_id");
                         if m_upkeep_player_id.is_none() {
                             let (new_tail, parsed_m_upkeep_player_id) =
                                 Self::parse_m_upkeep_player_id(tail)?;
@@ -3699,7 +3699,7 @@ pub mod byte_aligned {
                         }
                     }
                     5 => {
-                        tracing::debug!("Field [{i}]: tagged '5' for field m_x");
+                        tracing::trace!("Field [{i}]: tagged '5' for field m_x");
                         if m_x.is_none() {
                             let (new_tail, parsed_m_x) = Self::parse_m_x(tail)?;
                             tail = new_tail;
@@ -3711,7 +3711,7 @@ pub mod byte_aligned {
                         }
                     }
                     6 => {
-                        tracing::debug!("Field [{i}]: tagged '6' for field m_y");
+                        tracing::trace!("Field [{i}]: tagged '6' for field m_y");
                         if m_y.is_none() {
                             let (new_tail, parsed_m_y) = Self::parse_m_y(tail)?;
                             tail = new_tail;
@@ -3723,7 +3723,7 @@ pub mod byte_aligned {
                         }
                     }
                     7 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '7' for field m_creator_unit_tag_index"
                         );
                         if let Some(None) = m_creator_unit_tag_index {
@@ -3743,7 +3743,7 @@ pub mod byte_aligned {
                         }
                     }
                     8 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '8' for field m_creator_unit_tag_recycle"
                         );
                         if let Some(None) = m_creator_unit_tag_recycle {
@@ -3763,7 +3763,7 @@ pub mod byte_aligned {
                         }
                     }
                     9 => {
-                        tracing::debug!("Field [{i}]: tagged '9' for field m_creator_ability_name");
+                        tracing::trace!("Field [{i}]: tagged '9' for field m_creator_ability_name");
                         if let Some(None) = m_creator_ability_name {
                             let (new_tail, parsed_m_creator_ability_name) =
                                 Self::parse_m_creator_ability_name(tail)?;
@@ -3820,21 +3820,21 @@ pub mod byte_aligned {
         pub m_killer_unit_tag_recycle: Option<u32>,
     }
     impl ReplayTrackerSUnitDiedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_index(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_index) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_index: {:?}", m_unit_tag_index);
+            tracing::trace!("m_unit_tag_index: {:?}", m_unit_tag_index);
             Ok((tail, u32::try_from(m_unit_tag_index)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_recycle(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_recycle) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
+            tracing::trace!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
             Ok((tail, u32::try_from(m_unit_tag_recycle)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_killer_player_id(input: &[u8]) -> S2ProtoResult<&[u8], Option<u8>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
@@ -3844,24 +3844,24 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_killer_player_id: {:?}", m_killer_player_id);
+            tracing::trace!("m_killer_player_id: {:?}", m_killer_player_id);
             Ok((tail, m_killer_player_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_x(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_x) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_x: {:?}", m_x);
+            tracing::trace!("m_x: {:?}", m_x);
             Ok((tail, u8::try_from(m_x)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_y(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_y) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_y: {:?}", m_y);
+            tracing::trace!("m_y: {:?}", m_y);
             Ok((tail, u8::try_from(m_y)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_killer_unit_tag_index(input: &[u8]) -> S2ProtoResult<&[u8], Option<u32>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
@@ -3871,10 +3871,10 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_killer_unit_tag_index: {:?}", m_killer_unit_tag_index);
+            tracing::trace!("m_killer_unit_tag_index: {:?}", m_killer_unit_tag_index);
             Ok((tail, m_killer_unit_tag_index))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_killer_unit_tag_recycle(input: &[u8]) -> S2ProtoResult<&[u8], Option<u32>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
@@ -3884,10 +3884,10 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_killer_unit_tag_recycle: {:?}", m_killer_unit_tag_recycle);
+            tracing::trace!("m_killer_unit_tag_recycle: {:?}", m_killer_unit_tag_recycle);
             Ok((tail, m_killer_unit_tag_recycle))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitDiedEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitDiedEvent::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -3903,7 +3903,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_unit_tag_index");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_unit_tag_index");
                         if m_unit_tag_index.is_none() {
                             let (new_tail, parsed_m_unit_tag_index) =
                                 Self::parse_m_unit_tag_index(tail)?;
@@ -3921,7 +3921,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
                         if m_unit_tag_recycle.is_none() {
                             let (new_tail, parsed_m_unit_tag_recycle) =
                                 Self::parse_m_unit_tag_recycle(tail)?;
@@ -3939,7 +3939,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_killer_player_id");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_killer_player_id");
                         if let Some(None) = m_killer_player_id {
                             let (new_tail, parsed_m_killer_player_id) =
                                 Self::parse_m_killer_player_id(tail)?;
@@ -3957,7 +3957,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_x");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_x");
                         if m_x.is_none() {
                             let (new_tail, parsed_m_x) = Self::parse_m_x(tail)?;
                             tail = new_tail;
@@ -3969,7 +3969,7 @@ pub mod byte_aligned {
                         }
                     }
                     4 => {
-                        tracing::debug!("Field [{i}]: tagged '4' for field m_y");
+                        tracing::trace!("Field [{i}]: tagged '4' for field m_y");
                         if m_y.is_none() {
                             let (new_tail, parsed_m_y) = Self::parse_m_y(tail)?;
                             tail = new_tail;
@@ -3981,7 +3981,7 @@ pub mod byte_aligned {
                         }
                     }
                     5 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '5' for field m_killer_unit_tag_index"
                         );
                         if let Some(None) = m_killer_unit_tag_index {
@@ -4001,7 +4001,7 @@ pub mod byte_aligned {
                         }
                     }
                     6 => {
-                        tracing::debug!(
+                        tracing::trace!(
                             "Field [{i}]: tagged '6' for field m_killer_unit_tag_recycle"
                         );
                         if let Some(None) = m_killer_unit_tag_recycle {
@@ -4054,35 +4054,35 @@ pub mod byte_aligned {
         pub m_upkeep_player_id: u8,
     }
     impl ReplayTrackerSUnitOwnerChangeEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_index(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_index) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_index: {:?}", m_unit_tag_index);
+            tracing::trace!("m_unit_tag_index: {:?}", m_unit_tag_index);
             Ok((tail, u32::try_from(m_unit_tag_index)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_recycle(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_recycle) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
+            tracing::trace!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
             Ok((tail, u32::try_from(m_unit_tag_recycle)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_control_player_id(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_control_player_id) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_control_player_id: {:?}", m_control_player_id);
+            tracing::trace!("m_control_player_id: {:?}", m_control_player_id);
             Ok((tail, u8::try_from(m_control_player_id)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_upkeep_player_id(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_upkeep_player_id) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_upkeep_player_id: {:?}", m_upkeep_player_id);
+            tracing::trace!("m_upkeep_player_id: {:?}", m_upkeep_player_id);
             Ok((tail, u8::try_from(m_upkeep_player_id)?))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitOwnerChangeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitOwnerChangeEvent::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -4095,7 +4095,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_unit_tag_index");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_unit_tag_index");
                         if m_unit_tag_index.is_none() {
                             let (new_tail, parsed_m_unit_tag_index) =
                                 Self::parse_m_unit_tag_index(tail)?;
@@ -4113,7 +4113,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
                         if m_unit_tag_recycle.is_none() {
                             let (new_tail, parsed_m_unit_tag_recycle) =
                                 Self::parse_m_unit_tag_recycle(tail)?;
@@ -4131,7 +4131,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_control_player_id");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_control_player_id");
                         if m_control_player_id.is_none() {
                             let (new_tail, parsed_m_control_player_id) =
                                 Self::parse_m_control_player_id(tail)?;
@@ -4149,7 +4149,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_upkeep_player_id");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_upkeep_player_id");
                         if m_upkeep_player_id.is_none() {
                             let (new_tail, parsed_m_upkeep_player_id) =
                                 Self::parse_m_upkeep_player_id(tail)?;
@@ -4192,28 +4192,28 @@ pub mod byte_aligned {
         pub m_unit_type_name: Vec<u8>,
     }
     impl ReplayTrackerSUnitTypeChangeEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_index(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_index) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_index: {:?}", m_unit_tag_index);
+            tracing::trace!("m_unit_tag_index: {:?}", m_unit_tag_index);
             Ok((tail, u32::try_from(m_unit_tag_index)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_recycle(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_recycle) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
+            tracing::trace!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
             Ok((tail, u32::try_from(m_unit_tag_recycle)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_type_name(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_unit_type_name) = tagged_blob(input)?;
 
-            tracing::debug!("m_unit_type_name: {:?}", str::from_utf8(&m_unit_type_name));
+            tracing::trace!("m_unit_type_name: {:?}", str::from_utf8(&m_unit_type_name));
             Ok((tail, m_unit_type_name))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitTypeChangeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitTypeChangeEvent::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -4225,7 +4225,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_unit_tag_index");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_unit_tag_index");
                         if m_unit_tag_index.is_none() {
                             let (new_tail, parsed_m_unit_tag_index) =
                                 Self::parse_m_unit_tag_index(tail)?;
@@ -4243,7 +4243,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
                         if m_unit_tag_recycle.is_none() {
                             let (new_tail, parsed_m_unit_tag_recycle) =
                                 Self::parse_m_unit_tag_recycle(tail)?;
@@ -4261,7 +4261,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_unit_type_name");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_unit_type_name");
                         if m_unit_type_name.is_none() {
                             let (new_tail, parsed_m_unit_type_name) =
                                 Self::parse_m_unit_type_name(tail)?;
@@ -4303,31 +4303,31 @@ pub mod byte_aligned {
         pub m_count: i32,
     }
     impl ReplayTrackerSUpgradeEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_player_id(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_player_id) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_player_id: {:?}", m_player_id);
+            tracing::trace!("m_player_id: {:?}", m_player_id);
             Ok((tail, u8::try_from(m_player_id)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_upgrade_type_name(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_upgrade_type_name) = tagged_blob(input)?;
 
-            tracing::debug!(
+            tracing::trace!(
                 "m_upgrade_type_name: {:?}",
                 str::from_utf8(&m_upgrade_type_name)
             );
             Ok((tail, m_upgrade_type_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_count(input: &[u8]) -> S2ProtoResult<&[u8], i32> {
             let (tail, m_count) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_count: {:?}", m_count);
+            tracing::trace!("m_count: {:?}", m_count);
             Ok((tail, i32::try_from(m_count)?))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUpgradeEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUpgradeEvent::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -4339,7 +4339,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_player_id");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_player_id");
                         if m_player_id.is_none() {
                             let (new_tail, parsed_m_player_id) = Self::parse_m_player_id(tail)?;
                             tail = new_tail;
@@ -4354,7 +4354,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_upgrade_type_name");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_upgrade_type_name");
                         if m_upgrade_type_name.is_none() {
                             let (new_tail, parsed_m_upgrade_type_name) =
                                 Self::parse_m_upgrade_type_name(tail)?;
@@ -4372,7 +4372,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_count");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_count");
                         if m_count.is_none() {
                             let (new_tail, parsed_m_count) = Self::parse_m_count(tail)?;
                             tail = new_tail;
@@ -4412,56 +4412,56 @@ pub mod byte_aligned {
         pub m_y: u8,
     }
     impl ReplayTrackerSUnitInitEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_index(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_index) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_index: {:?}", m_unit_tag_index);
+            tracing::trace!("m_unit_tag_index: {:?}", m_unit_tag_index);
             Ok((tail, u32::try_from(m_unit_tag_index)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_recycle(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_recycle) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
+            tracing::trace!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
             Ok((tail, u32::try_from(m_unit_tag_recycle)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_type_name(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_unit_type_name) = tagged_blob(input)?;
 
-            tracing::debug!("m_unit_type_name: {:?}", str::from_utf8(&m_unit_type_name));
+            tracing::trace!("m_unit_type_name: {:?}", str::from_utf8(&m_unit_type_name));
             Ok((tail, m_unit_type_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_control_player_id(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_control_player_id) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_control_player_id: {:?}", m_control_player_id);
+            tracing::trace!("m_control_player_id: {:?}", m_control_player_id);
             Ok((tail, u8::try_from(m_control_player_id)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_upkeep_player_id(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_upkeep_player_id) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_upkeep_player_id: {:?}", m_upkeep_player_id);
+            tracing::trace!("m_upkeep_player_id: {:?}", m_upkeep_player_id);
             Ok((tail, u8::try_from(m_upkeep_player_id)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_x(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_x) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_x: {:?}", m_x);
+            tracing::trace!("m_x: {:?}", m_x);
             Ok((tail, u8::try_from(m_x)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_y(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_y) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_y: {:?}", m_y);
+            tracing::trace!("m_y: {:?}", m_y);
             Ok((tail, u8::try_from(m_y)?))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitInitEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitInitEvent::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -4477,7 +4477,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_unit_tag_index");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_unit_tag_index");
                         if m_unit_tag_index.is_none() {
                             let (new_tail, parsed_m_unit_tag_index) =
                                 Self::parse_m_unit_tag_index(tail)?;
@@ -4495,7 +4495,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
                         if m_unit_tag_recycle.is_none() {
                             let (new_tail, parsed_m_unit_tag_recycle) =
                                 Self::parse_m_unit_tag_recycle(tail)?;
@@ -4513,7 +4513,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_unit_type_name");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_unit_type_name");
                         if m_unit_type_name.is_none() {
                             let (new_tail, parsed_m_unit_type_name) =
                                 Self::parse_m_unit_type_name(tail)?;
@@ -4531,7 +4531,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_control_player_id");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_control_player_id");
                         if m_control_player_id.is_none() {
                             let (new_tail, parsed_m_control_player_id) =
                                 Self::parse_m_control_player_id(tail)?;
@@ -4549,7 +4549,7 @@ pub mod byte_aligned {
                         }
                     }
                     4 => {
-                        tracing::debug!("Field [{i}]: tagged '4' for field m_upkeep_player_id");
+                        tracing::trace!("Field [{i}]: tagged '4' for field m_upkeep_player_id");
                         if m_upkeep_player_id.is_none() {
                             let (new_tail, parsed_m_upkeep_player_id) =
                                 Self::parse_m_upkeep_player_id(tail)?;
@@ -4567,7 +4567,7 @@ pub mod byte_aligned {
                         }
                     }
                     5 => {
-                        tracing::debug!("Field [{i}]: tagged '5' for field m_x");
+                        tracing::trace!("Field [{i}]: tagged '5' for field m_x");
                         if m_x.is_none() {
                             let (new_tail, parsed_m_x) = Self::parse_m_x(tail)?;
                             tail = new_tail;
@@ -4579,7 +4579,7 @@ pub mod byte_aligned {
                         }
                     }
                     6 => {
-                        tracing::debug!("Field [{i}]: tagged '6' for field m_y");
+                        tracing::trace!("Field [{i}]: tagged '6' for field m_y");
                         if m_y.is_none() {
                             let (new_tail, parsed_m_y) = Self::parse_m_y(tail)?;
                             tail = new_tail;
@@ -4618,21 +4618,21 @@ pub mod byte_aligned {
         pub m_unit_tag_recycle: u32,
     }
     impl ReplayTrackerSUnitDoneEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_index(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_index) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_index: {:?}", m_unit_tag_index);
+            tracing::trace!("m_unit_tag_index: {:?}", m_unit_tag_index);
             Ok((tail, u32::try_from(m_unit_tag_index)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_unit_tag_recycle(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_unit_tag_recycle) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
+            tracing::trace!("m_unit_tag_recycle: {:?}", m_unit_tag_recycle);
             Ok((tail, u32::try_from(m_unit_tag_recycle)?))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitDoneEvent::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -4643,7 +4643,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_unit_tag_index");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_unit_tag_index");
                         if m_unit_tag_index.is_none() {
                             let (new_tail, parsed_m_unit_tag_index) =
                                 Self::parse_m_unit_tag_index(tail)?;
@@ -4661,7 +4661,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_unit_tag_recycle");
                         if m_unit_tag_recycle.is_none() {
                             let (new_tail, parsed_m_unit_tag_recycle) =
                                 Self::parse_m_unit_tag_recycle(tail)?;
@@ -4701,21 +4701,21 @@ pub mod byte_aligned {
         pub m_items: Vec<i32>,
     }
     impl ReplayTrackerSUnitPositionsEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_first_unit_index(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_first_unit_index) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_first_unit_index: {:?}", m_first_unit_index);
+            tracing::trace!("m_first_unit_index: {:?}", m_first_unit_index);
             Ok((tail, u32::try_from(m_first_unit_index)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_items(input: &[u8]) -> S2ProtoResult<&[u8], Vec<i32>> {
             let (tail, _) = validate_array_tag(input)?;
             let (mut tail, array_length) = parse_vlq_int(tail)?;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             // compat_count(tagged_vlq_int, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<i32>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -4726,7 +4726,7 @@ pub mod byte_aligned {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitPositionsEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSUnitPositionsEvent::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -4737,7 +4737,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_first_unit_index");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_first_unit_index");
                         if m_first_unit_index.is_none() {
                             let (new_tail, parsed_m_first_unit_index) =
                                 Self::parse_m_first_unit_index(tail)?;
@@ -4755,7 +4755,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_items");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_items");
                         if m_items.is_none() {
                             let (new_tail, parsed_m_items) = Self::parse_m_items(tail)?;
                             tail = new_tail;
@@ -4791,21 +4791,21 @@ pub mod byte_aligned {
         pub m_slot_id: Option<u32>,
     }
     impl ReplayTrackerSPlayerSetupEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_player_id(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_player_id) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_player_id: {:?}", m_player_id);
+            tracing::trace!("m_player_id: {:?}", m_player_id);
             Ok((tail, u8::try_from(m_player_id)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_type(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_type) = tagged_vlq_int(input)?;
 
-            tracing::debug!("m_type: {:?}", m_type);
+            tracing::trace!("m_type: {:?}", m_type);
             Ok((tail, u32::try_from(m_type)?))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_user_id(input: &[u8]) -> S2ProtoResult<&[u8], Option<u32>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
@@ -4815,10 +4815,10 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_user_id: {:?}", m_user_id);
+            tracing::trace!("m_user_id: {:?}", m_user_id);
             Ok((tail, m_user_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse_m_slot_id(input: &[u8]) -> S2ProtoResult<&[u8], Option<u32>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
@@ -4828,10 +4828,10 @@ pub mod byte_aligned {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_slot_id: {:?}", m_slot_id);
+            tracing::trace!("m_slot_id: {:?}", m_slot_id);
             Ok((tail, m_slot_id))
         }
-        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSPlayerSetupEvent::Parse", level = "debug", skip(input), fields(peek = peek_hex(input)))]
+        #[tracing::instrument(name="87702::byte_aligned::ReplayTrackerSPlayerSetupEvent::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
@@ -4844,7 +4844,7 @@ pub mod byte_aligned {
                 tail = new_tail;
                 match field_tag {
                     0 => {
-                        tracing::debug!("Field [{i}]: tagged '0' for field m_player_id");
+                        tracing::trace!("Field [{i}]: tagged '0' for field m_player_id");
                         if m_player_id.is_none() {
                             let (new_tail, parsed_m_player_id) = Self::parse_m_player_id(tail)?;
                             tail = new_tail;
@@ -4859,7 +4859,7 @@ pub mod byte_aligned {
                         }
                     }
                     1 => {
-                        tracing::debug!("Field [{i}]: tagged '1' for field m_type");
+                        tracing::trace!("Field [{i}]: tagged '1' for field m_type");
                         if m_type.is_none() {
                             let (new_tail, parsed_m_type) = Self::parse_m_type(tail)?;
                             tail = new_tail;
@@ -4871,7 +4871,7 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_user_id");
+                        tracing::trace!("Field [{i}]: tagged '2' for field m_user_id");
                         if let Some(None) = m_user_id {
                             let (new_tail, parsed_m_user_id) = Self::parse_m_user_id(tail)?;
                             tail = new_tail;
@@ -4886,7 +4886,7 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_slot_id");
+                        tracing::trace!("Field [{i}]: tagged '3' for field m_slot_id");
                         if let Some(None) = m_slot_id {
                             let (new_tail, parsed_m_slot_id) = Self::parse_m_slot_id(tail)?;
                             tail = new_tail;
@@ -4929,7 +4929,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl CFilePath {
-        #[tracing::instrument(name="87702::CFilePath::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CFilePath::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 11;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -4944,7 +4944,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl TRaceId {
-        #[tracing::instrument(name="87702::TRaceId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::TRaceId::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 8;
@@ -4958,7 +4958,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl TRaceCount {
-        #[tracing::instrument(name="87702::TRaceCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::TRaceCount::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 1;
             let num_bits: usize = 8;
@@ -4972,7 +4972,7 @@ pub mod bit_packed {
         pub m_race: Option<TRaceId>,
     }
     impl TRacePreference {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_race(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<TRaceId>> {
@@ -4983,10 +4983,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_race: {:?}", m_race);
+            tracing::trace!("m_race: {:?}", m_race);
             Ok((tail, m_race))
         }
-        #[tracing::instrument(name="87702::bit_packed::TRacePreference::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::TRacePreference::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_race: Option<Option<TRaceId>> = Some(None);
@@ -5010,11 +5010,11 @@ pub mod bit_packed {
                         // compare with blizzard's python implementation
     }
     impl CAllowedRaces {
-        #[tracing::instrument(name="87702::CAllowedRaces::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CAllowedRaces::BitArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let bitarray_length_bits: usize = 8;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
-            tracing::debug!("Reading bitarray length: {bitarray_length}");
+            tracing::trace!("Reading bitarray length: {bitarray_length}");
             let (tail, value) = take_n_bits_into_i64(tail, bitarray_length as usize)?;
             Ok((tail, Self { value }))
         }
@@ -5025,7 +5025,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl Int8 {
-        #[tracing::instrument(name="87702::Int8::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::Int8::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = -128;
             let num_bits: usize = 8;
@@ -5039,7 +5039,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl Int16 {
-        #[tracing::instrument(name="87702::Int16::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::Int16::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = -32768;
             let num_bits: usize = 16;
@@ -5053,7 +5053,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl Int32 {
-        #[tracing::instrument(name="87702::Int32::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::Int32::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = -2147483648;
             let num_bits: usize = 32;
@@ -5067,7 +5067,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl Int64 {
-        #[tracing::instrument(name="87702::Int64::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::Int64::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = -9223372036854775808;
             let num_bits: usize = 64;
@@ -5081,7 +5081,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl Uint8 {
-        #[tracing::instrument(name="87702::Uint8::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::Uint8::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 8;
@@ -5095,7 +5095,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl Uint16 {
-        #[tracing::instrument(name="87702::Uint16::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::Uint16::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 16;
@@ -5109,7 +5109,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl Uint32 {
-        #[tracing::instrument(name="87702::Uint32::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::Uint32::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 32;
@@ -5123,7 +5123,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl Uint64 {
-        #[tracing::instrument(name="87702::Uint64::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::Uint64::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 64;
@@ -5137,7 +5137,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl Uint6 {
-        #[tracing::instrument(name="87702::Uint6::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::Uint6::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 6;
@@ -5151,7 +5151,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl Uint14 {
-        #[tracing::instrument(name="87702::Uint14::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::Uint14::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 14;
@@ -5165,7 +5165,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl Uint22 {
-        #[tracing::instrument(name="87702::Uint22::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::Uint22::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 22;
@@ -5182,7 +5182,7 @@ pub mod bit_packed {
         MUint32(Uint32),
     }
     impl SVarUint32 {
-        #[tracing::instrument(name="87702::SVarUint32::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::SVarUint32::ChoiceType::parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
@@ -5193,22 +5193,22 @@ pub mod bit_packed {
             let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant tagged '0' for MUint6");
+                    tracing::trace!("Variant tagged '0' for MUint6");
                     let (tail, res) = Uint6::parse(tail)?;
                     Ok((tail, Self::MUint6(res)))
                 }
                 1 => {
-                    tracing::debug!("Variant tagged '1' for MUint14");
+                    tracing::trace!("Variant tagged '1' for MUint14");
                     let (tail, res) = Uint14::parse(tail)?;
                     Ok((tail, Self::MUint14(res)))
                 }
                 2 => {
-                    tracing::debug!("Variant tagged '2' for MUint22");
+                    tracing::trace!("Variant tagged '2' for MUint22");
                     let (tail, res) = Uint22::parse(tail)?;
                     Ok((tail, Self::MUint22(res)))
                 }
                 3 => {
-                    tracing::debug!("Variant tagged '3' for MUint32");
+                    tracing::trace!("Variant tagged '3' for MUint32");
                     let (tail, res) = Uint32::parse(tail)?;
                     Ok((tail, Self::MUint32(res)))
                 }
@@ -5226,7 +5226,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl TUserId {
-        #[tracing::instrument(name="87702::TUserId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::TUserId::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 4;
@@ -5240,7 +5240,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl TUserCount {
-        #[tracing::instrument(name="87702::TUserCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::TUserCount::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 5;
@@ -5254,7 +5254,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl CCacheHandle {
-        #[tracing::instrument(name="87702::CCacheHandle::BlobType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CCacheHandle::BlobType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, _) = byte_align(input)?;
             let num_bits: usize = 40 * 8;
@@ -5271,7 +5271,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl CUserName {
-        #[tracing::instrument(name="87702::CUserName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CUserName::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 8;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -5286,7 +5286,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl CClanTag {
-        #[tracing::instrument(name="87702::CClanTag::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CClanTag::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 8;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -5301,7 +5301,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl CHeroHandle {
-        #[tracing::instrument(name="87702::CHeroHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CHeroHandle::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 9;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -5316,7 +5316,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl CSkinHandle {
-        #[tracing::instrument(name="87702::CSkinHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CSkinHandle::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 9;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -5331,7 +5331,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl CMountHandle {
-        #[tracing::instrument(name="87702::CMountHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CMountHandle::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 9;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -5346,7 +5346,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl CArtifactHandle {
-        #[tracing::instrument(name="87702::CArtifactHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CArtifactHandle::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 9;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -5361,7 +5361,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl CToonHandle {
-        #[tracing::instrument(name="87702::CToonHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CToonHandle::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 7;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -5376,7 +5376,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl CCommanderHandle {
-        #[tracing::instrument(name="87702::CCommanderHandle::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CCommanderHandle::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 9;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -5393,22 +5393,22 @@ pub mod bit_packed {
         EReferee,
     }
     impl EObserve {
-        #[tracing::instrument(name="87702::EObserve::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::EObserve::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 3
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ENone for value '0'");
+                    tracing::trace!("Variant ENone for value '0'");
                     Ok((tail, Self::ENone))
                 }
                 1 => {
-                    tracing::debug!("Variant ESpectator for value '1'");
+                    tracing::trace!("Variant ESpectator for value '1'");
                     Ok((tail, Self::ESpectator))
                 }
                 2 => {
-                    tracing::debug!("Variant EReferee for value '2'");
+                    tracing::trace!("Variant EReferee for value '2'");
                     Ok((tail, Self::EReferee))
                 }
 
@@ -5426,11 +5426,11 @@ pub mod bit_packed {
                         // compare with blizzard's python implementation
     }
     impl CAllowedObserveTypes {
-        #[tracing::instrument(name="87702::CAllowedObserveTypes::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CAllowedObserveTypes::BitArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let bitarray_length_bits: usize = 2;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
-            tracing::debug!("Reading bitarray length: {bitarray_length}");
+            tracing::trace!("Reading bitarray length: {bitarray_length}");
             let (tail, value) = take_n_bits_into_i64(tail, bitarray_length as usize)?;
             Ok((tail, Self { value }))
         }
@@ -5441,7 +5441,7 @@ pub mod bit_packed {
         pub m_team: Option<Uint8>,
     }
     impl TTeamPreference {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_team(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Option<Uint8>> {
             let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
             let (tail, m_team) = if is_provided {
@@ -5450,10 +5450,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_team: {:?}", m_team);
+            tracing::trace!("m_team: {:?}", m_team);
             Ok((tail, m_team))
         }
-        #[tracing::instrument(name="87702::bit_packed::TTeamPreference::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::TTeamPreference::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_team: Option<Option<Uint8>> = Some(None);
@@ -5494,13 +5494,13 @@ pub mod bit_packed {
         pub m_scaled_rating: Option<Int32>,
     }
     impl SUserInitialData {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CUserName> {
             let (tail, m_name) = CUserName::parse(input)?;
-            tracing::debug!("m_name: {:?}", str::from_utf8(&m_name.value));
+            tracing::trace!("m_name: {:?}", str::from_utf8(&m_name.value));
             Ok((tail, m_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_clan_tag(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<CClanTag>> {
@@ -5511,10 +5511,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_clan_tag: {:?}", m_clan_tag);
+            tracing::trace!("m_clan_tag: {:?}", m_clan_tag);
             Ok((tail, m_clan_tag))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_clan_logo(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<CCacheHandle>> {
@@ -5525,10 +5525,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_clan_logo: {:?}", m_clan_logo);
+            tracing::trace!("m_clan_logo: {:?}", m_clan_logo);
             Ok((tail, m_clan_logo))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_highest_league(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Uint8>> {
@@ -5539,10 +5539,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_highest_league: {:?}", m_highest_league);
+            tracing::trace!("m_highest_league: {:?}", m_highest_league);
             Ok((tail, m_highest_league))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_combined_race_levels(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Uint32>> {
@@ -5553,96 +5553,96 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_combined_race_levels: {:?}", m_combined_race_levels);
+            tracing::trace!("m_combined_race_levels: {:?}", m_combined_race_levels);
             Ok((tail, m_combined_race_levels))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_random_seed(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_random_seed) = Uint32::parse(input)?;
-            tracing::debug!("m_random_seed: {:?}", m_random_seed);
+            tracing::trace!("m_random_seed: {:?}", m_random_seed);
             Ok((tail, m_random_seed))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_race_preference(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TRacePreference> {
             let (tail, m_race_preference) = TRacePreference::parse(input)?;
-            tracing::debug!("m_race_preference: {:?}", m_race_preference);
+            tracing::trace!("m_race_preference: {:?}", m_race_preference);
             Ok((tail, m_race_preference))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_team_preference(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TTeamPreference> {
             let (tail, m_team_preference) = TTeamPreference::parse(input)?;
-            tracing::debug!("m_team_preference: {:?}", m_team_preference);
+            tracing::trace!("m_team_preference: {:?}", m_team_preference);
             Ok((tail, m_team_preference))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_test_map(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_test_map) = parse_bool(input)?;
-            tracing::debug!("m_test_map: {:?}", m_test_map);
+            tracing::trace!("m_test_map: {:?}", m_test_map);
             Ok((tail, m_test_map))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_test_auto(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_test_auto) = parse_bool(input)?;
-            tracing::debug!("m_test_auto: {:?}", m_test_auto);
+            tracing::trace!("m_test_auto: {:?}", m_test_auto);
             Ok((tail, m_test_auto))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_examine(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_examine) = parse_bool(input)?;
-            tracing::debug!("m_examine: {:?}", m_examine);
+            tracing::trace!("m_examine: {:?}", m_examine);
             Ok((tail, m_examine))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_custom_interface(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_custom_interface) = parse_bool(input)?;
-            tracing::debug!("m_custom_interface: {:?}", m_custom_interface);
+            tracing::trace!("m_custom_interface: {:?}", m_custom_interface);
             Ok((tail, m_custom_interface))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_test_type(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_test_type) = Uint32::parse(input)?;
-            tracing::debug!("m_test_type: {:?}", m_test_type);
+            tracing::trace!("m_test_type: {:?}", m_test_type);
             Ok((tail, m_test_type))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_observe(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), EObserve> {
             let (tail, m_observe) = EObserve::parse(input)?;
-            tracing::debug!("m_observe: {:?}", m_observe);
+            tracing::trace!("m_observe: {:?}", m_observe);
             Ok((tail, m_observe))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_hero(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CHeroHandle> {
             let (tail, m_hero) = CHeroHandle::parse(input)?;
-            tracing::debug!("m_hero: {:?}", m_hero);
+            tracing::trace!("m_hero: {:?}", m_hero);
             Ok((tail, m_hero))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_skin(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CSkinHandle> {
             let (tail, m_skin) = CSkinHandle::parse(input)?;
-            tracing::debug!("m_skin: {:?}", m_skin);
+            tracing::trace!("m_skin: {:?}", m_skin);
             Ok((tail, m_skin))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_mount(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CMountHandle> {
             let (tail, m_mount) = CMountHandle::parse(input)?;
-            tracing::debug!("m_mount: {:?}", m_mount);
+            tracing::trace!("m_mount: {:?}", m_mount);
             Ok((tail, m_mount))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_toon_handle(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CToonHandle> {
             let (tail, m_toon_handle) = CToonHandle::parse(input)?;
-            tracing::debug!("m_toon_handle: {:?}", m_toon_handle);
+            tracing::trace!("m_toon_handle: {:?}", m_toon_handle);
             Ok((tail, m_toon_handle))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_scaled_rating(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Int32>> {
@@ -5653,10 +5653,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_scaled_rating: {:?}", m_scaled_rating);
+            tracing::trace!("m_scaled_rating: {:?}", m_scaled_rating);
             Ok((tail, m_scaled_rating))
         }
-        #[tracing::instrument(name="87702::bit_packed::SUserInitialData::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::SUserInitialData::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_name: Option<CUserName> = None;
@@ -5806,13 +5806,13 @@ pub mod bit_packed {
         pub value: Vec<SUserInitialData>,
     }
     impl CUserInitialDataArray {
-        #[tracing::instrument(name="87702::CUserInitialDataArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::CUserInitialDataArray::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 5;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(SUserInitialData::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<SUserInitialData>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -5845,74 +5845,74 @@ pub mod bit_packed {
         ETakeCommandDropped,
     }
     impl ELeaveReason {
-        #[tracing::instrument(name="87702::ELeaveReason::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::ELeaveReason::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 16
             let num_bits: usize = 4;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EUserLeft for value '0'");
+                    tracing::trace!("Variant EUserLeft for value '0'");
                     Ok((tail, Self::EUserLeft))
                 }
                 1 => {
-                    tracing::debug!("Variant EUserDropped for value '1'");
+                    tracing::trace!("Variant EUserDropped for value '1'");
                     Ok((tail, Self::EUserDropped))
                 }
                 2 => {
-                    tracing::debug!("Variant EUserBanned for value '2'");
+                    tracing::trace!("Variant EUserBanned for value '2'");
                     Ok((tail, Self::EUserBanned))
                 }
                 3 => {
-                    tracing::debug!("Variant EUserVictory for value '3'");
+                    tracing::trace!("Variant EUserVictory for value '3'");
                     Ok((tail, Self::EUserVictory))
                 }
                 4 => {
-                    tracing::debug!("Variant EUserDefeat for value '4'");
+                    tracing::trace!("Variant EUserDefeat for value '4'");
                     Ok((tail, Self::EUserDefeat))
                 }
                 5 => {
-                    tracing::debug!("Variant EUserTied for value '5'");
+                    tracing::trace!("Variant EUserTied for value '5'");
                     Ok((tail, Self::EUserTied))
                 }
                 6 => {
-                    tracing::debug!("Variant EUserDesynced for value '6'");
+                    tracing::trace!("Variant EUserDesynced for value '6'");
                     Ok((tail, Self::EUserDesynced))
                 }
                 7 => {
-                    tracing::debug!("Variant EUserOutOfTime for value '7'");
+                    tracing::trace!("Variant EUserOutOfTime for value '7'");
                     Ok((tail, Self::EUserOutOfTime))
                 }
                 8 => {
-                    tracing::debug!("Variant EWeWereUnresponsive for value '8'");
+                    tracing::trace!("Variant EWeWereUnresponsive for value '8'");
                     Ok((tail, Self::EWeWereUnresponsive))
                 }
                 9 => {
-                    tracing::debug!("Variant EWeContinuedAlone for value '9'");
+                    tracing::trace!("Variant EWeContinuedAlone for value '9'");
                     Ok((tail, Self::EWeContinuedAlone))
                 }
                 10 => {
-                    tracing::debug!("Variant EReplayDesynced for value '10'");
+                    tracing::trace!("Variant EReplayDesynced for value '10'");
                     Ok((tail, Self::EReplayDesynced))
                 }
                 11 => {
-                    tracing::debug!("Variant EUserTimeout for value '11'");
+                    tracing::trace!("Variant EUserTimeout for value '11'");
                     Ok((tail, Self::EUserTimeout))
                 }
                 12 => {
-                    tracing::debug!("Variant EUserDisconnected for value '12'");
+                    tracing::trace!("Variant EUserDisconnected for value '12'");
                     Ok((tail, Self::EUserDisconnected))
                 }
                 13 => {
-                    tracing::debug!("Variant EUnrecoverable for value '13'");
+                    tracing::trace!("Variant EUnrecoverable for value '13'");
                     Ok((tail, Self::EUnrecoverable))
                 }
                 14 => {
-                    tracing::debug!("Variant EUserCatchupDesynced for value '14'");
+                    tracing::trace!("Variant EUserCatchupDesynced for value '14'");
                     Ok((tail, Self::EUserCatchupDesynced))
                 }
                 15 => {
-                    tracing::debug!("Variant ETakeCommandDropped for value '15'");
+                    tracing::trace!("Variant ETakeCommandDropped for value '15'");
                     Ok((tail, Self::ETakeCommandDropped))
                 }
 
@@ -5932,26 +5932,26 @@ pub mod bit_packed {
         EUnrecoverable,
     }
     impl EReconnectStatus {
-        #[tracing::instrument(name="87702::EReconnectStatus::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::EReconnectStatus::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 4
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EConnected for value '0'");
+                    tracing::trace!("Variant EConnected for value '0'");
                     Ok((tail, Self::EConnected))
                 }
                 1 => {
-                    tracing::debug!("Variant EReconnected for value '1'");
+                    tracing::trace!("Variant EReconnected for value '1'");
                     Ok((tail, Self::EReconnected))
                 }
                 2 => {
-                    tracing::debug!("Variant EDisconnected for value '2'");
+                    tracing::trace!("Variant EDisconnected for value '2'");
                     Ok((tail, Self::EDisconnected))
                 }
                 3 => {
-                    tracing::debug!("Variant EUnrecoverable for value '3'");
+                    tracing::trace!("Variant EUnrecoverable for value '3'");
                     Ok((tail, Self::EUnrecoverable))
                 }
 
@@ -5973,43 +5973,43 @@ pub mod bit_packed {
         pub m_base_build: Uint32,
     }
     impl SVersion {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_flags(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_flags) = Uint8::parse(input)?;
-            tracing::debug!("m_flags: {:?}", m_flags);
+            tracing::trace!("m_flags: {:?}", m_flags);
             Ok((tail, m_flags))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_major(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_major) = Uint8::parse(input)?;
-            tracing::debug!("m_major: {:?}", m_major);
+            tracing::trace!("m_major: {:?}", m_major);
             Ok((tail, m_major))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_minor(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_minor) = Uint8::parse(input)?;
-            tracing::debug!("m_minor: {:?}", m_minor);
+            tracing::trace!("m_minor: {:?}", m_minor);
             Ok((tail, m_minor))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_revision(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_revision) = Uint8::parse(input)?;
-            tracing::debug!("m_revision: {:?}", m_revision);
+            tracing::trace!("m_revision: {:?}", m_revision);
             Ok((tail, m_revision))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_build(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_build) = Uint32::parse(input)?;
-            tracing::debug!("m_build: {:?}", m_build);
+            tracing::trace!("m_build: {:?}", m_build);
             Ok((tail, m_build))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_base_build(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_base_build) = Uint32::parse(input)?;
-            tracing::debug!("m_base_build: {:?}", m_base_build);
+            tracing::trace!("m_base_build: {:?}", m_base_build);
             Ok((tail, m_base_build))
         }
-        #[tracing::instrument(name="87702::bit_packed::SVersion::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::SVersion::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_flags: Option<Uint8> = None;
@@ -6068,7 +6068,7 @@ pub mod bit_packed {
         pub m_data: Vec<u8>,
     }
     impl Smd5 {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_data_deprecated(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Vec<Uint8>>> {
@@ -6076,7 +6076,7 @@ pub mod bit_packed {
             let (tail, m_data_deprecated) = if is_provided {
                 let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
                 let array_length = array_length as usize;
-                tracing::debug!("Reading array length: {array_length}");
+                tracing::trace!("Reading array length: {array_length}");
                 let max_initial_capacity =
                     MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<u8>().max(1);
                 let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -6089,14 +6089,14 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_data_deprecated: {:?}", m_data_deprecated);
+            tracing::trace!("m_data_deprecated: {:?}", m_data_deprecated);
             Ok((tail, m_data_deprecated))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_data(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -6105,7 +6105,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::Smd5::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::Smd5::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_data_deprecated: Option<Option<Vec<Uint8>>> = Some(None);
@@ -6135,7 +6135,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTColorId {
-        #[tracing::instrument(name="87702::GameTColorId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTColorId::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 5;
@@ -6149,7 +6149,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTColorCount {
-        #[tracing::instrument(name="87702::GameTColorCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTColorCount::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 6;
@@ -6163,7 +6163,7 @@ pub mod bit_packed {
         pub m_color: Option<GameTColorId>,
     }
     impl GameTColorPreference {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_color(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameTColorId>> {
@@ -6174,10 +6174,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_color: {:?}", m_color);
+            tracing::trace!("m_color: {:?}", m_color);
             Ok((tail, m_color))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameTColorPreference::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameTColorPreference::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_color: Option<Option<GameTColorId>> = Some(None);
@@ -6201,11 +6201,11 @@ pub mod bit_packed {
                         // compare with blizzard's python implementation
     }
     impl GameCAllowedColors {
-        #[tracing::instrument(name="87702::GameCAllowedColors::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCAllowedColors::BitArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let bitarray_length_bits: usize = 6;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
-            tracing::debug!("Reading bitarray_length[{bitarray_length_bits}]: {bitarray_length}");
+            tracing::trace!("Reading bitarray_length[{bitarray_length_bits}]: {bitarray_length}");
             let (tail, value) = take_n_bits_into_i64(tail, bitarray_length as usize)?;
             Ok((tail, Self { value }))
         }
@@ -6218,24 +6218,24 @@ pub mod bit_packed {
         EGame(GameSBankFileEvent),
     }
     impl GameESynchronous {
-        #[tracing::instrument(name="87702::GameESynchronous::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameESynchronous::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 3
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ELocal for value '0'");
+                    tracing::trace!("Variant ELocal for value '0'");
                     Ok((tail, Self::ELocal))
                 }
                 1 => {
-                    tracing::debug!("Variant ESession for value '1'");
+                    tracing::trace!("Variant ESession for value '1'");
 
                     let (tail, res) = GameSSetLobbySlotEvent::parse(tail)?;
                     Ok((tail, Self::ESession(res)))
                 }
                 2 => {
-                    tracing::debug!("Variant EGame for value '2'");
+                    tracing::trace!("Variant EGame for value '2'");
 
                     let (tail, res) = GameSBankFileEvent::parse(tail)?;
                     Ok((tail, Self::EGame(res)))
@@ -6255,20 +6255,20 @@ pub mod bit_packed {
         ENotSynthesized(GameSSetLobbySlotEvent),
     }
     impl GameESynthesized {
-        #[tracing::instrument(name="87702::GameESynthesized::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameESynthesized::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 2
             let num_bits: usize = 1;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ESynthesized for value '0'");
+                    tracing::trace!("Variant ESynthesized for value '0'");
 
                     let (tail, res) = GameSDropOurselvesEvent::parse(tail)?;
                     Ok((tail, Self::ESynthesized(res)))
                 }
                 1 => {
-                    tracing::debug!("Variant ENotSynthesized for value '1'");
+                    tracing::trace!("Variant ENotSynthesized for value '1'");
 
                     let (tail, res) = GameSSetLobbySlotEvent::parse(tail)?;
                     Ok((tail, Self::ENotSynthesized(res)))
@@ -6288,20 +6288,20 @@ pub mod bit_packed {
         ENotDebug(GameSSetLobbySlotEvent),
     }
     impl GameEDebug {
-        #[tracing::instrument(name="87702::GameEDebug::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEDebug::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 2
             let num_bits: usize = 1;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EDebug for value '0'");
+                    tracing::trace!("Variant EDebug for value '0'");
 
                     let (tail, res) = GameSPickMapTagEvent::parse(tail)?;
                     Ok((tail, Self::EDebug(res)))
                 }
                 1 => {
-                    tracing::debug!("Variant ENotDebug for value '1'");
+                    tracing::trace!("Variant ENotDebug for value '1'");
 
                     let (tail, res) = GameSSetLobbySlotEvent::parse(tail)?;
                     Ok((tail, Self::ENotDebug(res)))
@@ -6321,18 +6321,18 @@ pub mod bit_packed {
         ETakeCommand,
     }
     impl GameEHijackMethod {
-        #[tracing::instrument(name="87702::GameEHijackMethod::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEHijackMethod::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 2
             let num_bits: usize = 1;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ERecover for value '0'");
+                    tracing::trace!("Variant ERecover for value '0'");
                     Ok((tail, Self::ERecover))
                 }
                 1 => {
-                    tracing::debug!("Variant ETakeCommand for value '1'");
+                    tracing::trace!("Variant ETakeCommand for value '1'");
                     Ok((tail, Self::ETakeCommand))
                 }
 
@@ -6349,7 +6349,7 @@ pub mod bit_packed {
         pub value: Uint16,
     }
     impl GameTQueryId {
-        #[tracing::instrument(name="87702::GameTQueryId::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTQueryId::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
             Ok((tail, Self { value }))
@@ -6484,494 +6484,494 @@ pub mod bit_packed {
         EPeerSetSyncPlayingTime(GameSPeerSetSyncPlayingTimeEvent),
     }
     impl GameEEventId {
-        #[tracing::instrument(name="87702::GameEEventId::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEEventId::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 120
             let num_bits: usize = 7;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ESetLobbySlot for value '0'");
+                    tracing::trace!("Variant ESetLobbySlot for value '0'");
 
                     let (tail, res) = GameSSetLobbySlotEvent::parse(tail)?;
                     Ok((tail, Self::ESetLobbySlot(res)))
                 }
                 1 => {
-                    tracing::debug!("Variant EDropUser for value '1'");
+                    tracing::trace!("Variant EDropUser for value '1'");
 
                     let (tail, res) = GameSDropUserEvent::parse(tail)?;
                     Ok((tail, Self::EDropUser(res)))
                 }
                 2 => {
-                    tracing::debug!("Variant EStartGame for value '2'");
+                    tracing::trace!("Variant EStartGame for value '2'");
 
                     let (tail, res) = GameSStartGameEvent::parse(tail)?;
                     Ok((tail, Self::EStartGame(res)))
                 }
                 3 => {
-                    tracing::debug!("Variant EDropOurselves for value '3'");
+                    tracing::trace!("Variant EDropOurselves for value '3'");
 
                     let (tail, res) = GameSDropOurselvesEvent::parse(tail)?;
                     Ok((tail, Self::EDropOurselves(res)))
                 }
                 4 => {
-                    tracing::debug!("Variant EUserFinishedLoading for value '4'");
+                    tracing::trace!("Variant EUserFinishedLoading for value '4'");
 
                     let (tail, res) = GameSUserFinishedLoadingEvent::parse(tail)?;
                     Ok((tail, Self::EUserFinishedLoading(res)))
                 }
                 5 => {
-                    tracing::debug!("Variant EUserFinishedLoadingSync for value '5'");
+                    tracing::trace!("Variant EUserFinishedLoadingSync for value '5'");
 
                     let (tail, res) = GameSUserFinishedLoadingSyncEvent::parse(tail)?;
                     Ok((tail, Self::EUserFinishedLoadingSync(res)))
                 }
                 6 => {
-                    tracing::debug!("Variant ESetGameDuration for value '6'");
+                    tracing::trace!("Variant ESetGameDuration for value '6'");
 
                     let (tail, res) = GameSSetGameDurationEvent::parse(tail)?;
                     Ok((tail, Self::ESetGameDuration(res)))
                 }
                 7 => {
-                    tracing::debug!("Variant EUserOptions for value '7'");
+                    tracing::trace!("Variant EUserOptions for value '7'");
 
                     let (tail, res) = GameSUserOptionsEvent::parse(tail)?;
                     Ok((tail, Self::EUserOptions(res)))
                 }
                 114 => {
-                    tracing::debug!("Variant EPickMapTag for value '114'");
+                    tracing::trace!("Variant EPickMapTag for value '114'");
 
                     let (tail, res) = GameSPickMapTagEvent::parse(tail)?;
                     Ok((tail, Self::EPickMapTag(res)))
                 }
                 8 => {
-                    tracing::debug!("Variant ETurn for value '8'");
+                    tracing::trace!("Variant ETurn for value '8'");
 
                     let (tail, res) = GameSTurnEvent::parse(tail)?;
                     Ok((tail, Self::ETurn(res)))
                 }
                 9 => {
-                    tracing::debug!("Variant EBankFile for value '9'");
+                    tracing::trace!("Variant EBankFile for value '9'");
 
                     let (tail, res) = GameSBankFileEvent::parse(tail)?;
                     Ok((tail, Self::EBankFile(res)))
                 }
                 10 => {
-                    tracing::debug!("Variant EBankSection for value '10'");
+                    tracing::trace!("Variant EBankSection for value '10'");
 
                     let (tail, res) = GameSBankSectionEvent::parse(tail)?;
                     Ok((tail, Self::EBankSection(res)))
                 }
                 11 => {
-                    tracing::debug!("Variant EBankKey for value '11'");
+                    tracing::trace!("Variant EBankKey for value '11'");
 
                     let (tail, res) = GameSBankKeyEvent::parse(tail)?;
                     Ok((tail, Self::EBankKey(res)))
                 }
                 12 => {
-                    tracing::debug!("Variant EBankValue for value '12'");
+                    tracing::trace!("Variant EBankValue for value '12'");
 
                     let (tail, res) = GameSBankValueEvent::parse(tail)?;
                     Ok((tail, Self::EBankValue(res)))
                 }
                 13 => {
-                    tracing::debug!("Variant EBankSignature for value '13'");
+                    tracing::trace!("Variant EBankSignature for value '13'");
 
                     let (tail, res) = GameSBankSignatureEvent::parse(tail)?;
                     Ok((tail, Self::EBankSignature(res)))
                 }
                 14 => {
-                    tracing::debug!("Variant ECameraSave for value '14'");
+                    tracing::trace!("Variant ECameraSave for value '14'");
 
                     let (tail, res) = GameSCameraSaveEvent::parse(tail)?;
                     Ok((tail, Self::ECameraSave(res)))
                 }
                 15 => {
-                    tracing::debug!("Variant EPauseGame for value '15'");
+                    tracing::trace!("Variant EPauseGame for value '15'");
 
                     let (tail, res) = GameSPauseGameEvent::parse(tail)?;
                     Ok((tail, Self::EPauseGame(res)))
                 }
                 16 => {
-                    tracing::debug!("Variant EUnpauseGame for value '16'");
+                    tracing::trace!("Variant EUnpauseGame for value '16'");
 
                     let (tail, res) = GameSUnpauseGameEvent::parse(tail)?;
                     Ok((tail, Self::EUnpauseGame(res)))
                 }
                 17 => {
-                    tracing::debug!("Variant ESingleStepGame for value '17'");
+                    tracing::trace!("Variant ESingleStepGame for value '17'");
 
                     let (tail, res) = GameSSingleStepGameEvent::parse(tail)?;
                     Ok((tail, Self::ESingleStepGame(res)))
                 }
                 18 => {
-                    tracing::debug!("Variant ESetGameSpeed for value '18'");
+                    tracing::trace!("Variant ESetGameSpeed for value '18'");
 
                     let (tail, res) = GameSSetGameSpeedEvent::parse(tail)?;
                     Ok((tail, Self::ESetGameSpeed(res)))
                 }
                 19 => {
-                    tracing::debug!("Variant EAddGameSpeed for value '19'");
+                    tracing::trace!("Variant EAddGameSpeed for value '19'");
 
                     let (tail, res) = GameSAddGameSpeedEvent::parse(tail)?;
                     Ok((tail, Self::EAddGameSpeed(res)))
                 }
                 20 => {
-                    tracing::debug!("Variant EReplayJump for value '20'");
+                    tracing::trace!("Variant EReplayJump for value '20'");
 
                     let (tail, res) = GameSReplayJumpEvent::parse(tail)?;
                     Ok((tail, Self::EReplayJump(res)))
                 }
                 21 => {
-                    tracing::debug!("Variant ESaveGame for value '21'");
+                    tracing::trace!("Variant ESaveGame for value '21'");
 
                     let (tail, res) = GameSSaveGameEvent::parse(tail)?;
                     Ok((tail, Self::ESaveGame(res)))
                 }
                 22 => {
-                    tracing::debug!("Variant ESaveGameDone for value '22'");
+                    tracing::trace!("Variant ESaveGameDone for value '22'");
 
                     let (tail, res) = GameSSaveGameDoneEvent::parse(tail)?;
                     Ok((tail, Self::ESaveGameDone(res)))
                 }
                 23 => {
-                    tracing::debug!("Variant ELoadGameDone for value '23'");
+                    tracing::trace!("Variant ELoadGameDone for value '23'");
 
                     let (tail, res) = GameSLoadGameDoneEvent::parse(tail)?;
                     Ok((tail, Self::ELoadGameDone(res)))
                 }
                 24 => {
-                    tracing::debug!("Variant ESessionCheat for value '24'");
+                    tracing::trace!("Variant ESessionCheat for value '24'");
 
                     let (tail, res) = GameSSessionCheatEvent::parse(tail)?;
                     Ok((tail, Self::ESessionCheat(res)))
                 }
                 25 => {
-                    tracing::debug!("Variant ECommandManagerReset for value '25'");
+                    tracing::trace!("Variant ECommandManagerReset for value '25'");
 
                     let (tail, res) = GameSCommandManagerResetEvent::parse(tail)?;
                     Ok((tail, Self::ECommandManagerReset(res)))
                 }
                 26 => {
-                    tracing::debug!("Variant EGameCheat for value '26'");
+                    tracing::trace!("Variant EGameCheat for value '26'");
 
                     let (tail, res) = GameSGameCheatEvent::parse(tail)?;
                     Ok((tail, Self::EGameCheat(res)))
                 }
                 27 => {
-                    tracing::debug!("Variant ECmd for value '27'");
+                    tracing::trace!("Variant ECmd for value '27'");
 
                     let (tail, res) = GameSCmdEvent::parse(tail)?;
                     Ok((tail, Self::ECmd(res)))
                 }
                 28 => {
-                    tracing::debug!("Variant ESelectionDelta for value '28'");
+                    tracing::trace!("Variant ESelectionDelta for value '28'");
 
                     let (tail, res) = GameSSelectionDeltaEvent::parse(tail)?;
                     Ok((tail, Self::ESelectionDelta(res)))
                 }
                 29 => {
-                    tracing::debug!("Variant EControlGroupUpdate for value '29'");
+                    tracing::trace!("Variant EControlGroupUpdate for value '29'");
 
                     let (tail, res) = GameSControlGroupUpdateEvent::parse(tail)?;
                     Ok((tail, Self::EControlGroupUpdate(res)))
                 }
                 30 => {
-                    tracing::debug!("Variant ESelectionSyncCheck for value '30'");
+                    tracing::trace!("Variant ESelectionSyncCheck for value '30'");
 
                     let (tail, res) = GameSSelectionSyncCheckEvent::parse(tail)?;
                     Ok((tail, Self::ESelectionSyncCheck(res)))
                 }
                 31 => {
-                    tracing::debug!("Variant EResourceTrade for value '31'");
+                    tracing::trace!("Variant EResourceTrade for value '31'");
 
                     let (tail, res) = GameSResourceTradeEvent::parse(tail)?;
                     Ok((tail, Self::EResourceTrade(res)))
                 }
                 32 => {
-                    tracing::debug!("Variant ETriggerChatMessage for value '32'");
+                    tracing::trace!("Variant ETriggerChatMessage for value '32'");
 
                     let (tail, res) = GameSTriggerChatMessageEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerChatMessage(res)))
                 }
                 33 => {
-                    tracing::debug!("Variant EAiCommunicate for value '33'");
+                    tracing::trace!("Variant EAiCommunicate for value '33'");
 
                     let (tail, res) = GameSaiCommunicateEvent::parse(tail)?;
                     Ok((tail, Self::EAiCommunicate(res)))
                 }
                 34 => {
-                    tracing::debug!("Variant ESetAbsoluteGameSpeed for value '34'");
+                    tracing::trace!("Variant ESetAbsoluteGameSpeed for value '34'");
 
                     let (tail, res) = GameSSetAbsoluteGameSpeedEvent::parse(tail)?;
                     Ok((tail, Self::ESetAbsoluteGameSpeed(res)))
                 }
                 35 => {
-                    tracing::debug!("Variant EAddAbsoluteGameSpeed for value '35'");
+                    tracing::trace!("Variant EAddAbsoluteGameSpeed for value '35'");
 
                     let (tail, res) = GameSAddAbsoluteGameSpeedEvent::parse(tail)?;
                     Ok((tail, Self::EAddAbsoluteGameSpeed(res)))
                 }
                 36 => {
-                    tracing::debug!("Variant ETriggerPing for value '36'");
+                    tracing::trace!("Variant ETriggerPing for value '36'");
 
                     let (tail, res) = GameSTriggerPingEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerPing(res)))
                 }
                 37 => {
-                    tracing::debug!("Variant EBroadcastCheat for value '37'");
+                    tracing::trace!("Variant EBroadcastCheat for value '37'");
 
                     let (tail, res) = GameSBroadcastCheatEvent::parse(tail)?;
                     Ok((tail, Self::EBroadcastCheat(res)))
                 }
                 38 => {
-                    tracing::debug!("Variant EAlliance for value '38'");
+                    tracing::trace!("Variant EAlliance for value '38'");
 
                     let (tail, res) = GameSAllianceEvent::parse(tail)?;
                     Ok((tail, Self::EAlliance(res)))
                 }
                 39 => {
-                    tracing::debug!("Variant EUnitClick for value '39'");
+                    tracing::trace!("Variant EUnitClick for value '39'");
 
                     let (tail, res) = GameSUnitClickEvent::parse(tail)?;
                     Ok((tail, Self::EUnitClick(res)))
                 }
                 40 => {
-                    tracing::debug!("Variant EUnitHighlight for value '40'");
+                    tracing::trace!("Variant EUnitHighlight for value '40'");
 
                     let (tail, res) = GameSUnitHighlightEvent::parse(tail)?;
                     Ok((tail, Self::EUnitHighlight(res)))
                 }
                 41 => {
-                    tracing::debug!("Variant ETriggerReplySelected for value '41'");
+                    tracing::trace!("Variant ETriggerReplySelected for value '41'");
 
                     let (tail, res) = GameSTriggerReplySelectedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerReplySelected(res)))
                 }
                 42 => {
-                    tracing::debug!("Variant EHijackReplaySession for value '42'");
+                    tracing::trace!("Variant EHijackReplaySession for value '42'");
 
                     let (tail, res) = GameSHijackReplaySessionEvent::parse(tail)?;
                     Ok((tail, Self::EHijackReplaySession(res)))
                 }
                 43 => {
-                    tracing::debug!("Variant EHijackReplayGame for value '43'");
+                    tracing::trace!("Variant EHijackReplayGame for value '43'");
 
                     let (tail, res) = GameSHijackReplayGameEvent::parse(tail)?;
                     Ok((tail, Self::EHijackReplayGame(res)))
                 }
                 44 => {
-                    tracing::debug!("Variant ETriggerSkipped for value '44'");
+                    tracing::trace!("Variant ETriggerSkipped for value '44'");
 
                     let (tail, res) = GameSTriggerSkippedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerSkipped(res)))
                 }
                 45 => {
-                    tracing::debug!("Variant ETriggerSoundLengthQuery for value '45'");
+                    tracing::trace!("Variant ETriggerSoundLengthQuery for value '45'");
 
                     let (tail, res) = GameSTriggerSoundLengthQueryEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerSoundLengthQuery(res)))
                 }
                 46 => {
-                    tracing::debug!("Variant ETriggerSoundOffset for value '46'");
+                    tracing::trace!("Variant ETriggerSoundOffset for value '46'");
 
                     let (tail, res) = GameSTriggerSoundOffsetEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerSoundOffset(res)))
                 }
                 47 => {
-                    tracing::debug!("Variant ETriggerTransmissionOffset for value '47'");
+                    tracing::trace!("Variant ETriggerTransmissionOffset for value '47'");
 
                     let (tail, res) = GameSTriggerTransmissionOffsetEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerTransmissionOffset(res)))
                 }
                 48 => {
-                    tracing::debug!("Variant ETriggerTransmissionComplete for value '48'");
+                    tracing::trace!("Variant ETriggerTransmissionComplete for value '48'");
 
                     let (tail, res) = GameSTriggerTransmissionCompleteEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerTransmissionComplete(res)))
                 }
                 49 => {
-                    tracing::debug!("Variant ECameraUpdate for value '49'");
+                    tracing::trace!("Variant ECameraUpdate for value '49'");
 
                     let (tail, res) = GameSCameraUpdateEvent::parse(tail)?;
                     Ok((tail, Self::ECameraUpdate(res)))
                 }
                 50 => {
-                    tracing::debug!("Variant ETriggerAbortMission for value '50'");
+                    tracing::trace!("Variant ETriggerAbortMission for value '50'");
 
                     let (tail, res) = GameSTriggerAbortMissionEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerAbortMission(res)))
                 }
                 51 => {
-                    tracing::debug!("Variant ETriggerPurchaseMade for value '51'");
+                    tracing::trace!("Variant ETriggerPurchaseMade for value '51'");
 
                     let (tail, res) = GameSTriggerPurchaseMadeEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerPurchaseMade(res)))
                 }
                 52 => {
-                    tracing::debug!("Variant ETriggerPurchaseExit for value '52'");
+                    tracing::trace!("Variant ETriggerPurchaseExit for value '52'");
 
                     let (tail, res) = GameSTriggerPurchaseExitEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerPurchaseExit(res)))
                 }
                 53 => {
-                    tracing::debug!("Variant ETriggerPlanetMissionLaunched for value '53'");
+                    tracing::trace!("Variant ETriggerPlanetMissionLaunched for value '53'");
 
                     let (tail, res) = GameSTriggerPlanetMissionLaunchedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerPlanetMissionLaunched(res)))
                 }
                 54 => {
-                    tracing::debug!("Variant ETriggerPlanetPanelCanceled for value '54'");
+                    tracing::trace!("Variant ETriggerPlanetPanelCanceled for value '54'");
 
                     let (tail, res) = GameSTriggerPlanetPanelCanceledEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerPlanetPanelCanceled(res)))
                 }
                 55 => {
-                    tracing::debug!("Variant ETriggerDialogControl for value '55'");
+                    tracing::trace!("Variant ETriggerDialogControl for value '55'");
 
                     let (tail, res) = GameSTriggerDialogControlEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerDialogControl(res)))
                 }
                 56 => {
-                    tracing::debug!("Variant ETriggerSoundLengthSync for value '56'");
+                    tracing::trace!("Variant ETriggerSoundLengthSync for value '56'");
 
                     let (tail, res) = GameSTriggerSoundLengthSyncEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerSoundLengthSync(res)))
                 }
                 57 => {
-                    tracing::debug!("Variant ETriggerConversationSkipped for value '57'");
+                    tracing::trace!("Variant ETriggerConversationSkipped for value '57'");
 
                     let (tail, res) = GameSTriggerConversationSkippedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerConversationSkipped(res)))
                 }
                 58 => {
-                    tracing::debug!("Variant ETriggerMouseClicked for value '58'");
+                    tracing::trace!("Variant ETriggerMouseClicked for value '58'");
 
                     let (tail, res) = GameSTriggerMouseClickedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerMouseClicked(res)))
                 }
                 59 => {
-                    tracing::debug!("Variant ETriggerMouseMoved for value '59'");
+                    tracing::trace!("Variant ETriggerMouseMoved for value '59'");
 
                     let (tail, res) = GameSTriggerMouseMovedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerMouseMoved(res)))
                 }
                 60 => {
-                    tracing::debug!("Variant EAchievementAwarded for value '60'");
+                    tracing::trace!("Variant EAchievementAwarded for value '60'");
 
                     let (tail, res) = GameSAchievementAwardedEvent::parse(tail)?;
                     Ok((tail, Self::EAchievementAwarded(res)))
                 }
                 61 => {
-                    tracing::debug!("Variant ETriggerHotkeyPressed for value '61'");
+                    tracing::trace!("Variant ETriggerHotkeyPressed for value '61'");
 
                     let (tail, res) = GameSTriggerHotkeyPressedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerHotkeyPressed(res)))
                 }
                 62 => {
-                    tracing::debug!("Variant ETriggerTargetModeUpdate for value '62'");
+                    tracing::trace!("Variant ETriggerTargetModeUpdate for value '62'");
 
                     let (tail, res) = GameSTriggerTargetModeUpdateEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerTargetModeUpdate(res)))
                 }
                 63 => {
-                    tracing::debug!("Variant ETriggerPlanetPanelPanelReplay for value '63'");
+                    tracing::trace!("Variant ETriggerPlanetPanelPanelReplay for value '63'");
 
                     let (tail, res) = GameSTriggerPlanetPanelReplayEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerPlanetPanelPanelReplay(res)))
                 }
                 64 => {
-                    tracing::debug!("Variant ETriggerSoundtrackDone for value '64'");
+                    tracing::trace!("Variant ETriggerSoundtrackDone for value '64'");
 
                     let (tail, res) = GameSTriggerSoundtrackDoneEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerSoundtrackDone(res)))
                 }
                 65 => {
-                    tracing::debug!("Variant ETriggerPlanetMissionSelected for value '65'");
+                    tracing::trace!("Variant ETriggerPlanetMissionSelected for value '65'");
 
                     let (tail, res) = GameSTriggerPlanetMissionSelectedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerPlanetMissionSelected(res)))
                 }
                 66 => {
-                    tracing::debug!("Variant ETriggerKeyPressed for value '66'");
+                    tracing::trace!("Variant ETriggerKeyPressed for value '66'");
 
                     let (tail, res) = GameSTriggerKeyPressedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerKeyPressed(res)))
                 }
                 67 => {
-                    tracing::debug!("Variant ETriggerMovieFunction for value '67'");
+                    tracing::trace!("Variant ETriggerMovieFunction for value '67'");
 
                     let (tail, res) = GameSTriggerMovieFunctionEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerMovieFunction(res)))
                 }
                 68 => {
-                    tracing::debug!("Variant ETriggerPlanetPanelPanelBirthComplete for value '68'");
+                    tracing::trace!("Variant ETriggerPlanetPanelPanelBirthComplete for value '68'");
 
                     let (tail, res) = GameSTriggerPlanetPanelBirthCompleteEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerPlanetPanelPanelBirthComplete(res)))
                 }
                 69 => {
-                    tracing::debug!("Variant ETriggerPlanetPanelPanelDeathComplete for value '69'");
+                    tracing::trace!("Variant ETriggerPlanetPanelPanelDeathComplete for value '69'");
 
                     let (tail, res) = GameSTriggerPlanetPanelDeathCompleteEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerPlanetPanelPanelDeathComplete(res)))
                 }
                 70 => {
-                    tracing::debug!("Variant EResourceRequest for value '70'");
+                    tracing::trace!("Variant EResourceRequest for value '70'");
 
                     let (tail, res) = GameSResourceRequestEvent::parse(tail)?;
                     Ok((tail, Self::EResourceRequest(res)))
                 }
                 71 => {
-                    tracing::debug!("Variant EResourceRequestFulfill for value '71'");
+                    tracing::trace!("Variant EResourceRequestFulfill for value '71'");
 
                     let (tail, res) = GameSResourceRequestFulfillEvent::parse(tail)?;
                     Ok((tail, Self::EResourceRequestFulfill(res)))
                 }
                 72 => {
-                    tracing::debug!("Variant EResourceRequestCancel for value '72'");
+                    tracing::trace!("Variant EResourceRequestCancel for value '72'");
 
                     let (tail, res) = GameSResourceRequestCancelEvent::parse(tail)?;
                     Ok((tail, Self::EResourceRequestCancel(res)))
                 }
                 73 => {
-                    tracing::debug!("Variant ETriggerResearchPanelExit for value '73'");
+                    tracing::trace!("Variant ETriggerResearchPanelExit for value '73'");
 
                     let (tail, res) = GameSTriggerResearchPanelExitEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerResearchPanelExit(res)))
                 }
                 74 => {
-                    tracing::debug!("Variant ETriggerResearchPanelPurchase for value '74'");
+                    tracing::trace!("Variant ETriggerResearchPanelPurchase for value '74'");
 
                     let (tail, res) = GameSTriggerResearchPanelPurchaseEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerResearchPanelPurchase(res)))
                 }
                 75 => {
-                    tracing::debug!("Variant ETriggerResearchPanelSelectionChanged for value '75'");
+                    tracing::trace!("Variant ETriggerResearchPanelSelectionChanged for value '75'");
 
                     let (tail, res) = GameSTriggerResearchPanelSelectionChangedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerResearchPanelSelectionChanged(res)))
                 }
                 76 => {
-                    tracing::debug!("Variant ETriggerCommandError for value '76'");
+                    tracing::trace!("Variant ETriggerCommandError for value '76'");
 
                     let (tail, res) = GameSTriggerCommandErrorEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerCommandError(res)))
                 }
                 77 => {
-                    tracing::debug!("Variant ETriggerMercenaryPanelExit for value '77'");
+                    tracing::trace!("Variant ETriggerMercenaryPanelExit for value '77'");
 
                     let (tail, res) = GameSTriggerMercenaryPanelExitEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerMercenaryPanelExit(res)))
                 }
                 78 => {
-                    tracing::debug!("Variant ETriggerMercenaryPanelPurchase for value '78'");
+                    tracing::trace!("Variant ETriggerMercenaryPanelPurchase for value '78'");
 
                     let (tail, res) = GameSTriggerMercenaryPanelPurchaseEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerMercenaryPanelPurchase(res)))
                 }
                 79 => {
-                    tracing::debug!(
+                    tracing::trace!(
                         "Variant ETriggerMercenaryPanelSelectionChanged for value '79'"
                     );
 
@@ -6979,86 +6979,86 @@ pub mod bit_packed {
                     Ok((tail, Self::ETriggerMercenaryPanelSelectionChanged(res)))
                 }
                 80 => {
-                    tracing::debug!("Variant ETriggerVictoryPanelExit for value '80'");
+                    tracing::trace!("Variant ETriggerVictoryPanelExit for value '80'");
 
                     let (tail, res) = GameSTriggerVictoryPanelExitEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerVictoryPanelExit(res)))
                 }
                 81 => {
-                    tracing::debug!("Variant ETriggerBattleReportPanelExit for value '81'");
+                    tracing::trace!("Variant ETriggerBattleReportPanelExit for value '81'");
 
                     let (tail, res) = GameSTriggerBattleReportPanelExitEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerBattleReportPanelExit(res)))
                 }
                 82 => {
-                    tracing::debug!("Variant ETriggerBattleReportPanelPlayMission for value '82'");
+                    tracing::trace!("Variant ETriggerBattleReportPanelPlayMission for value '82'");
 
                     let (tail, res) = GameSTriggerBattleReportPanelPlayMissionEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerBattleReportPanelPlayMission(res)))
                 }
                 83 => {
-                    tracing::debug!("Variant ETriggerBattleReportPanelPlayScene for value '83'");
+                    tracing::trace!("Variant ETriggerBattleReportPanelPlayScene for value '83'");
 
                     let (tail, res) = GameSTriggerBattleReportPanelPlaySceneEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerBattleReportPanelPlayScene(res)))
                 }
                 84 => {
-                    tracing::debug!("Variant ETriggerBattleReportSelectionChanged for value '84'");
+                    tracing::trace!("Variant ETriggerBattleReportSelectionChanged for value '84'");
 
                     let (tail, res) =
                         GameSTriggerBattleReportPanelSelectionChangedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerBattleReportSelectionChanged(res)))
                 }
                 85 => {
-                    tracing::debug!("Variant ETriggerVictoryPanelPlayMissionAgain for value '85'");
+                    tracing::trace!("Variant ETriggerVictoryPanelPlayMissionAgain for value '85'");
 
                     let (tail, res) = GameSTriggerVictoryPanelPlayMissionAgainEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerVictoryPanelPlayMissionAgain(res)))
                 }
                 86 => {
-                    tracing::debug!("Variant ETriggerMovieStarted for value '86'");
+                    tracing::trace!("Variant ETriggerMovieStarted for value '86'");
 
                     let (tail, res) = GameSTriggerMovieStartedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerMovieStarted(res)))
                 }
                 87 => {
-                    tracing::debug!("Variant ETriggerMovieFinished for value '87'");
+                    tracing::trace!("Variant ETriggerMovieFinished for value '87'");
 
                     let (tail, res) = GameSTriggerMovieFinishedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerMovieFinished(res)))
                 }
                 88 => {
-                    tracing::debug!("Variant EDecrementGameTimeRemaining for value '88'");
+                    tracing::trace!("Variant EDecrementGameTimeRemaining for value '88'");
 
                     let (tail, res) = GameSDecrementGameTimeRemainingEvent::parse(tail)?;
                     Ok((tail, Self::EDecrementGameTimeRemaining(res)))
                 }
                 89 => {
-                    tracing::debug!("Variant ETriggerPortraitLoaded for value '89'");
+                    tracing::trace!("Variant ETriggerPortraitLoaded for value '89'");
 
                     let (tail, res) = GameSTriggerPortraitLoadedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerPortraitLoaded(res)))
                 }
                 90 => {
-                    tracing::debug!("Variant ETriggerQueryDialogDismissed for value '90'");
+                    tracing::trace!("Variant ETriggerQueryDialogDismissed for value '90'");
 
                     let (tail, res) = GameSTriggerCustomDialogDismissedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerQueryDialogDismissed(res)))
                 }
                 91 => {
-                    tracing::debug!("Variant ETriggerGameMenuItemSelected for value '91'");
+                    tracing::trace!("Variant ETriggerGameMenuItemSelected for value '91'");
 
                     let (tail, res) = GameSTriggerGameMenuItemSelectedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerGameMenuItemSelected(res)))
                 }
                 92 => {
-                    tracing::debug!("Variant ETriggerMouseWheel for value '92'");
+                    tracing::trace!("Variant ETriggerMouseWheel for value '92'");
 
                     let (tail, res) = GameSTriggerMouseWheelEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerMouseWheel(res)))
                 }
                 93 => {
-                    tracing::debug!(
+                    tracing::trace!(
                         "Variant ETriggerPurchasePanelSelectedPurchaseItemChanged for value '93'"
                     );
 
@@ -7070,7 +7070,7 @@ pub mod bit_packed {
                     ))
                 }
                 94 => {
-                    tracing::debug!("Variant ETriggerPurchasePanelSelectedPurchaseCategoryChanged for value '94'");
+                    tracing::trace!("Variant ETriggerPurchasePanelSelectedPurchaseCategoryChanged for value '94'");
 
                     let (tail, res) =
                         GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent::parse(tail)?;
@@ -7080,37 +7080,37 @@ pub mod bit_packed {
                     ))
                 }
                 95 => {
-                    tracing::debug!("Variant ETriggerButtonPressed for value '95'");
+                    tracing::trace!("Variant ETriggerButtonPressed for value '95'");
 
                     let (tail, res) = GameSTriggerButtonPressedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerButtonPressed(res)))
                 }
                 96 => {
-                    tracing::debug!("Variant ETriggerGameCreditsFinished for value '96'");
+                    tracing::trace!("Variant ETriggerGameCreditsFinished for value '96'");
 
                     let (tail, res) = GameSTriggerGameCreditsFinishedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerGameCreditsFinished(res)))
                 }
                 97 => {
-                    tracing::debug!("Variant ETriggerCutsceneBookmarkFired for value '97'");
+                    tracing::trace!("Variant ETriggerCutsceneBookmarkFired for value '97'");
 
                     let (tail, res) = GameSTriggerCutsceneBookmarkFiredEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerCutsceneBookmarkFired(res)))
                 }
                 98 => {
-                    tracing::debug!("Variant ETriggerCutsceneEndSceneFired for value '98'");
+                    tracing::trace!("Variant ETriggerCutsceneEndSceneFired for value '98'");
 
                     let (tail, res) = GameSTriggerCutsceneEndSceneFiredEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerCutsceneEndSceneFired(res)))
                 }
                 99 => {
-                    tracing::debug!("Variant ETriggerCutsceneConversationLine for value '99'");
+                    tracing::trace!("Variant ETriggerCutsceneConversationLine for value '99'");
 
                     let (tail, res) = GameSTriggerCutsceneConversationLineEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerCutsceneConversationLine(res)))
                 }
                 100 => {
-                    tracing::debug!(
+                    tracing::trace!(
                         "Variant ETriggerCutsceneConversationLineMissing for value '100'"
                     );
 
@@ -7119,109 +7119,109 @@ pub mod bit_packed {
                     Ok((tail, Self::ETriggerCutsceneConversationLineMissing(res)))
                 }
                 101 => {
-                    tracing::debug!("Variant EGameUserLeave for value '101'");
+                    tracing::trace!("Variant EGameUserLeave for value '101'");
 
                     let (tail, res) = GameSGameUserLeaveEvent::parse(tail)?;
                     Ok((tail, Self::EGameUserLeave(res)))
                 }
                 102 => {
-                    tracing::debug!("Variant EGameUserJoin for value '102'");
+                    tracing::trace!("Variant EGameUserJoin for value '102'");
 
                     let (tail, res) = GameSGameUserJoinEvent::parse(tail)?;
                     Ok((tail, Self::EGameUserJoin(res)))
                 }
                 103 => {
-                    tracing::debug!("Variant ECommandManagerState for value '103'");
+                    tracing::trace!("Variant ECommandManagerState for value '103'");
 
                     let (tail, res) = GameSCommandManagerStateEvent::parse(tail)?;
                     Ok((tail, Self::ECommandManagerState(res)))
                 }
                 104 => {
-                    tracing::debug!("Variant ECmdUpdateTargetPoint for value '104'");
+                    tracing::trace!("Variant ECmdUpdateTargetPoint for value '104'");
 
                     let (tail, res) = GameSCmdUpdateTargetPointEvent::parse(tail)?;
                     Ok((tail, Self::ECmdUpdateTargetPoint(res)))
                 }
                 105 => {
-                    tracing::debug!("Variant ECmdUpdateTargetUnit for value '105'");
+                    tracing::trace!("Variant ECmdUpdateTargetUnit for value '105'");
 
                     let (tail, res) = GameSCmdUpdateTargetUnitEvent::parse(tail)?;
                     Ok((tail, Self::ECmdUpdateTargetUnit(res)))
                 }
                 106 => {
-                    tracing::debug!("Variant ETriggerAnimLengthQueryByName for value '106'");
+                    tracing::trace!("Variant ETriggerAnimLengthQueryByName for value '106'");
 
                     let (tail, res) = GameSTriggerAnimLengthQueryByNameEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerAnimLengthQueryByName(res)))
                 }
                 107 => {
-                    tracing::debug!("Variant ETriggerAnimLengthQueryByProps for value '107'");
+                    tracing::trace!("Variant ETriggerAnimLengthQueryByProps for value '107'");
 
                     let (tail, res) = GameSTriggerAnimLengthQueryByPropsEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerAnimLengthQueryByProps(res)))
                 }
                 108 => {
-                    tracing::debug!("Variant ETriggerAnimOffset for value '108'");
+                    tracing::trace!("Variant ETriggerAnimOffset for value '108'");
 
                     let (tail, res) = GameSTriggerAnimOffsetEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerAnimOffset(res)))
                 }
                 109 => {
-                    tracing::debug!("Variant ECatalogModify for value '109'");
+                    tracing::trace!("Variant ECatalogModify for value '109'");
 
                     let (tail, res) = GameSCatalogModifyEvent::parse(tail)?;
                     Ok((tail, Self::ECatalogModify(res)))
                 }
                 110 => {
-                    tracing::debug!("Variant EHeroTalentTreeSelected for value '110'");
+                    tracing::trace!("Variant EHeroTalentTreeSelected for value '110'");
 
                     let (tail, res) = GameSHeroTalentTreeSelectedEvent::parse(tail)?;
                     Ok((tail, Self::EHeroTalentTreeSelected(res)))
                 }
                 111 => {
-                    tracing::debug!("Variant ETriggerProfilerLoggingFinished for value '111'");
+                    tracing::trace!("Variant ETriggerProfilerLoggingFinished for value '111'");
 
                     let (tail, res) = GameSTriggerProfilerLoggingFinishedEvent::parse(tail)?;
                     Ok((tail, Self::ETriggerProfilerLoggingFinished(res)))
                 }
                 112 => {
-                    tracing::debug!("Variant EHeroTalentTreeSelectionPanelToggled for value '112'");
+                    tracing::trace!("Variant EHeroTalentTreeSelectionPanelToggled for value '112'");
 
                     let (tail, res) = GameSHeroTalentTreeSelectionPanelToggledEvent::parse(tail)?;
                     Ok((tail, Self::EHeroTalentTreeSelectionPanelToggled(res)))
                 }
                 113 => {
-                    tracing::debug!("Variant EMuteUserChanged for value '113'");
+                    tracing::trace!("Variant EMuteUserChanged for value '113'");
 
                     let (tail, res) = GameSMuteChatEvent::parse(tail)?;
                     Ok((tail, Self::EMuteUserChanged(res)))
                 }
                 115 => {
-                    tracing::debug!("Variant EConvertToReplaySession for value '115'");
+                    tracing::trace!("Variant EConvertToReplaySession for value '115'");
 
                     let (tail, res) = GameSConvertToReplaySessionEvent::parse(tail)?;
                     Ok((tail, Self::EConvertToReplaySession(res)))
                 }
                 116 => {
-                    tracing::debug!("Variant ESetSyncLoadingTime for value '116'");
+                    tracing::trace!("Variant ESetSyncLoadingTime for value '116'");
 
                     let (tail, res) = GameSSetSyncLoadingTimeEvent::parse(tail)?;
                     Ok((tail, Self::ESetSyncLoadingTime(res)))
                 }
                 117 => {
-                    tracing::debug!("Variant ESetSyncPlayingTime for value '117'");
+                    tracing::trace!("Variant ESetSyncPlayingTime for value '117'");
 
                     let (tail, res) = GameSSetSyncPlayingTimeEvent::parse(tail)?;
                     Ok((tail, Self::ESetSyncPlayingTime(res)))
                 }
                 118 => {
-                    tracing::debug!("Variant EPeerSetSyncLoadingTime for value '118'");
+                    tracing::trace!("Variant EPeerSetSyncLoadingTime for value '118'");
 
                     let (tail, res) = GameSPeerSetSyncLoadingTimeEvent::parse(tail)?;
                     Ok((tail, Self::EPeerSetSyncLoadingTime(res)))
                 }
                 119 => {
-                    tracing::debug!("Variant EPeerSetSyncPlayingTime for value '119'");
+                    tracing::trace!("Variant EPeerSetSyncPlayingTime for value '119'");
 
                     let (tail, res) = GameSPeerSetSyncPlayingTimeEvent::parse(tail)?;
                     Ok((tail, Self::EPeerSetSyncPlayingTime(res)))
@@ -7242,21 +7242,21 @@ pub mod bit_packed {
         pub m_abil_cmd_data: Option<Uint8>,
     }
     impl GameSCmdAbil {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_abil_link(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTAbilLink> {
             let (tail, m_abil_link) = GameTAbilLink::parse(input)?;
-            tracing::debug!("m_abil_link: {:?}", m_abil_link);
+            tracing::trace!("m_abil_link: {:?}", m_abil_link);
             Ok((tail, m_abil_link))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_abil_cmd_index(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), i64> {
             let (tail, m_abil_cmd_index) = parse_packed_int(input, 0, 5usize)?;
-            tracing::debug!("m_abil_cmd_index: {:?}", m_abil_cmd_index);
+            tracing::trace!("m_abil_cmd_index: {:?}", m_abil_cmd_index);
             Ok((tail, m_abil_cmd_index))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_abil_cmd_data(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Uint8>> {
@@ -7267,10 +7267,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_abil_cmd_data: {:?}", m_abil_cmd_data);
+            tracing::trace!("m_abil_cmd_data: {:?}", m_abil_cmd_data);
             Ok((tail, m_abil_cmd_data))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSCmdAbil::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSCmdAbil::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_abil_link: Option<GameTAbilLink> = None;
@@ -7313,35 +7313,35 @@ pub mod bit_packed {
         pub m_snapshot_point: GameSMapCoord3D,
     }
     impl GameSCmdDataTargetUnit {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_target_unit_flags(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint16> {
             let (tail, m_target_unit_flags) = Uint16::parse(input)?;
-            tracing::debug!("m_target_unit_flags: {:?}", m_target_unit_flags);
+            tracing::trace!("m_target_unit_flags: {:?}", m_target_unit_flags);
             Ok((tail, m_target_unit_flags))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_timer(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_timer) = Uint8::parse(input)?;
-            tracing::debug!("m_timer: {:?}", m_timer);
+            tracing::trace!("m_timer: {:?}", m_timer);
             Ok((tail, m_timer))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_tag(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameTUnitTag> {
             let (tail, m_tag) = GameTUnitTag::parse(input)?;
-            tracing::debug!("m_tag: {:?}", m_tag);
+            tracing::trace!("m_tag: {:?}", m_tag);
             Ok((tail, m_tag))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_snapshot_unit_link(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTUnitLink> {
             let (tail, m_snapshot_unit_link) = GameTUnitLink::parse(input)?;
-            tracing::debug!("m_snapshot_unit_link: {:?}", m_snapshot_unit_link);
+            tracing::trace!("m_snapshot_unit_link: {:?}", m_snapshot_unit_link);
             Ok((tail, m_snapshot_unit_link))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_snapshot_control_player_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameTPlayerId>> {
@@ -7352,13 +7352,13 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!(
+            tracing::trace!(
                 "m_snapshot_control_player_id: {:?}",
                 m_snapshot_control_player_id
             );
             Ok((tail, m_snapshot_control_player_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_snapshot_upkeep_player_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameTPlayerId>> {
@@ -7369,21 +7369,21 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!(
+            tracing::trace!(
                 "m_snapshot_upkeep_player_id: {:?}",
                 m_snapshot_upkeep_player_id
             );
             Ok((tail, m_snapshot_upkeep_player_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_snapshot_point(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSMapCoord3D> {
             let (tail, m_snapshot_point) = GameSMapCoord3D::parse(input)?;
-            tracing::debug!("m_snapshot_point: {:?}", m_snapshot_point);
+            tracing::trace!("m_snapshot_point: {:?}", m_snapshot_point);
             Ok((tail, m_snapshot_point))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSCmdDataTargetUnit::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSCmdDataTargetUnit::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_target_unit_flags: Option<Uint16> = None;
@@ -7458,7 +7458,7 @@ pub mod bit_packed {
         Data(Uint32),
     }
     impl GameSCmdData {
-        #[tracing::instrument(name="87702::GameSCmdData::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameSCmdData::ChoiceType::parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
@@ -7469,22 +7469,22 @@ pub mod bit_packed {
             let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant tagged '0' for None");
+                    tracing::trace!("Variant tagged '0' for None");
                     let (tail, res) = take_null(tail)?;
                     Ok((tail, Self::None(res)))
                 }
                 1 => {
-                    tracing::debug!("Variant tagged '1' for TargetPoint");
+                    tracing::trace!("Variant tagged '1' for TargetPoint");
                     let (tail, res) = GameSMapCoord3D::parse(tail)?;
                     Ok((tail, Self::TargetPoint(res)))
                 }
                 2 => {
-                    tracing::debug!("Variant tagged '2' for TargetUnit");
+                    tracing::trace!("Variant tagged '2' for TargetUnit");
                     let (tail, res) = GameSCmdDataTargetUnit::parse(tail)?;
                     Ok((tail, Self::TargetUnit(res)))
                 }
                 3 => {
-                    tracing::debug!("Variant tagged '3' for Data");
+                    tracing::trace!("Variant tagged '3' for Data");
                     let (tail, res) = Uint32::parse(tail)?;
                     Ok((tail, Self::Data(res)))
                 }
@@ -7503,23 +7503,23 @@ pub mod bit_packed {
         pub m_slot_change: GameSLobbySlotChange,
     }
     impl GameSSetLobbySlotEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_slot_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTLobbySlotId> {
             let (tail, m_slot_id) = GameTLobbySlotId::parse(input)?;
-            tracing::debug!("m_slot_id: {:?}", m_slot_id);
+            tracing::trace!("m_slot_id: {:?}", m_slot_id);
             Ok((tail, m_slot_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_slot_change(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSLobbySlotChange> {
             let (tail, m_slot_change) = GameSLobbySlotChange::parse(input)?;
-            tracing::debug!("m_slot_change: {:?}", m_slot_change);
+            tracing::trace!("m_slot_change: {:?}", m_slot_change);
             Ok((tail, m_slot_change))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSetLobbySlotEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSetLobbySlotEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_slot_id: Option<GameTLobbySlotId> = None;
@@ -7550,23 +7550,23 @@ pub mod bit_packed {
         pub m_reason: ELeaveReason,
     }
     impl GameSDropUserEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_drop_session_user_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TUserId> {
             let (tail, m_drop_session_user_id) = TUserId::parse(input)?;
-            tracing::debug!("m_drop_session_user_id: {:?}", m_drop_session_user_id);
+            tracing::trace!("m_drop_session_user_id: {:?}", m_drop_session_user_id);
             Ok((tail, m_drop_session_user_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_reason(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), ELeaveReason> {
             let (tail, m_reason) = ELeaveReason::parse(input)?;
-            tracing::debug!("m_reason: {:?}", m_reason);
+            tracing::trace!("m_reason: {:?}", m_reason);
             Ok((tail, m_reason))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSDropUserEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSDropUserEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_drop_session_user_id: Option<TUserId> = None;
@@ -7595,7 +7595,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSStartGameEvent {}
     impl GameSStartGameEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSStartGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSStartGameEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -7605,7 +7605,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSDropOurselvesEvent {}
     impl GameSDropOurselvesEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSDropOurselvesEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSDropOurselvesEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -7617,11 +7617,11 @@ pub mod bit_packed {
         pub m_name: Vec<u8>,
     }
     impl GameSBankFileEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -7630,7 +7630,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSBankFileEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSBankFileEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_name: Option<Vec<u8>> = None;
@@ -7653,11 +7653,11 @@ pub mod bit_packed {
         pub m_name: Vec<u8>,
     }
     impl GameSBankSectionEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 6)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -7666,7 +7666,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSBankSectionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSBankSectionEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_name: Option<Vec<u8>> = None;
@@ -7691,11 +7691,11 @@ pub mod bit_packed {
         pub m_data: Vec<u8>,
     }
     impl GameSBankKeyEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 6)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -7704,17 +7704,17 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_type(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_type) = Uint32::parse(input)?;
-            tracing::debug!("m_type: {:?}", m_type);
+            tracing::trace!("m_type: {:?}", m_type);
             Ok((tail, m_type))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_data(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -7723,7 +7723,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSBankKeyEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSBankKeyEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_name: Option<Vec<u8>> = None;
@@ -7762,17 +7762,17 @@ pub mod bit_packed {
         pub m_data: Vec<u8>,
     }
     impl GameSBankValueEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_type(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_type) = Uint32::parse(input)?;
-            tracing::debug!("m_type: {:?}", m_type);
+            tracing::trace!("m_type: {:?}", m_type);
             Ok((tail, m_type))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 6)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -7781,11 +7781,11 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_data(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 10)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -7794,7 +7794,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSBankValueEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSBankValueEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_type: Option<Uint32> = None;
@@ -7832,13 +7832,13 @@ pub mod bit_packed {
         pub m_toon_handle: CToonHandle,
     }
     impl GameSBankSignatureEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_signature(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<Uint8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = Uint8::parse(tail)?;
@@ -7848,15 +7848,15 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_toon_handle(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CToonHandle> {
             let (tail, m_toon_handle) = CToonHandle::parse(input)?;
-            tracing::debug!("m_toon_handle: {:?}", m_toon_handle);
+            tracing::trace!("m_toon_handle: {:?}", m_toon_handle);
             Ok((tail, m_toon_handle))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSBankSignatureEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSBankSignatureEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_signature: Option<Vec<Uint8>> = None;
@@ -7899,123 +7899,123 @@ pub mod bit_packed {
         pub m_hotkey_profile: Vec<u8>,
     }
     impl GameSUserOptionsEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_fully_downloaded(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_game_fully_downloaded) = parse_bool(input)?;
-            tracing::debug!("m_game_fully_downloaded: {:?}", m_game_fully_downloaded);
+            tracing::trace!("m_game_fully_downloaded: {:?}", m_game_fully_downloaded);
             Ok((tail, m_game_fully_downloaded))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_development_cheats_enabled(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_development_cheats_enabled) = parse_bool(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_development_cheats_enabled: {:?}",
                 m_development_cheats_enabled
             );
             Ok((tail, m_development_cheats_enabled))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_test_cheats_enabled(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_test_cheats_enabled) = parse_bool(input)?;
-            tracing::debug!("m_test_cheats_enabled: {:?}", m_test_cheats_enabled);
+            tracing::trace!("m_test_cheats_enabled: {:?}", m_test_cheats_enabled);
             Ok((tail, m_test_cheats_enabled))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_multiplayer_cheats_enabled(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_multiplayer_cheats_enabled) = parse_bool(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_multiplayer_cheats_enabled: {:?}",
                 m_multiplayer_cheats_enabled
             );
             Ok((tail, m_multiplayer_cheats_enabled))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sync_checksumming_enabled(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_sync_checksumming_enabled) = parse_bool(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_sync_checksumming_enabled: {:?}",
                 m_sync_checksumming_enabled
             );
             Ok((tail, m_sync_checksumming_enabled))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_is_map_to_map_transition(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_is_map_to_map_transition) = parse_bool(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_is_map_to_map_transition: {:?}",
                 m_is_map_to_map_transition
             );
             Ok((tail, m_is_map_to_map_transition))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_debug_pause_enabled(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_debug_pause_enabled) = parse_bool(input)?;
-            tracing::debug!("m_debug_pause_enabled: {:?}", m_debug_pause_enabled);
+            tracing::trace!("m_debug_pause_enabled: {:?}", m_debug_pause_enabled);
             Ok((tail, m_debug_pause_enabled))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_use_galaxy_asserts(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_use_galaxy_asserts) = parse_bool(input)?;
-            tracing::debug!("m_use_galaxy_asserts: {:?}", m_use_galaxy_asserts);
+            tracing::trace!("m_use_galaxy_asserts: {:?}", m_use_galaxy_asserts);
             Ok((tail, m_use_galaxy_asserts))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_platform_mac(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_platform_mac) = parse_bool(input)?;
-            tracing::debug!("m_platform_mac: {:?}", m_platform_mac);
+            tracing::trace!("m_platform_mac: {:?}", m_platform_mac);
             Ok((tail, m_platform_mac))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_camera_follow(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_camera_follow) = parse_bool(input)?;
-            tracing::debug!("m_camera_follow: {:?}", m_camera_follow);
+            tracing::trace!("m_camera_follow: {:?}", m_camera_follow);
             Ok((tail, m_camera_follow))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_base_build_num(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_base_build_num) = Uint32::parse(input)?;
-            tracing::debug!("m_base_build_num: {:?}", m_base_build_num);
+            tracing::trace!("m_base_build_num: {:?}", m_base_build_num);
             Ok((tail, m_base_build_num))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_build_num(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_build_num) = Uint32::parse(input)?;
-            tracing::debug!("m_build_num: {:?}", m_build_num);
+            tracing::trace!("m_build_num: {:?}", m_build_num);
             Ok((tail, m_build_num))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_version_flags(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_version_flags) = Uint32::parse(input)?;
-            tracing::debug!("m_version_flags: {:?}", m_version_flags);
+            tracing::trace!("m_version_flags: {:?}", m_version_flags);
             Ok((tail, m_version_flags))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_hotkey_profile(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -8024,7 +8024,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSUserOptionsEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSUserOptionsEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_game_fully_downloaded: Option<bool> = None;
@@ -8156,15 +8156,15 @@ pub mod bit_packed {
         pub m_picked_map_tag: Uint8,
     }
     impl GameSPickMapTagEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_picked_map_tag(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_picked_map_tag) = Uint8::parse(input)?;
-            tracing::debug!("m_picked_map_tag: {:?}", m_picked_map_tag);
+            tracing::trace!("m_picked_map_tag: {:?}", m_picked_map_tag);
             Ok((tail, m_picked_map_tag))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSPickMapTagEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSPickMapTagEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_picked_map_tag: Option<Uint8> = None;
@@ -8185,7 +8185,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSUserFinishedLoadingEvent {}
     impl GameSUserFinishedLoadingEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSUserFinishedLoadingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSUserFinishedLoadingEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -8195,7 +8195,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSUserFinishedLoadingSyncEvent {}
     impl GameSUserFinishedLoadingSyncEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSUserFinishedLoadingSyncEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSUserFinishedLoadingSyncEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -8207,15 +8207,15 @@ pub mod bit_packed {
         pub m_game_duration: Uint32,
     }
     impl GameSSetGameDurationEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_duration(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_game_duration) = Uint32::parse(input)?;
-            tracing::debug!("m_game_duration: {:?}", m_game_duration);
+            tracing::trace!("m_game_duration: {:?}", m_game_duration);
             Ok((tail, m_game_duration))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSetGameDurationEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSetGameDurationEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_game_duration: Option<Uint32> = None;
@@ -8236,7 +8236,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTurnEvent {}
     impl GameSTurnEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTurnEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTurnEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -8249,21 +8249,21 @@ pub mod bit_packed {
         pub m_target: GameSPointMini,
     }
     impl GameSCameraSaveEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_which(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), i64> {
             let (tail, m_which) = parse_packed_int(input, 0, 3usize)?;
-            tracing::debug!("m_which: {:?}", m_which);
+            tracing::trace!("m_which: {:?}", m_which);
             Ok((tail, m_which))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_target(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSPointMini> {
             let (tail, m_target) = GameSPointMini::parse(input)?;
-            tracing::debug!("m_target: {:?}", m_target);
+            tracing::trace!("m_target: {:?}", m_target);
             Ok((tail, m_target))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSCameraSaveEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSCameraSaveEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_which: Option<i64> = None;
@@ -8293,15 +8293,15 @@ pub mod bit_packed {
         pub m_pause_type_index: Uint8,
     }
     impl GameSPauseGameEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_pause_type_index(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_pause_type_index) = Uint8::parse(input)?;
-            tracing::debug!("m_pause_type_index: {:?}", m_pause_type_index);
+            tracing::trace!("m_pause_type_index: {:?}", m_pause_type_index);
             Ok((tail, m_pause_type_index))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSPauseGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSPauseGameEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_pause_type_index: Option<Uint8> = None;
@@ -8324,15 +8324,15 @@ pub mod bit_packed {
         pub m_pause_type_index: Uint8,
     }
     impl GameSUnpauseGameEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_pause_type_index(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_pause_type_index) = Uint8::parse(input)?;
-            tracing::debug!("m_pause_type_index: {:?}", m_pause_type_index);
+            tracing::trace!("m_pause_type_index: {:?}", m_pause_type_index);
             Ok((tail, m_pause_type_index))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSUnpauseGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSUnpauseGameEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_pause_type_index: Option<Uint8> = None;
@@ -8353,7 +8353,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSSingleStepGameEvent {}
     impl GameSSingleStepGameEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSSingleStepGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSingleStepGameEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -8365,15 +8365,15 @@ pub mod bit_packed {
         pub m_speed: GameEGameSpeed,
     }
     impl GameSSetGameSpeedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_speed(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEGameSpeed> {
             let (tail, m_speed) = GameEGameSpeed::parse(input)?;
-            tracing::debug!("m_speed: {:?}", m_speed);
+            tracing::trace!("m_speed: {:?}", m_speed);
             Ok((tail, m_speed))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSetGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSetGameSpeedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_speed: Option<GameEGameSpeed> = None;
@@ -8396,13 +8396,13 @@ pub mod bit_packed {
         pub m_delta: Int8,
     }
     impl GameSAddGameSpeedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_delta(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_delta) = Int8::parse(input)?;
-            tracing::debug!("m_delta: {:?}", m_delta);
+            tracing::trace!("m_delta: {:?}", m_delta);
             Ok((tail, m_delta))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSAddGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSAddGameSpeedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_delta: Option<Int8> = None;
@@ -8425,7 +8425,7 @@ pub mod bit_packed {
         pub m_replay_jump_game_loop: Option<Uint32>,
     }
     impl GameSReplayJumpEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_replay_jump_game_loop(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Uint32>> {
@@ -8436,10 +8436,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_replay_jump_game_loop: {:?}", m_replay_jump_game_loop);
+            tracing::trace!("m_replay_jump_game_loop: {:?}", m_replay_jump_game_loop);
             Ok((tail, m_replay_jump_game_loop))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSReplayJumpEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSReplayJumpEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_replay_jump_game_loop: Option<Option<Uint32>> = Some(None);
@@ -8469,31 +8469,31 @@ pub mod bit_packed {
         pub m_description: Vec<u8>,
     }
     impl GameSSaveGameEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_file_name(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CFilePath> {
             let (tail, m_file_name) = CFilePath::parse(input)?;
-            tracing::debug!("m_file_name: {:?}", str::from_utf8(&m_file_name.value));
+            tracing::trace!("m_file_name: {:?}", str::from_utf8(&m_file_name.value));
             Ok((tail, m_file_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_automatic(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_automatic) = parse_bool(input)?;
-            tracing::debug!("m_automatic: {:?}", m_automatic);
+            tracing::trace!("m_automatic: {:?}", m_automatic);
             Ok((tail, m_automatic))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_overwrite(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_overwrite) = parse_bool(input)?;
-            tracing::debug!("m_overwrite: {:?}", m_overwrite);
+            tracing::trace!("m_overwrite: {:?}", m_overwrite);
             Ok((tail, m_overwrite))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 6)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -8502,13 +8502,13 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_description(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -8517,7 +8517,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSaveGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSaveGameEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_file_name: Option<CFilePath> = None;
@@ -8566,7 +8566,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSSaveGameDoneEvent {}
     impl GameSSaveGameDoneEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSSaveGameDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSaveGameDoneEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -8576,7 +8576,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSLoadGameDoneEvent {}
     impl GameSLoadGameDoneEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSLoadGameDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSLoadGameDoneEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -8591,35 +8591,35 @@ pub mod bit_packed {
         pub m_arguments: GameCCheatString,
     }
     impl GameSCheatEventData {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_point(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameSPoint> {
             let (tail, m_point) = GameSPoint::parse(input)?;
-            tracing::debug!("m_point: {:?}", m_point);
+            tracing::trace!("m_point: {:?}", m_point);
             Ok((tail, m_point))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_time(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_time) = Int32::parse(input)?;
-            tracing::debug!("m_time: {:?}", m_time);
+            tracing::trace!("m_time: {:?}", m_time);
             Ok((tail, m_time))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_verb(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCCheatString> {
             let (tail, m_verb) = GameCCheatString::parse(input)?;
-            tracing::debug!("m_verb: {:?}", m_verb);
+            tracing::trace!("m_verb: {:?}", m_verb);
             Ok((tail, m_verb))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_arguments(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCCheatString> {
             let (tail, m_arguments) = GameCCheatString::parse(input)?;
-            tracing::debug!("m_arguments: {:?}", m_arguments);
+            tracing::trace!("m_arguments: {:?}", m_arguments);
             Ok((tail, m_arguments))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSCheatEventData::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSCheatEventData::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_point: Option<GameSPoint> = None;
@@ -8663,15 +8663,15 @@ pub mod bit_packed {
         pub m_data: GameSCheatEventData,
     }
     impl GameSSessionCheatEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_data(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSCheatEventData> {
             let (tail, m_data) = GameSCheatEventData::parse(input)?;
-            tracing::debug!("m_data: {:?}", m_data);
+            tracing::trace!("m_data: {:?}", m_data);
             Ok((tail, m_data))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSessionCheatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSessionCheatEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_data: Option<GameSCheatEventData> = None;
@@ -8694,13 +8694,13 @@ pub mod bit_packed {
         pub m_sequence: Uint32,
     }
     impl GameSCommandManagerResetEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sequence(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_sequence) = Uint32::parse(input)?;
-            tracing::debug!("m_sequence: {:?}", m_sequence);
+            tracing::trace!("m_sequence: {:?}", m_sequence);
             Ok((tail, m_sequence))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSCommandManagerResetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSCommandManagerResetEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_sequence: Option<Uint32> = None;
@@ -8723,15 +8723,15 @@ pub mod bit_packed {
         pub m_data: GameSCheatEventData,
     }
     impl GameSGameCheatEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_data(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSCheatEventData> {
             let (tail, m_data) = GameSCheatEventData::parse(input)?;
-            tracing::debug!("m_data: {:?}", m_data);
+            tracing::trace!("m_data: {:?}", m_data);
             Ok((tail, m_data))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSGameCheatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSGameCheatEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_data: Option<GameSCheatEventData> = None;
@@ -8759,13 +8759,13 @@ pub mod bit_packed {
         pub m_unit_group: Option<Uint32>,
     }
     impl GameSCmdEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_cmd_flags(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), i64> {
             let (tail, m_cmd_flags) = parse_packed_int(input, 0, 27usize)?;
-            tracing::debug!("m_cmd_flags: {:?}", m_cmd_flags);
+            tracing::trace!("m_cmd_flags: {:?}", m_cmd_flags);
             Ok((tail, m_cmd_flags))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_abil(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameSCmdAbil>> {
@@ -8776,22 +8776,22 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_abil: {:?}", m_abil);
+            tracing::trace!("m_abil: {:?}", m_abil);
             Ok((tail, m_abil))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_data(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameSCmdData> {
             let (tail, m_data) = GameSCmdData::parse(input)?;
-            tracing::debug!("m_data: {:?}", m_data);
+            tracing::trace!("m_data: {:?}", m_data);
             Ok((tail, m_data))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sequence(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), i64> {
             let (tail, m_sequence) = parse_packed_int(input, 1, 32usize)?;
-            tracing::debug!("m_sequence: {:?}", m_sequence);
+            tracing::trace!("m_sequence: {:?}", m_sequence);
             Ok((tail, m_sequence))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_other_unit(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameTUnitTag>> {
@@ -8802,10 +8802,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_other_unit: {:?}", m_other_unit);
+            tracing::trace!("m_other_unit: {:?}", m_other_unit);
             Ok((tail, m_other_unit))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_unit_group(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Uint32>> {
@@ -8816,10 +8816,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_unit_group: {:?}", m_unit_group);
+            tracing::trace!("m_unit_group: {:?}", m_unit_group);
             Ok((tail, m_unit_group))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSCmdEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSCmdEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_cmd_flags: Option<i64> = None;
@@ -8878,23 +8878,23 @@ pub mod bit_packed {
         pub m_delta: GameSSelectionDelta,
     }
     impl GameSSelectionDeltaEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_control_group_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTControlGroupId> {
             let (tail, m_control_group_id) = GameTControlGroupId::parse(input)?;
-            tracing::debug!("m_control_group_id: {:?}", m_control_group_id);
+            tracing::trace!("m_control_group_id: {:?}", m_control_group_id);
             Ok((tail, m_control_group_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_delta(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSSelectionDelta> {
             let (tail, m_delta) = GameSSelectionDelta::parse(input)?;
-            tracing::debug!("m_delta: {:?}", m_delta);
+            tracing::trace!("m_delta: {:?}", m_delta);
             Ok((tail, m_delta))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSelectionDeltaEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSelectionDeltaEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_control_group_id: Option<GameTControlGroupId> = None;
@@ -8926,31 +8926,31 @@ pub mod bit_packed {
         pub m_mask: GameSSelectionMask,
     }
     impl GameSControlGroupUpdateEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_control_group_index(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTControlGroupIndex> {
             let (tail, m_control_group_index) = GameTControlGroupIndex::parse(input)?;
-            tracing::debug!("m_control_group_index: {:?}", m_control_group_index);
+            tracing::trace!("m_control_group_index: {:?}", m_control_group_index);
             Ok((tail, m_control_group_index))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_control_group_update(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEControlGroupUpdate> {
             let (tail, m_control_group_update) = GameEControlGroupUpdate::parse(input)?;
-            tracing::debug!("m_control_group_update: {:?}", m_control_group_update);
+            tracing::trace!("m_control_group_update: {:?}", m_control_group_update);
             Ok((tail, m_control_group_update))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_mask(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSSelectionMask> {
             let (tail, m_mask) = GameSSelectionMask::parse(input)?;
-            tracing::debug!("m_mask: {:?}", m_mask);
+            tracing::trace!("m_mask: {:?}", m_mask);
             Ok((tail, m_mask))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSControlGroupUpdateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSControlGroupUpdateEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_control_group_index: Option<GameTControlGroupIndex> = None;
@@ -8990,23 +8990,23 @@ pub mod bit_packed {
         pub m_selection_sync_data: GameSSelectionSyncData,
     }
     impl GameSSelectionSyncCheckEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_control_group_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTControlGroupId> {
             let (tail, m_control_group_id) = GameTControlGroupId::parse(input)?;
-            tracing::debug!("m_control_group_id: {:?}", m_control_group_id);
+            tracing::trace!("m_control_group_id: {:?}", m_control_group_id);
             Ok((tail, m_control_group_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_selection_sync_data(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSSelectionSyncData> {
             let (tail, m_selection_sync_data) = GameSSelectionSyncData::parse(input)?;
-            tracing::debug!("m_selection_sync_data: {:?}", m_selection_sync_data);
+            tracing::trace!("m_selection_sync_data: {:?}", m_selection_sync_data);
             Ok((tail, m_selection_sync_data))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSelectionSyncCheckEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSelectionSyncCheckEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_control_group_id: Option<GameTControlGroupId> = None;
@@ -9038,21 +9038,21 @@ pub mod bit_packed {
         pub m_resources: Vec<Int32>,
     }
     impl GameSResourceTradeEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_recipient_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTPlayerId> {
             let (tail, m_recipient_id) = GameTPlayerId::parse(input)?;
-            tracing::debug!("m_recipient_id: {:?}", m_recipient_id);
+            tracing::trace!("m_recipient_id: {:?}", m_recipient_id);
             Ok((tail, m_recipient_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_resources(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<Int32>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 3)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = Int32::parse(tail)?;
@@ -9062,7 +9062,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSResourceTradeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSResourceTradeEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_recipient_id: Option<GameTPlayerId> = None;
@@ -9092,15 +9092,15 @@ pub mod bit_packed {
         pub m_chat_message: GameCTriggerChatMessageString,
     }
     impl GameSTriggerChatMessageEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_chat_message(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCTriggerChatMessageString> {
             let (tail, m_chat_message) = GameCTriggerChatMessageString::parse(input)?;
-            tracing::debug!("m_chat_message: {:?}", m_chat_message);
+            tracing::trace!("m_chat_message: {:?}", m_chat_message);
             Ok((tail, m_chat_message))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerChatMessageEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerChatMessageEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_chat_message: Option<GameCTriggerChatMessageString> = None;
@@ -9131,80 +9131,80 @@ pub mod bit_packed {
         pub m_target_point: GameSPoint3,
     }
     impl GameSaiCommunicateEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_beacon(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_beacon) = Int8::parse(input)?;
-            tracing::debug!("m_beacon: {:?}", m_beacon);
+            tracing::trace!("m_beacon: {:?}", m_beacon);
             Ok((tail, m_beacon))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_ally(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_ally) = Int8::parse(input)?;
-            tracing::debug!("m_ally: {:?}", m_ally);
+            tracing::trace!("m_ally: {:?}", m_ally);
             Ok((tail, m_ally))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_flags(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_flags) = Int8::parse(input)?;
-            tracing::debug!("m_flags: {:?}", m_flags);
+            tracing::trace!("m_flags: {:?}", m_flags);
             Ok((tail, m_flags))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_build(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_build) = Int8::parse(input)?;
-            tracing::debug!("m_build: {:?}", m_build);
+            tracing::trace!("m_build: {:?}", m_build);
             Ok((tail, m_build))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_target_unit_tag(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTUnitTag> {
             let (tail, m_target_unit_tag) = GameTUnitTag::parse(input)?;
-            tracing::debug!("m_target_unit_tag: {:?}", m_target_unit_tag);
+            tracing::trace!("m_target_unit_tag: {:?}", m_target_unit_tag);
             Ok((tail, m_target_unit_tag))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_target_unit_snapshot_unit_link(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTUnitLink> {
             let (tail, m_target_unit_snapshot_unit_link) = GameTUnitLink::parse(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_target_unit_snapshot_unit_link: {:?}",
                 m_target_unit_snapshot_unit_link
             );
             Ok((tail, m_target_unit_snapshot_unit_link))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_target_unit_snapshot_upkeep_player_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_target_unit_snapshot_upkeep_player_id) = Int8::parse(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_target_unit_snapshot_upkeep_player_id: {:?}",
                 m_target_unit_snapshot_upkeep_player_id
             );
             Ok((tail, m_target_unit_snapshot_upkeep_player_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_target_unit_snapshot_control_player_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_target_unit_snapshot_control_player_id) = Int8::parse(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_target_unit_snapshot_control_player_id: {:?}",
                 m_target_unit_snapshot_control_player_id
             );
             Ok((tail, m_target_unit_snapshot_control_player_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_target_point(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSPoint3> {
             let (tail, m_target_point) = GameSPoint3::parse(input)?;
-            tracing::debug!("m_target_point: {:?}", m_target_point);
+            tracing::trace!("m_target_point: {:?}", m_target_point);
             Ok((tail, m_target_point))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSaiCommunicateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSaiCommunicateEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_beacon: Option<Int8> = None;
@@ -9294,15 +9294,15 @@ pub mod bit_packed {
         pub m_speed: GameEGameSpeed,
     }
     impl GameSSetAbsoluteGameSpeedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_speed(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEGameSpeed> {
             let (tail, m_speed) = GameEGameSpeed::parse(input)?;
-            tracing::debug!("m_speed: {:?}", m_speed);
+            tracing::trace!("m_speed: {:?}", m_speed);
             Ok((tail, m_speed))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSetAbsoluteGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSetAbsoluteGameSpeedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_speed: Option<GameEGameSpeed> = None;
@@ -9325,13 +9325,13 @@ pub mod bit_packed {
         pub m_delta: Int8,
     }
     impl GameSAddAbsoluteGameSpeedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_delta(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_delta) = Int8::parse(input)?;
-            tracing::debug!("m_delta: {:?}", m_delta);
+            tracing::trace!("m_delta: {:?}", m_delta);
             Ok((tail, m_delta))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSAddAbsoluteGameSpeedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSAddAbsoluteGameSpeedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_delta: Option<Int8> = None;
@@ -9362,27 +9362,27 @@ pub mod bit_packed {
         pub m_option: Int32,
     }
     impl GameSTriggerPingEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_point(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameSPoint> {
             let (tail, m_point) = GameSPoint::parse(input)?;
-            tracing::debug!("m_point: {:?}", m_point);
+            tracing::trace!("m_point: {:?}", m_point);
             Ok((tail, m_point))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_unit(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameTUnitTag> {
             let (tail, m_unit) = GameTUnitTag::parse(input)?;
-            tracing::debug!("m_unit: {:?}", m_unit);
+            tracing::trace!("m_unit: {:?}", m_unit);
             Ok((tail, m_unit))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_unit_link(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTUnitLink> {
             let (tail, m_unit_link) = GameTUnitLink::parse(input)?;
-            tracing::debug!("m_unit_link: {:?}", m_unit_link);
+            tracing::trace!("m_unit_link: {:?}", m_unit_link);
             Ok((tail, m_unit_link))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_unit_control_player_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameTPlayerId>> {
@@ -9393,10 +9393,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_unit_control_player_id: {:?}", m_unit_control_player_id);
+            tracing::trace!("m_unit_control_player_id: {:?}", m_unit_control_player_id);
             Ok((tail, m_unit_control_player_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_unit_upkeep_player_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameTPlayerId>> {
@@ -9407,43 +9407,43 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_unit_upkeep_player_id: {:?}", m_unit_upkeep_player_id);
+            tracing::trace!("m_unit_upkeep_player_id: {:?}", m_unit_upkeep_player_id);
             Ok((tail, m_unit_upkeep_player_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_unit_position(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSMapCoord3D> {
             let (tail, m_unit_position) = GameSMapCoord3D::parse(input)?;
-            tracing::debug!("m_unit_position: {:?}", m_unit_position);
+            tracing::trace!("m_unit_position: {:?}", m_unit_position);
             Ok((tail, m_unit_position))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_unit_is_under_construction(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_unit_is_under_construction) = parse_bool(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_unit_is_under_construction: {:?}",
                 m_unit_is_under_construction
             );
             Ok((tail, m_unit_is_under_construction))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_pinged_minimap(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_pinged_minimap) = parse_bool(input)?;
-            tracing::debug!("m_pinged_minimap: {:?}", m_pinged_minimap);
+            tracing::trace!("m_pinged_minimap: {:?}", m_pinged_minimap);
             Ok((tail, m_pinged_minimap))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_option(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_option) = Int32::parse(input)?;
-            tracing::debug!("m_option: {:?}", m_option);
+            tracing::trace!("m_option: {:?}", m_option);
             Ok((tail, m_option))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPingEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_point: Option<GameSPoint> = None;
@@ -9532,23 +9532,23 @@ pub mod bit_packed {
         pub m_arguments: GameCCheatString,
     }
     impl GameSBroadcastCheatEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_verb(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCCheatString> {
             let (tail, m_verb) = GameCCheatString::parse(input)?;
-            tracing::debug!("m_verb: {:?}", m_verb);
+            tracing::trace!("m_verb: {:?}", m_verb);
             Ok((tail, m_verb))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_arguments(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCCheatString> {
             let (tail, m_arguments) = GameCCheatString::parse(input)?;
-            tracing::debug!("m_arguments: {:?}", m_arguments);
+            tracing::trace!("m_arguments: {:?}", m_arguments);
             Ok((tail, m_arguments))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSBroadcastCheatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSBroadcastCheatEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_verb: Option<GameCCheatString> = None;
@@ -9579,19 +9579,19 @@ pub mod bit_packed {
         pub m_control: Uint32,
     }
     impl GameSAllianceEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_alliance(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_alliance) = Uint32::parse(input)?;
-            tracing::debug!("m_alliance: {:?}", m_alliance);
+            tracing::trace!("m_alliance: {:?}", m_alliance);
             Ok((tail, m_alliance))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_control(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_control) = Uint32::parse(input)?;
-            tracing::debug!("m_control: {:?}", m_control);
+            tracing::trace!("m_control: {:?}", m_control);
             Ok((tail, m_control))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSAllianceEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSAllianceEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_alliance: Option<Uint32> = None;
@@ -9621,15 +9621,15 @@ pub mod bit_packed {
         pub m_unit_tag: GameTUnitTag,
     }
     impl GameSUnitClickEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_unit_tag(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTUnitTag> {
             let (tail, m_unit_tag) = GameTUnitTag::parse(input)?;
-            tracing::debug!("m_unit_tag: {:?}", m_unit_tag);
+            tracing::trace!("m_unit_tag: {:?}", m_unit_tag);
             Ok((tail, m_unit_tag))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSUnitClickEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSUnitClickEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_unit_tag: Option<GameTUnitTag> = None;
@@ -9653,21 +9653,21 @@ pub mod bit_packed {
         pub m_flags: Uint8,
     }
     impl GameSUnitHighlightEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_unit_tag(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTUnitTag> {
             let (tail, m_unit_tag) = GameTUnitTag::parse(input)?;
-            tracing::debug!("m_unit_tag: {:?}", m_unit_tag);
+            tracing::trace!("m_unit_tag: {:?}", m_unit_tag);
             Ok((tail, m_unit_tag))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_flags(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_flags) = Uint8::parse(input)?;
-            tracing::debug!("m_flags: {:?}", m_flags);
+            tracing::trace!("m_flags: {:?}", m_flags);
             Ok((tail, m_flags))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSUnitHighlightEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSUnitHighlightEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_unit_tag: Option<GameTUnitTag> = None;
@@ -9698,21 +9698,21 @@ pub mod bit_packed {
         pub m_reply_id: Int32,
     }
     impl GameSTriggerReplySelectedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_conversation_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_conversation_id) = Int32::parse(input)?;
-            tracing::debug!("m_conversation_id: {:?}", m_conversation_id);
+            tracing::trace!("m_conversation_id: {:?}", m_conversation_id);
             Ok((tail, m_conversation_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_reply_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_reply_id) = Int32::parse(input)?;
-            tracing::debug!("m_reply_id: {:?}", m_reply_id);
+            tracing::trace!("m_reply_id: {:?}", m_reply_id);
             Ok((tail, m_reply_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerReplySelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerReplySelectedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_conversation_id: Option<Int32> = None;
@@ -9744,31 +9744,31 @@ pub mod bit_packed {
         pub m_game_user_id: TUserId,
     }
     impl GameSHijackReplaySessionUserInfo {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_session_user_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TUserId> {
             let (tail, m_session_user_id) = TUserId::parse(input)?;
-            tracing::debug!("m_session_user_id: {:?}", m_session_user_id);
+            tracing::trace!("m_session_user_id: {:?}", m_session_user_id);
             Ok((tail, m_session_user_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_add_new_game_user(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_add_new_game_user) = parse_bool(input)?;
-            tracing::debug!("m_add_new_game_user: {:?}", m_add_new_game_user);
+            tracing::trace!("m_add_new_game_user: {:?}", m_add_new_game_user);
             Ok((tail, m_add_new_game_user))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_user_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TUserId> {
             let (tail, m_game_user_id) = TUserId::parse(input)?;
-            tracing::debug!("m_game_user_id: {:?}", m_game_user_id);
+            tracing::trace!("m_game_user_id: {:?}", m_game_user_id);
             Ok((tail, m_game_user_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSHijackReplaySessionUserInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSHijackReplaySessionUserInfo::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_session_user_id: Option<TUserId> = None;
@@ -9806,13 +9806,13 @@ pub mod bit_packed {
         pub m_method: GameEHijackMethod,
     }
     impl GameSHijackReplaySessionEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_user_infos(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<GameSHijackReplaySessionUserInfo>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameSHijackReplaySessionUserInfo::parse(tail)?;
@@ -9822,15 +9822,15 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_method(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEHijackMethod> {
             let (tail, m_method) = GameEHijackMethod::parse(input)?;
-            tracing::debug!("m_method: {:?}", m_method);
+            tracing::trace!("m_method: {:?}", m_method);
             Ok((tail, m_method))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSHijackReplaySessionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSHijackReplaySessionEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_user_infos: Option<Vec<GameSHijackReplaySessionUserInfo>> = None;
@@ -9865,27 +9865,27 @@ pub mod bit_packed {
         pub m_clan_logo: Option<GameCCacheHandle>,
     }
     impl GameSHijackReplayGameUserInfo {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_user_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TUserId> {
             let (tail, m_game_user_id) = TUserId::parse(input)?;
-            tracing::debug!("m_game_user_id: {:?}", m_game_user_id);
+            tracing::trace!("m_game_user_id: {:?}", m_game_user_id);
             Ok((tail, m_game_user_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_observe(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), EObserve> {
             let (tail, m_observe) = EObserve::parse(input)?;
-            tracing::debug!("m_observe: {:?}", m_observe);
+            tracing::trace!("m_observe: {:?}", m_observe);
             Ok((tail, m_observe))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CUserName> {
             let (tail, m_name) = CUserName::parse(input)?;
-            tracing::debug!("m_name: {:?}", str::from_utf8(&m_name.value));
+            tracing::trace!("m_name: {:?}", str::from_utf8(&m_name.value));
             Ok((tail, m_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_toon_handle(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<CToonHandle>> {
@@ -9896,10 +9896,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_toon_handle: {:?}", m_toon_handle);
+            tracing::trace!("m_toon_handle: {:?}", m_toon_handle);
             Ok((tail, m_toon_handle))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_clan_tag(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<CClanTag>> {
@@ -9910,10 +9910,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_clan_tag: {:?}", m_clan_tag);
+            tracing::trace!("m_clan_tag: {:?}", m_clan_tag);
             Ok((tail, m_clan_tag))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_clan_logo(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameCCacheHandle>> {
@@ -9924,10 +9924,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_clan_logo: {:?}", m_clan_logo);
+            tracing::trace!("m_clan_logo: {:?}", m_clan_logo);
             Ok((tail, m_clan_logo))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSHijackReplayGameUserInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSHijackReplayGameUserInfo::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_game_user_id: Option<TUserId> = None;
@@ -9986,13 +9986,13 @@ pub mod bit_packed {
         pub m_method: GameEHijackMethod,
     }
     impl GameSHijackReplayGameEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_user_infos(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<GameSHijackReplayGameUserInfo>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameSHijackReplayGameUserInfo::parse(tail)?;
@@ -10002,15 +10002,15 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_method(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEHijackMethod> {
             let (tail, m_method) = GameEHijackMethod::parse(input)?;
-            tracing::debug!("m_method: {:?}", m_method);
+            tracing::trace!("m_method: {:?}", m_method);
             Ok((tail, m_method))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSHijackReplayGameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSHijackReplayGameEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_user_infos: Option<Vec<GameSHijackReplayGameUserInfo>> = None;
@@ -10038,7 +10038,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerAbortMissionEvent {}
     impl GameSTriggerAbortMissionEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerAbortMissionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerAbortMissionEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -10050,15 +10050,15 @@ pub mod bit_packed {
         pub m_purchase_item_id: Int32,
     }
     impl GameSTriggerPurchaseMadeEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_purchase_item_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_purchase_item_id) = Int32::parse(input)?;
-            tracing::debug!("m_purchase_item_id: {:?}", m_purchase_item_id);
+            tracing::trace!("m_purchase_item_id: {:?}", m_purchase_item_id);
             Ok((tail, m_purchase_item_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPurchaseMadeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPurchaseMadeEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_purchase_item_id: Option<Int32> = None;
@@ -10079,7 +10079,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerPurchaseExitEvent {}
     impl GameSTriggerPurchaseExitEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPurchaseExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPurchaseExitEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -10091,15 +10091,15 @@ pub mod bit_packed {
         pub m_difficulty_level: Int32,
     }
     impl GameSTriggerPlanetMissionLaunchedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_difficulty_level(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_difficulty_level) = Int32::parse(input)?;
-            tracing::debug!("m_difficulty_level: {:?}", m_difficulty_level);
+            tracing::trace!("m_difficulty_level: {:?}", m_difficulty_level);
             Ok((tail, m_difficulty_level))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetMissionLaunchedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetMissionLaunchedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_difficulty_level: Option<Int32> = None;
@@ -10120,7 +10120,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerPlanetPanelCanceledEvent {}
     impl GameSTriggerPlanetPanelCanceledEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelCanceledEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelCanceledEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -10134,27 +10134,27 @@ pub mod bit_packed {
         pub m_event_data: MEventData,
     }
     impl GameSTriggerDialogControlEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_control_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_control_id) = Int32::parse(input)?;
-            tracing::debug!("m_control_id: {:?}", m_control_id);
+            tracing::trace!("m_control_id: {:?}", m_control_id);
             Ok((tail, m_control_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_event_type(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_event_type) = Int32::parse(input)?;
-            tracing::debug!("m_event_type: {:?}", m_event_type);
+            tracing::trace!("m_event_type: {:?}", m_event_type);
             Ok((tail, m_event_type))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_event_data(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), MEventData> {
             let (tail, m_event_data) = MEventData::parse(input)?;
-            tracing::debug!("m_event_data: {:?}", m_event_data);
+            tracing::trace!("m_event_data: {:?}", m_event_data);
             Ok((tail, m_event_data))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerDialogControlEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerDialogControlEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_control_id: Option<Int32> = None;
@@ -10196,7 +10196,7 @@ pub mod bit_packed {
         MouseButton(Uint32),
     }
     impl MEventData {
-        #[tracing::instrument(name="87702::MEventData::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::MEventData::ChoiceType::parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
@@ -10207,32 +10207,32 @@ pub mod bit_packed {
             let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant tagged '0' for None");
+                    tracing::trace!("Variant tagged '0' for None");
                     let (tail, res) = take_null(tail)?;
                     Ok((tail, Self::None(res)))
                 }
                 1 => {
-                    tracing::debug!("Variant tagged '1' for Checked");
+                    tracing::trace!("Variant tagged '1' for Checked");
                     let (tail, res) = parse_bool(tail)?;
                     Ok((tail, Self::Checked(res)))
                 }
                 2 => {
-                    tracing::debug!("Variant tagged '2' for ValueChanged");
+                    tracing::trace!("Variant tagged '2' for ValueChanged");
                     let (tail, res) = Uint32::parse(tail)?;
                     Ok((tail, Self::ValueChanged(res)))
                 }
                 3 => {
-                    tracing::debug!("Variant tagged '3' for SelectionChanged");
+                    tracing::trace!("Variant tagged '3' for SelectionChanged");
                     let (tail, res) = Int32::parse(tail)?;
                     Ok((tail, Self::SelectionChanged(res)))
                 }
                 4 => {
-                    tracing::debug!("Variant tagged '4' for TextChanged");
+                    tracing::trace!("Variant tagged '4' for TextChanged");
                     let (tail, res) = GameCChatString::parse(tail)?;
                     Ok((tail, Self::TextChanged(res)))
                 }
                 5 => {
-                    tracing::debug!("Variant tagged '5' for MouseButton");
+                    tracing::trace!("Variant tagged '5' for MouseButton");
                     let (tail, res) = Uint32::parse(tail)?;
                     Ok((tail, Self::MouseButton(res)))
                 }
@@ -10248,7 +10248,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerSkippedEvent {}
     impl GameSTriggerSkippedEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerSkippedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerSkippedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -10261,19 +10261,19 @@ pub mod bit_packed {
         pub m_length: Uint32,
     }
     impl GameSTriggerSoundLengthQueryEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sound_hash(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_sound_hash) = Uint32::parse(input)?;
-            tracing::debug!("m_sound_hash: {:?}", m_sound_hash);
+            tracing::trace!("m_sound_hash: {:?}", m_sound_hash);
             Ok((tail, m_sound_hash))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_length(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_length) = Uint32::parse(input)?;
-            tracing::debug!("m_length: {:?}", m_length);
+            tracing::trace!("m_length: {:?}", m_length);
             Ok((tail, m_length))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerSoundLengthQueryEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerSoundLengthQueryEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_sound_hash: Option<Uint32> = None;
@@ -10303,15 +10303,15 @@ pub mod bit_packed {
         pub m_sync_info: GameSSyncSoundLength,
     }
     impl GameSTriggerSoundLengthSyncEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sync_info(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSSyncSoundLength> {
             let (tail, m_sync_info) = GameSSyncSoundLength::parse(input)?;
-            tracing::debug!("m_sync_info: {:?}", m_sync_info);
+            tracing::trace!("m_sync_info: {:?}", m_sync_info);
             Ok((tail, m_sync_info))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerSoundLengthSyncEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerSoundLengthSyncEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_sync_info: Option<GameSSyncSoundLength> = None;
@@ -10336,29 +10336,29 @@ pub mod bit_packed {
         pub m_finish_game_loop: Uint32,
     }
     impl GameSTriggerAnimLengthQueryByNameEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_query_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTQueryId> {
             let (tail, m_query_id) = GameTQueryId::parse(input)?;
-            tracing::debug!("m_query_id: {:?}", m_query_id);
+            tracing::trace!("m_query_id: {:?}", m_query_id);
             Ok((tail, m_query_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_length_ms(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_length_ms) = Uint32::parse(input)?;
-            tracing::debug!("m_length_ms: {:?}", m_length_ms);
+            tracing::trace!("m_length_ms: {:?}", m_length_ms);
             Ok((tail, m_length_ms))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_finish_game_loop(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_finish_game_loop) = Uint32::parse(input)?;
-            tracing::debug!("m_finish_game_loop: {:?}", m_finish_game_loop);
+            tracing::trace!("m_finish_game_loop: {:?}", m_finish_game_loop);
             Ok((tail, m_finish_game_loop))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerAnimLengthQueryByNameEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerAnimLengthQueryByNameEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_query_id: Option<GameTQueryId> = None;
@@ -10396,21 +10396,21 @@ pub mod bit_packed {
         pub m_length_ms: Uint32,
     }
     impl GameSTriggerAnimLengthQueryByPropsEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_query_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTQueryId> {
             let (tail, m_query_id) = GameTQueryId::parse(input)?;
-            tracing::debug!("m_query_id: {:?}", m_query_id);
+            tracing::trace!("m_query_id: {:?}", m_query_id);
             Ok((tail, m_query_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_length_ms(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_length_ms) = Uint32::parse(input)?;
-            tracing::debug!("m_length_ms: {:?}", m_length_ms);
+            tracing::trace!("m_length_ms: {:?}", m_length_ms);
             Ok((tail, m_length_ms))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerAnimLengthQueryByPropsEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerAnimLengthQueryByPropsEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_query_id: Option<GameTQueryId> = None;
@@ -10440,15 +10440,15 @@ pub mod bit_packed {
         pub m_anim_wait_query_id: GameTQueryId,
     }
     impl GameSTriggerAnimOffsetEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_anim_wait_query_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTQueryId> {
             let (tail, m_anim_wait_query_id) = GameTQueryId::parse(input)?;
-            tracing::debug!("m_anim_wait_query_id: {:?}", m_anim_wait_query_id);
+            tracing::trace!("m_anim_wait_query_id: {:?}", m_anim_wait_query_id);
             Ok((tail, m_anim_wait_query_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerAnimOffsetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerAnimOffsetEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_anim_wait_query_id: Option<GameTQueryId> = None;
@@ -10472,15 +10472,15 @@ pub mod bit_packed {
         pub m_sound: GameTTriggerSoundTag,
     }
     impl GameSTriggerSoundOffsetEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sound(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTTriggerSoundTag> {
             let (tail, m_sound) = GameTTriggerSoundTag::parse(input)?;
-            tracing::debug!("m_sound: {:?}", m_sound);
+            tracing::trace!("m_sound: {:?}", m_sound);
             Ok((tail, m_sound))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerSoundOffsetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerSoundOffsetEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_sound: Option<GameTTriggerSoundTag> = None;
@@ -10504,23 +10504,23 @@ pub mod bit_packed {
         pub m_thread: GameTTriggerThreadTag,
     }
     impl GameSTriggerTransmissionOffsetEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_transmission_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_transmission_id) = Int32::parse(input)?;
-            tracing::debug!("m_transmission_id: {:?}", m_transmission_id);
+            tracing::trace!("m_transmission_id: {:?}", m_transmission_id);
             Ok((tail, m_transmission_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_thread(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTTriggerThreadTag> {
             let (tail, m_thread) = GameTTriggerThreadTag::parse(input)?;
-            tracing::debug!("m_thread: {:?}", m_thread);
+            tracing::trace!("m_thread: {:?}", m_thread);
             Ok((tail, m_thread))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerTransmissionOffsetEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerTransmissionOffsetEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_transmission_id: Option<Int32> = None;
@@ -10550,15 +10550,15 @@ pub mod bit_packed {
         pub m_transmission_id: Int32,
     }
     impl GameSTriggerTransmissionCompleteEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_transmission_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_transmission_id) = Int32::parse(input)?;
-            tracing::debug!("m_transmission_id: {:?}", m_transmission_id);
+            tracing::trace!("m_transmission_id: {:?}", m_transmission_id);
             Ok((tail, m_transmission_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerTransmissionCompleteEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerTransmissionCompleteEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_transmission_id: Option<Int32> = None;
@@ -10586,7 +10586,7 @@ pub mod bit_packed {
         pub m_follow: bool,
     }
     impl GameSCameraUpdateEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_target(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameSPointMini>> {
@@ -10597,10 +10597,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_target: {:?}", m_target);
+            tracing::trace!("m_target: {:?}", m_target);
             Ok((tail, m_target))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_distance(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameTFixedMiniBitsUnsigned>> {
@@ -10611,10 +10611,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_distance: {:?}", m_distance);
+            tracing::trace!("m_distance: {:?}", m_distance);
             Ok((tail, m_distance))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_pitch(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameTFixedMiniBitsUnsigned>> {
@@ -10625,10 +10625,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_pitch: {:?}", m_pitch);
+            tracing::trace!("m_pitch: {:?}", m_pitch);
             Ok((tail, m_pitch))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_yaw(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameTFixedMiniBitsUnsigned>> {
@@ -10639,10 +10639,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_yaw: {:?}", m_yaw);
+            tracing::trace!("m_yaw: {:?}", m_yaw);
             Ok((tail, m_yaw))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_reason(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Int8>> {
@@ -10653,16 +10653,16 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_reason: {:?}", m_reason);
+            tracing::trace!("m_reason: {:?}", m_reason);
             Ok((tail, m_reason))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_follow(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_follow) = parse_bool(input)?;
-            tracing::debug!("m_follow: {:?}", m_follow);
+            tracing::trace!("m_follow: {:?}", m_follow);
             Ok((tail, m_follow))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSCameraUpdateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSCameraUpdateEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_target: Option<Option<GameSPointMini>> = Some(None);
@@ -10720,15 +10720,15 @@ pub mod bit_packed {
         pub m_skip_type: GameEConversationSkip,
     }
     impl GameSTriggerConversationSkippedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_skip_type(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEConversationSkip> {
             let (tail, m_skip_type) = GameEConversationSkip::parse(input)?;
-            tracing::debug!("m_skip_type: {:?}", m_skip_type);
+            tracing::trace!("m_skip_type: {:?}", m_skip_type);
             Ok((tail, m_skip_type))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerConversationSkippedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerConversationSkippedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_skip_type: Option<GameEConversationSkip> = None;
@@ -10755,41 +10755,41 @@ pub mod bit_packed {
         pub m_flags: Int8,
     }
     impl GameSTriggerMouseClickedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_button(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_button) = Uint32::parse(input)?;
-            tracing::debug!("m_button: {:?}", m_button);
+            tracing::trace!("m_button: {:?}", m_button);
             Ok((tail, m_button))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_down(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_down) = parse_bool(input)?;
-            tracing::debug!("m_down: {:?}", m_down);
+            tracing::trace!("m_down: {:?}", m_down);
             Ok((tail, m_down))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_pos_ui(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSuiCoord> {
             let (tail, m_pos_ui) = GameSuiCoord::parse(input)?;
-            tracing::debug!("m_pos_ui: {:?}", m_pos_ui);
+            tracing::trace!("m_pos_ui: {:?}", m_pos_ui);
             Ok((tail, m_pos_ui))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_pos_world(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSMapCoord3D> {
             let (tail, m_pos_world) = GameSMapCoord3D::parse(input)?;
-            tracing::debug!("m_pos_world: {:?}", m_pos_world);
+            tracing::trace!("m_pos_world: {:?}", m_pos_world);
             Ok((tail, m_pos_world))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_flags(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_flags) = Int8::parse(input)?;
-            tracing::debug!("m_flags: {:?}", m_flags);
+            tracing::trace!("m_flags: {:?}", m_flags);
             Ok((tail, m_flags))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMouseClickedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMouseClickedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_button: Option<Uint32> = None;
@@ -10842,29 +10842,29 @@ pub mod bit_packed {
         pub m_flags: Int8,
     }
     impl GameSTriggerMouseMovedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_pos_ui(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSuiCoord> {
             let (tail, m_pos_ui) = GameSuiCoord::parse(input)?;
-            tracing::debug!("m_pos_ui: {:?}", m_pos_ui);
+            tracing::trace!("m_pos_ui: {:?}", m_pos_ui);
             Ok((tail, m_pos_ui))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_pos_world(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSMapCoord3D> {
             let (tail, m_pos_world) = GameSMapCoord3D::parse(input)?;
-            tracing::debug!("m_pos_world: {:?}", m_pos_world);
+            tracing::trace!("m_pos_world: {:?}", m_pos_world);
             Ok((tail, m_pos_world))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_flags(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_flags) = Int8::parse(input)?;
-            tracing::debug!("m_flags: {:?}", m_flags);
+            tracing::trace!("m_flags: {:?}", m_flags);
             Ok((tail, m_flags))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMouseMovedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMouseMovedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_pos_ui: Option<GameSuiCoord> = None;
@@ -10901,15 +10901,15 @@ pub mod bit_packed {
         pub m_achievement_link: GameTAchievementLink,
     }
     impl GameSAchievementAwardedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_achievement_link(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTAchievementLink> {
             let (tail, m_achievement_link) = GameTAchievementLink::parse(input)?;
-            tracing::debug!("m_achievement_link: {:?}", m_achievement_link);
+            tracing::trace!("m_achievement_link: {:?}", m_achievement_link);
             Ok((tail, m_achievement_link))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSAchievementAwardedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSAchievementAwardedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_achievement_link: Option<GameTAchievementLink> = None;
@@ -10933,19 +10933,19 @@ pub mod bit_packed {
         pub m_down: bool,
     }
     impl GameSTriggerHotkeyPressedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_hotkey(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_hotkey) = Uint32::parse(input)?;
-            tracing::debug!("m_hotkey: {:?}", m_hotkey);
+            tracing::trace!("m_hotkey: {:?}", m_hotkey);
             Ok((tail, m_hotkey))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_down(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_down) = parse_bool(input)?;
-            tracing::debug!("m_down: {:?}", m_down);
+            tracing::trace!("m_down: {:?}", m_down);
             Ok((tail, m_down))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerHotkeyPressedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerHotkeyPressedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_hotkey: Option<Uint32> = None;
@@ -10977,27 +10977,27 @@ pub mod bit_packed {
         pub m_state: Int8,
     }
     impl GameSTriggerTargetModeUpdateEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_abil_link(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTAbilLink> {
             let (tail, m_abil_link) = GameTAbilLink::parse(input)?;
-            tracing::debug!("m_abil_link: {:?}", m_abil_link);
+            tracing::trace!("m_abil_link: {:?}", m_abil_link);
             Ok((tail, m_abil_link))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_abil_cmd_index(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), i64> {
             let (tail, m_abil_cmd_index) = parse_packed_int(input, 0, 5usize)?;
-            tracing::debug!("m_abil_cmd_index: {:?}", m_abil_cmd_index);
+            tracing::trace!("m_abil_cmd_index: {:?}", m_abil_cmd_index);
             Ok((tail, m_abil_cmd_index))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_state(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_state) = Int8::parse(input)?;
-            tracing::debug!("m_state: {:?}", m_state);
+            tracing::trace!("m_state: {:?}", m_state);
             Ok((tail, m_state))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerTargetModeUpdateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerTargetModeUpdateEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_abil_link: Option<GameTAbilLink> = None;
@@ -11032,7 +11032,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerPlanetPanelReplayEvent {}
     impl GameSTriggerPlanetPanelReplayEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelReplayEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelReplayEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11044,13 +11044,13 @@ pub mod bit_packed {
         pub m_soundtrack: Uint32,
     }
     impl GameSTriggerSoundtrackDoneEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_soundtrack(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_soundtrack) = Uint32::parse(input)?;
-            tracing::debug!("m_soundtrack: {:?}", m_soundtrack);
+            tracing::trace!("m_soundtrack: {:?}", m_soundtrack);
             Ok((tail, m_soundtrack))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerSoundtrackDoneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerSoundtrackDoneEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_soundtrack: Option<Uint32> = None;
@@ -11073,13 +11073,13 @@ pub mod bit_packed {
         pub m_planet_id: Int32,
     }
     impl GameSTriggerPlanetMissionSelectedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_planet_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_planet_id) = Int32::parse(input)?;
-            tracing::debug!("m_planet_id: {:?}", m_planet_id);
+            tracing::trace!("m_planet_id: {:?}", m_planet_id);
             Ok((tail, m_planet_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetMissionSelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetMissionSelectedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_planet_id: Option<Int32> = None;
@@ -11103,19 +11103,19 @@ pub mod bit_packed {
         pub m_flags: Int8,
     }
     impl GameSTriggerKeyPressedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_key(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_key) = Int8::parse(input)?;
-            tracing::debug!("m_key: {:?}", m_key);
+            tracing::trace!("m_key: {:?}", m_key);
             Ok((tail, m_key))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_flags(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_flags) = Int8::parse(input)?;
-            tracing::debug!("m_flags: {:?}", m_flags);
+            tracing::trace!("m_flags: {:?}", m_flags);
             Ok((tail, m_flags))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerKeyPressedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerKeyPressedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_key: Option<Int8> = None;
@@ -11143,7 +11143,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerPlanetPanelBirthCompleteEvent {}
     impl GameSTriggerPlanetPanelBirthCompleteEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelBirthCompleteEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelBirthCompleteEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11153,7 +11153,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerPlanetPanelDeathCompleteEvent {}
     impl GameSTriggerPlanetPanelDeathCompleteEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelDeathCompleteEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelDeathCompleteEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11165,13 +11165,13 @@ pub mod bit_packed {
         pub m_resources: Vec<Int32>,
     }
     impl GameSResourceRequestEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_resources(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<Int32>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 3)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = Int32::parse(tail)?;
@@ -11180,7 +11180,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSResourceRequestEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSResourceRequestEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_resources: Option<Vec<Int32>> = None;
@@ -11203,15 +11203,15 @@ pub mod bit_packed {
         pub m_fulfill_request_id: Int32,
     }
     impl GameSResourceRequestFulfillEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_fulfill_request_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_fulfill_request_id) = Int32::parse(input)?;
-            tracing::debug!("m_fulfill_request_id: {:?}", m_fulfill_request_id);
+            tracing::trace!("m_fulfill_request_id: {:?}", m_fulfill_request_id);
             Ok((tail, m_fulfill_request_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSResourceRequestFulfillEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSResourceRequestFulfillEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_fulfill_request_id: Option<Int32> = None;
@@ -11235,15 +11235,15 @@ pub mod bit_packed {
         pub m_cancel_request_id: Int32,
     }
     impl GameSResourceRequestCancelEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_cancel_request_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_cancel_request_id) = Int32::parse(input)?;
-            tracing::debug!("m_cancel_request_id: {:?}", m_cancel_request_id);
+            tracing::trace!("m_cancel_request_id: {:?}", m_cancel_request_id);
             Ok((tail, m_cancel_request_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSResourceRequestCancelEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSResourceRequestCancelEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_cancel_request_id: Option<Int32> = None;
@@ -11264,7 +11264,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerResearchPanelExitEvent {}
     impl GameSTriggerResearchPanelExitEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerResearchPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerResearchPanelExitEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11274,7 +11274,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerResearchPanelPurchaseEvent {}
     impl GameSTriggerResearchPanelPurchaseEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerResearchPanelPurchaseEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerResearchPanelPurchaseEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11287,13 +11287,13 @@ pub mod bit_packed {
         pub m_abil: Option<GameSCmdAbil>,
     }
     impl GameSTriggerCommandErrorEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_error(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_error) = Int32::parse(input)?;
-            tracing::debug!("m_error: {:?}", m_error);
+            tracing::trace!("m_error: {:?}", m_error);
             Ok((tail, m_error))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_abil(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameSCmdAbil>> {
@@ -11304,10 +11304,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_abil: {:?}", m_abil);
+            tracing::trace!("m_abil: {:?}", m_abil);
             Ok((tail, m_abil))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCommandErrorEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCommandErrorEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_error: Option<Int32> = None;
@@ -11337,15 +11337,15 @@ pub mod bit_packed {
         pub m_research_item_id: Int32,
     }
     impl GameSTriggerResearchPanelSelectionChangedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_research_item_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_research_item_id) = Int32::parse(input)?;
-            tracing::debug!("m_research_item_id: {:?}", m_research_item_id);
+            tracing::trace!("m_research_item_id: {:?}", m_research_item_id);
             Ok((tail, m_research_item_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerResearchPanelSelectionChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerResearchPanelSelectionChangedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_research_item_id: Option<Int32> = None;
@@ -11366,7 +11366,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerMercenaryPanelExitEvent {}
     impl GameSTriggerMercenaryPanelExitEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMercenaryPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMercenaryPanelExitEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11376,7 +11376,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerMercenaryPanelPurchaseEvent {}
     impl GameSTriggerMercenaryPanelPurchaseEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMercenaryPanelPurchaseEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMercenaryPanelPurchaseEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11388,13 +11388,13 @@ pub mod bit_packed {
         pub m_mercenary_id: Int32,
     }
     impl GameSTriggerMercenaryPanelSelectionChangedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_mercenary_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_mercenary_id) = Int32::parse(input)?;
-            tracing::debug!("m_mercenary_id: {:?}", m_mercenary_id);
+            tracing::trace!("m_mercenary_id: {:?}", m_mercenary_id);
             Ok((tail, m_mercenary_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMercenaryPanelSelectionChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMercenaryPanelSelectionChangedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_mercenary_id: Option<Int32> = None;
@@ -11415,7 +11415,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerVictoryPanelExitEvent {}
     impl GameSTriggerVictoryPanelExitEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerVictoryPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerVictoryPanelExitEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11425,7 +11425,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerBattleReportPanelExitEvent {}
     impl GameSTriggerBattleReportPanelExitEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerBattleReportPanelExitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerBattleReportPanelExitEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11438,23 +11438,23 @@ pub mod bit_packed {
         pub m_difficulty_level: Int32,
     }
     impl GameSTriggerBattleReportPanelPlayMissionEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_battle_report_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_battle_report_id) = Int32::parse(input)?;
-            tracing::debug!("m_battle_report_id: {:?}", m_battle_report_id);
+            tracing::trace!("m_battle_report_id: {:?}", m_battle_report_id);
             Ok((tail, m_battle_report_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_difficulty_level(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_difficulty_level) = Int32::parse(input)?;
-            tracing::debug!("m_difficulty_level: {:?}", m_difficulty_level);
+            tracing::trace!("m_difficulty_level: {:?}", m_difficulty_level);
             Ok((tail, m_difficulty_level))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerBattleReportPanelPlayMissionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerBattleReportPanelPlayMissionEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_battle_report_id: Option<Int32> = None;
@@ -11484,15 +11484,15 @@ pub mod bit_packed {
         pub m_battle_report_id: Int32,
     }
     impl GameSTriggerBattleReportPanelPlaySceneEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_battle_report_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_battle_report_id) = Int32::parse(input)?;
-            tracing::debug!("m_battle_report_id: {:?}", m_battle_report_id);
+            tracing::trace!("m_battle_report_id: {:?}", m_battle_report_id);
             Ok((tail, m_battle_report_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerBattleReportPanelPlaySceneEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerBattleReportPanelPlaySceneEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_battle_report_id: Option<Int32> = None;
@@ -11515,15 +11515,15 @@ pub mod bit_packed {
         pub m_battle_report_id: Int32,
     }
     impl GameSTriggerBattleReportPanelSelectionChangedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_battle_report_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_battle_report_id) = Int32::parse(input)?;
-            tracing::debug!("m_battle_report_id: {:?}", m_battle_report_id);
+            tracing::trace!("m_battle_report_id: {:?}", m_battle_report_id);
             Ok((tail, m_battle_report_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerBattleReportPanelSelectionChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerBattleReportPanelSelectionChangedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_battle_report_id: Option<Int32> = None;
@@ -11546,15 +11546,15 @@ pub mod bit_packed {
         pub m_difficulty_level: Int32,
     }
     impl GameSTriggerVictoryPanelPlayMissionAgainEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_difficulty_level(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_difficulty_level) = Int32::parse(input)?;
-            tracing::debug!("m_difficulty_level: {:?}", m_difficulty_level);
+            tracing::trace!("m_difficulty_level: {:?}", m_difficulty_level);
             Ok((tail, m_difficulty_level))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerVictoryPanelPlayMissionAgainEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerVictoryPanelPlayMissionAgainEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_difficulty_level: Option<Int32> = None;
@@ -11575,7 +11575,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerMovieStartedEvent {}
     impl GameSTriggerMovieStartedEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMovieStartedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMovieStartedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11585,7 +11585,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerMovieFinishedEvent {}
     impl GameSTriggerMovieFinishedEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMovieFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMovieFinishedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11597,15 +11597,15 @@ pub mod bit_packed {
         pub m_decrement_seconds: Int32,
     }
     impl GameSDecrementGameTimeRemainingEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_decrement_seconds(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_decrement_seconds) = Int32::parse(input)?;
-            tracing::debug!("m_decrement_seconds: {:?}", m_decrement_seconds);
+            tracing::trace!("m_decrement_seconds: {:?}", m_decrement_seconds);
             Ok((tail, m_decrement_seconds))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSDecrementGameTimeRemainingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSDecrementGameTimeRemainingEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_decrement_seconds: Option<Int32> = None;
@@ -11628,13 +11628,13 @@ pub mod bit_packed {
         pub m_portrait_id: Int32,
     }
     impl GameSTriggerPortraitLoadedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_portrait_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_portrait_id) = Int32::parse(input)?;
-            tracing::debug!("m_portrait_id: {:?}", m_portrait_id);
+            tracing::trace!("m_portrait_id: {:?}", m_portrait_id);
             Ok((tail, m_portrait_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPortraitLoadedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPortraitLoadedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_portrait_id: Option<Int32> = None;
@@ -11657,13 +11657,13 @@ pub mod bit_packed {
         pub m_function_name: Vec<u8>,
     }
     impl GameSTriggerMovieFunctionEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_function_name(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -11672,7 +11672,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMovieFunctionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMovieFunctionEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_function_name: Option<Vec<u8>> = None;
@@ -11695,13 +11695,13 @@ pub mod bit_packed {
         pub m_result: Int32,
     }
     impl GameSTriggerCustomDialogDismissedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_result(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_result) = Int32::parse(input)?;
-            tracing::debug!("m_result: {:?}", m_result);
+            tracing::trace!("m_result: {:?}", m_result);
             Ok((tail, m_result))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCustomDialogDismissedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCustomDialogDismissedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_result: Option<Int32> = None;
@@ -11724,15 +11724,15 @@ pub mod bit_packed {
         pub m_game_menu_item_index: Int32,
     }
     impl GameSTriggerGameMenuItemSelectedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_menu_item_index(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_game_menu_item_index) = Int32::parse(input)?;
-            tracing::debug!("m_game_menu_item_index: {:?}", m_game_menu_item_index);
+            tracing::trace!("m_game_menu_item_index: {:?}", m_game_menu_item_index);
             Ok((tail, m_game_menu_item_index))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerGameMenuItemSelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerGameMenuItemSelectedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_game_menu_item_index: Option<Int32> = None;
@@ -11757,21 +11757,21 @@ pub mod bit_packed {
         pub m_flags: Int8,
     }
     impl GameSTriggerMouseWheelEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_wheel_spin(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTFixedMiniBitsSigned> {
             let (tail, m_wheel_spin) = GameTFixedMiniBitsSigned::parse(input)?;
-            tracing::debug!("m_wheel_spin: {:?}", m_wheel_spin);
+            tracing::trace!("m_wheel_spin: {:?}", m_wheel_spin);
             Ok((tail, m_wheel_spin))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_flags(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int8> {
             let (tail, m_flags) = Int8::parse(input)?;
-            tracing::debug!("m_flags: {:?}", m_flags);
+            tracing::trace!("m_flags: {:?}", m_flags);
             Ok((tail, m_flags))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMouseWheelEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerMouseWheelEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_wheel_spin: Option<GameTFixedMiniBitsSigned> = None;
@@ -11801,15 +11801,15 @@ pub mod bit_packed {
         pub m_purchase_item_id: Int32,
     }
     impl GameSTriggerPurchasePanelSelectedPurchaseItemChangedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_purchase_item_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_purchase_item_id) = Int32::parse(input)?;
-            tracing::debug!("m_purchase_item_id: {:?}", m_purchase_item_id);
+            tracing::trace!("m_purchase_item_id: {:?}", m_purchase_item_id);
             Ok((tail, m_purchase_item_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPurchasePanelSelectedPurchaseItemChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPurchasePanelSelectedPurchaseItemChangedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_purchase_item_id: Option<Int32> = None;
@@ -11832,15 +11832,15 @@ pub mod bit_packed {
         pub m_purchase_category_id: Int32,
     }
     impl GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_purchase_category_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_purchase_category_id) = Int32::parse(input)?;
-            tracing::debug!("m_purchase_category_id: {:?}", m_purchase_category_id);
+            tracing::trace!("m_purchase_category_id: {:?}", m_purchase_category_id);
             Ok((tail, m_purchase_category_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_purchase_category_id: Option<Int32> = None;
@@ -11864,15 +11864,15 @@ pub mod bit_packed {
         pub m_button: GameTButtonLink,
     }
     impl GameSTriggerButtonPressedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_button(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTButtonLink> {
             let (tail, m_button) = GameTButtonLink::parse(input)?;
-            tracing::debug!("m_button: {:?}", m_button);
+            tracing::trace!("m_button: {:?}", m_button);
             Ok((tail, m_button))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerButtonPressedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerButtonPressedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_button: Option<GameTButtonLink> = None;
@@ -11893,7 +11893,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerGameCreditsFinishedEvent {}
     impl GameSTriggerGameCreditsFinishedEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerGameCreditsFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerGameCreditsFinishedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -11906,19 +11906,19 @@ pub mod bit_packed {
         pub m_bookmark_name: Vec<u8>,
     }
     impl GameSTriggerCutsceneBookmarkFiredEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_cutscene_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_cutscene_id) = Int32::parse(input)?;
-            tracing::debug!("m_cutscene_id: {:?}", m_cutscene_id);
+            tracing::trace!("m_cutscene_id: {:?}", m_cutscene_id);
             Ok((tail, m_cutscene_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_bookmark_name(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -11927,7 +11927,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCutsceneBookmarkFiredEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCutsceneBookmarkFiredEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_cutscene_id: Option<Int32> = None;
@@ -11957,13 +11957,13 @@ pub mod bit_packed {
         pub m_cutscene_id: Int32,
     }
     impl GameSTriggerCutsceneEndSceneFiredEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_cutscene_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_cutscene_id) = Int32::parse(input)?;
-            tracing::debug!("m_cutscene_id: {:?}", m_cutscene_id);
+            tracing::trace!("m_cutscene_id: {:?}", m_cutscene_id);
             Ok((tail, m_cutscene_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCutsceneEndSceneFiredEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCutsceneEndSceneFiredEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_cutscene_id: Option<Int32> = None;
@@ -11988,19 +11988,19 @@ pub mod bit_packed {
         pub m_alt_conversation_line: Vec<u8>,
     }
     impl GameSTriggerCutsceneConversationLineEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_cutscene_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_cutscene_id) = Int32::parse(input)?;
-            tracing::debug!("m_cutscene_id: {:?}", m_cutscene_id);
+            tracing::trace!("m_cutscene_id: {:?}", m_cutscene_id);
             Ok((tail, m_cutscene_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_conversation_line(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -12009,13 +12009,13 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_alt_conversation_line(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -12024,7 +12024,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCutsceneConversationLineEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCutsceneConversationLineEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_cutscene_id: Option<Int32> = None;
@@ -12065,19 +12065,19 @@ pub mod bit_packed {
         pub m_conversation_line: Vec<u8>,
     }
     impl GameSTriggerCutsceneConversationLineMissingEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_cutscene_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_cutscene_id) = Int32::parse(input)?;
-            tracing::debug!("m_cutscene_id: {:?}", m_cutscene_id);
+            tracing::trace!("m_cutscene_id: {:?}", m_cutscene_id);
             Ok((tail, m_cutscene_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_conversation_line(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -12086,7 +12086,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCutsceneConversationLineMissingEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerCutsceneConversationLineMissingEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_cutscene_id: Option<Int32> = None;
@@ -12116,15 +12116,15 @@ pub mod bit_packed {
         pub m_leave_reason: ELeaveReason,
     }
     impl GameSGameUserLeaveEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_leave_reason(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), ELeaveReason> {
             let (tail, m_leave_reason) = ELeaveReason::parse(input)?;
-            tracing::debug!("m_leave_reason: {:?}", m_leave_reason);
+            tracing::trace!("m_leave_reason: {:?}", m_leave_reason);
             Ok((tail, m_leave_reason))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSGameUserLeaveEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSGameUserLeaveEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_leave_reason: Option<ELeaveReason> = None;
@@ -12153,19 +12153,19 @@ pub mod bit_packed {
         pub m_hijack_clone_game_user_id: Option<TUserId>,
     }
     impl GameSGameUserJoinEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_observe(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), EObserve> {
             let (tail, m_observe) = EObserve::parse(input)?;
-            tracing::debug!("m_observe: {:?}", m_observe);
+            tracing::trace!("m_observe: {:?}", m_observe);
             Ok((tail, m_observe))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CUserName> {
             let (tail, m_name) = CUserName::parse(input)?;
-            tracing::debug!("m_name: {:?}", str::from_utf8(&m_name.value));
+            tracing::trace!("m_name: {:?}", str::from_utf8(&m_name.value));
             Ok((tail, m_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_toon_handle(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<CToonHandle>> {
@@ -12176,10 +12176,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_toon_handle: {:?}", m_toon_handle);
+            tracing::trace!("m_toon_handle: {:?}", m_toon_handle);
             Ok((tail, m_toon_handle))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_clan_tag(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<CClanTag>> {
@@ -12190,10 +12190,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_clan_tag: {:?}", m_clan_tag);
+            tracing::trace!("m_clan_tag: {:?}", m_clan_tag);
             Ok((tail, m_clan_tag))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_clan_logo(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameCCacheHandle>> {
@@ -12204,16 +12204,16 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_clan_logo: {:?}", m_clan_logo);
+            tracing::trace!("m_clan_logo: {:?}", m_clan_logo);
             Ok((tail, m_clan_logo))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_hijack(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_hijack) = parse_bool(input)?;
-            tracing::debug!("m_hijack: {:?}", m_hijack);
+            tracing::trace!("m_hijack: {:?}", m_hijack);
             Ok((tail, m_hijack))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_hijack_clone_game_user_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<TUserId>> {
@@ -12224,13 +12224,13 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!(
+            tracing::trace!(
                 "m_hijack_clone_game_user_id: {:?}",
                 m_hijack_clone_game_user_id
             );
             Ok((tail, m_hijack_clone_game_user_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSGameUserJoinEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSGameUserJoinEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_observe: Option<EObserve> = None;
@@ -12300,22 +12300,22 @@ pub mod bit_packed {
         EFireMany,
     }
     impl GameECommandManagerState {
-        #[tracing::instrument(name="87702::GameECommandManagerState::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameECommandManagerState::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 3
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EFireDone for value '0'");
+                    tracing::trace!("Variant EFireDone for value '0'");
                     Ok((tail, Self::EFireDone))
                 }
                 1 => {
-                    tracing::debug!("Variant EFireOnce for value '1'");
+                    tracing::trace!("Variant EFireOnce for value '1'");
                     Ok((tail, Self::EFireOnce))
                 }
                 2 => {
-                    tracing::debug!("Variant EFireMany for value '2'");
+                    tracing::trace!("Variant EFireMany for value '2'");
                     Ok((tail, Self::EFireMany))
                 }
 
@@ -12333,15 +12333,15 @@ pub mod bit_packed {
         pub m_sequence: Option<i64>,
     }
     impl GameSCommandManagerStateEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_state(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameECommandManagerState> {
             let (tail, m_state) = GameECommandManagerState::parse(input)?;
-            tracing::debug!("m_state: {:?}", m_state);
+            tracing::trace!("m_state: {:?}", m_state);
             Ok((tail, m_state))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sequence(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<i64>> {
@@ -12352,10 +12352,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_sequence: {:?}", m_sequence);
+            tracing::trace!("m_sequence: {:?}", m_sequence);
             Ok((tail, m_sequence))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSCommandManagerStateEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSCommandManagerStateEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_state: Option<GameECommandManagerState> = None;
@@ -12385,15 +12385,15 @@ pub mod bit_packed {
         pub m_target: GameSMapCoord3D,
     }
     impl GameSCmdUpdateTargetPointEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_target(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSMapCoord3D> {
             let (tail, m_target) = GameSMapCoord3D::parse(input)?;
-            tracing::debug!("m_target: {:?}", m_target);
+            tracing::trace!("m_target: {:?}", m_target);
             Ok((tail, m_target))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSCmdUpdateTargetPointEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSCmdUpdateTargetPointEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_target: Option<GameSMapCoord3D> = None;
@@ -12416,15 +12416,15 @@ pub mod bit_packed {
         pub m_target: GameSCmdDataTargetUnit,
     }
     impl GameSCmdUpdateTargetUnitEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_target(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSCmdDataTargetUnit> {
             let (tail, m_target) = GameSCmdDataTargetUnit::parse(input)?;
-            tracing::debug!("m_target: {:?}", m_target);
+            tracing::trace!("m_target: {:?}", m_target);
             Ok((tail, m_target))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSCmdUpdateTargetUnitEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSCmdUpdateTargetUnitEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_target: Option<GameSCmdDataTargetUnit> = None;
@@ -12450,23 +12450,23 @@ pub mod bit_packed {
         pub m_value: Vec<u8>,
     }
     impl GameSCatalogModifyEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_catalog(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_catalog) = Uint8::parse(input)?;
-            tracing::debug!("m_catalog: {:?}", m_catalog);
+            tracing::trace!("m_catalog: {:?}", m_catalog);
             Ok((tail, m_catalog))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_entry(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint16> {
             let (tail, m_entry) = Uint16::parse(input)?;
-            tracing::debug!("m_entry: {:?}", m_entry);
+            tracing::trace!("m_entry: {:?}", m_entry);
             Ok((tail, m_entry))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_field(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -12475,11 +12475,11 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_value(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -12488,7 +12488,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSCatalogModifyEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSCatalogModifyEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_catalog: Option<Uint8> = None;
@@ -12532,13 +12532,13 @@ pub mod bit_packed {
         pub m_index: Uint32,
     }
     impl GameSHeroTalentTreeSelectedEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_index(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_index) = Uint32::parse(input)?;
-            tracing::debug!("m_index: {:?}", m_index);
+            tracing::trace!("m_index: {:?}", m_index);
             Ok((tail, m_index))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSHeroTalentTreeSelectedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSHeroTalentTreeSelectedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_index: Option<Uint32> = None;
@@ -12559,7 +12559,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSTriggerProfilerLoggingFinishedEvent {}
     impl GameSTriggerProfilerLoggingFinishedEvent {
-        #[tracing::instrument(name="87702::bit_packed::GameSTriggerProfilerLoggingFinishedEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSTriggerProfilerLoggingFinishedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -12571,13 +12571,13 @@ pub mod bit_packed {
         pub m_shown: bool,
     }
     impl GameSHeroTalentTreeSelectionPanelToggledEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_shown(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_shown) = parse_bool(input)?;
-            tracing::debug!("m_shown: {:?}", m_shown);
+            tracing::trace!("m_shown: {:?}", m_shown);
             Ok((tail, m_shown))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSHeroTalentTreeSelectionPanelToggledEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSHeroTalentTreeSelectionPanelToggledEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_shown: Option<bool> = None;
@@ -12601,21 +12601,21 @@ pub mod bit_packed {
         pub m_muted: bool,
     }
     impl GameSMuteChatEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_target_user_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TUserId> {
             let (tail, m_target_user_id) = TUserId::parse(input)?;
-            tracing::debug!("m_target_user_id: {:?}", m_target_user_id);
+            tracing::trace!("m_target_user_id: {:?}", m_target_user_id);
             Ok((tail, m_target_user_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_muted(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_muted) = parse_bool(input)?;
-            tracing::debug!("m_muted: {:?}", m_muted);
+            tracing::trace!("m_muted: {:?}", m_muted);
             Ok((tail, m_muted))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSMuteChatEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSMuteChatEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_target_user_id: Option<TUserId> = None;
@@ -12645,7 +12645,7 @@ pub mod bit_packed {
         pub m_replay_jump_game_loop: Option<Int32>,
     }
     impl GameSConvertToReplaySessionEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_replay_jump_game_loop(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Int32>> {
@@ -12656,10 +12656,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_replay_jump_game_loop: {:?}", m_replay_jump_game_loop);
+            tracing::trace!("m_replay_jump_game_loop: {:?}", m_replay_jump_game_loop);
             Ok((tail, m_replay_jump_game_loop))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSConvertToReplaySessionEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSConvertToReplaySessionEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_replay_jump_game_loop: Option<Option<Int32>> = Some(None);
@@ -12685,13 +12685,13 @@ pub mod bit_packed {
         pub m_sync_time: Uint32,
     }
     impl GameSSetSyncLoadingTimeEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sync_time(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_sync_time) = Uint32::parse(input)?;
-            tracing::debug!("m_sync_time: {:?}", m_sync_time);
+            tracing::trace!("m_sync_time: {:?}", m_sync_time);
             Ok((tail, m_sync_time))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSetSyncLoadingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSetSyncLoadingTimeEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_sync_time: Option<Uint32> = None;
@@ -12714,13 +12714,13 @@ pub mod bit_packed {
         pub m_sync_time: Uint32,
     }
     impl GameSSetSyncPlayingTimeEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sync_time(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_sync_time) = Uint32::parse(input)?;
-            tracing::debug!("m_sync_time: {:?}", m_sync_time);
+            tracing::trace!("m_sync_time: {:?}", m_sync_time);
             Ok((tail, m_sync_time))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSetSyncPlayingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSetSyncPlayingTimeEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_sync_time: Option<Uint32> = None;
@@ -12743,13 +12743,13 @@ pub mod bit_packed {
         pub m_sync_time: Uint32,
     }
     impl GameSPeerSetSyncLoadingTimeEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sync_time(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_sync_time) = Uint32::parse(input)?;
-            tracing::debug!("m_sync_time: {:?}", m_sync_time);
+            tracing::trace!("m_sync_time: {:?}", m_sync_time);
             Ok((tail, m_sync_time))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSPeerSetSyncLoadingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSPeerSetSyncLoadingTimeEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_sync_time: Option<Uint32> = None;
@@ -12772,13 +12772,13 @@ pub mod bit_packed {
         pub m_sync_time: Uint32,
     }
     impl GameSPeerSetSyncPlayingTimeEvent {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sync_time(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_sync_time) = Uint32::parse(input)?;
-            tracing::debug!("m_sync_time: {:?}", m_sync_time);
+            tracing::trace!("m_sync_time: {:?}", m_sync_time);
             Ok((tail, m_sync_time))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSPeerSetSyncPlayingTimeEvent::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSPeerSetSyncPlayingTimeEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_sync_time: Option<Uint32> = None;
@@ -12805,30 +12805,30 @@ pub mod bit_packed {
         EFaster,
     }
     impl GameEGameSpeed {
-        #[tracing::instrument(name="87702::GameEGameSpeed::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEGameSpeed::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 5
             let num_bits: usize = 3;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ESlower for value '0'");
+                    tracing::trace!("Variant ESlower for value '0'");
                     Ok((tail, Self::ESlower))
                 }
                 1 => {
-                    tracing::debug!("Variant ESlow for value '1'");
+                    tracing::trace!("Variant ESlow for value '1'");
                     Ok((tail, Self::ESlow))
                 }
                 2 => {
-                    tracing::debug!("Variant ENormal for value '2'");
+                    tracing::trace!("Variant ENormal for value '2'");
                     Ok((tail, Self::ENormal))
                 }
                 3 => {
-                    tracing::debug!("Variant EFast for value '3'");
+                    tracing::trace!("Variant EFast for value '3'");
                     Ok((tail, Self::EFast))
                 }
                 4 => {
-                    tracing::debug!("Variant EFaster for value '4'");
+                    tracing::trace!("Variant EFaster for value '4'");
                     Ok((tail, Self::EFaster))
                 }
 
@@ -12850,34 +12850,34 @@ pub mod bit_packed {
         EGameover,
     }
     impl GameEPhase {
-        #[tracing::instrument(name="87702::GameEPhase::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEPhase::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 6
             let num_bits: usize = 3;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EInitializing for value '0'");
+                    tracing::trace!("Variant EInitializing for value '0'");
                     Ok((tail, Self::EInitializing))
                 }
                 1 => {
-                    tracing::debug!("Variant ELobby for value '1'");
+                    tracing::trace!("Variant ELobby for value '1'");
                     Ok((tail, Self::ELobby))
                 }
                 2 => {
-                    tracing::debug!("Variant EClosed for value '2'");
+                    tracing::trace!("Variant EClosed for value '2'");
                     Ok((tail, Self::EClosed))
                 }
                 3 => {
-                    tracing::debug!("Variant ELoading for value '3'");
+                    tracing::trace!("Variant ELoading for value '3'");
                     Ok((tail, Self::ELoading))
                 }
                 4 => {
-                    tracing::debug!("Variant EPlaying for value '4'");
+                    tracing::trace!("Variant EPlaying for value '4'");
                     Ok((tail, Self::EPlaying))
                 }
                 5 => {
-                    tracing::debug!("Variant EGameover for value '5'");
+                    tracing::trace!("Variant EGameover for value '5'");
                     Ok((tail, Self::EGameover))
                 }
 
@@ -12895,18 +12895,18 @@ pub mod bit_packed {
         ESkipAllLines,
     }
     impl GameEConversationSkip {
-        #[tracing::instrument(name="87702::GameEConversationSkip::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEConversationSkip::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 2
             let num_bits: usize = 1;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ESkipOneLine for value '0'");
+                    tracing::trace!("Variant ESkipOneLine for value '0'");
                     Ok((tail, Self::ESkipOneLine))
                 }
                 1 => {
-                    tracing::debug!("Variant ESkipAllLines for value '1'");
+                    tracing::trace!("Variant ESkipAllLines for value '1'");
                     Ok((tail, Self::ESkipAllLines))
                 }
 
@@ -12923,7 +12923,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameCCheatString {
-        #[tracing::instrument(name="87702::GameCCheatString::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCCheatString::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 11;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -12938,7 +12938,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameCTriggerChatMessageString {
-        #[tracing::instrument(name="87702::GameCTriggerChatMessageString::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCTriggerChatMessageString::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 11;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -12953,7 +12953,7 @@ pub mod bit_packed {
         pub value: Uint16,
     }
     impl GameTAchievementLink {
-        #[tracing::instrument(name="87702::GameTAchievementLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTAchievementLink::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
             Ok((tail, Self { value }))
@@ -12965,7 +12965,7 @@ pub mod bit_packed {
         pub value: Uint16,
     }
     impl GameTAchievementTermLink {
-        #[tracing::instrument(name="87702::GameTAchievementTermLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTAchievementTermLink::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
             Ok((tail, Self { value }))
@@ -12977,7 +12977,7 @@ pub mod bit_packed {
         pub value: Uint16,
     }
     impl GameTButtonLink {
-        #[tracing::instrument(name="87702::GameTButtonLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTButtonLink::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
             Ok((tail, Self { value }))
@@ -12989,7 +12989,7 @@ pub mod bit_packed {
         pub value: Uint16,
     }
     impl GameTUnitLink {
-        #[tracing::instrument(name="87702::GameTUnitLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTUnitLink::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
             Ok((tail, Self { value }))
@@ -13001,7 +13001,7 @@ pub mod bit_packed {
         pub value: Uint32,
     }
     impl GameTUnitTag {
-        #[tracing::instrument(name="87702::GameTUnitTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTUnitTag::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
             Ok((tail, Self { value }))
@@ -13013,7 +13013,7 @@ pub mod bit_packed {
         pub value: Uint32,
     }
     impl GameTTriggerThreadTag {
-        #[tracing::instrument(name="87702::GameTTriggerThreadTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTTriggerThreadTag::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
             Ok((tail, Self { value }))
@@ -13025,7 +13025,7 @@ pub mod bit_packed {
         pub value: Uint32,
     }
     impl GameTTriggerSoundTag {
-        #[tracing::instrument(name="87702::GameTTriggerSoundTag::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTTriggerSoundTag::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
             Ok((tail, Self { value }))
@@ -13037,7 +13037,7 @@ pub mod bit_packed {
         pub value: Uint16,
     }
     impl GameTAbilLink {
-        #[tracing::instrument(name="87702::GameTAbilLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTAbilLink::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
             Ok((tail, Self { value }))
@@ -13049,7 +13049,7 @@ pub mod bit_packed {
         pub value: Int32,
     }
     impl GameTFixedBits {
-        #[tracing::instrument(name="87702::GameTFixedBits::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTFixedBits::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Int32::parse(input)?;
             Ok((tail, Self { value }))
@@ -13061,7 +13061,7 @@ pub mod bit_packed {
         pub value: Uint16,
     }
     impl GameTFixedMiniBitsUnsigned {
-        #[tracing::instrument(name="87702::GameTFixedMiniBitsUnsigned::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTFixedMiniBitsUnsigned::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
             Ok((tail, Self { value }))
@@ -13073,7 +13073,7 @@ pub mod bit_packed {
         pub value: Int16,
     }
     impl GameTFixedMiniBitsSigned {
-        #[tracing::instrument(name="87702::GameTFixedMiniBitsSigned::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTFixedMiniBitsSigned::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Int16::parse(input)?;
             Ok((tail, Self { value }))
@@ -13085,7 +13085,7 @@ pub mod bit_packed {
         pub value: Uint32,
     }
     impl GameTPlayerLogoIndex {
-        #[tracing::instrument(name="87702::GameTPlayerLogoIndex::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTPlayerLogoIndex::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
             Ok((tail, Self { value }))
@@ -13097,7 +13097,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTFixedInt {
-        #[tracing::instrument(name="87702::GameTFixedInt::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTFixedInt::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = -524288;
             let num_bits: usize = 20;
@@ -13111,7 +13111,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTFixedUInt {
-        #[tracing::instrument(name="87702::GameTFixedUInt::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTFixedUInt::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 19;
@@ -13125,7 +13125,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTMapCoordFixedBits {
-        #[tracing::instrument(name="87702::GameTMapCoordFixedBits::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTMapCoordFixedBits::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 20;
@@ -13139,7 +13139,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTuiCoordX {
-        #[tracing::instrument(name="87702::GameTuiCoordX::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTuiCoordX::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 11;
@@ -13153,7 +13153,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTuiCoordY {
-        #[tracing::instrument(name="87702::GameTuiCoordY::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTuiCoordY::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 11;
@@ -13167,7 +13167,7 @@ pub mod bit_packed {
         pub value: Uint16,
     }
     impl GameTHeroLink {
-        #[tracing::instrument(name="87702::GameTHeroLink::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTHeroLink::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
             Ok((tail, Self { value }))
@@ -13180,19 +13180,19 @@ pub mod bit_packed {
         pub y: GameTFixedBits,
     }
     impl GameSPoint {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_x(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameTFixedBits> {
             let (tail, x) = GameTFixedBits::parse(input)?;
-            tracing::debug!("x: {:?}", x);
+            tracing::trace!("x: {:?}", x);
             Ok((tail, x))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_y(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameTFixedBits> {
             let (tail, y) = GameTFixedBits::parse(input)?;
-            tracing::debug!("y: {:?}", y);
+            tracing::trace!("y: {:?}", y);
             Ok((tail, y))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSPoint::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSPoint::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut x: Option<GameTFixedBits> = None;
@@ -13224,25 +13224,25 @@ pub mod bit_packed {
         pub z: GameTFixedBits,
     }
     impl GameSPoint3 {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_x(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameTFixedBits> {
             let (tail, x) = GameTFixedBits::parse(input)?;
-            tracing::debug!("x: {:?}", x);
+            tracing::trace!("x: {:?}", x);
             Ok((tail, x))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_y(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameTFixedBits> {
             let (tail, y) = GameTFixedBits::parse(input)?;
-            tracing::debug!("y: {:?}", y);
+            tracing::trace!("y: {:?}", y);
             Ok((tail, y))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_z(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameTFixedBits> {
             let (tail, z) = GameTFixedBits::parse(input)?;
-            tracing::debug!("z: {:?}", z);
+            tracing::trace!("z: {:?}", z);
             Ok((tail, z))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSPoint3::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSPoint3::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut x: Option<GameTFixedBits> = None;
@@ -13280,23 +13280,23 @@ pub mod bit_packed {
         pub y: GameTFixedMiniBitsUnsigned,
     }
     impl GameSPointMini {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_x(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTFixedMiniBitsUnsigned> {
             let (tail, x) = GameTFixedMiniBitsUnsigned::parse(input)?;
-            tracing::debug!("x: {:?}", x);
+            tracing::trace!("x: {:?}", x);
             Ok((tail, x))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_y(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTFixedMiniBitsUnsigned> {
             let (tail, y) = GameTFixedMiniBitsUnsigned::parse(input)?;
-            tracing::debug!("y: {:?}", y);
+            tracing::trace!("y: {:?}", y);
             Ok((tail, y))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSPointMini::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSPointMini::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut x: Option<GameTFixedMiniBitsUnsigned> = None;
@@ -13327,23 +13327,23 @@ pub mod bit_packed {
         pub y: GameTMapCoordFixedBits,
     }
     impl GameSMapCoord {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_x(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTMapCoordFixedBits> {
             let (tail, x) = GameTMapCoordFixedBits::parse(input)?;
-            tracing::debug!("x: {:?}", x);
+            tracing::trace!("x: {:?}", x);
             Ok((tail, x))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_y(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTMapCoordFixedBits> {
             let (tail, y) = GameTMapCoordFixedBits::parse(input)?;
-            tracing::debug!("y: {:?}", y);
+            tracing::trace!("y: {:?}", y);
             Ok((tail, y))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSMapCoord::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSMapCoord::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut x: Option<GameTMapCoordFixedBits> = None;
@@ -13375,29 +13375,29 @@ pub mod bit_packed {
         pub z: GameTFixedBits,
     }
     impl GameSMapCoord3D {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_x(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTMapCoordFixedBits> {
             let (tail, x) = GameTMapCoordFixedBits::parse(input)?;
-            tracing::debug!("x: {:?}", x);
+            tracing::trace!("x: {:?}", x);
             Ok((tail, x))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_y(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTMapCoordFixedBits> {
             let (tail, y) = GameTMapCoordFixedBits::parse(input)?;
-            tracing::debug!("y: {:?}", y);
+            tracing::trace!("y: {:?}", y);
             Ok((tail, y))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_z(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameTFixedBits> {
             let (tail, z) = GameTFixedBits::parse(input)?;
-            tracing::debug!("z: {:?}", z);
+            tracing::trace!("z: {:?}", z);
             Ok((tail, z))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSMapCoord3D::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSMapCoord3D::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut x: Option<GameTMapCoordFixedBits> = None;
@@ -13435,19 +13435,19 @@ pub mod bit_packed {
         pub y: GameTuiCoordY,
     }
     impl GameSuiCoord {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_x(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameTuiCoordX> {
             let (tail, x) = GameTuiCoordX::parse(input)?;
-            tracing::debug!("x: {:?}", x);
+            tracing::trace!("x: {:?}", x);
             Ok((tail, x))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_y(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameTuiCoordY> {
             let (tail, y) = GameTuiCoordY::parse(input)?;
-            tracing::debug!("y: {:?}", y);
+            tracing::trace!("y: {:?}", y);
             Ok((tail, y))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSuiCoord::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSuiCoord::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut x: Option<GameTuiCoordX> = None;
@@ -13477,7 +13477,7 @@ pub mod bit_packed {
         pub value: Uint32,
     }
     impl GameTHandicap {
-        #[tracing::instrument(name="87702::GameTHandicap::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTHandicap::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
             Ok((tail, Self { value }))
@@ -13489,7 +13489,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTDifficulty {
-        #[tracing::instrument(name="87702::GameTDifficulty::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTDifficulty::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 6;
@@ -13504,11 +13504,11 @@ pub mod bit_packed {
                         // compare with blizzard's python implementation
     }
     impl GameCAllowedDifficulty {
-        #[tracing::instrument(name="87702::GameCAllowedDifficulty::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCAllowedDifficulty::BitArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let bitarray_length_bits: usize = 6;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
-            tracing::debug!("Reading bitarray length: {bitarray_length}");
+            tracing::trace!("Reading bitarray length: {bitarray_length}");
             let (tail, value) = take_n_bits_into_i64(tail, bitarray_length as usize)?;
             Ok((tail, Self { value }))
         }
@@ -13519,7 +13519,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTaiBuild {
-        #[tracing::instrument(name="87702::GameTaiBuild::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTaiBuild::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 8;
@@ -13533,11 +13533,11 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameCAllowedAiBuild {
-        #[tracing::instrument(name="87702::GameCAllowedAiBuild::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCAllowedAiBuild::BitArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let bitarray_length_bits: usize = 8;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
-            tracing::debug!("Reading bitarray length: {bitarray_length}");
+            tracing::trace!("Reading bitarray length: {bitarray_length}");
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
             Ok((tail, Self { value }))
         }
@@ -13549,13 +13549,13 @@ pub mod bit_packed {
         pub m_length: Vec<Uint32>,
     }
     impl GameSSyncSoundLength {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sound_hash(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<Uint32>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = Uint32::parse(tail)?;
@@ -13564,11 +13564,11 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_length(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<Uint32>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = Uint32::parse(tail)?;
@@ -13577,7 +13577,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSyncSoundLength::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSyncSoundLength::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_sound_hash: Option<Vec<Uint32>> = None;
@@ -13607,11 +13607,11 @@ pub mod bit_packed {
         pub m_file: Vec<u8>,
     }
     impl GameSThumbnail {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_file(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 10)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -13620,7 +13620,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSThumbnail::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSThumbnail::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_file: Option<Vec<u8>> = None;
@@ -13646,31 +13646,31 @@ pub mod bit_packed {
         pub m_b: Uint8,
     }
     impl GameSColor {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_a(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_a) = Uint8::parse(input)?;
-            tracing::debug!("m_a: {:?}", m_a);
+            tracing::trace!("m_a: {:?}", m_a);
             Ok((tail, m_a))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_r(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_r) = Uint8::parse(input)?;
-            tracing::debug!("m_r: {:?}", m_r);
+            tracing::trace!("m_r: {:?}", m_r);
             Ok((tail, m_r))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_g(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_g) = Uint8::parse(input)?;
-            tracing::debug!("m_g: {:?}", m_g);
+            tracing::trace!("m_g: {:?}", m_g);
             Ok((tail, m_g))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_b(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_b) = Uint8::parse(input)?;
-            tracing::debug!("m_b: {:?}", m_b);
+            tracing::trace!("m_b: {:?}", m_b);
             Ok((tail, m_b))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSColor::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSColor::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_a: Option<Uint8> = None;
@@ -13717,26 +13717,26 @@ pub mod bit_packed {
         ETie,
     }
     impl GameEResultDetails {
-        #[tracing::instrument(name="87702::GameEResultDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEResultDetails::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 4
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EUndecided for value '0'");
+                    tracing::trace!("Variant EUndecided for value '0'");
                     Ok((tail, Self::EUndecided))
                 }
                 1 => {
-                    tracing::debug!("Variant EWin for value '1'");
+                    tracing::trace!("Variant EWin for value '1'");
                     Ok((tail, Self::EWin))
                 }
                 2 => {
-                    tracing::debug!("Variant ELoss for value '2'");
+                    tracing::trace!("Variant ELoss for value '2'");
                     Ok((tail, Self::ELoss))
                 }
                 3 => {
-                    tracing::debug!("Variant ETie for value '3'");
+                    tracing::trace!("Variant ETie for value '3'");
                     Ok((tail, Self::ETie))
                 }
 
@@ -13757,29 +13757,29 @@ pub mod bit_packed {
         pub m_id: Uint64,
     }
     impl GameSToonNameDetails {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_region(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_region) = Uint8::parse(input)?;
-            tracing::debug!("m_region: {:?}", m_region);
+            tracing::trace!("m_region: {:?}", m_region);
             Ok((tail, m_region))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_program_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (tail, m_program_id) = take_fourcc(input)?;
-            tracing::debug!("m_program_id: {:?}", m_program_id);
+            tracing::trace!("m_program_id: {:?}", m_program_id);
             Ok((tail, m_program_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_realm(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_realm) = Uint32::parse(input)?;
-            tracing::debug!("m_realm: {:?}", m_realm);
+            tracing::trace!("m_realm: {:?}", m_realm);
             Ok((tail, m_realm))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 5)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -13788,13 +13788,13 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint64> {
             let (tail, m_id) = Uint64::parse(input)?;
-            tracing::debug!("m_id: {:?}", m_id);
+            tracing::trace!("m_id: {:?}", m_id);
             Ok((tail, m_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSToonNameDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSToonNameDetails::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_region: Option<Uint8> = None;
@@ -13855,25 +13855,25 @@ pub mod bit_packed {
         pub m_hero: Vec<u8>,
     }
     impl GameSPlayerDetails {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_name(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CUserName> {
             let (tail, m_name) = CUserName::parse(input)?;
-            tracing::debug!("m_name: {:?}", str::from_utf8(&m_name.value));
+            tracing::trace!("m_name: {:?}", str::from_utf8(&m_name.value));
             Ok((tail, m_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_toon(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSToonNameDetails> {
             let (tail, m_toon) = GameSToonNameDetails::parse(input)?;
-            tracing::debug!("m_toon: {:?}", m_toon);
+            tracing::trace!("m_toon: {:?}", m_toon);
             Ok((tail, m_toon))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_race(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -13882,51 +13882,51 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_color(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameSColor> {
             let (tail, m_color) = GameSColor::parse(input)?;
-            tracing::debug!("m_color: {:?}", m_color);
+            tracing::trace!("m_color: {:?}", m_color);
             Ok((tail, m_color))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_control(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTControlId> {
             let (tail, m_control) = GameTControlId::parse(input)?;
-            tracing::debug!("m_control: {:?}", m_control);
+            tracing::trace!("m_control: {:?}", m_control);
             Ok((tail, m_control))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_team_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTTeamId> {
             let (tail, m_team_id) = GameTTeamId::parse(input)?;
-            tracing::debug!("m_team_id: {:?}", m_team_id);
+            tracing::trace!("m_team_id: {:?}", m_team_id);
             Ok((tail, m_team_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_handicap(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTHandicap> {
             let (tail, m_handicap) = GameTHandicap::parse(input)?;
-            tracing::debug!("m_handicap: {:?}", m_handicap);
+            tracing::trace!("m_handicap: {:?}", m_handicap);
             Ok((tail, m_handicap))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_observe(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), EObserve> {
             let (tail, m_observe) = EObserve::parse(input)?;
-            tracing::debug!("m_observe: {:?}", m_observe);
+            tracing::trace!("m_observe: {:?}", m_observe);
             Ok((tail, m_observe))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_result(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEResultDetails> {
             let (tail, m_result) = GameEResultDetails::parse(input)?;
-            tracing::debug!("m_result: {:?}", m_result);
+            tracing::trace!("m_result: {:?}", m_result);
             Ok((tail, m_result))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_working_set_slot_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Uint8>> {
@@ -13937,14 +13937,14 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_working_set_slot_id: {:?}", m_working_set_slot_id);
+            tracing::trace!("m_working_set_slot_id: {:?}", m_working_set_slot_id);
             Ok((tail, m_working_set_slot_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_hero(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -13953,7 +13953,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSPlayerDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSPlayerDetails::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_name: Option<CUserName> = None;
@@ -14049,13 +14049,13 @@ pub mod bit_packed {
         pub value: Vec<GameSPlayerDetails>,
     }
     impl GameCPlayerDetailsArray {
-        #[tracing::instrument(name="87702::GameCPlayerDetailsArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCPlayerDetailsArray::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 5;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(GameSPlayerDetails::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<GameSPlayerDetails>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -14073,13 +14073,13 @@ pub mod bit_packed {
         pub value: Vec<CFilePath>,
     }
     impl GameCModPaths {
-        #[tracing::instrument(name="87702::GameCModPaths::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCModPaths::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 6;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(CFilePath::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<CFilePath>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -14114,7 +14114,7 @@ pub mod bit_packed {
         pub m_mod_paths: Option<GameCModPaths>,
     }
     impl GameSDetails {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_player_list(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameCPlayerDetailsArray>> {
@@ -14125,14 +14125,14 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_player_list: {:?}", m_player_list);
+            tracing::trace!("m_player_list: {:?}", m_player_list);
             Ok((tail, m_player_list))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_title(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -14141,11 +14141,11 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_difficulty(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 7)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -14154,37 +14154,37 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_thumbnail(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSThumbnail> {
             let (tail, m_thumbnail) = GameSThumbnail::parse(input)?;
-            tracing::debug!("m_thumbnail: {:?}", m_thumbnail);
+            tracing::trace!("m_thumbnail: {:?}", m_thumbnail);
             Ok((tail, m_thumbnail))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_is_blizzard_map(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_is_blizzard_map) = parse_bool(input)?;
-            tracing::debug!("m_is_blizzard_map: {:?}", m_is_blizzard_map);
+            tracing::trace!("m_is_blizzard_map: {:?}", m_is_blizzard_map);
             Ok((tail, m_is_blizzard_map))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_time_utc(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int64> {
             let (tail, m_time_utc) = Int64::parse(input)?;
-            tracing::debug!("m_time_utc: {:?}", m_time_utc);
+            tracing::trace!("m_time_utc: {:?}", m_time_utc);
             Ok((tail, m_time_utc))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_time_local_offset(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Int64> {
             let (tail, m_time_local_offset) = Int64::parse(input)?;
-            tracing::debug!("m_time_local_offset: {:?}", m_time_local_offset);
+            tracing::trace!("m_time_local_offset: {:?}", m_time_local_offset);
             Ok((tail, m_time_local_offset))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_restart_as_transition_map(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<bool>> {
@@ -14195,27 +14195,27 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!(
+            tracing::trace!(
                 "m_restart_as_transition_map: {:?}",
                 m_restart_as_transition_map
             );
             Ok((tail, m_restart_as_transition_map))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_disable_recover_game(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_disable_recover_game) = parse_bool(input)?;
-            tracing::debug!("m_disable_recover_game: {:?}", m_disable_recover_game);
+            tracing::trace!("m_disable_recover_game: {:?}", m_disable_recover_game);
             Ok((tail, m_disable_recover_game))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_description(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 11)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = take_unaligned_byte(tail)?;
@@ -14224,34 +14224,34 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_image_file_path(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CFilePath> {
             let (tail, m_image_file_path) = CFilePath::parse(input)?;
-            tracing::debug!("m_image_file_path: {:?}", m_image_file_path);
+            tracing::trace!("m_image_file_path: {:?}", m_image_file_path);
             Ok((tail, m_image_file_path))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_campaign_index(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_campaign_index) = Uint8::parse(input)?;
-            tracing::debug!("m_campaign_index: {:?}", m_campaign_index);
+            tracing::trace!("m_campaign_index: {:?}", m_campaign_index);
             Ok((tail, m_campaign_index))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_map_file_name(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CFilePath> {
             let (tail, m_map_file_name) = CFilePath::parse(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_map_file_name: {:?}",
                 str::from_utf8(&m_map_file_name.value)
             );
             Ok((tail, m_map_file_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_cache_handles(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameCCacheHandles>> {
@@ -14262,32 +14262,32 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_cache_handles: {:?}", m_cache_handles);
+            tracing::trace!("m_cache_handles: {:?}", m_cache_handles);
             Ok((tail, m_cache_handles))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_mini_save(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_mini_save) = parse_bool(input)?;
-            tracing::debug!("m_mini_save: {:?}", m_mini_save);
+            tracing::trace!("m_mini_save: {:?}", m_mini_save);
             Ok((tail, m_mini_save))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_speed(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEGameSpeed> {
             let (tail, m_game_speed) = GameEGameSpeed::parse(input)?;
-            tracing::debug!("m_game_speed: {:?}", m_game_speed);
+            tracing::trace!("m_game_speed: {:?}", m_game_speed);
             Ok((tail, m_game_speed))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_default_difficulty(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTDifficulty> {
             let (tail, m_default_difficulty) = GameTDifficulty::parse(input)?;
-            tracing::debug!("m_default_difficulty: {:?}", m_default_difficulty);
+            tracing::trace!("m_default_difficulty: {:?}", m_default_difficulty);
             Ok((tail, m_default_difficulty))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_mod_paths(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameCModPaths>> {
@@ -14298,10 +14298,10 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_mod_paths: {:?}", m_mod_paths);
+            tracing::trace!("m_mod_paths: {:?}", m_mod_paths);
             Ok((tail, m_mod_paths))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSDetails::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSDetails::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_player_list: Option<Option<GameCPlayerDetailsArray>> = Some(None);
@@ -14451,26 +14451,26 @@ pub mod bit_packed {
         EAlwaysVisible,
     }
     impl GameEOptionFog {
-        #[tracing::instrument(name="87702::GameEOptionFog::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEOptionFog::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 4
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EDefault for value '0'");
+                    tracing::trace!("Variant EDefault for value '0'");
                     Ok((tail, Self::EDefault))
                 }
                 1 => {
-                    tracing::debug!("Variant EHideTerrain for value '1'");
+                    tracing::trace!("Variant EHideTerrain for value '1'");
                     Ok((tail, Self::EHideTerrain))
                 }
                 2 => {
-                    tracing::debug!("Variant EMapExplored for value '2'");
+                    tracing::trace!("Variant EMapExplored for value '2'");
                     Ok((tail, Self::EMapExplored))
                 }
                 3 => {
-                    tracing::debug!("Variant EAlwaysVisible for value '3'");
+                    tracing::trace!("Variant EAlwaysVisible for value '3'");
                     Ok((tail, Self::EAlwaysVisible))
                 }
 
@@ -14490,26 +14490,26 @@ pub mod bit_packed {
         ERefereesOnJoin,
     }
     impl GameEOptionObservers {
-        #[tracing::instrument(name="87702::GameEOptionObservers::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEOptionObservers::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 4
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ENone for value '0'");
+                    tracing::trace!("Variant ENone for value '0'");
                     Ok((tail, Self::ENone))
                 }
                 1 => {
-                    tracing::debug!("Variant EOnJoin for value '1'");
+                    tracing::trace!("Variant EOnJoin for value '1'");
                     Ok((tail, Self::EOnJoin))
                 }
                 2 => {
-                    tracing::debug!("Variant EOnJoinAndDefeat for value '2'");
+                    tracing::trace!("Variant EOnJoinAndDefeat for value '2'");
                     Ok((tail, Self::EOnJoinAndDefeat))
                 }
                 3 => {
-                    tracing::debug!("Variant ERefereesOnJoin for value '3'");
+                    tracing::trace!("Variant ERefereesOnJoin for value '3'");
                     Ok((tail, Self::ERefereesOnJoin))
                 }
 
@@ -14528,22 +14528,22 @@ pub mod bit_packed {
         EIndividual,
     }
     impl GameEOptionUserDifficulty {
-        #[tracing::instrument(name="87702::GameEOptionUserDifficulty::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEOptionUserDifficulty::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 3
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ENone for value '0'");
+                    tracing::trace!("Variant ENone for value '0'");
                     Ok((tail, Self::ENone))
                 }
                 1 => {
-                    tracing::debug!("Variant EGlobal for value '1'");
+                    tracing::trace!("Variant EGlobal for value '1'");
                     Ok((tail, Self::EGlobal))
                 }
                 2 => {
-                    tracing::debug!("Variant EIndividual for value '2'");
+                    tracing::trace!("Variant EIndividual for value '2'");
                     Ok((tail, Self::EIndividual))
                 }
 
@@ -14565,34 +14565,34 @@ pub mod bit_packed {
         EServerReplay,
     }
     impl GameEGameLaunch {
-        #[tracing::instrument(name="87702::GameEGameLaunch::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEGameLaunch::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 6
             let num_bits: usize = 3;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EInvalid for value '0'");
+                    tracing::trace!("Variant EInvalid for value '0'");
                     Ok((tail, Self::EInvalid))
                 }
                 1 => {
-                    tracing::debug!("Variant EMap for value '1'");
+                    tracing::trace!("Variant EMap for value '1'");
                     Ok((tail, Self::EMap))
                 }
                 2 => {
-                    tracing::debug!("Variant EReplay for value '2'");
+                    tracing::trace!("Variant EReplay for value '2'");
                     Ok((tail, Self::EReplay))
                 }
                 3 => {
-                    tracing::debug!("Variant ESave for value '3'");
+                    tracing::trace!("Variant ESave for value '3'");
                     Ok((tail, Self::ESave))
                 }
                 4 => {
-                    tracing::debug!("Variant ETransition for value '4'");
+                    tracing::trace!("Variant ETransition for value '4'");
                     Ok((tail, Self::ETransition))
                 }
                 5 => {
-                    tracing::debug!("Variant EServerReplay for value '5'");
+                    tracing::trace!("Variant EServerReplay for value '5'");
                     Ok((tail, Self::EServerReplay))
                 }
 
@@ -14609,7 +14609,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameEClientDebugFlags {
-        #[tracing::instrument(name="87702::GameEClientDebugFlags::IntType::Parse::PowExpr", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEClientDebugFlags::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 64;
@@ -14638,119 +14638,119 @@ pub mod bit_packed {
         pub m_build_coach_enabled: bool,
     }
     impl GameSGameOptions {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_lock_teams(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_lock_teams) = parse_bool(input)?;
-            tracing::debug!("m_lock_teams: {:?}", m_lock_teams);
+            tracing::trace!("m_lock_teams: {:?}", m_lock_teams);
             Ok((tail, m_lock_teams))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_teams_together(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_teams_together) = parse_bool(input)?;
-            tracing::debug!("m_teams_together: {:?}", m_teams_together);
+            tracing::trace!("m_teams_together: {:?}", m_teams_together);
             Ok((tail, m_teams_together))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_advanced_shared_control(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_advanced_shared_control) = parse_bool(input)?;
-            tracing::debug!("m_advanced_shared_control: {:?}", m_advanced_shared_control);
+            tracing::trace!("m_advanced_shared_control: {:?}", m_advanced_shared_control);
             Ok((tail, m_advanced_shared_control))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_random_races(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_random_races) = parse_bool(input)?;
-            tracing::debug!("m_random_races: {:?}", m_random_races);
+            tracing::trace!("m_random_races: {:?}", m_random_races);
             Ok((tail, m_random_races))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_battle_net(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_battle_net) = parse_bool(input)?;
-            tracing::debug!("m_battle_net: {:?}", m_battle_net);
+            tracing::trace!("m_battle_net: {:?}", m_battle_net);
             Ok((tail, m_battle_net))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_amm(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_amm) = parse_bool(input)?;
-            tracing::debug!("m_amm: {:?}", m_amm);
+            tracing::trace!("m_amm: {:?}", m_amm);
             Ok((tail, m_amm))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_competitive(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_competitive) = parse_bool(input)?;
-            tracing::debug!("m_competitive: {:?}", m_competitive);
+            tracing::trace!("m_competitive: {:?}", m_competitive);
             Ok((tail, m_competitive))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_practice(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_practice) = parse_bool(input)?;
-            tracing::debug!("m_practice: {:?}", m_practice);
+            tracing::trace!("m_practice: {:?}", m_practice);
             Ok((tail, m_practice))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_cooperative(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_cooperative) = parse_bool(input)?;
-            tracing::debug!("m_cooperative: {:?}", m_cooperative);
+            tracing::trace!("m_cooperative: {:?}", m_cooperative);
             Ok((tail, m_cooperative))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_no_victory_or_defeat(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_no_victory_or_defeat) = parse_bool(input)?;
-            tracing::debug!("m_no_victory_or_defeat: {:?}", m_no_victory_or_defeat);
+            tracing::trace!("m_no_victory_or_defeat: {:?}", m_no_victory_or_defeat);
             Ok((tail, m_no_victory_or_defeat))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_hero_duplicates_allowed(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_hero_duplicates_allowed) = parse_bool(input)?;
-            tracing::debug!("m_hero_duplicates_allowed: {:?}", m_hero_duplicates_allowed);
+            tracing::trace!("m_hero_duplicates_allowed: {:?}", m_hero_duplicates_allowed);
             Ok((tail, m_hero_duplicates_allowed))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_fog(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameEOptionFog> {
             let (tail, m_fog) = GameEOptionFog::parse(input)?;
-            tracing::debug!("m_fog: {:?}", m_fog);
+            tracing::trace!("m_fog: {:?}", m_fog);
             Ok((tail, m_fog))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_observers(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEOptionObservers> {
             let (tail, m_observers) = GameEOptionObservers::parse(input)?;
-            tracing::debug!("m_observers: {:?}", m_observers);
+            tracing::trace!("m_observers: {:?}", m_observers);
             Ok((tail, m_observers))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_user_difficulty(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEOptionUserDifficulty> {
             let (tail, m_user_difficulty) = GameEOptionUserDifficulty::parse(input)?;
-            tracing::debug!("m_user_difficulty: {:?}", m_user_difficulty);
+            tracing::trace!("m_user_difficulty: {:?}", m_user_difficulty);
             Ok((tail, m_user_difficulty))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_client_debug_flags(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEClientDebugFlags> {
             let (tail, m_client_debug_flags) = GameEClientDebugFlags::parse(input)?;
-            tracing::debug!("m_client_debug_flags: {:?}", m_client_debug_flags);
+            tracing::trace!("m_client_debug_flags: {:?}", m_client_debug_flags);
             Ok((tail, m_client_debug_flags))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_build_coach_enabled(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_build_coach_enabled) = parse_bool(input)?;
-            tracing::debug!("m_build_coach_enabled: {:?}", m_build_coach_enabled);
+            tracing::trace!("m_build_coach_enabled: {:?}", m_build_coach_enabled);
             Ok((tail, m_build_coach_enabled))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSGameOptions::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSGameOptions::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_lock_teams: Option<bool> = None;
@@ -14893,38 +14893,38 @@ pub mod bit_packed {
         EFourTeamPlay,
     }
     impl GameEGameType {
-        #[tracing::instrument(name="87702::GameEGameType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEGameType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 7
             let num_bits: usize = 3;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EMelee for value '0'");
+                    tracing::trace!("Variant EMelee for value '0'");
                     Ok((tail, Self::EMelee))
                 }
                 1 => {
-                    tracing::debug!("Variant EFreeForAll for value '1'");
+                    tracing::trace!("Variant EFreeForAll for value '1'");
                     Ok((tail, Self::EFreeForAll))
                 }
                 2 => {
-                    tracing::debug!("Variant EUseSettings for value '2'");
+                    tracing::trace!("Variant EUseSettings for value '2'");
                     Ok((tail, Self::EUseSettings))
                 }
                 3 => {
-                    tracing::debug!("Variant EOneOnOne for value '3'");
+                    tracing::trace!("Variant EOneOnOne for value '3'");
                     Ok((tail, Self::EOneOnOne))
                 }
                 4 => {
-                    tracing::debug!("Variant ETwoTeamPlay for value '4'");
+                    tracing::trace!("Variant ETwoTeamPlay for value '4'");
                     Ok((tail, Self::ETwoTeamPlay))
                 }
                 5 => {
-                    tracing::debug!("Variant EThreeTeamPlay for value '5'");
+                    tracing::trace!("Variant EThreeTeamPlay for value '5'");
                     Ok((tail, Self::EThreeTeamPlay))
                 }
                 6 => {
-                    tracing::debug!("Variant EFourTeamPlay for value '6'");
+                    tracing::trace!("Variant EFourTeamPlay for value '6'");
                     Ok((tail, Self::EFourTeamPlay))
                 }
 
@@ -14944,26 +14944,26 @@ pub mod bit_packed {
         EComputer,
     }
     impl GameEControl {
-        #[tracing::instrument(name="87702::GameEControl::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEControl::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 4
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EOpen for value '0'");
+                    tracing::trace!("Variant EOpen for value '0'");
                     Ok((tail, Self::EOpen))
                 }
                 1 => {
-                    tracing::debug!("Variant EClosed for value '1'");
+                    tracing::trace!("Variant EClosed for value '1'");
                     Ok((tail, Self::EClosed))
                 }
                 2 => {
-                    tracing::debug!("Variant EUser for value '2'");
+                    tracing::trace!("Variant EUser for value '2'");
                     Ok((tail, Self::EUser))
                 }
                 3 => {
-                    tracing::debug!("Variant EComputer for value '3'");
+                    tracing::trace!("Variant EComputer for value '3'");
                     Ok((tail, Self::EComputer))
                 }
 
@@ -14980,7 +14980,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTControlId {
-        #[tracing::instrument(name="87702::GameTControlId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTControlId::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 8;
@@ -14994,7 +14994,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTControlCount {
-        #[tracing::instrument(name="87702::GameTControlCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTControlCount::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 8;
@@ -15008,11 +15008,11 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameCAllowedControls {
-        #[tracing::instrument(name="87702::GameCAllowedControls::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCAllowedControls::BitArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let bitarray_length_bits: usize = 8;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
-            tracing::debug!("Reading bitarray length: {bitarray_length}");
+            tracing::trace!("Reading bitarray length: {bitarray_length}");
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
             Ok((tail, Self { value }))
         }
@@ -15028,55 +15028,55 @@ pub mod bit_packed {
         pub m_allowed_ai_builds: GameCAllowedAiBuild,
     }
     impl GameSSlotDescription {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_allowed_colors(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCAllowedColors> {
             let (tail, m_allowed_colors) = GameCAllowedColors::parse(input)?;
-            tracing::debug!("m_allowed_colors: {:?}", m_allowed_colors);
+            tracing::trace!("m_allowed_colors: {:?}", m_allowed_colors);
             Ok((tail, m_allowed_colors))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_allowed_races(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CAllowedRaces> {
             let (tail, m_allowed_races) = CAllowedRaces::parse(input)?;
-            tracing::debug!("m_allowed_races: {:?}", m_allowed_races);
+            tracing::trace!("m_allowed_races: {:?}", m_allowed_races);
             Ok((tail, m_allowed_races))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_allowed_difficulty(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCAllowedDifficulty> {
             let (tail, m_allowed_difficulty) = GameCAllowedDifficulty::parse(input)?;
-            tracing::debug!("m_allowed_difficulty: {:?}", m_allowed_difficulty);
+            tracing::trace!("m_allowed_difficulty: {:?}", m_allowed_difficulty);
             Ok((tail, m_allowed_difficulty))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_allowed_controls(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCAllowedControls> {
             let (tail, m_allowed_controls) = GameCAllowedControls::parse(input)?;
-            tracing::debug!("m_allowed_controls: {:?}", m_allowed_controls);
+            tracing::trace!("m_allowed_controls: {:?}", m_allowed_controls);
             Ok((tail, m_allowed_controls))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_allowed_observe_types(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CAllowedObserveTypes> {
             let (tail, m_allowed_observe_types) = CAllowedObserveTypes::parse(input)?;
-            tracing::debug!("m_allowed_observe_types: {:?}", m_allowed_observe_types);
+            tracing::trace!("m_allowed_observe_types: {:?}", m_allowed_observe_types);
             Ok((tail, m_allowed_observe_types))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_allowed_ai_builds(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCAllowedAiBuild> {
             let (tail, m_allowed_ai_builds) = GameCAllowedAiBuild::parse(input)?;
-            tracing::debug!("m_allowed_ai_builds: {:?}", m_allowed_ai_builds);
+            tracing::trace!("m_allowed_ai_builds: {:?}", m_allowed_ai_builds);
             Ok((tail, m_allowed_ai_builds))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSlotDescription::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSlotDescription::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_allowed_colors: Option<GameCAllowedColors> = None;
@@ -15138,7 +15138,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameCCacheHandle {
-        #[tracing::instrument(name="87702::GameCCacheHandle::BlobType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCCacheHandle::BlobType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, _) = byte_align(input)?;
             let num_bits: usize = 40 * 8;
@@ -15155,13 +15155,13 @@ pub mod bit_packed {
         pub value: Vec<GameCCacheHandle>,
     }
     impl GameCCacheHandles {
-        #[tracing::instrument(name="87702::GameCCacheHandles::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCCacheHandles::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 6;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(GameCCacheHandle::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<GameCCacheHandle>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -15179,7 +15179,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameCGameCacheName {
-        #[tracing::instrument(name="87702::GameCGameCacheName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCGameCacheName::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 11;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -15194,7 +15194,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameCAuthorName {
-        #[tracing::instrument(name="87702::GameCAuthorName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCAuthorName::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 8;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -15209,13 +15209,13 @@ pub mod bit_packed {
         pub value: Vec<GameSSlotDescription>,
     }
     impl GameSSlotDescriptions {
-        #[tracing::instrument(name="87702::GameSSlotDescriptions::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameSSlotDescriptions::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 5;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(GameSSlotDescription::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<GameSSlotDescription>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -15260,237 +15260,237 @@ pub mod bit_packed {
         pub m_is_realtime_mode: bool,
     }
     impl GameSGameDescription {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_random_value(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_random_value) = Uint32::parse(input)?;
-            tracing::debug!("m_random_value: {:?}", m_random_value);
+            tracing::trace!("m_random_value: {:?}", m_random_value);
             Ok((tail, m_random_value))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_cache_name(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCGameCacheName> {
             let (tail, m_game_cache_name) = GameCGameCacheName::parse(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_game_cache_name: {:?}",
                 str::from_utf8(&m_game_cache_name.value)
             );
             Ok((tail, m_game_cache_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_options(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSGameOptions> {
             let (tail, m_game_options) = GameSGameOptions::parse(input)?;
-            tracing::debug!("m_game_options: {:?}", m_game_options);
+            tracing::trace!("m_game_options: {:?}", m_game_options);
             Ok((tail, m_game_options))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_speed(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEGameSpeed> {
             let (tail, m_game_speed) = GameEGameSpeed::parse(input)?;
-            tracing::debug!("m_game_speed: {:?}", m_game_speed);
+            tracing::trace!("m_game_speed: {:?}", m_game_speed);
             Ok((tail, m_game_speed))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_type(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEGameType> {
             let (tail, m_game_type) = GameEGameType::parse(input)?;
-            tracing::debug!("m_game_type: {:?}", m_game_type);
+            tracing::trace!("m_game_type: {:?}", m_game_type);
             Ok((tail, m_game_type))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_max_users(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TUserCount> {
             let (tail, m_max_users) = TUserCount::parse(input)?;
-            tracing::debug!("m_max_users: {:?}", m_max_users);
+            tracing::trace!("m_max_users: {:?}", m_max_users);
             Ok((tail, m_max_users))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_max_observers(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TUserCount> {
             let (tail, m_max_observers) = TUserCount::parse(input)?;
-            tracing::debug!("m_max_observers: {:?}", m_max_observers);
+            tracing::trace!("m_max_observers: {:?}", m_max_observers);
             Ok((tail, m_max_observers))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_max_players(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTPlayerCount> {
             let (tail, m_max_players) = GameTPlayerCount::parse(input)?;
-            tracing::debug!("m_max_players: {:?}", m_max_players);
+            tracing::trace!("m_max_players: {:?}", m_max_players);
             Ok((tail, m_max_players))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_max_teams(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTTeamCount> {
             let (tail, m_max_teams) = GameTTeamCount::parse(input)?;
-            tracing::debug!("m_max_teams: {:?}", m_max_teams);
+            tracing::trace!("m_max_teams: {:?}", m_max_teams);
             Ok((tail, m_max_teams))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_max_colors(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTColorCount> {
             let (tail, m_max_colors) = GameTColorCount::parse(input)?;
-            tracing::debug!("m_max_colors: {:?}", m_max_colors);
+            tracing::trace!("m_max_colors: {:?}", m_max_colors);
             Ok((tail, m_max_colors))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_max_races(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TRaceCount> {
             let (tail, m_max_races) = TRaceCount::parse(input)?;
-            tracing::debug!("m_max_races: {:?}", m_max_races);
+            tracing::trace!("m_max_races: {:?}", m_max_races);
             Ok((tail, m_max_races))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_max_controls(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTControlCount> {
             let (tail, m_max_controls) = GameTControlCount::parse(input)?;
-            tracing::debug!("m_max_controls: {:?}", m_max_controls);
+            tracing::trace!("m_max_controls: {:?}", m_max_controls);
             Ok((tail, m_max_controls))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_map_size_x(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_map_size_x) = Uint8::parse(input)?;
-            tracing::debug!("m_map_size_x: {:?}", m_map_size_x);
+            tracing::trace!("m_map_size_x: {:?}", m_map_size_x);
             Ok((tail, m_map_size_x))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_map_size_y(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_map_size_y) = Uint8::parse(input)?;
-            tracing::debug!("m_map_size_y: {:?}", m_map_size_y);
+            tracing::trace!("m_map_size_y: {:?}", m_map_size_y);
             Ok((tail, m_map_size_y))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_map_file_sync_checksum(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSyncChecksum> {
             let (tail, m_map_file_sync_checksum) = GameTSyncChecksum::parse(input)?;
-            tracing::debug!("m_map_file_sync_checksum: {:?}", m_map_file_sync_checksum);
+            tracing::trace!("m_map_file_sync_checksum: {:?}", m_map_file_sync_checksum);
             Ok((tail, m_map_file_sync_checksum))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_map_file_name(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CFilePath> {
             let (tail, m_map_file_name) = CFilePath::parse(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_map_file_name: {:?}",
                 str::from_utf8(&m_map_file_name.value)
             );
             Ok((tail, m_map_file_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_map_author_name(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCAuthorName> {
             let (tail, m_map_author_name) = GameCAuthorName::parse(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_map_author_name: {:?}",
                 str::from_utf8(&m_map_author_name.value)
             );
             Ok((tail, m_map_author_name))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_mod_file_sync_checksum(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSyncChecksum> {
             let (tail, m_mod_file_sync_checksum) = GameTSyncChecksum::parse(input)?;
-            tracing::debug!("m_mod_file_sync_checksum: {:?}", m_mod_file_sync_checksum);
+            tracing::trace!("m_mod_file_sync_checksum: {:?}", m_mod_file_sync_checksum);
             Ok((tail, m_mod_file_sync_checksum))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_slot_descriptions(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSSlotDescriptions> {
             let (tail, m_slot_descriptions) = GameSSlotDescriptions::parse(input)?;
-            tracing::debug!("m_slot_descriptions: {:?}", m_slot_descriptions);
+            tracing::trace!("m_slot_descriptions: {:?}", m_slot_descriptions);
             Ok((tail, m_slot_descriptions))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_default_difficulty(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTDifficulty> {
             let (tail, m_default_difficulty) = GameTDifficulty::parse(input)?;
-            tracing::debug!("m_default_difficulty: {:?}", m_default_difficulty);
+            tracing::trace!("m_default_difficulty: {:?}", m_default_difficulty);
             Ok((tail, m_default_difficulty))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_default_ai_build(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTaiBuild> {
             let (tail, m_default_ai_build) = GameTaiBuild::parse(input)?;
-            tracing::debug!("m_default_ai_build: {:?}", m_default_ai_build);
+            tracing::trace!("m_default_ai_build: {:?}", m_default_ai_build);
             Ok((tail, m_default_ai_build))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_cache_handles(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCCacheHandles> {
             let (tail, m_cache_handles) = GameCCacheHandles::parse(input)?;
-            tracing::debug!("m_cache_handles: {:?}", m_cache_handles);
+            tracing::trace!("m_cache_handles: {:?}", m_cache_handles);
             Ok((tail, m_cache_handles))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_has_extension_mod(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_has_extension_mod) = parse_bool(input)?;
-            tracing::debug!("m_has_extension_mod: {:?}", m_has_extension_mod);
+            tracing::trace!("m_has_extension_mod: {:?}", m_has_extension_mod);
             Ok((tail, m_has_extension_mod))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_has_non_blizzard_extension_mod(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_has_non_blizzard_extension_mod) = parse_bool(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_has_non_blizzard_extension_mod: {:?}",
                 m_has_non_blizzard_extension_mod
             );
             Ok((tail, m_has_non_blizzard_extension_mod))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_is_blizzard_map(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_is_blizzard_map) = parse_bool(input)?;
-            tracing::debug!("m_is_blizzard_map: {:?}", m_is_blizzard_map);
+            tracing::trace!("m_is_blizzard_map: {:?}", m_is_blizzard_map);
             Ok((tail, m_is_blizzard_map))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_is_premade_ffa(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_is_premade_ffa) = parse_bool(input)?;
-            tracing::debug!("m_is_premade_ffa: {:?}", m_is_premade_ffa);
+            tracing::trace!("m_is_premade_ffa: {:?}", m_is_premade_ffa);
             Ok((tail, m_is_premade_ffa))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_is_coop_mode(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_is_coop_mode) = parse_bool(input)?;
-            tracing::debug!("m_is_coop_mode: {:?}", m_is_coop_mode);
+            tracing::trace!("m_is_coop_mode: {:?}", m_is_coop_mode);
             Ok((tail, m_is_coop_mode))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_is_realtime_mode(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_is_realtime_mode) = parse_bool(input)?;
-            tracing::debug!("m_is_realtime_mode: {:?}", m_is_realtime_mode);
+            tracing::trace!("m_is_realtime_mode: {:?}", m_is_realtime_mode);
             Ok((tail, m_is_realtime_mode))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSGameDescription::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSGameDescription::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_random_value: Option<Uint32> = None;
@@ -15712,7 +15712,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTLobbySlotCount {
-        #[tracing::instrument(name="87702::GameTLobbySlotCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTLobbySlotCount::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 5;
@@ -15726,7 +15726,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTLobbySlotId {
-        #[tracing::instrument(name="87702::GameTLobbySlotId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTLobbySlotId::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 4;
@@ -15740,13 +15740,13 @@ pub mod bit_packed {
         pub value: Vec<CArtifactHandle>,
     }
     impl GameCArtifactArray {
-        #[tracing::instrument(name="87702::GameCArtifactArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCArtifactArray::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 4;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(CArtifactHandle::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<CArtifactHandle>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -15764,13 +15764,13 @@ pub mod bit_packed {
         pub value: Vec<Uint32>,
     }
     impl GameCCommanderMasteryTalentArray {
-        #[tracing::instrument(name="87702::GameCCommanderMasteryTalentArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCCommanderMasteryTalentArray::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 3;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(Uint32::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<Uint32>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -15788,13 +15788,13 @@ pub mod bit_packed {
         pub value: Vec<Uint32>,
     }
     impl GameCRetryMutationIndexArray {
-        #[tracing::instrument(name="87702::GameCRetryMutationIndexArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCRetryMutationIndexArray::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 3;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(Uint32::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<Uint32>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -15812,7 +15812,7 @@ pub mod bit_packed {
         pub value: Uint32,
     }
     impl GameTReward {
-        #[tracing::instrument(name="87702::GameTReward::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTReward::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
             Ok((tail, Self { value }))
@@ -15824,13 +15824,13 @@ pub mod bit_packed {
         pub value: Vec<GameTReward>,
     }
     impl GameCRewardArray {
-        #[tracing::instrument(name="87702::GameCRewardArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCRewardArray::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 17;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(GameTReward::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<GameTReward>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -15849,21 +15849,21 @@ pub mod bit_packed {
         pub m_rewards: GameCRewardArray,
     }
     impl GameCRewardOverride {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_key(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_key) = Uint32::parse(input)?;
-            tracing::debug!("m_key: {:?}", m_key);
+            tracing::trace!("m_key: {:?}", m_key);
             Ok((tail, m_key))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_rewards(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCRewardArray> {
             let (tail, m_rewards) = GameCRewardArray::parse(input)?;
-            tracing::debug!("m_rewards: {:?}", m_rewards);
+            tracing::trace!("m_rewards: {:?}", m_rewards);
             Ok((tail, m_rewards))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameCRewardOverride::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameCRewardOverride::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_key: Option<Uint32> = None;
@@ -15893,13 +15893,13 @@ pub mod bit_packed {
         pub value: Vec<GameCRewardOverride>,
     }
     impl GameCRewardOverrideArray {
-        #[tracing::instrument(name="87702::GameCRewardOverrideArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCRewardOverrideArray::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 17;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(GameCRewardOverride::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<GameCRewardOverride>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -15917,7 +15917,7 @@ pub mod bit_packed {
         pub value: Uint32,
     }
     impl GameTLicense {
-        #[tracing::instrument(name="87702::GameTLicense::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTLicense::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
             Ok((tail, Self { value }))
@@ -15929,13 +15929,13 @@ pub mod bit_packed {
         pub value: Vec<GameTLicense>,
     }
     impl GameCLicenseArray {
-        #[tracing::instrument(name="87702::GameCLicenseArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCLicenseArray::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 16;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(GameTLicense::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<GameTLicense>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -15953,7 +15953,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameTFlexLicenseName {
-        #[tracing::instrument(name="87702::GameTFlexLicenseName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTFlexLicenseName::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 8;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -15968,7 +15968,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameTFlexLicenseAttributeName {
-        #[tracing::instrument(name="87702::GameTFlexLicenseAttributeName::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTFlexLicenseAttributeName::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 8;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -15983,7 +15983,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameTFlexLicenseAttributeValue {
-        #[tracing::instrument(name="87702::GameTFlexLicenseAttributeValue::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTFlexLicenseAttributeValue::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 11;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -16029,15 +16029,15 @@ pub mod bit_packed {
         pub m_selected_commander_prestige: Uint32,
     }
     impl GameSLobbySlot {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_control(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTControlId> {
             let (tail, m_control) = GameTControlId::parse(input)?;
-            tracing::debug!("m_control: {:?}", m_control);
+            tracing::trace!("m_control: {:?}", m_control);
             Ok((tail, m_control))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_user_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<TUserId>> {
@@ -16048,98 +16048,98 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_user_id: {:?}", m_user_id);
+            tracing::trace!("m_user_id: {:?}", m_user_id);
             Ok((tail, m_user_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_team_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTTeamId> {
             let (tail, m_team_id) = GameTTeamId::parse(input)?;
-            tracing::debug!("m_team_id: {:?}", m_team_id);
+            tracing::trace!("m_team_id: {:?}", m_team_id);
             Ok((tail, m_team_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_color_pref(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTColorPreference> {
             let (tail, m_color_pref) = GameTColorPreference::parse(input)?;
-            tracing::debug!("m_color_pref: {:?}", m_color_pref);
+            tracing::trace!("m_color_pref: {:?}", m_color_pref);
             Ok((tail, m_color_pref))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_race_pref(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TRacePreference> {
             let (tail, m_race_pref) = TRacePreference::parse(input)?;
-            tracing::debug!("m_race_pref: {:?}", m_race_pref);
+            tracing::trace!("m_race_pref: {:?}", m_race_pref);
             Ok((tail, m_race_pref))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_difficulty(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTDifficulty> {
             let (tail, m_difficulty) = GameTDifficulty::parse(input)?;
-            tracing::debug!("m_difficulty: {:?}", m_difficulty);
+            tracing::trace!("m_difficulty: {:?}", m_difficulty);
             Ok((tail, m_difficulty))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_ai_build(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTaiBuild> {
             let (tail, m_ai_build) = GameTaiBuild::parse(input)?;
-            tracing::debug!("m_ai_build: {:?}", m_ai_build);
+            tracing::trace!("m_ai_build: {:?}", m_ai_build);
             Ok((tail, m_ai_build))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_handicap(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTHandicap> {
             let (tail, m_handicap) = GameTHandicap::parse(input)?;
-            tracing::debug!("m_handicap: {:?}", m_handicap);
+            tracing::trace!("m_handicap: {:?}", m_handicap);
             Ok((tail, m_handicap))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_observe(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), EObserve> {
             let (tail, m_observe) = EObserve::parse(input)?;
-            tracing::debug!("m_observe: {:?}", m_observe);
+            tracing::trace!("m_observe: {:?}", m_observe);
             Ok((tail, m_observe))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_logo_index(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTPlayerLogoIndex> {
             let (tail, m_logo_index) = GameTPlayerLogoIndex::parse(input)?;
-            tracing::debug!("m_logo_index: {:?}", m_logo_index);
+            tracing::trace!("m_logo_index: {:?}", m_logo_index);
             Ok((tail, m_logo_index))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_hero(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CHeroHandle> {
             let (tail, m_hero) = CHeroHandle::parse(input)?;
-            tracing::debug!("m_hero: {:?}", m_hero);
+            tracing::trace!("m_hero: {:?}", m_hero);
             Ok((tail, m_hero))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_skin(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CSkinHandle> {
             let (tail, m_skin) = CSkinHandle::parse(input)?;
-            tracing::debug!("m_skin: {:?}", m_skin);
+            tracing::trace!("m_skin: {:?}", m_skin);
             Ok((tail, m_skin))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_mount(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CMountHandle> {
             let (tail, m_mount) = CMountHandle::parse(input)?;
-            tracing::debug!("m_mount: {:?}", m_mount);
+            tracing::trace!("m_mount: {:?}", m_mount);
             Ok((tail, m_mount))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_artifacts(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCArtifactArray> {
             let (tail, m_artifacts) = GameCArtifactArray::parse(input)?;
-            tracing::debug!("m_artifacts: {:?}", m_artifacts);
+            tracing::trace!("m_artifacts: {:?}", m_artifacts);
             Ok((tail, m_artifacts))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_working_set_slot_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Uint8>> {
@@ -16150,34 +16150,34 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_working_set_slot_id: {:?}", m_working_set_slot_id);
+            tracing::trace!("m_working_set_slot_id: {:?}", m_working_set_slot_id);
             Ok((tail, m_working_set_slot_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_rewards(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCRewardArray> {
             let (tail, m_rewards) = GameCRewardArray::parse(input)?;
-            tracing::debug!("m_rewards: {:?}", m_rewards);
+            tracing::trace!("m_rewards: {:?}", m_rewards);
             Ok((tail, m_rewards))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_toon_handle(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CToonHandle> {
             let (tail, m_toon_handle) = CToonHandle::parse(input)?;
-            tracing::debug!("m_toon_handle: {:?}", m_toon_handle);
+            tracing::trace!("m_toon_handle: {:?}", m_toon_handle);
             Ok((tail, m_toon_handle))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_licenses(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCLicenseArray> {
             let (tail, m_licenses) = GameCLicenseArray::parse(input)?;
-            tracing::debug!("m_licenses: {:?}", m_licenses);
+            tracing::trace!("m_licenses: {:?}", m_licenses);
             Ok((tail, m_licenses))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_tandem_leader_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<TUserId>> {
@@ -16188,34 +16188,34 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_tandem_leader_id: {:?}", m_tandem_leader_id);
+            tracing::trace!("m_tandem_leader_id: {:?}", m_tandem_leader_id);
             Ok((tail, m_tandem_leader_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_commander(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CCommanderHandle> {
             let (tail, m_commander) = CCommanderHandle::parse(input)?;
-            tracing::debug!("m_commander: {:?}", m_commander);
+            tracing::trace!("m_commander: {:?}", m_commander);
             Ok((tail, m_commander))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_commander_level(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_commander_level) = Uint32::parse(input)?;
-            tracing::debug!("m_commander_level: {:?}", m_commander_level);
+            tracing::trace!("m_commander_level: {:?}", m_commander_level);
             Ok((tail, m_commander_level))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_has_silence_penalty(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_has_silence_penalty) = parse_bool(input)?;
-            tracing::debug!("m_has_silence_penalty: {:?}", m_has_silence_penalty);
+            tracing::trace!("m_has_silence_penalty: {:?}", m_has_silence_penalty);
             Ok((tail, m_has_silence_penalty))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_tandem_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<TUserId>> {
@@ -16226,87 +16226,87 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_tandem_id: {:?}", m_tandem_id);
+            tracing::trace!("m_tandem_id: {:?}", m_tandem_id);
             Ok((tail, m_tandem_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_commander_mastery_level(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_commander_mastery_level) = Uint32::parse(input)?;
-            tracing::debug!("m_commander_mastery_level: {:?}", m_commander_mastery_level);
+            tracing::trace!("m_commander_mastery_level: {:?}", m_commander_mastery_level);
             Ok((tail, m_commander_mastery_level))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_commander_mastery_talents(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCCommanderMasteryTalentArray> {
             let (tail, m_commander_mastery_talents) =
                 GameCCommanderMasteryTalentArray::parse(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_commander_mastery_talents: {:?}",
                 m_commander_mastery_talents
             );
             Ok((tail, m_commander_mastery_talents))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_trophy_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_trophy_id) = Uint32::parse(input)?;
-            tracing::debug!("m_trophy_id: {:?}", m_trophy_id);
+            tracing::trace!("m_trophy_id: {:?}", m_trophy_id);
             Ok((tail, m_trophy_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_reward_overrides(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCRewardOverrideArray> {
             let (tail, m_reward_overrides) = GameCRewardOverrideArray::parse(input)?;
-            tracing::debug!("m_reward_overrides: {:?}", m_reward_overrides);
+            tracing::trace!("m_reward_overrides: {:?}", m_reward_overrides);
             Ok((tail, m_reward_overrides))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_brutal_plus_difficulty(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_brutal_plus_difficulty) = Uint32::parse(input)?;
-            tracing::debug!("m_brutal_plus_difficulty: {:?}", m_brutal_plus_difficulty);
+            tracing::trace!("m_brutal_plus_difficulty: {:?}", m_brutal_plus_difficulty);
             Ok((tail, m_brutal_plus_difficulty))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_retry_mutation_indexes(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCRetryMutationIndexArray> {
             let (tail, m_retry_mutation_indexes) = GameCRetryMutationIndexArray::parse(input)?;
-            tracing::debug!("m_retry_mutation_indexes: {:?}", m_retry_mutation_indexes);
+            tracing::trace!("m_retry_mutation_indexes: {:?}", m_retry_mutation_indexes);
             Ok((tail, m_retry_mutation_indexes))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_a_c_enemy_race(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_a_c_enemy_race) = Uint32::parse(input)?;
-            tracing::debug!("m_a_c_enemy_race: {:?}", m_a_c_enemy_race);
+            tracing::trace!("m_a_c_enemy_race: {:?}", m_a_c_enemy_race);
             Ok((tail, m_a_c_enemy_race))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_a_c_enemy_wave_type(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_a_c_enemy_wave_type) = Uint32::parse(input)?;
-            tracing::debug!("m_a_c_enemy_wave_type: {:?}", m_a_c_enemy_wave_type);
+            tracing::trace!("m_a_c_enemy_wave_type: {:?}", m_a_c_enemy_wave_type);
             Ok((tail, m_a_c_enemy_wave_type))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_selected_commander_prestige(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_selected_commander_prestige) = Uint32::parse(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_selected_commander_prestige: {:?}",
                 m_selected_commander_prestige
             );
             Ok((tail, m_selected_commander_prestige))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSLobbySlot::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSLobbySlot::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_control: Option<GameTControlId> = None;
@@ -16564,13 +16564,13 @@ pub mod bit_packed {
         pub value: Vec<GameSLobbySlot>,
     }
     impl GameCLobbySlotArray {
-        #[tracing::instrument(name="87702::GameCLobbySlotArray::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCLobbySlotArray::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 5;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(GameSLobbySlot::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<GameSLobbySlot>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -16612,7 +16612,7 @@ pub mod bit_packed {
         MSelectedCommanderPrestige(Uint32),
     }
     impl GameSLobbySlotChange {
-        #[tracing::instrument(name="87702::GameSLobbySlotChange::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameSLobbySlotChange::ChoiceType::parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
@@ -16623,12 +16623,12 @@ pub mod bit_packed {
             let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant tagged '0' for MControl");
+                    tracing::trace!("Variant tagged '0' for MControl");
                     let (tail, res) = GameTControlId::parse(tail)?;
                     Ok((tail, Self::MControl(res)))
                 }
                 1 => {
-                    tracing::debug!("Variant tagged '1' for MUserId");
+                    tracing::trace!("Variant tagged '1' for MUserId");
                     let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(tail)?;
                     if is_provided {
                         let (tail, res) = TUserId::parse(tail)?;
@@ -16638,67 +16638,67 @@ pub mod bit_packed {
                     }
                 }
                 2 => {
-                    tracing::debug!("Variant tagged '2' for MTeamId");
+                    tracing::trace!("Variant tagged '2' for MTeamId");
                     let (tail, res) = GameTTeamId::parse(tail)?;
                     Ok((tail, Self::MTeamId(res)))
                 }
                 3 => {
-                    tracing::debug!("Variant tagged '3' for MColorPref");
+                    tracing::trace!("Variant tagged '3' for MColorPref");
                     let (tail, res) = GameTColorPreference::parse(tail)?;
                     Ok((tail, Self::MColorPref(res)))
                 }
                 4 => {
-                    tracing::debug!("Variant tagged '4' for MRacePref");
+                    tracing::trace!("Variant tagged '4' for MRacePref");
                     let (tail, res) = TRacePreference::parse(tail)?;
                     Ok((tail, Self::MRacePref(res)))
                 }
                 5 => {
-                    tracing::debug!("Variant tagged '5' for MDifficulty");
+                    tracing::trace!("Variant tagged '5' for MDifficulty");
                     let (tail, res) = GameTDifficulty::parse(tail)?;
                     Ok((tail, Self::MDifficulty(res)))
                 }
                 6 => {
-                    tracing::debug!("Variant tagged '6' for MAiBuild");
+                    tracing::trace!("Variant tagged '6' for MAiBuild");
                     let (tail, res) = GameTaiBuild::parse(tail)?;
                     Ok((tail, Self::MAiBuild(res)))
                 }
                 7 => {
-                    tracing::debug!("Variant tagged '7' for MHandicap");
+                    tracing::trace!("Variant tagged '7' for MHandicap");
                     let (tail, res) = GameTHandicap::parse(tail)?;
                     Ok((tail, Self::MHandicap(res)))
                 }
                 8 => {
-                    tracing::debug!("Variant tagged '8' for MObserve");
+                    tracing::trace!("Variant tagged '8' for MObserve");
                     let (tail, res) = EObserve::parse(tail)?;
                     Ok((tail, Self::MObserve(res)))
                 }
                 9 => {
-                    tracing::debug!("Variant tagged '9' for MLogoIndex");
+                    tracing::trace!("Variant tagged '9' for MLogoIndex");
                     let (tail, res) = GameTPlayerLogoIndex::parse(tail)?;
                     Ok((tail, Self::MLogoIndex(res)))
                 }
                 10 => {
-                    tracing::debug!("Variant tagged '10' for MHero");
+                    tracing::trace!("Variant tagged '10' for MHero");
                     let (tail, res) = CHeroHandle::parse(tail)?;
                     Ok((tail, Self::MHero(res)))
                 }
                 11 => {
-                    tracing::debug!("Variant tagged '11' for MSkin");
+                    tracing::trace!("Variant tagged '11' for MSkin");
                     let (tail, res) = CSkinHandle::parse(tail)?;
                     Ok((tail, Self::MSkin(res)))
                 }
                 12 => {
-                    tracing::debug!("Variant tagged '12' for MMount");
+                    tracing::trace!("Variant tagged '12' for MMount");
                     let (tail, res) = CMountHandle::parse(tail)?;
                     Ok((tail, Self::MMount(res)))
                 }
                 13 => {
-                    tracing::debug!("Variant tagged '13' for MLicenses");
+                    tracing::trace!("Variant tagged '13' for MLicenses");
                     let (tail, res) = GameCLicenseArray::parse(tail)?;
                     Ok((tail, Self::MLicenses(res)))
                 }
                 14 => {
-                    tracing::debug!("Variant tagged '14' for MTandemLeaderId");
+                    tracing::trace!("Variant tagged '14' for MTandemLeaderId");
                     let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(tail)?;
                     if is_provided {
                         let (tail, res) = TUserId::parse(tail)?;
@@ -16708,22 +16708,22 @@ pub mod bit_packed {
                     }
                 }
                 15 => {
-                    tracing::debug!("Variant tagged '15' for MCommander");
+                    tracing::trace!("Variant tagged '15' for MCommander");
                     let (tail, res) = CCommanderHandle::parse(tail)?;
                     Ok((tail, Self::MCommander(res)))
                 }
                 16 => {
-                    tracing::debug!("Variant tagged '16' for MCommanderLevel");
+                    tracing::trace!("Variant tagged '16' for MCommanderLevel");
                     let (tail, res) = Uint32::parse(tail)?;
                     Ok((tail, Self::MCommanderLevel(res)))
                 }
                 17 => {
-                    tracing::debug!("Variant tagged '17' for MHasSilencePenalty");
+                    tracing::trace!("Variant tagged '17' for MHasSilencePenalty");
                     let (tail, res) = parse_bool(tail)?;
                     Ok((tail, Self::MHasSilencePenalty(res)))
                 }
                 18 => {
-                    tracing::debug!("Variant tagged '18' for MTandemId");
+                    tracing::trace!("Variant tagged '18' for MTandemId");
                     let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(tail)?;
                     if is_provided {
                         let (tail, res) = TUserId::parse(tail)?;
@@ -16733,32 +16733,32 @@ pub mod bit_packed {
                     }
                 }
                 19 => {
-                    tracing::debug!("Variant tagged '19' for MCommanderMasteryLevel");
+                    tracing::trace!("Variant tagged '19' for MCommanderMasteryLevel");
                     let (tail, res) = Uint32::parse(tail)?;
                     Ok((tail, Self::MCommanderMasteryLevel(res)))
                 }
                 20 => {
-                    tracing::debug!("Variant tagged '20' for MBrutalPlusDifficulty");
+                    tracing::trace!("Variant tagged '20' for MBrutalPlusDifficulty");
                     let (tail, res) = Uint32::parse(tail)?;
                     Ok((tail, Self::MBrutalPlusDifficulty(res)))
                 }
                 21 => {
-                    tracing::debug!("Variant tagged '21' for MRetryMutationIndexes");
+                    tracing::trace!("Variant tagged '21' for MRetryMutationIndexes");
                     let (tail, res) = GameCRetryMutationIndexArray::parse(tail)?;
                     Ok((tail, Self::MRetryMutationIndexes(res)))
                 }
                 22 => {
-                    tracing::debug!("Variant tagged '22' for MACEnemyRace");
+                    tracing::trace!("Variant tagged '22' for MACEnemyRace");
                     let (tail, res) = Uint32::parse(tail)?;
                     Ok((tail, Self::MACEnemyRace(res)))
                 }
                 23 => {
-                    tracing::debug!("Variant tagged '23' for MACEnemyWaveType");
+                    tracing::trace!("Variant tagged '23' for MACEnemyWaveType");
                     let (tail, res) = Uint32::parse(tail)?;
                     Ok((tail, Self::MACEnemyWaveType(res)))
                 }
                 24 => {
-                    tracing::debug!("Variant tagged '24' for MSelectedCommanderPrestige");
+                    tracing::trace!("Variant tagged '24' for MSelectedCommanderPrestige");
                     let (tail, res) = Uint32::parse(tail)?;
                     Ok((tail, Self::MSelectedCommanderPrestige(res)))
                 }
@@ -16786,43 +16786,43 @@ pub mod bit_packed {
         pub m_default_ai_build: GameTaiBuild,
     }
     impl GameSLobbyState {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_phase(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameEPhase> {
             let (tail, m_phase) = GameEPhase::parse(input)?;
-            tracing::debug!("m_phase: {:?}", m_phase);
+            tracing::trace!("m_phase: {:?}", m_phase);
             Ok((tail, m_phase))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_max_users(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TUserCount> {
             let (tail, m_max_users) = TUserCount::parse(input)?;
-            tracing::debug!("m_max_users: {:?}", m_max_users);
+            tracing::trace!("m_max_users: {:?}", m_max_users);
             Ok((tail, m_max_users))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_max_observers(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TUserCount> {
             let (tail, m_max_observers) = TUserCount::parse(input)?;
-            tracing::debug!("m_max_observers: {:?}", m_max_observers);
+            tracing::trace!("m_max_observers: {:?}", m_max_observers);
             Ok((tail, m_max_observers))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_slots(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCLobbySlotArray> {
             let (tail, m_slots) = GameCLobbySlotArray::parse(input)?;
-            tracing::debug!("m_slots: {:?}", m_slots);
+            tracing::trace!("m_slots: {:?}", m_slots);
             Ok((tail, m_slots))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_random_seed(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_random_seed) = Uint32::parse(input)?;
-            tracing::debug!("m_random_seed: {:?}", m_random_seed);
+            tracing::trace!("m_random_seed: {:?}", m_random_seed);
             Ok((tail, m_random_seed))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_host_user_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<TUserId>> {
@@ -16833,50 +16833,50 @@ pub mod bit_packed {
             } else {
                 (tail, None)
             };
-            tracing::debug!("m_host_user_id: {:?}", m_host_user_id);
+            tracing::trace!("m_host_user_id: {:?}", m_host_user_id);
             Ok((tail, m_host_user_id))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_is_single_player(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_is_single_player) = parse_bool(input)?;
-            tracing::debug!("m_is_single_player: {:?}", m_is_single_player);
+            tracing::trace!("m_is_single_player: {:?}", m_is_single_player);
             Ok((tail, m_is_single_player))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_picked_map_tag(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint8> {
             let (tail, m_picked_map_tag) = Uint8::parse(input)?;
-            tracing::debug!("m_picked_map_tag: {:?}", m_picked_map_tag);
+            tracing::trace!("m_picked_map_tag: {:?}", m_picked_map_tag);
             Ok((tail, m_picked_map_tag))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_duration(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_game_duration) = Uint32::parse(input)?;
-            tracing::debug!("m_game_duration: {:?}", m_game_duration);
+            tracing::trace!("m_game_duration: {:?}", m_game_duration);
             Ok((tail, m_game_duration))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_default_difficulty(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTDifficulty> {
             let (tail, m_default_difficulty) = GameTDifficulty::parse(input)?;
-            tracing::debug!("m_default_difficulty: {:?}", m_default_difficulty);
+            tracing::trace!("m_default_difficulty: {:?}", m_default_difficulty);
             Ok((tail, m_default_difficulty))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_default_ai_build(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTaiBuild> {
             let (tail, m_default_ai_build) = GameTaiBuild::parse(input)?;
-            tracing::debug!("m_default_ai_build: {:?}", m_default_ai_build);
+            tracing::trace!("m_default_ai_build: {:?}", m_default_ai_build);
             Ok((tail, m_default_ai_build))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSLobbyState::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSLobbyState::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_phase: Option<GameEPhase> = None;
@@ -16972,31 +16972,31 @@ pub mod bit_packed {
         pub m_lobby_state: GameSLobbyState,
     }
     impl GameSLobbySyncState {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_user_initial_data(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CUserInitialDataArray> {
             let (tail, m_user_initial_data) = CUserInitialDataArray::parse(input)?;
-            tracing::debug!("m_user_initial_data: {:?}", m_user_initial_data);
+            tracing::trace!("m_user_initial_data: {:?}", m_user_initial_data);
             Ok((tail, m_user_initial_data))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_game_description(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSGameDescription> {
             let (tail, m_game_description) = GameSGameDescription::parse(input)?;
-            tracing::debug!("m_game_description: {:?}", m_game_description);
+            tracing::trace!("m_game_description: {:?}", m_game_description);
             Ok((tail, m_game_description))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_lobby_state(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSLobbyState> {
             let (tail, m_lobby_state) = GameSLobbyState::parse(input)?;
-            tracing::debug!("m_lobby_state: {:?}", m_lobby_state);
+            tracing::trace!("m_lobby_state: {:?}", m_lobby_state);
             Ok((tail, m_lobby_state))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSLobbySyncState::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSLobbySyncState::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_user_initial_data: Option<CUserInitialDataArray> = None;
@@ -17037,30 +17037,30 @@ pub mod bit_packed {
         EObservers,
     }
     impl GameEMessageRecipient {
-        #[tracing::instrument(name="87702::GameEMessageRecipient::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEMessageRecipient::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 5
             let num_bits: usize = 3;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EAll for value '0'");
+                    tracing::trace!("Variant EAll for value '0'");
                     Ok((tail, Self::EAll))
                 }
                 1 => {
-                    tracing::debug!("Variant EAllies for value '1'");
+                    tracing::trace!("Variant EAllies for value '1'");
                     Ok((tail, Self::EAllies))
                 }
                 2 => {
-                    tracing::debug!("Variant EIndividual for value '2'");
+                    tracing::trace!("Variant EIndividual for value '2'");
                     Ok((tail, Self::EIndividual))
                 }
                 3 => {
-                    tracing::debug!("Variant EBattlenet for value '3'");
+                    tracing::trace!("Variant EBattlenet for value '3'");
                     Ok((tail, Self::EBattlenet))
                 }
                 4 => {
-                    tracing::debug!("Variant EObservers for value '4'");
+                    tracing::trace!("Variant EObservers for value '4'");
                     Ok((tail, Self::EObservers))
                 }
 
@@ -17077,7 +17077,7 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameCChatString {
-        #[tracing::instrument(name="87702::GameCChatString::StringType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameCChatString::StringType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let str_size_num_bits: usize = 11;
             let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;
@@ -17096,38 +17096,38 @@ pub mod bit_packed {
         EReconnectNotify(GameSReconnectNotifyMessage),
     }
     impl GameEMessageId {
-        #[tracing::instrument(name="87702::GameEMessageId::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEMessageId::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 5
             let num_bits: usize = 4;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EChat for value '0'");
+                    tracing::trace!("Variant EChat for value '0'");
 
                     let (tail, res) = GameSChatMessage::parse(tail)?;
                     Ok((tail, Self::EChat(res)))
                 }
                 1 => {
-                    tracing::debug!("Variant EPing for value '1'");
+                    tracing::trace!("Variant EPing for value '1'");
 
                     let (tail, res) = GameSPingMessage::parse(tail)?;
                     Ok((tail, Self::EPing(res)))
                 }
                 2 => {
-                    tracing::debug!("Variant ELoadingProgress for value '2'");
+                    tracing::trace!("Variant ELoadingProgress for value '2'");
 
                     let (tail, res) = GameSLoadingProgressMessage::parse(tail)?;
                     Ok((tail, Self::ELoadingProgress(res)))
                 }
                 3 => {
-                    tracing::debug!("Variant EServerPing for value '3'");
+                    tracing::trace!("Variant EServerPing for value '3'");
 
                     let (tail, res) = GameSServerPingMessage::parse(tail)?;
                     Ok((tail, Self::EServerPing(res)))
                 }
                 4 => {
-                    tracing::debug!("Variant EReconnectNotify for value '4'");
+                    tracing::trace!("Variant EReconnectNotify for value '4'");
 
                     let (tail, res) = GameSReconnectNotifyMessage::parse(tail)?;
                     Ok((tail, Self::EReconnectNotify(res)))
@@ -17147,23 +17147,23 @@ pub mod bit_packed {
         pub m_string: GameCChatString,
     }
     impl GameSChatMessage {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_recipient(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEMessageRecipient> {
             let (tail, m_recipient) = GameEMessageRecipient::parse(input)?;
-            tracing::debug!("m_recipient: {:?}", m_recipient);
+            tracing::trace!("m_recipient: {:?}", m_recipient);
             Ok((tail, m_recipient))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_string(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCChatString> {
             let (tail, m_string) = GameCChatString::parse(input)?;
-            tracing::debug!("m_string: {:?}", m_string);
+            tracing::trace!("m_string: {:?}", m_string);
             Ok((tail, m_string))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSChatMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSChatMessage::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_recipient: Option<GameEMessageRecipient> = None;
@@ -17194,21 +17194,21 @@ pub mod bit_packed {
         pub m_point: GameSPoint,
     }
     impl GameSPingMessage {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_recipient(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameEMessageRecipient> {
             let (tail, m_recipient) = GameEMessageRecipient::parse(input)?;
-            tracing::debug!("m_recipient: {:?}", m_recipient);
+            tracing::trace!("m_recipient: {:?}", m_recipient);
             Ok((tail, m_recipient))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_point(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameSPoint> {
             let (tail, m_point) = GameSPoint::parse(input)?;
-            tracing::debug!("m_point: {:?}", m_point);
+            tracing::trace!("m_point: {:?}", m_point);
             Ok((tail, m_point))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSPingMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSPingMessage::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_recipient: Option<GameEMessageRecipient> = None;
@@ -17238,13 +17238,13 @@ pub mod bit_packed {
         pub m_progress: Int32,
     }
     impl GameSLoadingProgressMessage {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_progress(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Int32> {
             let (tail, m_progress) = Int32::parse(input)?;
-            tracing::debug!("m_progress: {:?}", m_progress);
+            tracing::trace!("m_progress: {:?}", m_progress);
             Ok((tail, m_progress))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSLoadingProgressMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSLoadingProgressMessage::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_progress: Option<Int32> = None;
@@ -17265,7 +17265,7 @@ pub mod bit_packed {
     #[derive(Debug, PartialEq, Clone)]
     pub struct GameSServerPingMessage {}
     impl GameSServerPingMessage {
-        #[tracing::instrument(name="87702::bit_packed::GameSServerPingMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSServerPingMessage::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let tail = input;
             Ok((tail, Self {}))
@@ -17277,15 +17277,15 @@ pub mod bit_packed {
         pub m_status: EReconnectStatus,
     }
     impl GameSReconnectNotifyMessage {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_status(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), EReconnectStatus> {
             let (tail, m_status) = EReconnectStatus::parse(input)?;
-            tracing::debug!("m_status: {:?}", m_status);
+            tracing::trace!("m_status: {:?}", m_status);
             Ok((tail, m_status))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSReconnectNotifyMessage::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSReconnectNotifyMessage::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_status: Option<EReconnectStatus> = None;
@@ -17308,7 +17308,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTPlayerId {
-        #[tracing::instrument(name="87702::GameTPlayerId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTPlayerId::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 4;
@@ -17322,7 +17322,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTPlayerCount {
-        #[tracing::instrument(name="87702::GameTPlayerCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTPlayerCount::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 5;
@@ -17339,26 +17339,26 @@ pub mod bit_packed {
         EWin,
     }
     impl GameEResultCode {
-        #[tracing::instrument(name="87702::GameEResultCode::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEResultCode::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 4
             let num_bits: usize = 2;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant EUndecided for value '0'");
+                    tracing::trace!("Variant EUndecided for value '0'");
                     Ok((tail, Self::EUndecided))
                 }
                 1 => {
-                    tracing::debug!("Variant ELoss for value '1'");
+                    tracing::trace!("Variant ELoss for value '1'");
                     Ok((tail, Self::ELoss))
                 }
                 2 => {
-                    tracing::debug!("Variant ETie for value '2'");
+                    tracing::trace!("Variant ETie for value '2'");
                     Ok((tail, Self::ETie))
                 }
                 3 => {
-                    tracing::debug!("Variant EWin for value '3'");
+                    tracing::trace!("Variant EWin for value '3'");
                     Ok((tail, Self::EWin))
                 }
 
@@ -17380,34 +17380,34 @@ pub mod bit_packed {
         EAppendAndSteal,
     }
     impl GameEControlGroupUpdate {
-        #[tracing::instrument(name="87702::GameEControlGroupUpdate::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameEControlGroupUpdate::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 6
             let num_bits: usize = 3;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant ESet for value '0'");
+                    tracing::trace!("Variant ESet for value '0'");
                     Ok((tail, Self::ESet))
                 }
                 1 => {
-                    tracing::debug!("Variant EAppend for value '1'");
+                    tracing::trace!("Variant EAppend for value '1'");
                     Ok((tail, Self::EAppend))
                 }
                 2 => {
-                    tracing::debug!("Variant ERecall for value '2'");
+                    tracing::trace!("Variant ERecall for value '2'");
                     Ok((tail, Self::ERecall))
                 }
                 3 => {
-                    tracing::debug!("Variant EClear for value '3'");
+                    tracing::trace!("Variant EClear for value '3'");
                     Ok((tail, Self::EClear))
                 }
                 4 => {
-                    tracing::debug!("Variant ESetAndSteal for value '4'");
+                    tracing::trace!("Variant ESetAndSteal for value '4'");
                     Ok((tail, Self::ESetAndSteal))
                 }
                 5 => {
-                    tracing::debug!("Variant EAppendAndSteal for value '5'");
+                    tracing::trace!("Variant EAppendAndSteal for value '5'");
                     Ok((tail, Self::EAppendAndSteal))
                 }
 
@@ -17424,7 +17424,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTSelectionCount {
-        #[tracing::instrument(name="87702::GameTSelectionCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTSelectionCount::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 9;
@@ -17438,7 +17438,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTSelectionIndex {
-        #[tracing::instrument(name="87702::GameTSelectionIndex::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTSelectionIndex::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 9;
@@ -17452,7 +17452,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTSubgroupPriority {
-        #[tracing::instrument(name="87702::GameTSubgroupPriority::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTSubgroupPriority::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 8;
@@ -17466,7 +17466,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTSubgroupCount {
-        #[tracing::instrument(name="87702::GameTSubgroupCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTSubgroupCount::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 9;
@@ -17480,7 +17480,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTSubgroupIndex {
-        #[tracing::instrument(name="87702::GameTSubgroupIndex::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTSubgroupIndex::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 9;
@@ -17494,7 +17494,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTControlGroupCount {
-        #[tracing::instrument(name="87702::GameTControlGroupCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTControlGroupCount::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 4;
@@ -17508,7 +17508,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTControlGroupIndex {
-        #[tracing::instrument(name="87702::GameTControlGroupIndex::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTControlGroupIndex::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 4;
@@ -17522,7 +17522,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTControlGroupId {
-        #[tracing::instrument(name="87702::GameTControlGroupId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTControlGroupId::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 4;
@@ -17539,39 +17539,39 @@ pub mod bit_packed {
         pub m_count: GameTSelectionCount,
     }
     impl GameSSelectionDeltaSubgroup {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_unit_link(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTUnitLink> {
             let (tail, m_unit_link) = GameTUnitLink::parse(input)?;
-            tracing::debug!("m_unit_link: {:?}", m_unit_link);
+            tracing::trace!("m_unit_link: {:?}", m_unit_link);
             Ok((tail, m_unit_link))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_subgroup_priority(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSubgroupPriority> {
             let (tail, m_subgroup_priority) = GameTSubgroupPriority::parse(input)?;
-            tracing::debug!("m_subgroup_priority: {:?}", m_subgroup_priority);
+            tracing::trace!("m_subgroup_priority: {:?}", m_subgroup_priority);
             Ok((tail, m_subgroup_priority))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_intra_subgroup_priority(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSubgroupPriority> {
             let (tail, m_intra_subgroup_priority) = GameTSubgroupPriority::parse(input)?;
-            tracing::debug!("m_intra_subgroup_priority: {:?}", m_intra_subgroup_priority);
+            tracing::trace!("m_intra_subgroup_priority: {:?}", m_intra_subgroup_priority);
             Ok((tail, m_intra_subgroup_priority))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_count(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSelectionCount> {
             let (tail, m_count) = GameTSelectionCount::parse(input)?;
-            tracing::debug!("m_count: {:?}", m_count);
+            tracing::trace!("m_count: {:?}", m_count);
             Ok((tail, m_count))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSelectionDeltaSubgroup::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSelectionDeltaSubgroup::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_unit_link: Option<GameTUnitLink> = None;
@@ -17618,13 +17618,13 @@ pub mod bit_packed {
         pub value: Vec<GameTSelectionIndex>,
     }
     impl GameSelectionIndexArrayType {
-        #[tracing::instrument(name="87702::GameSelectionIndexArrayType::ArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameSelectionIndexArrayType::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 9;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(GameTSelectionIndex::parse, array_length as usize)(tail)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let max_initial_capacity =
                 MAX_INITIAL_CAPACITY_BYTES / std::mem::size_of::<GameTSelectionIndex>().max(1);
             let mut array = Vec::with_capacity(array_length.min(max_initial_capacity));
@@ -17642,11 +17642,11 @@ pub mod bit_packed {
         pub value: Vec<u8>,
     }
     impl GameSelectionMaskType {
-        #[tracing::instrument(name="87702::GameSelectionMaskType::BitArrayType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameSelectionMaskType::BitArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let bitarray_length_bits: usize = 9;
             let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
-            tracing::debug!("Reading bitarray length: {bitarray_length}");
+            tracing::trace!("Reading bitarray length: {bitarray_length}");
             let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;
             Ok((tail, Self { value }))
         }
@@ -17660,7 +17660,7 @@ pub mod bit_packed {
         ZeroIndices(GameSelectionIndexArrayType),
     }
     impl GameSSelectionMask {
-        #[tracing::instrument(name="87702::GameSSelectionMask::ChoiceType::parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameSSelectionMask::ChoiceType::parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
@@ -17671,22 +17671,22 @@ pub mod bit_packed {
             let (tail, variant_tag) = parse_packed_int(input, offset, num_bits)?;
             match variant_tag {
                 0 => {
-                    tracing::debug!("Variant tagged '0' for None");
+                    tracing::trace!("Variant tagged '0' for None");
                     let (tail, res) = take_null(tail)?;
                     Ok((tail, Self::None(res)))
                 }
                 1 => {
-                    tracing::debug!("Variant tagged '1' for Mask");
+                    tracing::trace!("Variant tagged '1' for Mask");
                     let (tail, res) = GameSelectionMaskType::parse(tail)?;
                     Ok((tail, Self::Mask(res)))
                 }
                 2 => {
-                    tracing::debug!("Variant tagged '2' for OneIndices");
+                    tracing::trace!("Variant tagged '2' for OneIndices");
                     let (tail, res) = GameSelectionIndexArrayType::parse(tail)?;
                     Ok((tail, Self::OneIndices(res)))
                 }
                 3 => {
-                    tracing::debug!("Variant tagged '3' for ZeroIndices");
+                    tracing::trace!("Variant tagged '3' for ZeroIndices");
                     let (tail, res) = GameSelectionIndexArrayType::parse(tail)?;
                     Ok((tail, Self::ZeroIndices(res)))
                 }
@@ -17707,29 +17707,29 @@ pub mod bit_packed {
         pub m_add_unit_tags: Vec<GameTUnitTag>,
     }
     impl GameSSelectionDelta {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_subgroup_index(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSubgroupIndex> {
             let (tail, m_subgroup_index) = GameTSubgroupIndex::parse(input)?;
-            tracing::debug!("m_subgroup_index: {:?}", m_subgroup_index);
+            tracing::trace!("m_subgroup_index: {:?}", m_subgroup_index);
             Ok((tail, m_subgroup_index))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_remove_mask(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSSelectionMask> {
             let (tail, m_remove_mask) = GameSSelectionMask::parse(input)?;
-            tracing::debug!("m_remove_mask: {:?}", m_remove_mask);
+            tracing::trace!("m_remove_mask: {:?}", m_remove_mask);
             Ok((tail, m_remove_mask))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_add_subgroups(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<GameSSelectionDeltaSubgroup>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameSSelectionDeltaSubgroup::parse(tail)?;
@@ -17739,13 +17739,13 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_add_unit_tags(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<GameTUnitTag>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 9)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameTUnitTag::parse(tail)?;
@@ -17755,7 +17755,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSelectionDelta::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSelectionDelta::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_subgroup_index: Option<GameTSubgroupIndex> = None;
@@ -17804,58 +17804,58 @@ pub mod bit_packed {
         pub m_subgroups_checksum: GameTSyncChecksum,
     }
     impl GameSSelectionSyncData {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_count(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSelectionCount> {
             let (tail, m_count) = GameTSelectionCount::parse(input)?;
-            tracing::debug!("m_count: {:?}", m_count);
+            tracing::trace!("m_count: {:?}", m_count);
             Ok((tail, m_count))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_subgroup_count(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSubgroupCount> {
             let (tail, m_subgroup_count) = GameTSubgroupCount::parse(input)?;
-            tracing::debug!("m_subgroup_count: {:?}", m_subgroup_count);
+            tracing::trace!("m_subgroup_count: {:?}", m_subgroup_count);
             Ok((tail, m_subgroup_count))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_active_subgroup_index(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSubgroupIndex> {
             let (tail, m_active_subgroup_index) = GameTSubgroupIndex::parse(input)?;
-            tracing::debug!("m_active_subgroup_index: {:?}", m_active_subgroup_index);
+            tracing::trace!("m_active_subgroup_index: {:?}", m_active_subgroup_index);
             Ok((tail, m_active_subgroup_index))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_unit_tags_checksum(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSyncChecksum> {
             let (tail, m_unit_tags_checksum) = GameTSyncChecksum::parse(input)?;
-            tracing::debug!("m_unit_tags_checksum: {:?}", m_unit_tags_checksum);
+            tracing::trace!("m_unit_tags_checksum: {:?}", m_unit_tags_checksum);
             Ok((tail, m_unit_tags_checksum))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_subgroup_indices_checksum(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSyncChecksum> {
             let (tail, m_subgroup_indices_checksum) = GameTSyncChecksum::parse(input)?;
-            tracing::debug!(
+            tracing::trace!(
                 "m_subgroup_indices_checksum: {:?}",
                 m_subgroup_indices_checksum
             );
             Ok((tail, m_subgroup_indices_checksum))
         }
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_subgroups_checksum(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTSyncChecksum> {
             let (tail, m_subgroups_checksum) = GameTSyncChecksum::parse(input)?;
-            tracing::debug!("m_subgroups_checksum: {:?}", m_subgroups_checksum);
+            tracing::trace!("m_subgroups_checksum: {:?}", m_subgroups_checksum);
             Ok((tail, m_subgroups_checksum))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSelectionSyncData::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSelectionSyncData::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_count: Option<GameTSelectionCount> = None;
@@ -17921,7 +17921,7 @@ pub mod bit_packed {
         pub value: Uint32,
     }
     impl GameTSyncChecksum {
-        #[tracing::instrument(name="87702::GameTSyncChecksum::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTSyncChecksum::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint32::parse(input)?;
             Ok((tail, Self { value }))
@@ -17933,7 +17933,7 @@ pub mod bit_packed {
         pub value: Uint16,
     }
     impl GameTSyncValue {
-        #[tracing::instrument(name="87702::GameTSyncValue::UserType::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTSyncValue::UserType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let (tail, value) = Uint16::parse(input)?;
             Ok((tail, Self { value }))
@@ -17945,13 +17945,13 @@ pub mod bit_packed {
         pub m_checksums: Vec<GameTSyncChecksum>,
     }
     impl GameSSessionSyncInfo {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_checksums(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<GameTSyncChecksum>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 6)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameTSyncChecksum::parse(tail)?;
@@ -17961,7 +17961,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSSessionSyncInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSSessionSyncInfo::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_checksums: Option<Vec<GameTSyncChecksum>> = None;
@@ -17984,13 +17984,13 @@ pub mod bit_packed {
         pub m_checksums: Vec<GameTSyncChecksum>,
     }
     impl GameSGameSyncInfo {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_checksums(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Vec<GameTSyncChecksum>> {
             let (mut tail, array_length) = take_n_bits_into_i64(input, 8)?;
             let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
+            tracing::trace!("Reading array length: {array_length}");
             let mut array = vec![];
             for _ in 0..array_length {
                 let (new_tail, data) = GameTSyncChecksum::parse(tail)?;
@@ -18000,7 +18000,7 @@ pub mod bit_packed {
             }
             Ok((tail, array))
         }
-        #[tracing::instrument(name="87702::bit_packed::GameSGameSyncInfo::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::GameSGameSyncInfo::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_checksums: Option<Vec<GameTSyncChecksum>> = None;
@@ -18023,7 +18023,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTTeamId {
-        #[tracing::instrument(name="87702::GameTTeamId::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTTeamId::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 4;
@@ -18037,7 +18037,7 @@ pub mod bit_packed {
         pub value: i64,
     }
     impl GameTTeamCount {
-        #[tracing::instrument(name="87702::GameTTeamCount::IntType::Parse::MinMaxConstraint", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::GameTTeamCount::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 1;
             let num_bits: usize = 5;
@@ -18051,15 +18051,15 @@ pub mod bit_packed {
         pub m_sync_lobby_state: GameSLobbySyncState,
     }
     impl ReplaySInitData {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_sync_lobby_state(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameSLobbySyncState> {
             let (tail, m_sync_lobby_state) = GameSLobbySyncState::parse(input)?;
-            tracing::debug!("m_sync_lobby_state: {:?}", m_sync_lobby_state);
+            tracing::trace!("m_sync_lobby_state: {:?}", m_sync_lobby_state);
             Ok((tail, m_sync_lobby_state))
         }
-        #[tracing::instrument(name="87702::bit_packed::ReplaySInitData::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::ReplaySInitData::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_sync_lobby_state: Option<GameSLobbySyncState> = None;
@@ -18082,13 +18082,13 @@ pub mod bit_packed {
         pub m_user_id: i64,
     }
     impl ReplaySGameUserId {
-        #[tracing::instrument(level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse_m_user_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), i64> {
             let (tail, m_user_id) = parse_packed_int(input, 0, 5usize)?;
-            tracing::debug!("m_user_id: {:?}", m_user_id);
+            tracing::trace!("m_user_id: {:?}", m_user_id);
             Ok((tail, m_user_id))
         }
-        #[tracing::instrument(name="87702::bit_packed::ReplaySGameUserId::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::ReplaySGameUserId::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_user_id: Option<i64> = None;

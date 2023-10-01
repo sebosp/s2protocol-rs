@@ -14,18 +14,13 @@ pub fn handle_unit_init(
     game_loop: i64,
     unit_init: &UnitInitEvent,
 ) -> UnitChangeHint {
-    let unit_name_filter = &sc2_state.filters.unit_name;
-    if let Some(unit_name_filter) = unit_name_filter {
-        if unit_name_filter != &unit_init.unit_type_name {
-            return UnitChangeHint::None;
-        }
-    }
     let sc2_unit = SC2Unit {
         last_game_loop: game_loop,
         user_id: Some(unit_init.control_player_id),
         name: unit_init.unit_type_name.clone(),
-        pos: Vec3D::new(unit_init.x as f32, -1. * unit_init.y as f32, 0.),
+        pos: Vec3D::new(unit_init.x as f32, unit_init.y as f32, 0.),
         init_game_loop: game_loop,
+        is_init: true,
         ..Default::default()
     };
     tracing::debug!("Initializing unit: {:?}", sc2_unit);
@@ -33,38 +28,86 @@ pub fn handle_unit_init(
         // Hmm no idea if this is normal.
         tracing::warn!("Re-initializing unit: {:?}", unit);
     }
-    sc2_state.units.insert(unit_init.unit_tag_index, sc2_unit);
-    UnitChangeHint::Registered(unit_init.unit_tag_index)
+    sc2_state
+        .units
+        .insert(unit_init.unit_tag_index, sc2_unit.clone());
+    UnitChangeHint::Registered(sc2_unit)
 }
 
 /// Handles the state management for unit born messages
+/// These are units with instant creation such as at the start of the game.
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_unit_born(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     unit_born: &UnitBornEvent,
 ) -> UnitChangeHint {
-    let unit_name_filter = &sc2_state.filters.unit_name;
-    if let Some(unit_name_filter) = unit_name_filter {
-        if unit_name_filter != &unit_born.unit_type_name {
-            return UnitChangeHint::None;
-        }
-    }
     if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_born.unit_tag_index) {
         unit.creator_ability_name = unit_born.creator_ability_name.clone();
         unit.last_game_loop = game_loop;
+        UnitChangeHint::Registered(unit.clone())
     } else {
         let sc2_unit = SC2Unit {
             last_game_loop: game_loop,
             user_id: Some(unit_born.control_player_id),
             name: unit_born.unit_type_name.clone(),
-            pos: Vec3D::new(unit_born.x as f32, -1. * unit_born.y as f32, 0.),
+            pos: Vec3D::new(unit_born.x as f32, unit_born.y as f32, 0.),
             init_game_loop: game_loop,
             ..Default::default()
         };
-        sc2_state.units.insert(unit_born.unit_tag_index, sc2_unit);
+        sc2_state
+            .units
+            .insert(unit_born.unit_tag_index, sc2_unit.clone());
+        UnitChangeHint::Registered(sc2_unit)
     }
-    UnitChangeHint::Registered(unit_born.unit_tag_index)
+}
+
+/// Handles the state management for unit change messages
+/// These are units that transition states such as zerglin to banelingcocoon to baneling
+#[tracing::instrument(level = "debug", skip(sc2_state))]
+pub fn handle_unit_type_change(
+    sc2_state: &mut SC2ReplayState,
+    game_loop: i64,
+    unit_change: &UnitTypeChangeEvent,
+) -> UnitChangeHint {
+    if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_change.unit_tag_index) {
+        unit.name = unit_change.unit_type_name.clone();
+        unit.last_game_loop = game_loop;
+        UnitChangeHint::Registered(unit.clone())
+    } else {
+        let sc2_unit = SC2Unit {
+            last_game_loop: game_loop,
+            user_id: None,
+            name: unit_change.unit_type_name.clone(),
+            init_game_loop: game_loop,
+            ..Default::default()
+        };
+        sc2_state
+            .units
+            .insert(unit_change.unit_tag_index, sc2_unit.clone());
+        UnitChangeHint::Registered(sc2_unit)
+    }
+}
+
+/// Handles the state management for unit born messages
+/// These are units with instant creation such as at the start of the game.
+#[tracing::instrument(level = "debug", skip(sc2_state))]
+pub fn handle_unit_done(
+    sc2_state: &mut SC2ReplayState,
+    game_loop: i64,
+    unit_done: &UnitDoneEvent,
+) -> UnitChangeHint {
+    if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_done.unit_tag_index) {
+        unit.last_game_loop = game_loop;
+        unit.is_init = false;
+        UnitChangeHint::Registered(unit.clone())
+    } else {
+        tracing::warn!(
+            "Unit {} done but not init before.",
+            unit_done.unit_tag_index
+        );
+        UnitChangeHint::None
+    }
 }
 
 #[tracing::instrument(level = "debug", skip(sc2_state))]
@@ -80,12 +123,12 @@ pub fn handle_unit_position(
             updated_units.push(unit_pos_item.tag);
             sc2_unit.pos = Vec3D::new(
                 unit_pos_item.x as f32 / UNIT_POSITION_RATIO,
-                -1. * unit_pos_item.y as f32 / UNIT_POSITION_RATIO,
+                unit_pos_item.y as f32 / UNIT_POSITION_RATIO,
                 0.,
             );
             sc2_unit.last_game_loop = game_loop;
         } else {
-            tracing::error!(
+            tracing::debug!(
                 "Unit {} did not exist but position registered.",
                 unit_pos_item.tag
             );
@@ -130,16 +173,22 @@ pub fn handle_unit_died(
 /// Handles a tracker event as it steps through the SC2 State
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_tracker_event(
-    mut sc2_state: &mut SC2ReplayState,
+    sc2_state: &mut SC2ReplayState,
     tracker_loop: i64,
     evt: &ReplayTrackerEvent,
 ) -> UnitChangeHint {
     match &evt {
+        ReplayTrackerEvent::UnitBorn(unit_born) => {
+            handle_unit_born(sc2_state, tracker_loop, unit_born)
+        }
+        ReplayTrackerEvent::UnitTypeChange(unit_change) => {
+            handle_unit_type_change(sc2_state, tracker_loop, unit_change)
+        }
         ReplayTrackerEvent::UnitInit(unit_init) => {
             handle_unit_init(sc2_state, tracker_loop, unit_init)
         }
-        ReplayTrackerEvent::UnitBorn(unit_born) => {
-            handle_unit_born(sc2_state, tracker_loop, unit_born)
+        ReplayTrackerEvent::UnitDone(unit_done) => {
+            handle_unit_done(sc2_state, tracker_loop, unit_done)
         }
         ReplayTrackerEvent::UnitDied(unit_died) => {
             handle_unit_died(sc2_state, tracker_loop, unit_died)

@@ -1,5 +1,6 @@
-//! Iterator for the ReplayTrackerEEventId
+//! Iterator for ReplayTrackerEEventId
 
+use super::handle_tracker_event;
 use crate::error::S2ProtocolError;
 use crate::tracker_events::{self, TrackerEvent};
 use crate::versions::protocol75689::byte_aligned::ReplayTrackerEEventId as Protocol75689ReplayTrackerEEventId;
@@ -8,11 +9,6 @@ use crate::{SC2EventType, SC2ReplayState, UnitChangeHint, TRACKER_SPEED_RATIO};
 use nom::*;
 use std::iter::Iterator;
 use std::path::PathBuf;
-
-// TODO:
-//  - Details does not need to be cloned now that we only use the sha256.
-
-use super::handle_tracker_event;
 
 /// Creates an iterator over the TrackerEvents
 pub struct TrackerEventIterator {
@@ -30,13 +26,18 @@ pub struct TrackerEventIterator {
 
 impl TrackerEventIterator {
     /// Creates a new TrackerEventIterator from a PathBuf
+    #[tracing::instrument(level = "debug")]
     pub fn new(source: &PathBuf) -> Result<Self, S2ProtocolError> {
+        tracing::debug!("Processing {:?}", source);
         let file_contents = crate::read_file(source)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
         let (_tail, proto_header) = crate::read_protocol_header(&mpq)?;
         let (_event_tail, tracker_events) =
             mpq.read_mpq_file_sector("replay.tracker.events", false, &file_contents)?;
-        let sc2_state: SC2ReplayState = Default::default();
+        let sc2_state = SC2ReplayState {
+            filename: format!("{:?}", source),
+            ..Default::default()
+        };
         Ok(Self {
             protocol_version: proto_header.m_version.m_base_build,
             sc2_state,
@@ -54,11 +55,7 @@ impl TrackerEventIterator {
                     Protocol75689ReplayTrackerEEventId::parse_event_pair(
                         &self.event_data[self.byte_index..],
                     )?;
-                let event = match event.try_into() {
-                    Ok(event) => event,
-                    Err(err) => return Err(err),
-                };
-                (new_event_tail, delta, event)
+                (new_event_tail, delta, event.try_into()?)
             }
             83830 | 84643 | 88500 | 86383 | 87702 | 89165 | 89634 | 89720 | 90136 | 90779
             | 90870 => {
@@ -94,7 +91,7 @@ impl TrackerEventIterator {
         details: &crate::details::Details,
     ) -> Vec<tracker_events::PlayerStatsFlatRow> {
         self.into_iter()
-            .filter_map(|(sc2_event, updated_units)| match sc2_event {
+            .filter_map(|(sc2_event, _change_hint)| match sc2_event {
                 SC2EventType::Tracker {
                     tracker_loop,
                     event,
@@ -120,7 +117,7 @@ impl TrackerEventIterator {
         details: &crate::details::Details,
     ) -> Vec<tracker_events::UpgradeEventFlatRow> {
         self.into_iter()
-            .filter_map(|(sc2_event, updated_units)| match sc2_event {
+            .filter_map(|(sc2_event, _change_hint)| match sc2_event {
                 SC2EventType::Tracker {
                     tracker_loop,
                     event,
@@ -146,21 +143,36 @@ impl TrackerEventIterator {
         details: &crate::details::Details,
     ) -> Vec<tracker_events::UnitBornEventFlatRow> {
         self.into_iter()
-            .filter_map(|(sc2_event, updated_units)| match sc2_event {
+            .filter_map(|(sc2_event, change_hint)| match sc2_event {
                 SC2EventType::Tracker {
                     tracker_loop,
                     event,
-                } => {
-                    if let tracker_events::ReplayTrackerEvent::UnitBorn(event) = event {
-                        Some(tracker_events::UnitBornEventFlatRow::new(
+                } => match event {
+                    tracker_events::ReplayTrackerEvent::UnitBorn(event) => {
+                        Some(tracker_events::UnitBornEventFlatRow::from_unit_born(
                             event,
                             tracker_loop,
-                            details.clone(),
+                            details,
                         ))
-                    } else {
-                        None
                     }
-                }
+                    tracker_events::ReplayTrackerEvent::UnitDone(event) => {
+                        Some(tracker_events::UnitBornEventFlatRow::from_unit_done(
+                            event,
+                            tracker_loop,
+                            details,
+                            change_hint,
+                        ))
+                    }
+                    tracker_events::ReplayTrackerEvent::UnitTypeChange(event) => {
+                        Some(tracker_events::UnitBornEventFlatRow::from_unit_type_change(
+                            event,
+                            tracker_loop,
+                            details,
+                            change_hint,
+                        ))
+                    }
+                    _ => None,
+                },
                 _ => None,
             })
             .collect()
@@ -179,7 +191,7 @@ impl TrackerEventIterator {
                 } => {
                     if let tracker_events::ReplayTrackerEvent::UnitDied(event) = event {
                         Some(tracker_events::UnitDiedEventFlatRow::new(
-                            &details,
+                            details,
                             event,
                             tracker_loop,
                             change_hint,
@@ -195,11 +207,8 @@ impl TrackerEventIterator {
 }
 
 impl Iterator for TrackerEventIterator {
-    /// The item is a tuple of the SC2EventType with the accumulated (adjusted) game loop, and the updated
-    /// units. An adjusted game loop is the `event_loop` adjusted to be in the same units as the game loops.
-    /// For now this only works with the Tracker events. When we start adding GameType events, we will need
-    /// to find a way to peak into the next events and keep track of the events in both Game and
-    /// Tracker sectors.
+    /// The item is a tuple of the SC2EventType with the accumulated (adjusted) game loop, and a
+    /// hint of what has changed. An adjusted game loop is the `event_loop` adjusted to be in the same units as the game loops.
     type Item = (SC2EventType, UnitChangeHint);
 
     fn next(&mut self) -> Option<Self::Item> {

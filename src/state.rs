@@ -34,6 +34,21 @@ impl Vec3D {
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self([x, y, z])
     }
+
+    /// Returns the x coordinate from the vector.
+    pub fn x(&self) -> f32 {
+        self.0[0]
+    }
+
+    /// Returns the y coordinate from the vector.
+    pub fn y(&self) -> f32 {
+        self.0[1]
+    }
+
+    /// Returns the z coordinate from the vector.
+    pub fn z(&self) -> f32 {
+        self.0[2]
+    }
 }
 
 /// Unit Attributes.
@@ -59,6 +74,8 @@ pub struct SC2Unit {
     pub radius: f32,
     /// Whether the unit is selected
     pub is_selected: bool,
+    /// Whether the unit is in Initializing state, for example morphing.
+    pub is_init: bool,
 }
 
 /// Supported event types.
@@ -80,9 +97,9 @@ pub enum SC2EventType {
 /// returned back for reporting purposes.
 #[derive(Debug, Clone)]
 pub enum UnitChangeHint {
-    /// A unit has been added, the index in the state registry is returned.
-    /// This would return both for UnitBorn and InitInit
-    Registered(u32),
+    /// A unit has been added, the full unit is returned in case the caller wants to inspect it.
+    /// This covers UnitBorn, InitInit, UnitDone, and UnitTypeChange.
+    Registered(SC2Unit),
     /// Unit positions are being reported, the indexes in the unit registry are returned.
     Batch(Vec<u32>),
     /// Selected units in the first item of the tuple (.0) are targetting the unit on the second item of the tuple (.1)
@@ -166,11 +183,18 @@ pub struct SC2ReplayState {
     /// This should be a reference to the `events`, for now it's a usize pointing the events being
     /// iterated over
     pub loop_items: Vec<(i64, usize)>,
+
+    /// The filename of the replay
+    pub filename: String,
+
+    /// The sha256 digest of the replay file.
+    pub sha256: String,
 }
 
 impl SC2ReplayState {
     /// Reads the MPQ at `file_path` and returns the state handler.
     /// The state handler can be used to construct a SC2EventIterator
+    /// TODO: Refactor to use iterator.
     pub fn new(
         file_path: &str,
         filters: SC2ReplayFilters,
@@ -181,6 +205,7 @@ impl SC2ReplayState {
     }
 
     /// Constructs an SC2ReplayState from an MPQ file and its contents.
+    /// TODO: REMOVE in favour of iterator.
     pub fn from_mpq(
         mpq: MPQ,
         file_contents: Vec<u8>,
@@ -188,23 +213,19 @@ impl SC2ReplayState {
         include_stats: bool,
     ) -> Result<Self, S2ProtocolError> {
         let mut res = Self {
-            units: HashMap::new(),
             filters,
             include_stats,
-            user_state: HashMap::new(),
-            events: HashMap::new(),
-            current_loop_idx: 0usize,
-            loop_items: vec![],
+            ..Default::default()
         };
         let filter_event_type = &res.filters.event_type.clone();
         let tracker_events = if let Some(event_type) = filter_event_type {
             if event_type.clone().to_lowercase().contains("tracker") {
-                read_tracker_events(&mpq, &file_contents)?
+                read_tracker_events(&res.filename, &mpq, &file_contents)?
             } else {
                 vec![]
             }
         } else {
-            read_tracker_events(&mpq, &file_contents)?
+            read_tracker_events(&res.filename, &mpq, &file_contents)?
         };
         let mut sc2_events: HashMap<i64, Vec<SC2EventType>> = HashMap::new();
         let mut tracker_loop = 0i64;
@@ -230,12 +251,12 @@ impl SC2ReplayState {
         }
         let game_events = if let Some(event_type) = filter_event_type {
             if event_type.clone().to_lowercase().contains("game") {
-                read_game_events(&mpq, &file_contents)?
+                read_game_events(&res.filename, &mpq, &file_contents)?
             } else {
                 vec![]
             }
         } else {
-            read_game_events(&mpq, &file_contents)?
+            read_game_events(&res.filename, &mpq, &file_contents)?
         };
         let mut game_loop = 0i64;
         for game_step in game_events {
