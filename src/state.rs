@@ -1,9 +1,9 @@
-//! Handling of state of SC2 Replay as it steps trhough time.
+//! Handling of state of SC2 Replay as it steps through game loops
 //!
 //!
 //! Events are ordered by their "priority", this is a guessed priority for now.
 //! For example, if a TrackerEvent and a GameEvent, happen at the same game loop,
-//! the game events take priority (See the const below). This may not be true but
+//! the tracker events take priority (See the const below). This may not be true but
 //! seems to work so far.
 //! In this version, the game_loop will be multiplied by 10 and added the priority.
 //! This means 10 max events types are supported.
@@ -25,6 +25,8 @@ pub const MAX_EVENT_TYPES: i64 = 10;
 pub const ACTIVE_UNITS_GROUP_IDX: usize = 10usize;
 
 use super::*;
+use crate::game_events::{handle_game_event, GameEventIteratorState};
+use crate::tracker_events::{handle_tracker_event, TrackertEventIteratorState};
 
 /// Unit position  will be provided like this to match as much as possible the protocols
 /// themselves.
@@ -195,6 +197,7 @@ impl SC2ReplayState {
     /// Reads the MPQ at `file_path` and returns the state handler.
     /// The state handler can be used to construct a SC2EventIterator
     /// TODO: Refactor to use iterator.
+    #[tracing::instrument(level = "debug")]
     pub fn new(
         file_path: &str,
         filters: SC2ReplayFilters,
@@ -354,6 +357,110 @@ impl SC2ReplayState {
             }
             self.current_loop_idx += 1;
             return Some((evt_type, updated_hint));
+        }
+    }
+}
+
+/// The iterator that returns the events as they happen.
+#[derive(Debug)]
+pub struct SC2EventIterator {
+    /// The protocol version
+    protocol_version: u32,
+    /// The replay state machine transducer
+    sc2_state: SC2ReplayState,
+    /// The tracker event iterator.
+    tracker_iterator_state: TrackertEventIteratorState,
+    /// The game event iterator.
+    game_iterator_state: GameEventIteratorState,
+    /// The next event coming from the tracker iterator.
+    next_tracker_event: Option<(SC2EventType, UnitChangeHint)>,
+    /// The next event coming from the game iterator.
+    next_game_event: Option<(SC2EventType, UnitChangeHint)>,
+}
+
+impl SC2EventIterator {
+    /// Creates a new SC2EventIterator from a PathBuf
+    #[tracing::instrument(level = "debug")]
+    pub fn new(source: &PathBuf) -> Result<Self, S2ProtocolError> {
+        // The sc2 replay state is not shared between the two iterators...
+        tracing::debug!("Processing {:?}", source);
+        let file_contents = crate::read_file(source)?;
+        let source_filename = format!("{:?}", source);
+        let (_input, mpq) = crate::parser::parse(&file_contents)?;
+        let (_tail, proto_header) = crate::read_protocol_header(&mpq)?;
+        let (_event_tail, tracker_events) =
+            mpq.read_mpq_file_sector("replay.tracker.events", false, &file_contents)?;
+        let (_event_tail, game_events) =
+            mpq.read_mpq_file_sector("replay.game.events", false, &file_contents)?;
+        let sc2_state = SC2ReplayState {
+            filename: source_filename,
+            ..Default::default()
+        };
+        Ok(Self {
+            protocol_version: proto_header.m_version.m_base_build,
+            sc2_state,
+            tracker_iterator_state: tracker_events.into(),
+            game_iterator_state: game_events.into(),
+            next_tracker_event: None,
+            next_game_event: None,
+        })
+    }
+
+    /// Returns the tracker loop inside the next_tracker_event collected.
+    fn get_tracker_loop(&self) -> Option<i64> {
+        match &self.next_tracker_event {
+            Some((SC2EventType::Tracker { tracker_loop, .. }, _)) => Some(*tracker_loop),
+            _ => None,
+        }
+    }
+
+    /// Returns the game loop inside the next_game_event collected.
+    fn get_game_loop(&self) -> Option<i64> {
+        match &self.next_game_event {
+            Some((SC2EventType::Game { game_loop, .. }, _)) => Some(*game_loop),
+            _ => None,
+        }
+    }
+}
+
+impl Iterator for SC2EventIterator {
+    /// The item is a tuple of the SC2EventType with the accumulated (adjusted) game loop, and a
+    /// hint of what has changed. An adjusted game loop is the `event_loop` adjusted to be in the same units as the game loops.
+    /// Events may be of Game or Tracker type.
+    /// They are produced in absolute order between them.
+    type Item = (SC2EventType, UnitChangeHint);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        // Fill the next_tracker_event and next_game_event if they are empty.
+        if self.next_tracker_event.is_none() {
+            self.next_tracker_event = self
+                .tracker_iterator_state
+                .transist_to_next_supported_event(self.protocol_version, &mut self.sc2_state);
+        }
+        if self.next_game_event.is_none() {
+            self.next_game_event = self
+                .game_iterator_state
+                .transist_to_next_supported_event(self.protocol_version, &mut self.sc2_state);
+        }
+        let next_tracker_event_loop = self.get_tracker_loop();
+        let next_game_event_loop = self.get_game_loop();
+        if let Some(next_tracker_event_loop) = next_tracker_event_loop {
+            if let Some(next_game_event_loop) = next_game_event_loop {
+                // Both events are populated, compare the loop and return the lowest one
+                if next_tracker_event_loop <= next_game_event_loop {
+                    self.next_tracker_event.take()
+                } else {
+                    self.next_game_event.take()
+                }
+            } else {
+                // The game event is not populated, return the tracker event.
+                self.next_tracker_event.take()
+            }
+        } else if let Some(next_game_event_loop) = next_game_event_loop {
+            // The tracker event is not populated, return the game event.
+            self.next_game_event.take()
+        } else {
+            None
         }
     }
 }
