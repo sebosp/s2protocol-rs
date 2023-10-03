@@ -103,7 +103,7 @@ impl ArrowIpcTypes {
             Self::UnitBorn => self.handle_tracker_events(sources, output),
             Self::All => {
                 if !output.is_dir() {
-                    panic!("Output must be a directory for types all");
+                    panic!("Output must be a directory for types 'all'");
                 }
                 // output must be a directory, for this directory we will create the following files:
                 // init_data.ipc
@@ -138,7 +138,7 @@ impl ArrowIpcTypes {
 
         // process the sources in parallel consuming into the batch variable
         let res: Box<dyn Array> = sources
-            .iter()
+            .par_iter()
             .filter_map(|source| crate::init_data::InitData::try_from(source.clone()).ok())
             .collect::<Vec<init_data::InitData>>()
             .try_into_arrow()?;
@@ -157,7 +157,7 @@ impl ArrowIpcTypes {
         sources: Vec<PathBuf>,
         output: PathBuf,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        tracing::info!("Processing Stats IPC write request");
+        tracing::info!("Processing TrackerEvents IPC write request: {:?}", self);
         let writer = open_arrow_mutex_writer(output, self.schema())?;
 
         // process files in parallel, the internal iterators will fight for the lock
@@ -202,7 +202,7 @@ impl ArrowIpcTypes {
         tracing::info!("Processing Details IPC write request");
         // process the sources in parallel consuming into the batch variable
         let res: Box<dyn Array> = sources
-            .iter()
+            .par_iter()
             .filter_map(|source| crate::details::Details::try_from(source.clone()).ok())
             .collect::<Vec<details::Details>>()
             .try_into_arrow()?;

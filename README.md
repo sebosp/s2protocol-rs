@@ -23,32 +23,30 @@ by using
 
 ## Consuming events
 
-To consume events, they are currently loaded in memory in a HashMap:
 
-`GameLoop` -> `Vec<EventTypes>`
+### Transition through time is doable through different iterators:
+
+- `SC2EventIterator` collects both TrackerEvents and GameEvents. Events are provided as they appear, be them Tracker or Game
+- `TrackerEventIterator` allows consuming only Tracker Events
+- `GameEventIterator` allows consuming only the Game Events.
+
+Event changes transist a minimal state machine that updates:
+- names
+- positions
+- Attack events
+- etc.
+
+The iterator returns a tuple `(SC2EventType, UnitChangeHint)`
+The second item allows the consumers of the iterator to inspect the state to gather more information on what has changed.
+For example, units may have been deleted, added, changed position, etc.
+
+The changes to the state machine are returned by the iterator.
 
 ```rust
-let include_stats = false;
-let mut replay = SC2ReplayState::new(file_path, SC2ReplayFilters::default(), include_stats).unwrap();
-// at this point, all events frcom the MPQ file at `file_path` have been loaded to memory.
-// To progress through the game loop, the `replay` state machine transduces from one gameloop to the next one.
-// This means it recycles variables, sets position, maintains active units, etc.
-// For each transduce step, an SC2EventType is returned and the unit IDs that have been changed.
-// These "units" properties can be looked up in the `replay` state machine further.
-// In this example, the `add_tracker_event` and the `add_game_event` also are sent a reference to the SC2ReplayState
-// For a working example, see the swarmy repo referenced above.
-while let Some((event, updated_units)) = replay.transduce() {
-    match event {
-        SC2EventType::Tracker {
-            tracker_loop,
-            event,
-        } => add_tracker_event(&self, tracker_loop, &event, updated_units)?, // Some code accessing the Tracker Events
-        SC2EventType::Game {
-            game_loop,
-            user_id,
-            event,
-        } => add_game_event(&self, game_loop, user_id, &event, updated_units)?,
-    }
+let source: PathBuf = ""
+let res = s2protocol::state::SC2EventIterator::new(&source)?;
+for (event, change_hint) in res.into_iter() {
+    println!("{},", serde_json::to_string(&event)?);
 }
 ```
 
@@ -57,7 +55,7 @@ while let Some((event, updated_units)) = replay.transduce() {
 ### Generating the IPC Arrow datasets
 
 In the directory ipcs/ one .ipc file will be created per implemented data type.
-The `--source` is the directory that contains the replay of interest.
+The `--source` is the directory that contains the replay directory (Or a single file).
 Files are processed using parallel operations. For 3600 files (500 MBs) it takes 30 seconds to transform/split them.
 
 ```bash
@@ -115,9 +113,10 @@ $ # List the max number of minerals that were lost in per map when the army was 
 
 ## Current issues
 
-Currently we load the file contents in memory.
-Since the replays are a few hundred KBs size, this seems not be an issue. (Maybe for AI ladder this is different).
-Future iterators will work with `nom::streaming` to be able to avoid loading too much stuff into memory.
+In the arrow file generation, sha256 digest is used to detect duplication/etc.
+This inflates the size of the rows. Even tho it's slightly less than long directory names.
+Perhaps using short rev-parse for sha256 may be better, find something like 7-characters unique combinations
+And use that instead of the long sha256 form.
 
 ## version compatibility.
 
@@ -143,5 +142,6 @@ RUST_LOG_SPAN_EVENTS=full RUST_LOG=debug cargo watch -i src/versions/protocol897
 ```
 
 ## JSON Sources
+
 [Blizzard/s2protocol repo](https://github.com/Blizzard/s2protocol)
 

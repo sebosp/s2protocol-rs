@@ -1,14 +1,15 @@
 #[cfg(feature = "arrow")]
 use super::*;
 
+use crate::game_events::iterator::GameEventIterator;
 use crate::generator::proto_morphist::ProtoMorphist;
-use crate::versions::read_details;
-use crate::versions::read_game_events;
-use crate::versions::read_init_data;
-use crate::versions::read_message_events;
-use crate::versions::read_tracker_events;
+use crate::read_details;
+use crate::read_init_data;
+use crate::read_message_events;
+use crate::tracker_events::iterator::TrackerEventIterator;
 use clap::{Parser, Subcommand};
 use nom_mpq::parser;
+use std::iter::Iterator;
 use std::path::PathBuf;
 
 #[derive(Subcommand)]
@@ -23,6 +24,8 @@ enum ReadTypes {
     Details,
     /// Reads the initData from an SC2Replay MPQ Archive
     InitData,
+    /// Transist through the state machine and print change hints
+    TransistEvents,
 }
 
 #[derive(Subcommand)]
@@ -39,6 +42,7 @@ enum Commands {
     #[command(subcommand)]
     WriteArrowIpc(ArrowIpcTypes),
 }
+
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
@@ -50,6 +54,7 @@ struct Cli {
     #[arg(short, long, default_value = "info")]
     verbosity_level: String,
 
+    /// A command to run
     #[command(subcommand)]
     command: Commands,
 
@@ -136,26 +141,23 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     .to_string();
                 match read_type {
                     ReadTypes::TrackerEvents => {
-                        tracing::info!("Getting tracker events");
-                        let res = read_tracker_events(&source_path, &mpq, &file_contents)?;
+                        let res = TrackerEventIterator::new(&source)?;
                         println!("[");
-                        for evt in res {
+                        for evt in res.into_iter() {
                             println!("{},", serde_json::to_string(&evt)?);
                         }
                         println!("]");
                     }
 
                     ReadTypes::GameEvents => {
-                        tracing::info!("Getting game events");
-                        let res = read_game_events(&source_path, &mpq, &file_contents)?;
+                        let res = GameEventIterator::new(&source)?;
                         println!("[");
-                        for evt in res {
+                        for evt in res.into_iter() {
                             println!("{},", serde_json::to_string(&evt)?);
                         }
                         println!("]");
                     }
                     ReadTypes::MessageEvents => {
-                        tracing::info!("Getting message events");
                         let res = read_message_events(&source_path, &mpq, &file_contents)?;
                         println!("[");
                         for evt in res {
@@ -164,14 +166,21 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         println!("]");
                     }
                     ReadTypes::Details => {
-                        tracing::info!("Getting details");
                         let res = read_details(&source_path, &mpq, &file_contents)?;
                         println!("{},", serde_json::to_string(&res)?);
                     }
                     ReadTypes::InitData => {
-                        tracing::info!("Getting initData");
                         let res = read_init_data(&source_path, &mpq, &file_contents)?;
                         println!("{},", serde_json::to_string(&res)?);
+                    }
+                    ReadTypes::TransistEvents => {
+                        tracing::info!("Transducing through both Game and Tracker Events");
+                        println!("[");
+                        let res = crate::state::SC2EventIterator::new(&source)?;
+                        for evt in res.into_iter() {
+                            println!("{},", serde_json::to_string(&evt)?);
+                        }
+                        println!("]");
                     }
                 }
             }

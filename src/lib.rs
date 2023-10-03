@@ -7,6 +7,7 @@ pub mod cli;
 pub mod common;
 pub mod details;
 pub mod error;
+pub mod filters;
 pub mod game_events;
 pub mod generator;
 pub mod init_data;
@@ -32,17 +33,20 @@ pub use cli::*;
 use colored::*;
 pub use common::*;
 pub use error::*;
+pub use filters::*;
 pub use init_data::*;
 use nom::number::complete::u8;
 use nom::IResult;
-use nom_mpq::parser::peek_hex;
-use nom_mpq::{parser, MPQ};
+
 pub use protocol_version_decoder::read_protocol_header;
 use std::collections::HashMap;
 use std::io::Read;
 use std::path::PathBuf;
 use std::str;
 pub use versioned_decoder::*;
+
+/// Re-export to avoid having to also add this crate to other consumers.
+pub use nom_mpq::parser::{self, peek_hex, MPQ};
 
 /// Many fields are optional, this macro will return an Ok for the nom::IResult but the value will
 /// be an Err(S2ProtocolError::MissingField) if the field is not present.
