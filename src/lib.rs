@@ -37,7 +37,6 @@ pub use filters::*;
 pub use init_data::*;
 use nom::number::complete::u8;
 use nom::IResult;
-
 pub use protocol_version_decoder::read_protocol_header;
 use std::collections::HashMap;
 use std::io::Read;
@@ -46,7 +45,8 @@ use std::str;
 pub use versioned_decoder::*;
 
 /// Re-export to avoid having to also add this crate to other consumers.
-pub use nom_mpq::parser::{self, peek_hex, MPQ};
+pub use nom_mpq::parser::{self, peek_hex};
+pub use nom_mpq::MPQ;
 
 /// Many fields are optional, this macro will return an Ok for the nom::IResult but the value will
 /// be an Err(S2ProtocolError::MissingField) if the field is not present.
