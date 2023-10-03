@@ -5,13 +5,14 @@ use crate::error::S2ProtocolError;
 use crate::tracker_events::{self, TrackerEvent};
 use crate::versions::protocol75689::byte_aligned::ReplayTrackerEEventId as Protocol75689ReplayTrackerEEventId;
 use crate::versions::protocol87702::byte_aligned::ReplayTrackerEEventId as Protocol87702ReplayTrackerEEventId;
-use crate::{SC2EventType, SC2ReplayState, UnitChangeHint, TRACKER_SPEED_RATIO};
+use crate::{SC2EventType, SC2ReplayFilters, SC2ReplayState, UnitChangeHint, TRACKER_SPEED_RATIO};
 use nom::*;
+use serde::{Deserialize, Serialize};
 use std::iter::Iterator;
 use std::path::PathBuf;
 
 /// Keeps track of the progress of the iterator through the open MPQ file.
-#[derive(Debug)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct TrackertEventIteratorState {
     /// The MPQ replay.tracker.events sector bytes
     event_data: Vec<u8>,
@@ -37,48 +38,38 @@ impl TrackertEventIteratorState {
         &mut self,
         protocol_version: u32,
     ) -> Result<TrackerEvent, S2ProtocolError> {
-        let (new_event_tail, delta, event) = match protocol_version {
-            75689 => {
-                let (new_event_tail, (delta, event)) =
-                    Protocol75689ReplayTrackerEEventId::parse_event_pair(
-                        &self.event_data[self.byte_index..],
-                    )?;
-                (new_event_tail, delta, event.try_into()?)
-            }
-            83830 | 84643 | 88500 | 86383 | 87702 | 89165 | 89634 | 89720 | 90136 | 90779
-            | 90870 => {
-                // The protocol is known to be compatible with these versions
-                let (new_event_tail, (delta, event)) =
-                    Protocol87702ReplayTrackerEEventId::parse_event_pair(
-                        &self.event_data[self.byte_index..],
-                    )?;
-                (new_event_tail, delta, event.try_into()?)
+        let (delta, event) = match protocol_version {
+            0..=75689 => {
+                let (tail, (delta, event)) = Protocol75689ReplayTrackerEEventId::parse_event_pair(
+                    &self.event_data[self.byte_index..],
+                )?;
+                self.byte_index +=
+                    tail.as_ptr() as usize - self.event_data[self.byte_index..].as_ptr() as usize;
+                self.event_loop += delta as i64;
+                (delta, event.try_into()?)
             }
             _ => {
-                tracing::warn!(
-                    "Unknown protocol version: {}, will attempt to use 87702",
-                    protocol_version
-                );
-                // The protocol is known to be compatible with these versions
-                let (new_event_tail, (delta, event)) =
-                    Protocol87702ReplayTrackerEEventId::parse_event_pair(
-                        &self.event_data[self.byte_index..],
-                    )?;
-                (new_event_tail, delta, event.try_into()?)
+                // The protocol may be compatible, if we do not know it, just attempt to parse
+                let (tail, (delta, event)) = Protocol87702ReplayTrackerEEventId::parse_event_pair(
+                    &self.event_data[self.byte_index..],
+                )?;
+                self.byte_index +=
+                    tail.as_ptr() as usize - self.event_data[self.byte_index..].as_ptr() as usize;
+                self.event_loop += delta as i64;
+                (delta, event.try_into()?)
             }
         };
-        self.byte_index +=
-            new_event_tail.as_ptr() as usize - self.event_data[self.byte_index..].as_ptr() as usize;
-        self.event_loop += delta as i64;
         Ok(TrackerEvent { delta, event })
     }
 
     /// Attempt to find the next possible supported event.
     /// If an event is not "de-versioned", then it is skipped, thus the internal loop
+    #[tracing::instrument(level = "debug", skip(self, sc2_state), fields(event_loop = self.event_loop))]
     pub fn transist_to_next_supported_event(
         &mut self,
         protocol_version: u32,
         sc2_state: &mut SC2ReplayState,
+        filters: &Option<SC2ReplayFilters>,
     ) -> Option<(SC2EventType, UnitChangeHint)> {
         loop {
             let current_slice: &[u8] = &self.event_data[self.byte_index..];
@@ -86,34 +77,59 @@ impl TrackertEventIteratorState {
                 return None;
             }
 
-            // After the event is collected, the loop is adjusted to be in the same units as the
-            // game loops.
             match self.read_versioned_tracker_event(protocol_version) {
                 Ok(val) => {
+                    // After the event is collected, the loop is adjusted to be in the same units as the
+                    // game loops.
                     let adjusted_loop = (self.event_loop as f32 / TRACKER_SPEED_RATIO) as i64;
                     let updated_hint = handle_tracker_event(sc2_state, adjusted_loop, &val.event);
-                    return Some((
-                        SC2EventType::Tracker {
-                            tracker_loop: adjusted_loop,
-                            event: val.event,
-                        },
-                        updated_hint,
-                    ));
+                    tracing::debug!("Trac [{:>08}]: {:?}", adjusted_loop, val.event);
+                    let event = SC2EventType::Tracker {
+                        tracker_loop: adjusted_loop,
+                        event: val.event,
+                    };
+                    if let Some(filters) = filters {
+                        if self.shoud_skip_event(&event, filters) {
+                            continue;
+                        }
+                    }
+                    return Some((event, updated_hint));
                 }
                 Err(S2ProtocolError::UnsupportedEventType) => {}
                 Err(err) => {
+                    // At this point we can't read the events, our state is either corrupted or the
+                    // SC2ReplayState is corrupted.
                     tracing::error!("Error reading tracker event: {:?}", err);
                     return None;
                 }
             }
         }
     }
+
+    /// Returns true if the event should be skipped based on the filters
+    fn shoud_skip_event(&self, event: &SC2EventType, filters: &SC2ReplayFilters) -> bool {
+        if let Some(min_loop) = filters.min_loop {
+            if let SC2EventType::Tracker { tracker_loop, .. } = event {
+                if *tracker_loop < min_loop {
+                    return true;
+                }
+            }
+        }
+        if let Some(max_loop) = filters.max_loop {
+            if let SC2EventType::Tracker { tracker_loop, .. } = event {
+                if *tracker_loop > max_loop {
+                    return true;
+                }
+            }
+        }
+        event.should_skip(filters)
+    }
 }
 
 /// Creates an iterator over the TrackerEvents
 /// This Iterator is for consumers that are only interested in the TrackerEvents and not any
 /// GameEvents
-#[derive(Debug)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct TrackerEventIterator {
     /// The protocol version
     protocol_version: u32,
@@ -121,6 +137,8 @@ pub struct TrackerEventIterator {
     sc2_state: SC2ReplayState,
     /// The IteratorState
     iterator_state: TrackertEventIteratorState,
+    /// The filters to the iterator
+    filters: Option<SC2ReplayFilters>,
 }
 
 impl TrackerEventIterator {
@@ -141,6 +159,7 @@ impl TrackerEventIterator {
         )
     }
 
+    /// Creates a new GameEventIterator from previously read MPQ content
     #[tracing::instrument(level = "debug")]
     pub fn from_versioned_mpq(
         source_filename: String,
@@ -159,6 +178,7 @@ impl TrackerEventIterator {
                 event_loop: 0,
                 byte_index: 0,
             },
+            ..Default::default()
         })
     }
 
@@ -186,6 +206,12 @@ impl TrackerEventIterator {
                 _ => None,
             })
             .collect()
+    }
+
+    /// Sets the filters for the iterator
+    pub fn with_filters(mut self, filters: SC2ReplayFilters) -> Self {
+        self.filters = Some(filters);
+        self
     }
 
     /// Consumes the Iterator collecting only the Upgrade events into a vector of UpgradeEventFlatRow
@@ -289,7 +315,10 @@ impl Iterator for TrackerEventIterator {
     type Item = (SC2EventType, UnitChangeHint);
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.iterator_state
-            .transist_to_next_supported_event(self.protocol_version, &mut self.sc2_state)
+        self.iterator_state.transist_to_next_supported_event(
+            self.protocol_version,
+            &mut self.sc2_state,
+            &self.filters,
+        )
     }
 }

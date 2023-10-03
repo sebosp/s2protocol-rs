@@ -3,127 +3,48 @@
 
 #[cfg(feature = "arrow")]
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
-
 #[cfg(feature = "arrow")]
 pub mod arrow;
 #[cfg(feature = "arrow")]
 pub use arrow::*;
 
-pub mod iterator;
-pub use iterator::*;
-
-pub mod state;
+use crate::filters::SC2ReplayFilters;
 use serde::{Deserialize, Serialize};
+
+pub mod iterator;
+pub mod player_setup;
+pub mod player_stats;
+pub mod player_upgrade;
+pub mod state;
+pub mod unit_born;
+pub mod unit_died;
+pub mod unit_done;
+pub mod unit_init;
+pub mod unit_owner_change;
+pub mod unit_positions;
+pub mod unit_type_change;
+pub use iterator::*;
+pub use player_setup::*;
+pub use player_stats::*;
+pub use player_upgrade::*;
 pub use state::*;
+pub use unit_born::*;
+pub use unit_died::*;
+pub use unit_done::*;
+pub use unit_init::*;
+pub use unit_owner_change::*;
+pub use unit_positions::*;
+pub use unit_type_change::*;
 
-/// A protocol agnostic Unit Born
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+/// A Tracker Event is an event in the gameloop for a specific user id
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-pub struct UnitBornEvent {
-    pub unit_tag_index: u32,
-    pub unit_tag_recycle: u32,
-    pub unit_type_name: String,
-    pub control_player_id: u8,
-    pub upkeep_player_id: u8,
-    pub x: u8,
-    pub y: u8,
-    pub creator_unit_tag_index: Option<u32>,
-    pub creator_unit_tag_recycle: Option<u32>,
-    pub creator_ability_name: Option<String>,
-}
-
-/// A protocol agnostic Unit Died
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct UnitDiedEvent {
-    pub unit_tag_index: u32,
-    pub unit_tag_recycle: u32,
-    pub killer_player_id: Option<u8>,
-    pub x: u8,
-    pub y: u8,
-    pub killer_unit_tag_index: Option<u32>,
-    pub killer_unit_tag_recycle: Option<u32>,
-}
-
-/// A protocol agnostic Unit Init Event
-/// Emitted when a unit takes time to be created and may be cancelled.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct UnitInitEvent {
-    pub unit_tag_index: u32,
-    pub unit_tag_recycle: u32,
-    pub unit_type_name: String,
-    pub control_player_id: u8,
-    pub upkeep_player_id: u8,
-    pub x: u8,
-    pub y: u8,
-}
-
-/// A protocol agnostic Unit Done Event
-/// Emitted when a unit that is previously in progress is completed.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct UnitDoneEvent {
-    pub unit_tag_index: u32,
-    pub unit_tag_recycle: u32,
-}
-
-/// A protocol agnostic Unit Done Event
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct UnitPositionsEvent {
-    pub first_unit_index: u32,
-    pub items: Vec<i32>,
-}
-
-impl UnitPositionsEvent {
-    /// Transforms the internal unit positions into a vector of UnitPosition
-    pub fn to_unit_positions_vec(self) -> Vec<UnitPosition> {
-        let mut unit_index = self.first_unit_index as i32;
-        let mut res = vec![];
-        for relative_unit_pos in self.items.chunks_exact(3) {
-            unit_index += relative_unit_pos[0];
-            let x = relative_unit_pos[1] * 4;
-            let y = relative_unit_pos[2] * 4;
-            res.push(UnitPosition {
-                tag: unit_index as u32,
-                x,
-                y,
-            });
-            // unit identified by unitIndex at the current event['_gameloop'] time is at approximate position (x, y)
-        }
-        res
-    }
-}
-
-/// A single unit position
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct UnitPosition {
-    /// The unit "tag" is the "index"?
-    pub tag: u32,
-    /// The X position.
-    pub x: i32,
-    /// The Y position.
-    pub y: i32,
+pub struct TrackerEvent {
+    pub delta: u32,
+    pub event: ReplayTrackerEvent,
 }
 
 /// A unified Replay Tracker that is agnostic of any version.
@@ -149,261 +70,20 @@ pub enum ReplayTrackerEvent {
     PlayerSetup(PlayerSetupEvent),
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct UpgradeEvent {
-    pub player_id: u8,
-    pub upgrade_type_name: String,
-    pub count: i32,
-}
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct UnitOwnerChangeEvent {
-    pub unit_tag_index: u32,
-    pub unit_tag_recycle: u32,
-    pub control_player_id: u8,
-    pub upkeep_player_id: u8,
-}
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct PlayerSetupEvent {
-    pub player_id: u8,
-    pub m_type: u32,
-    pub user_id: Option<u32>,
-    pub slot_id: Option<u32>,
-}
-
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct UnitTypeChangeEvent {
-    pub unit_tag_index: u32,
-    pub unit_tag_recycle: u32,
-    pub unit_type_name: String,
-}
-
-/// A Tracker Event is an event in the gameloop for a specific user id
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct TrackerEvent {
-    pub delta: u32,
-    pub event: ReplayTrackerEvent,
-}
-
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct PlayerStatsEvent {
-    pub player_id: u8,
-    pub stats: PlayerStats,
-}
-
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-pub struct PlayerStats {
-    pub minerals_current: i32,
-    pub vespene_current: i32,
-    pub minerals_collection_rate: i32,
-    pub vespene_collection_rate: i32,
-    pub workers_active_count: i32,
-    pub minerals_used_in_progress_army: i32,
-    pub minerals_used_in_progress_economy: i32,
-    pub minerals_used_in_progress_technology: i32,
-    pub vespene_used_in_progress_army: i32,
-    pub vespene_used_in_progress_economy: i32,
-    pub vespene_used_in_progress_technology: i32,
-    pub minerals_used_current_army: i32,
-    pub minerals_used_current_economy: i32,
-    pub minerals_used_current_technology: i32,
-    pub vespene_used_current_army: i32,
-    pub vespene_used_current_economy: i32,
-    pub vespene_used_current_technology: i32,
-    pub minerals_lost_army: i32,
-    pub minerals_lost_economy: i32,
-    pub minerals_lost_technology: i32,
-    pub vespene_lost_army: i32,
-    pub vespene_lost_economy: i32,
-    pub vespene_lost_technology: i32,
-    pub minerals_killed_army: i32,
-    pub minerals_killed_economy: i32,
-    pub minerals_killed_technology: i32,
-    pub vespene_killed_army: i32,
-    pub vespene_killed_economy: i32,
-    pub vespene_killed_technology: i32,
-    pub food_used: i32,
-    pub food_made: i32,
-    pub minerals_used_active_forces: i32,
-    pub vespene_used_active_forces: i32,
-    pub minerals_friendly_fire_army: i32,
-    pub minerals_friendly_fire_economy: i32,
-    pub minerals_friendly_fire_technology: i32,
-    pub vespene_friendly_fire_army: i32,
-    pub vespene_friendly_fire_economy: i32,
-    pub vespene_friendly_fire_technology: i32,
-}
-
-impl PlayerStats {
-    ///  Creates a vector of Entity Path to value to be consumed by plots
-    pub fn as_prop_name_value_vec(&self) -> Vec<(String, i32)> {
-        vec![
-            (String::from("minerals/current"), self.minerals_current),
-            (String::from("vespene/current"), self.vespene_current),
-            (
-                String::from("minerals/collection_rate"),
-                self.minerals_collection_rate,
-            ),
-            (
-                String::from("vespene/collection_rate"),
-                self.vespene_collection_rate,
-            ),
-            (
-                String::from("workers_active_count"),
-                self.workers_active_count,
-            ),
-            (
-                String::from("minerals/used_in_progress_army"),
-                self.minerals_used_in_progress_army,
-            ),
-            (
-                String::from("minerals/used_in_progress_economy"),
-                self.minerals_used_in_progress_economy,
-            ),
-            (
-                String::from("minerals/used_in_progress_technology"),
-                self.minerals_used_in_progress_technology,
-            ),
-            (
-                String::from("vespene/used_in_progress_army"),
-                self.vespene_used_in_progress_army,
-            ),
-            (
-                String::from("vespene/used_in_progress_economy"),
-                self.vespene_used_in_progress_economy,
-            ),
-            (
-                String::from("vespene/used_in_progress_technology"),
-                self.vespene_used_in_progress_technology,
-            ),
-            (
-                String::from("minerals/used_current_army"),
-                self.minerals_used_current_army,
-            ),
-            (
-                String::from("minerals/used_current_economy"),
-                self.minerals_used_current_economy,
-            ),
-            (
-                String::from("minerals/used_current_technology"),
-                self.minerals_used_current_technology,
-            ),
-            (
-                String::from("vespene/used_current_army"),
-                self.vespene_used_current_army,
-            ),
-            (
-                String::from("vespene/used_current_economy"),
-                self.vespene_used_current_economy,
-            ),
-            (
-                String::from("vespene/used_current_technology"),
-                self.vespene_used_current_technology,
-            ),
-            (String::from("minerals/lost_army"), self.minerals_lost_army),
-            (
-                String::from("minerals/lost_economy"),
-                self.minerals_lost_economy,
-            ),
-            (
-                String::from("minerals/lost_technology"),
-                self.minerals_lost_technology,
-            ),
-            (String::from("vespene/lost_army"), self.vespene_lost_army),
-            (
-                String::from("vespene/lost_economy"),
-                self.vespene_lost_economy,
-            ),
-            (
-                String::from("vespene/lost_technology"),
-                self.vespene_lost_technology,
-            ),
-            (
-                String::from("minerals/killed_army"),
-                self.minerals_killed_army,
-            ),
-            (
-                String::from("minerals/killed_economy"),
-                self.minerals_killed_economy,
-            ),
-            (
-                String::from("minerals/killed_technology"),
-                self.minerals_killed_technology,
-            ),
-            (
-                String::from("vespene/killed_army"),
-                self.vespene_killed_army,
-            ),
-            (
-                String::from("vespene/killed_economy"),
-                self.vespene_killed_economy,
-            ),
-            (
-                String::from("vespene/killed_technology"),
-                self.vespene_killed_technology,
-            ),
-            (String::from("food/used"), self.food_used),
-            (String::from("food/made"), self.food_made),
-            (
-                String::from("minerals/used_active_forces"),
-                self.minerals_used_active_forces,
-            ),
-            (
-                String::from("vespene/used_active_forces"),
-                self.vespene_used_active_forces,
-            ),
-            (
-                String::from("minerals/friendly_fire_army"),
-                self.minerals_friendly_fire_army,
-            ),
-            (
-                String::from("minerals/friendly_fire_economy"),
-                self.minerals_friendly_fire_economy,
-            ),
-            (
-                String::from("minerals/friendly_fire_technology"),
-                self.minerals_friendly_fire_technology,
-            ),
-            (
-                String::from("vespene/friendly_fire_army"),
-                self.vespene_friendly_fire_army,
-            ),
-            (
-                String::from("vespene/friendly_fire_economy"),
-                self.vespene_friendly_fire_economy,
-            ),
-            (
-                String::from("vespene/friendly_fire_technology"),
-                self.vespene_friendly_fire_technology,
-            ),
-        ]
+impl ReplayTrackerEvent {
+    pub fn should_skip(&self, filters: &SC2ReplayFilters) -> bool {
+        match self {
+            ReplayTrackerEvent::PlayerStats(evt) => evt.should_skip(filters),
+            ReplayTrackerEvent::UnitBorn(evt) => evt.should_skip(filters),
+            ReplayTrackerEvent::UnitDied(evt) => evt.should_skip(filters),
+            ReplayTrackerEvent::UnitOwnerChange(evt) => evt.should_skip(filters),
+            ReplayTrackerEvent::UnitTypeChange(evt) => evt.should_skip(filters),
+            ReplayTrackerEvent::Upgrade(evt) => evt.should_skip(filters),
+            ReplayTrackerEvent::UnitInit(evt) => evt.should_skip(filters),
+            ReplayTrackerEvent::UnitDone(evt) => evt.should_skip(filters),
+            ReplayTrackerEvent::UnitPosition(evt) => evt.should_skip(filters),
+            ReplayTrackerEvent::PlayerSetup(evt) => evt.should_skip(filters),
+        }
     }
 }
 

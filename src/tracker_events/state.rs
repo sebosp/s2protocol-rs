@@ -8,7 +8,11 @@ use crate::*;
 pub const UNIT_POSITION_RATIO: f32 = 4.;
 
 /// Handles the state management for unit init messages
-#[tracing::instrument(level = "debug", skip(sc2_state))]
+#[tracing::instrument(
+    level = "debug",
+    skip(sc2_state),
+    fields(filename = "sc2_state.filename")
+)]
 pub fn handle_unit_init(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
@@ -24,13 +28,17 @@ pub fn handle_unit_init(
         ..Default::default()
     };
     tracing::debug!("Initializing unit: {:?}", sc2_unit);
-    if let Some(unit) = sc2_state.units.get(&unit_init.unit_tag_index) {
-        // Hmm no idea if this is normal.
-        tracing::warn!("Re-initializing unit: {:?}", unit);
+    if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_init.unit_tag_index) {
+        // This happens for example when a unit is burrowed.
+        unit.last_game_loop = game_loop;
+        unit.pos = Vec3D::new(unit_init.x as f32, unit_init.y as f32, 0.);
+        unit.is_init = true;
+        unit.name = unit_init.unit_type_name.clone();
+    } else {
+        sc2_state
+            .units
+            .insert(unit_init.unit_tag_index, sc2_unit.clone());
     }
-    sc2_state
-        .units
-        .insert(unit_init.unit_tag_index, sc2_unit.clone());
     UnitChangeHint::Registered(sc2_unit)
 }
 
