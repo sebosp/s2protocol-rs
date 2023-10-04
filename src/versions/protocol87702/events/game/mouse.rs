@@ -7,7 +7,7 @@ impl From<GameSTriggerMouseClickedEvent> for ReplayGameEvent {
     fn from(source: GameSTriggerMouseClickedEvent) -> ReplayGameEvent {
         ReplayGameEvent::TriggerMouseClicked(crate::game_events::GameSTriggerMouseClickedEvent {
             m_button: source.m_button.into(),
-            m_down: source.m_down.into(),
+            m_down: source.m_down,
             m_pos_ui: source.m_pos_ui.into(),
             m_pos_world: source.m_pos_world.into(),
             m_flags: source.m_flags.into(),

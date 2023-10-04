@@ -13,7 +13,7 @@ pub fn handle_cmd(
     game_loop: i64,
     user_id: i64,
     game_cmd: &GameSCmdEvent,
-) -> Vec<u32> {
+) -> UnitChangeHint {
     match &game_cmd.m_data {
         GameSCmdData::TargetPoint(target) => {
             handle_update_target_point(sc2_state, game_loop, user_id, target)
@@ -24,19 +24,20 @@ pub fn handle_cmd(
         GameSCmdData::Data(data) => {
             // Unknown for now.
             tracing::info!("GameSCmdData::Data: {}", data);
-            vec![]
+            UnitChangeHint::None
         }
-        GameSCmdData::None => vec![],
+        GameSCmdData::None => UnitChangeHint::None,
     }
 }
 
+/// The selected units for a specific players are given a specific target point to move towards.
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_update_target_point(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
     target_point: &GameSMapCoord3D,
-) -> Vec<u32> {
+) -> UnitChangeHint {
     let unit_target_pos = Vec3D::new(
         target_point.x as f32 / GAME_EVENT_POS_RATIO,
         -1. * target_point.y as f32 / GAME_EVENT_POS_RATIO,
@@ -49,13 +50,14 @@ pub fn handle_update_target_point(
     for selected_unit in &user_selected_units {
         let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
-            registered_unit.target = Some(unit_target_pos);
+            registered_unit.target = Some(unit_target_pos.clone());
+            registered_unit.last_game_loop = game_loop;
         }
     }
-    user_selected_units
+    UnitChangeHint::Batch(user_selected_units)
 }
 
-/// Handles the change of target for a unit.
+/// Handles the change of target for the currently selected units.
 /// The unit is previously selected and is part of the ACTIVE_UNITS_GROUP_IDX,
 /// then a TargetUnit event is emitted.
 #[tracing::instrument(level = "debug", skip(sc2_state))]
@@ -64,7 +66,7 @@ pub fn handle_update_target_unit(
     game_loop: i64,
     user_id: i64,
     target_unit: &GameSCmdDataTargetUnit,
-) -> Vec<u32> {
+) -> UnitChangeHint {
     let unit_target_pos = Vec3D::new(
         target_unit.m_snapshot_point.x as f32 / GAME_EVENT_POS_RATIO,
         -1. * target_unit.m_snapshot_point.y as f32 / GAME_EVENT_POS_RATIO,
@@ -77,10 +79,11 @@ pub fn handle_update_target_unit(
     for selected_unit in &user_selected_units {
         let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
-            registered_unit.target = Some(unit_target_pos);
+            registered_unit.target = Some(unit_target_pos.clone());
+            registered_unit.last_game_loop = game_loop;
         }
     }
-    user_selected_units
+    UnitChangeHint::BatchWithTarget(user_selected_units, target_unit.m_tag)
 }
 
 /// Removes the changes to the units that signify they are selected.
@@ -89,7 +92,7 @@ pub fn unmark_previously_selected_units(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
-) -> Vec<u32> {
+) -> UnitChangeHint {
     let mut updated_units = vec![];
     if let Some(state) = sc2_state.user_state.get_mut(&user_id) {
         for prev_unit in &state.control_groups[ACTIVE_UNITS_GROUP_IDX] {
@@ -97,13 +100,14 @@ pub fn unmark_previously_selected_units(
             if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_index) {
                 if unit.is_selected {
                     unit.is_selected = false;
-                    unit.radius = unit.radius * 0.5;
+                    unit.radius *= 0.5;
                     updated_units.push(unit_index);
                 }
+                unit.last_game_loop = game_loop;
             }
         }
     }
-    updated_units
+    UnitChangeHint::Batch(updated_units)
 }
 
 /// Marks a group of units as selected by increasing the radius.
@@ -113,19 +117,20 @@ pub fn mark_selected_units(
     game_loop: i64,
     _user_id: i64,
     selected_units: &[u32],
-) -> Vec<u32> {
+) -> UnitChangeHint {
     let mut updated_units = vec![];
     for new_selected_unit in selected_units {
         let unit_index = unit_tag_index(*new_selected_unit as i64);
         if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_index) {
             if !unit.is_selected {
                 unit.is_selected = true;
-                unit.radius = unit.radius * 2.0;
+                unit.radius *= 2.0;
                 updated_units.push(unit_index);
             }
+            unit.last_game_loop = game_loop;
         }
     }
-    updated_units
+    UnitChangeHint::Batch(updated_units)
 }
 
 /// Registers units as being selected.
@@ -142,18 +147,25 @@ pub fn handle_selection_delta(
     game_loop: i64,
     user_id: i64,
     selection_delta: &GameSSelectionDeltaEvent,
-) -> Vec<u32> {
+) -> UnitChangeHint {
     let mut updated_units = vec![];
     if selection_delta.m_control_group_id == ACTIVE_UNITS_GROUP_IDX as u8 {
-        updated_units.append(&mut unmark_previously_selected_units(
-            sc2_state, game_loop, user_id,
-        ));
-        updated_units.append(&mut mark_selected_units(
+        let mut unmarked_units =
+            match unmark_previously_selected_units(sc2_state, game_loop, user_id) {
+                UnitChangeHint::Batch(units) => units,
+                _ => unreachable!(),
+            };
+        updated_units.append(&mut unmarked_units);
+        let mut marked_units = match mark_selected_units(
             sc2_state,
             game_loop,
             user_id,
             &selection_delta.m_delta.m_add_unit_tags,
-        ));
+        ) {
+            UnitChangeHint::Batch(units) => units,
+            _ => unreachable!(),
+        };
+        updated_units.append(&mut marked_units);
     }
     if let Some(ref mut state) = sc2_state.user_state.get_mut(&user_id) {
         state.control_groups[selection_delta.m_control_group_id as usize] =
@@ -161,7 +173,7 @@ pub fn handle_selection_delta(
     }
     updated_units.sort_unstable();
     updated_units.dedup();
-    updated_units
+    UnitChangeHint::Batch(updated_units)
 }
 
 /// Handles control group update events
@@ -172,8 +184,11 @@ pub fn update_control_group(
     game_loop: i64,
     user_id: i64,
     ctrl_group_evt: &GameSControlGroupUpdateEvent,
-) -> Vec<u32> {
-    let mut updated_units = unmark_previously_selected_units(sc2_state, game_loop, user_id);
+) -> UnitChangeHint {
+    let mut updated_units = match unmark_previously_selected_units(sc2_state, game_loop, user_id) {
+        UnitChangeHint::Batch(units) => units,
+        _ => unreachable!(),
+    };
     match ctrl_group_evt.m_control_group_update {
         GameEControlGroupUpdate::ESet => {
             if let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id) {
@@ -237,44 +252,44 @@ pub fn update_control_group(
                     .clone();
                 current_selected_units = user_state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
             }
-            updated_units.append(&mut mark_selected_units(
-                sc2_state,
-                game_loop,
-                user_id,
-                &current_selected_units,
-            ));
+            let mut curr_units =
+                match mark_selected_units(sc2_state, game_loop, user_id, &current_selected_units) {
+                    UnitChangeHint::Batch(units) => units,
+                    _ => unreachable!(),
+                };
+            updated_units.append(&mut curr_units);
         }
     }
-    updated_units
+    UnitChangeHint::Batch(updated_units)
 }
 
 /// Handles a game event as it steps through the SC2 State.
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_game_event(
-    mut sc2_state: &mut SC2ReplayState,
+    sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
     evt: &ReplayGameEvent,
-) -> Vec<u32> {
+) -> UnitChangeHint {
     match &evt {
         ReplayGameEvent::CameraUpdate(_camera_update) => {
             // Unhandled for now
             // handle_camera_update(&sc2_state, game_loop, user_id, camera_update)?;
-            vec![]
+            UnitChangeHint::None
         }
-        ReplayGameEvent::Cmd(game_cmd) => handle_cmd(&mut sc2_state, game_loop, user_id, game_cmd),
+        ReplayGameEvent::Cmd(game_cmd) => handle_cmd(sc2_state, game_loop, user_id, game_cmd),
         ReplayGameEvent::CmdUpdateTargetPoint(target_point) => {
-            handle_update_target_point(&mut sc2_state, game_loop, user_id, &target_point.m_target)
+            handle_update_target_point(sc2_state, game_loop, user_id, &target_point.m_target)
         }
         ReplayGameEvent::CmdUpdateTargetUnit(target_unit) => {
-            handle_update_target_unit(&mut sc2_state, game_loop, user_id, &target_unit.m_target)
+            handle_update_target_unit(sc2_state, game_loop, user_id, &target_unit.m_target)
         }
         ReplayGameEvent::SelectionDelta(selection_delta) => {
-            handle_selection_delta(&mut sc2_state, game_loop, user_id, &selection_delta)
+            handle_selection_delta(sc2_state, game_loop, user_id, selection_delta)
         }
         ReplayGameEvent::ControlGroupUpdate(ctrl_group) => {
-            update_control_group(&mut sc2_state, game_loop, user_id, &ctrl_group)
+            update_control_group(sc2_state, game_loop, user_id, ctrl_group)
         }
-        _ => vec![],
+        _ => UnitChangeHint::None,
     }
 }

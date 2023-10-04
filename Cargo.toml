@@ -1,6 +1,6 @@
 [package]
 name = "s2protocol"
-version = "2.0.0"
+version = "3.0.0"
 edition = "2021"
 license = "MIT"
 description = "A reader for Starcraft II - Replay format"
@@ -19,10 +19,20 @@ serde = { version = "1.0.164", features = ["derive"] }
 convert_case = "0.6.0"
 nom-mpq = "2.0.1"
 colored = "2.0.4"
+arrow2 = { version = "0.17.0", features = ["io_print", "io_ipc"], optional = true }
+arrow2_convert = { version = "0.5.0", optional = true }
+sha256 = { version = "1.4.0", optional = true, default-features = false }
+rayon = { version = "1.7.0", optional = true }
+chrono = { version = "0.4.31", features = ["serde"] }
 
 [features]
+default = ["tracing_info_level", "arrow"]
 # A feature that allows extra tracing, disable by default because of performance
-no_tracing = ["tracing/max_level_off", "tracing/release_max_level_off"]
+tracing_off = ["tracing/max_level_off", "tracing/release_max_level_off"]
+tracing_trace_level = ["tracing/max_level_trace", "tracing/release_max_level_trace"]
+tracing_info_level = ["tracing/max_level_info", "tracing/release_max_level_info"]
+arrow = ["arrow2", "arrow2_convert", "sha256", "rayon"]
+
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }

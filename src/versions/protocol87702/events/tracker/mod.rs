@@ -2,8 +2,8 @@
 use super::byte_aligned::*;
 use crate::tracker_events::{
     PlayerSetupEvent, PlayerStats, PlayerStatsEvent, ReplayTrackerEvent, TrackerEvent,
-    TrackerEventError, UnitBornEvent, UnitDiedEvent, UnitDoneEvent, UnitInitEvent,
-    UnitOwnerChangeEvent, UnitPositionsEvent, UnitTypeChangeEvent, UpgradeEvent,
+    UnitBornEvent, UnitDiedEvent, UnitDoneEvent, UnitInitEvent, UnitOwnerChangeEvent,
+    UnitPositionsEvent, UnitTypeChangeEvent, UpgradeEvent,
 };
 use crate::*;
 use nom::*;
@@ -30,11 +30,11 @@ impl ReplayTrackerEEventId {
     ) -> Result<Vec<TrackerEvent>, S2ProtocolError> {
         // TODO: Make it return an Iterator.
         let (_event_tail, tracker_events) =
-            mpq.read_mpq_file_sector("replay.tracker.events", false, &file_contents)?;
+            mpq.read_mpq_file_sector("replay.tracker.events", false, file_contents)?;
         let mut res = vec![];
         let mut event_tail: &[u8] = &tracker_events;
         loop {
-            let (new_event_tail, (delta, event)) = Self::parse_event_pair(&event_tail)?;
+            let (new_event_tail, (delta, event)) = Self::parse_event_pair(event_tail)?;
             event_tail = new_event_tail;
             match event.try_into() {
                 Ok(val) => res.push(TrackerEvent { delta, event: val }),
@@ -51,7 +51,7 @@ impl ReplayTrackerEEventId {
 }
 
 impl TryFrom<ReplayTrackerEEventId> for ReplayTrackerEvent {
-    type Error = TrackerEventError;
+    type Error = S2ProtocolError;
 
     fn try_from(value: ReplayTrackerEEventId) -> Result<Self, Self::Error> {
         match value {
@@ -70,7 +70,7 @@ impl TryFrom<ReplayTrackerEEventId> for ReplayTrackerEvent {
 }
 
 impl TryFrom<ReplayTrackerSUpgradeEvent> for ReplayTrackerEvent {
-    type Error = TrackerEventError;
+    type Error = S2ProtocolError;
     fn try_from(source: ReplayTrackerSUpgradeEvent) -> Result<Self, Self::Error> {
         Ok(ReplayTrackerEvent::Upgrade(UpgradeEvent {
             player_id: source.m_player_id,
@@ -80,7 +80,7 @@ impl TryFrom<ReplayTrackerSUpgradeEvent> for ReplayTrackerEvent {
     }
 }
 impl TryFrom<ReplayTrackerSUnitBornEvent> for ReplayTrackerEvent {
-    type Error = TrackerEventError;
+    type Error = S2ProtocolError;
     fn try_from(source: ReplayTrackerSUnitBornEvent) -> Result<Self, Self::Error> {
         let creator_ability_name = if let Some(val) = source.m_creator_ability_name {
             Some(str::from_utf8(&val)?.to_string())
@@ -128,7 +128,7 @@ impl From<ReplayTrackerSUnitDiedEvent> for ReplayTrackerEvent {
 }
 
 impl TryFrom<ReplayTrackerSUnitTypeChangeEvent> for ReplayTrackerEvent {
-    type Error = TrackerEventError;
+    type Error = S2ProtocolError;
     fn try_from(source: ReplayTrackerSUnitTypeChangeEvent) -> Result<Self, Self::Error> {
         Ok(ReplayTrackerEvent::UnitTypeChange(UnitTypeChangeEvent {
             unit_tag_index: source.m_unit_tag_index,
@@ -139,7 +139,7 @@ impl TryFrom<ReplayTrackerSUnitTypeChangeEvent> for ReplayTrackerEvent {
 }
 
 impl TryFrom<ReplayTrackerSUnitInitEvent> for ReplayTrackerEvent {
-    type Error = TrackerEventError;
+    type Error = S2ProtocolError;
     fn try_from(source: ReplayTrackerSUnitInitEvent) -> Result<Self, Self::Error> {
         Ok(ReplayTrackerEvent::UnitInit(UnitInitEvent {
             unit_tag_index: source.m_unit_tag_index,

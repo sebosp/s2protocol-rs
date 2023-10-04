@@ -6,29 +6,19 @@ use crate::peek_bits;
 use nom::bits::complete::take;
 use nom::*;
 
-/*
- * Seems like the only use we could have for BitArray is the NNet.Game.SelectionMaskType
-/// Stores a bit array.
-#[derive(Debug, Clone, Copy)]
-pub struct BitArray {
-    /// The data read
-    data: Vec<u8>,
-    /// The last byte may have only a few addressed bits.
-    left_overs: usize,
-}*/
-
 /// Takes n bits from the input bytes.
 /// The bits are taken counting from right to left.
 /// It returns the original input as if had not been processed.
 /// The caller must call the normal take process afterwards.
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
+#[allow(clippy::let_and_return)]
 pub fn rtake_n_bits(input: (&[u8], usize), count: usize) -> IResult<(&[u8], usize), u8> {
     let res = if input.1 + count > 8usize {
         // We need to process the current left-over bits (from the left)
         let (_, res0) = take::<&[u8], u8, usize, _>(8usize - input.1)((input.0, 0usize))?;
         // Then advance the current bits
         let (tail, _) = take::<&[u8], u8, usize, _>(8usize)((input.0, 0usize))?;
-        // and join them with the subsequent bits on teh next byte
+        // and join them with the subsequent bits on the next byte
         let left_over_count = count - (8usize - input.1);
         let (_, res1) =
             take::<&[u8], u8, usize, _>(left_over_count)((tail.0, 8usize - left_over_count))?;
@@ -39,17 +29,19 @@ pub fn rtake_n_bits(input: (&[u8], usize), count: usize) -> IResult<(&[u8], usiz
         let (_, res) = take::<&[u8], u8, usize, _>(count)((input.0, 8usize - input.1 - count))?;
         res
     };
+    tracing::debug!("rtake_n_bits: {}", res);
     Ok(((input.0, input.1 + count), res))
 }
 
 /// Takes n total bits from the current u8 slice at the current offset and transforms the data into
 /// an u64, this works with Big Endian
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
+#[allow(clippy::precedence)]
 pub fn take_n_bits_into_i64(
     input: (&[u8], usize),
     total_bits: usize,
 ) -> IResult<(&[u8], usize), i64> {
-    assert!(total_bits < 64);
+    assert!(total_bits <= 64);
     let mut res = 0i64;
     let mut remaining_bits = total_bits;
     let mut tail = input;
@@ -67,6 +59,7 @@ pub fn take_n_bits_into_i64(
         let (_, bits) = rtake_n_bits(tail, count)?;
         let (new_tail, _) =
             dbg_peek_bits(take::<&[u8], u8, usize, _>(count), "take_n_bits_into_i64")(tail)?;
+        // clippy::precedence is disabled, when I tried to apply the proposed fix we can't parse.
         res |= (bits as i64) << remaining_bits - count;
         // copy << (total_bits - resultbits - copybits)
         tail = new_tail;
@@ -90,12 +83,7 @@ pub fn take_bit_array(
     let mut tail = input;
     loop {
         let count = if remaining_bits > 8 {
-            // Try to byte-align
-            if tail.1 != 0 {
-                8usize - tail.1
-            } else {
-                8usize
-            }
+            8usize
         } else {
             remaining_bits
         };
@@ -110,6 +98,7 @@ pub fn take_bit_array(
             break;
         }
     }
+    tracing::trace!("take_bit_array: {:?}", res);
     Ok((tail, res))
 }
 
@@ -119,8 +108,10 @@ pub fn byte_align(input: (&[u8], usize)) -> IResult<(&[u8], usize), ()> {
     if input.1 != 0 {
         let (tail, _) =
             dbg_peek_bits(take::<&[u8], u8, usize, _>(8usize - input.1), "byte_align")(input)?;
+        tracing::debug!("byte_align: took {} bits", 8usize - input.1);
         Ok((tail, ()))
     } else {
+        tracing::debug!("byte_align: took 0 bits");
         Ok((input, ()))
     }
 }
@@ -129,18 +120,22 @@ pub fn byte_align(input: (&[u8], usize)) -> IResult<(&[u8], usize), ()> {
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn take_unaligned_byte(input: (&[u8], usize)) -> IResult<(&[u8], usize), u8> {
     let (tail, res) = take_bit_array(input, 8usize)?;
+    tracing::debug!("take_unaligned_byte: {:?}", res[0]);
     Ok((tail, res[0]))
 }
 
 /// Takes 4 unaligned bytes
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn take_fourcc(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
-    take_bit_array(input, 4usize * 8usize)
+    let (tail, res) = take_bit_array(input, 4usize * 8usize)?;
+    tracing::debug!("take_fourcc: {:?}", res);
+    Ok((tail, res))
 }
 
 /// Just a function that would be called when a null is needed, this is for debugging purposes
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn take_null(input: (&[u8], usize)) -> IResult<(&[u8], usize), ()> {
+    tracing::debug!("take_null");
     Ok((input, ()))
 }
 /// Reads a packed int, In offset binary representation, (also called excess-K or biased).
@@ -154,6 +149,7 @@ pub fn parse_packed_int(
 ) -> IResult<(&[u8], usize), i64> {
     let (tail, num) = take_n_bits_into_i64(input, num_bits)?;
     let res = offset + num;
+    tracing::debug!("parse_packed_int: {}", res);
     Ok((tail, res))
 }
 
@@ -162,15 +158,13 @@ pub fn parse_packed_int(
 pub fn parse_bool(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
     let (_, val) = rtake_n_bits(input, 1usize)?;
     let (tail, _) = dbg_peek_bits(take::<&[u8], u8, usize, _>(1usize), "take_bit_for_bool")(input)?;
+    tracing::debug!("parse_bool: {}", val != 0);
     Ok((tail, val != 0))
 }
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::versions::protocol87702::bit_packed::ReplaySGameUserId;
-    use crate::versions::protocol87702::bit_packed::SVarUint32;
-    use crate::versions::protocol87702::bit_packed::Uint32;
-    use crate::versions::protocol87702::bit_packed::Uint6;
+    use crate::versions::protocol87702::bit_packed::*;
 
     #[test_log::test]
     fn it_reads_game_events() {
@@ -194,5 +188,53 @@ mod tests {
         let (tail, m_sync_time) = Uint32::parse(tail).unwrap();
         assert_eq!(tail.1, 4usize);
         assert_eq!(m_sync_time.value, 1656011340);
+    }
+    #[test_log::test]
+    fn it_reads_init_data_properties() {
+        let data: Vec<u8> = vec![
+            0x07, 0x75, 0x26, 0x7a, // 125118074
+            0x50, 0xf8, 0xdf, 0x07, 0xbb, 0xf0, // colors and races
+            0xe0, 0x70, 0x00, 0xf0, // difficulty
+            // start of allowed controls
+            0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+            0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+            0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // end of allowed controls
+            0x7d, 0x00, 0x00, 0xc0, 0x01, 0x7f, 0x3c, 0x00, 0xc0, 0x03, 0x1f, 0x1c, 0x00, 0xc0,
+            0x07, 0x1f, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+        ];
+        let tail: (&[u8], usize) = (&data, 0usize);
+        let (tail, checksum) = Uint32::parse(tail).unwrap();
+        assert_eq!(checksum.value, 125118074);
+        let array_length_num_bits: usize = 5;
+        let (tail, array_length) = parse_packed_int(tail, 0, array_length_num_bits).unwrap();
+        assert_eq!(array_length, 16);
+        let bitarray_length_bits: usize = 6;
+        let (_tail, bitarray_length) = take_n_bits_into_i64(tail, bitarray_length_bits).unwrap();
+        assert_eq!(bitarray_length, 16);
+        let (tail, allowed_colors) = GameCAllowedColors::parse(tail).unwrap();
+        assert_eq!(allowed_colors.value, 65279);
+        let bitarray_length_bits: usize = 8;
+        let (_tail, bitarray_length) = take_n_bits_into_i64(tail, bitarray_length_bits).unwrap();
+        assert_eq!(bitarray_length, 3);
+        let (tail, allowed_races) = CAllowedRaces::parse(tail).unwrap();
+        assert_eq!(allowed_races.value, 7);
+        let bitarray_length_bits: usize = 6;
+        let (_tail, bitarray_length) = take_n_bits_into_i64(tail, bitarray_length_bits).unwrap();
+        assert_eq!(bitarray_length, 32);
+        let (tail, allowed_difficulty) = GameCAllowedDifficulty::parse(tail).unwrap();
+        assert_eq!(allowed_difficulty.value, 4261871616);
+        assert_eq!(tail.1, 4usize);
+        assert_eq!(tail.0[0], 0xf0);
+        let (_tail, bits) = take_n_bits_into_i64(tail, 8usize).unwrap();
+        assert_eq!(bits, 0xff);
+        let bitarray_length_bits: usize = 8;
+        let (_tail, bitarray_length) = take_n_bits_into_i64(tail, bitarray_length_bits).unwrap();
+        assert_eq!(bitarray_length, 255);
+        let (tail, allowed_races) = GameCAllowedControls::parse(tail).unwrap();
+        assert_eq!(allowed_races.value.len(), 32);
+        let bitarray_length_bits: usize = 2;
+        let (_tail, bitarray_length) = take_n_bits_into_i64(tail, bitarray_length_bits).unwrap();
+        assert_eq!(bitarray_length, 3);
     }
 }

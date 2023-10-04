@@ -3,28 +3,22 @@
 //!
 
 use super::byte_aligned::*;
-use crate::details::{
-    Color, Details, DetailsError, GameSpeed, PlayerDetails, ResultDetails, Thumbnail,
-    ToonNameDetails,
-};
+use crate::details::{Color, Details, PlayerDetails, Thumbnail, ToonNameDetails};
 use crate::*;
 use nom_mpq::MPQ;
 
 impl GameSDetails {
-    /// Read the Tracker Events
+    /// Read the Details MPQ sector.
     pub fn read_details(mpq: &MPQ, file_contents: &[u8]) -> Result<Details, S2ProtocolError> {
-        // TODO: Make it return an Iterator.
         let (_, details_sector) =
-            mpq.read_mpq_file_sector("replay.details", false, &file_contents)?;
+            mpq.read_mpq_file_sector("replay.details", false, file_contents)?;
         let (_, game_sdetails) = GameSDetails::parse(&details_sector)?;
-        game_sdetails
-            .try_into()
-            .map_err(|err: DetailsError| err.into())
+        game_sdetails.try_into()
     }
 }
 
 impl TryFrom<GameSDetails> for Details {
-    type Error = DetailsError;
+    type Error = S2ProtocolError;
     fn try_from(source: GameSDetails) -> Result<Self, Self::Error> {
         let mut player_list = vec![];
         // Into the Optional
@@ -69,12 +63,15 @@ impl TryFrom<GameSDetails> for Details {
             game_speed: source.m_game_speed.into(),
             default_difficulty: source.m_default_difficulty,
             mod_paths,
+            ext_fs_replay_file_name: String::from(""),
+            ext_fs_replay_sha256: String::from(""),
+            ext_datetime: Default::default(),
         })
     }
 }
 
 impl TryFrom<GameSPlayerDetails> for PlayerDetails {
-    type Error = DetailsError;
+    type Error = S2ProtocolError;
     fn try_from(source: GameSPlayerDetails) -> Result<Self, Self::Error> {
         Ok(PlayerDetails {
             name: str::from_utf8(&source.m_name)?.to_string(),
@@ -103,29 +100,19 @@ impl From<GameSColor> for Color {
     }
 }
 
-impl From<super::byte_aligned::EObserve> for crate::details::EObserve {
-    fn from(value: super::byte_aligned::EObserve) -> Self {
-        match value {
-            super::byte_aligned::EObserve::ENone => Self::ENone,
-            super::byte_aligned::EObserve::ESpectator => Self::ESpectator,
-            super::byte_aligned::EObserve::EReferee => Self::EReferee,
-        }
-    }
-}
-
-impl From<GameEResultDetails> for ResultDetails {
+impl From<GameEResultDetails> for u8 {
     fn from(value: GameEResultDetails) -> Self {
         match value {
-            GameEResultDetails::EUndecided => Self::EUndecided,
-            GameEResultDetails::EWin => Self::EWin,
-            GameEResultDetails::ELoss => Self::ELoss,
-            GameEResultDetails::ETie => Self::ETie,
+            GameEResultDetails::EUndecided => crate::common::GAME_RESULT_UNDECIDED,
+            GameEResultDetails::EWin => crate::common::GAME_RESULT_WIN,
+            GameEResultDetails::ELoss => crate::common::GAME_RESULT_DEFEAT,
+            GameEResultDetails::ETie => crate::common::GAME_RESULT_TIE,
         }
     }
 }
 
 impl TryFrom<GameSThumbnail> for Thumbnail {
-    type Error = DetailsError;
+    type Error = S2ProtocolError;
     fn try_from(value: GameSThumbnail) -> Result<Self, Self::Error> {
         Ok(Self {
             file: str::from_utf8(&value.m_file)?.to_string(),
@@ -133,20 +120,20 @@ impl TryFrom<GameSThumbnail> for Thumbnail {
     }
 }
 
-impl From<GameEGameSpeed> for GameSpeed {
+impl From<GameEGameSpeed> for u8 {
     fn from(value: GameEGameSpeed) -> Self {
         match value {
-            GameEGameSpeed::ESlower => Self::ESlower,
-            GameEGameSpeed::ESlow => Self::ESlow,
-            GameEGameSpeed::ENormal => Self::ENormal,
-            GameEGameSpeed::EFast => Self::EFast,
-            GameEGameSpeed::EFaster => Self::EFaster,
+            GameEGameSpeed::ESlower => crate::common::GAME_SPEED_SLOWER,
+            GameEGameSpeed::ESlow => crate::common::GAME_SPEED_SLOW,
+            GameEGameSpeed::ENormal => crate::common::GAME_SPEED_NORMAL,
+            GameEGameSpeed::EFast => crate::common::GAME_SPEED_FAST,
+            GameEGameSpeed::EFaster => crate::common::GAME_SPEED_FASTER,
         }
     }
 }
 
 impl TryFrom<GameSToonNameDetails> for ToonNameDetails {
-    type Error = DetailsError;
+    type Error = S2ProtocolError;
     fn try_from(value: GameSToonNameDetails) -> Result<Self, Self::Error> {
         Ok(Self {
             region: value.m_region,

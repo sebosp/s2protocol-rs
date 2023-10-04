@@ -34,7 +34,7 @@ impl ProtoMorphist {
         // Try to get the numeric part of the protocol.
         // The source path is called like: ./s2protocol/json/protocol87702.json
         let mut proto_num: String = format!("{:?}", json_proto_path.file_name().unwrap());
-        proto_num.retain(|c| c >= '0' && c <= '9');
+        proto_num.retain(|c| ('0'..='9').contains(&c));
         let proto_num = proto_num.parse().unwrap();
         let output = File::create(output_name)?;
         let mut json_definition_file = File::open(&json_proto_path).unwrap();
@@ -128,10 +128,9 @@ impl ProtoMorphist {
             // NNet.Game.EEventId is an enum we must parse 3 levels in.
             // NNet.Replay.Tracker.EEventId is an enum we must parse 4 levels in.
             if proto_mod["fullname"] == "NNet.Replay" || proto_mod["fullname"] == "NNet.Game" {
-                let sub_mods_arr = proto_mod["decls"].as_array().expect(&format!(
-                    "{} should have '.decls' array",
-                    proto_mod["fullname"]
-                ));
+                let sub_mods_arr = proto_mod["decls"].as_array().unwrap_or_else(|| {
+                    panic!("{} should have '.decls' array", proto_mod["fullname"])
+                });
                 for sub_mod in sub_mods_arr.iter() {
                     if let Some(sub_mod_decls_array) = sub_mod["decls"].as_array() {
                         // traverse inside the current type's decls.
@@ -139,7 +138,7 @@ impl ProtoMorphist {
                             self.fill_module_decl_structs(sub_mod_decl);
                         }
                     } else {
-                        self.fill_module_decl_structs(&sub_mod);
+                        self.fill_module_decl_structs(sub_mod);
                     }
                 }
             }
@@ -268,7 +267,9 @@ impl ProtoMorphist {
                     .expect("NNet.Replay should have '.decls' array");
                 for replay_mod in replay_mods_arr {
                     tracing::info!("Processing: {}", replay_mod["fullname"]);
-                    if replay_mod["fullname"] == "NNet.Replay.SGameUserId" {
+                    if replay_mod["fullname"] == "NNet.Replay.SGameUserId"
+                        || replay_mod["fullname"] == "NNet.Replay.SInitData"
+                    {
                         self.gen_proto_code(replay_mod, DecoderType::BitPacked)?;
                     }
                 }
@@ -579,6 +580,7 @@ pub fn open_type_impl_def(name: &str) -> String {
 }
 
 /// Closes the type impl scope.
+#[allow(clippy::useless_conversion)]
 pub fn close_type_impl_def() -> String {
     format!("}}\n")
 }
