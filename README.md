@@ -45,7 +45,7 @@ The second item hints the consumers of the iterator about the changes performed 
 For example, units may have been deleted, added, changed position, etc.
 
 ```rust
-let source: PathBuf = ""
+let source: PathBuf = PathBuf::new();
 let res = s2protocol::state::SC2EventIterator::new(&source)?;
 for (event, change_hint) in res.into_iter() {
     println!("{},", serde_json::to_string(&event)?);
