@@ -4,7 +4,7 @@ use super::*;
 use crate::game_events::ReplayGameEvent;
 
 impl TryFrom<GameSControlGroupUpdateEvent> for ReplayGameEvent {
-    type Error = GameEventError;
+    type Error = S2ProtocolError;
     fn try_from(source: GameSControlGroupUpdateEvent) -> Result<Self, Self::Error> {
         Ok(ReplayGameEvent::ControlGroupUpdate(
             crate::game_events::GameSControlGroupUpdateEvent {

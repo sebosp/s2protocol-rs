@@ -86,7 +86,7 @@ pub fn tagged_bitarray(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
     let (tail, array_length) = parse_vlq_int(tail)?;
     let array_length = (array_length as usize + 7usize) / 8usize;
     tracing::trace!("Reading array length: {}", array_length);
-    let (tail, array) = dbg_peek_hex(take(array_length as usize), "bitarray")(tail)?;
+    let (tail, array) = dbg_peek_hex(take(array_length), "bitarray")(tail)?;
     Ok((tail, array.to_vec()))
 }
 
@@ -111,7 +111,7 @@ pub fn tagged_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn tagged_bool(input: &[u8]) -> IResult<&[u8], bool> {
     let (tail, _) = validate_bool_tag(input)?;
-    let (tail, value) = dbg_peek_hex(u8, "bool")(&tail)?;
+    let (tail, value) = dbg_peek_hex(u8, "bool")(tail)?;
     Ok((tail, value != 0))
 }
 
@@ -120,6 +120,6 @@ pub fn tagged_bool(input: &[u8]) -> IResult<&[u8], bool> {
 pub fn tagged_fourcc(input: &[u8]) -> IResult<&[u8], u32> {
     let (tail, _) = validate_fourcc_tag(input)?;
     // TODO: We don't care much about the Endianness at this point
-    let (tail, value) = dbg_peek_hex(u32(nom::number::Endianness::Big), "fourcc")(&tail)?;
+    let (tail, value) = dbg_peek_hex(u32(nom::number::Endianness::Big), "fourcc")(tail)?;
     Ok((tail, value))
 }

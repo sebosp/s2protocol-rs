@@ -52,7 +52,7 @@ impl ReplayTrackerEEventId {
 }
 
 impl TryFrom<ReplayTrackerEEventId> for ReplayTrackerEvent {
-    type Error = TrackerEventError;
+    type Error = S2ProtocolError;
 
     fn try_from(value: ReplayTrackerEEventId) -> Result<Self, Self::Error> {
         match value {
@@ -60,7 +60,7 @@ impl TryFrom<ReplayTrackerEEventId> for ReplayTrackerEvent {
             | ReplayTrackerEEventId::EUnitOwnerChange(_)
             | ReplayTrackerEEventId::EUpgrade(_)
             | ReplayTrackerEEventId::EPlayerSetup(_) => {
-                Err(TrackerEventError::UnsupportedEventType)
+                Err(S2ProtocolError::UnsupportedEventType)
             }
             ReplayTrackerEEventId::EUnitBorn(e) => Ok(e.to_versionless()?),
             ReplayTrackerEEventId::EUnitDied(e) => Ok(e.to_versionless()?),
@@ -73,7 +73,7 @@ impl TryFrom<ReplayTrackerEEventId> for ReplayTrackerEvent {
 }
 
 impl ReplayTrackerSUnitBornEvent {
-    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, S2ProtocolError> {
         let creator_ability_name = if let Some(val) = self.m_creator_ability_name {
             Some(str::from_utf8(&val)?.to_string())
         } else {
@@ -95,7 +95,7 @@ impl ReplayTrackerSUnitBornEvent {
 }
 
 impl ReplayTrackerSUnitDiedEvent {
-    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, S2ProtocolError> {
         Ok(ReplayTrackerEvent::UnitDied(UnitDiedEvent {
             unit_tag_index: self.m_unit_tag_index,
             unit_tag_recycle: self.m_unit_tag_recycle,
@@ -109,7 +109,7 @@ impl ReplayTrackerSUnitDiedEvent {
 }
 
 impl ReplayTrackerSUnitTypeChangeEvent {
-    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, S2ProtocolError> {
         Ok(ReplayTrackerEvent::UnitTypeChange(UnitTypeChangeEvent {
             unit_tag_index: self.m_unit_tag_index,
             unit_tag_recycle: self.m_unit_tag_recycle,
@@ -119,7 +119,7 @@ impl ReplayTrackerSUnitTypeChangeEvent {
 }
 
 impl ReplayTrackerSUnitInitEvent {
-    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, S2ProtocolError> {
         Ok(ReplayTrackerEvent::UnitInit(UnitInitEvent {
             unit_tag_index: self.m_unit_tag_index,
             unit_tag_recycle: self.m_unit_tag_recycle,
@@ -133,7 +133,7 @@ impl ReplayTrackerSUnitInitEvent {
 }
 
 impl ReplayTrackerSUnitDoneEvent {
-    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, S2ProtocolError> {
         Ok(ReplayTrackerEvent::UnitDone(UnitDoneEvent {
             unit_tag_index: self.m_unit_tag_index,
             unit_tag_recycle: self.m_unit_tag_recycle,
@@ -142,7 +142,7 @@ impl ReplayTrackerSUnitDoneEvent {
 }
 
 impl ReplayTrackerSUnitPositionsEvent {
-    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, TrackerEventError> {
+    pub fn to_versionless(self) -> Result<ReplayTrackerEvent, S2ProtocolError> {
         Ok(ReplayTrackerEvent::UnitPosition(UnitPositionsEvent {
             first_unit_index: self.m_first_unit_index,
             items: self.m_items,

@@ -26,7 +26,7 @@ impl DecoderType {
     fn open_byte_aligned_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
         format!(
         "#[tracing::instrument(name=\"{proto_num}::byte_aligned::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
-         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
+         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
              let (tail, _) = validate_struct_tag(input)?;\n\
              let (mut tail, struct_field_count) = parse_vlq_int(tail)?;\n\
          ",
@@ -58,7 +58,7 @@ impl DecoderType {
         };
         format!(
         "#[tracing::instrument(name=\"{proto_num}::bit_packed::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
-         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
              let {tail_str} = input;
          ",
     )
@@ -170,7 +170,10 @@ impl DecoderType {
                 is_optional: true,
                 ..Default::default()
             },
-            "ArrayType" | "DynArrayType" => ProtoTypeConversion {
+            "ArrayType"
+            | "DynArrayType"
+            | "NNet.CUserArchiveDataArray"
+            | "NNet.CUserInitialDataArray" => ProtoTypeConversion {
                 // Leaves placeholders to be replaced later by the actual enclosed types
                 rust_ty: "Vec<{}>".to_string(),
                 parser: "{}".to_string(),
@@ -271,16 +274,12 @@ impl DecoderType {
                 ..Default::default()
             },
             "BlobType" | "BitArrayType" | "AsciiStringType" | "StringType" => ProtoTypeConversion {
-                // If we can ever make use of the bits we would need to account for the last byte
-                // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
                 rust_ty: "Vec<u8>".to_string(),
                 parser: "take_unaligned_byte".to_string(),
                 is_vec: true,
                 ..Default::default()
             },
             "IntType" => ProtoTypeConversion {
-                // If we can ever make use of the bits we would need to account for the last byte
-                // not being fully utilized, there's a BitArray defined in bit_packed_decoder.rs
                 rust_ty: "i64".to_string(),
                 parser: "parse_packed_int({})".to_string(),
                 is_sized_int: true,
@@ -318,7 +317,7 @@ impl DecoderType {
     ) -> String {
         format!(
         "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
-         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
+         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, _) = validate_choice_tag(input)?;\n\
          let (tail, variant_tag) = parse_vlq_int(tail)?;\n\
          ",
@@ -339,7 +338,7 @@ impl DecoderType {
         let num_bits = (num_fields as f32).log2().ceil() as usize;
         format!(
         "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
-         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
             // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
             // bits to have unique tags.
@@ -576,12 +575,12 @@ impl DecoderType {
                 ));
             }
             struct_parse_return.push_str(&format!(
-                "{field_name}: {field_name}.expect(\"Missing {field_name} from struct\"),\n"
+                "{field_name}: ok_or_return_missing_field_err!({field_name})n"
             ));
             // Create a parsing function
             type_impl_def.push_str(&format!(
                     "#[tracing::instrument(level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
-                     pub fn parse_{field_name}(input: &[u8]) -> IResult<&[u8], {field_type}> {{\n\
+                     pub fn parse_{field_name}(input: &[u8]) -> S2ProtoResult<&[u8], {field_type}> {{\n\
                     "));
             if morph.is_optional {
                 type_impl_def.push_str("let (tail, _) = validate_opt_tag(input)?;\n");
@@ -850,12 +849,12 @@ impl DecoderType {
                  "
             ));
             struct_parse_return.push_str(&format!(
-                "{field_name}: {field_name}.expect(\"Missing {field_name} from struct\"),\n"
+                "{field_name}: ok_or_return_missing_field_err!({field_name}),\n"
             ));
             // Create a parsing function
             type_impl_def.push_str(&format!(
                     "#[tracing::instrument(level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
-                     pub fn parse_{field_name}(input: (&[u8], usize)) -> IResult<(&[u8], usize), {field_type}> {{\n\
+                     pub fn parse_{field_name}(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), {field_type}> {{\n\
                     "));
             if morph.is_optional {
                 // If the next bit is a zero, then the field is None
@@ -1202,7 +1201,7 @@ impl DecoderType {
     ) -> String {
         format!(
         "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
-         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
+         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, _) = validate_int_tag(input)?;\n\
          let (tail, value) = parse_vlq_int(tail)?;\n\
          Ok((tail, Self {{ value }}))\n\
@@ -1269,7 +1268,7 @@ impl DecoderType {
         }
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse::{bound_type}\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
-         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let offset: i64 = {offset};
          let num_bits: usize = {num_bits};
          let (tail, res) = parse_packed_int(input, offset, num_bits)?;\n\
@@ -1307,7 +1306,7 @@ impl DecoderType {
             .expect("type_info.fullname should be string");
         format!(
         "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
-         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
+         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, value) = {type_info}::parse(input)?;\n\
          Ok((tail, Self {{ value }}))\n\
          ",
@@ -1328,7 +1327,7 @@ impl DecoderType {
 
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
-         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let (tail, value) = {type_info}::parse(input)?;\n\
          Ok((tail, Self {{ value }}))\n\
          ",
@@ -1373,7 +1372,7 @@ impl DecoderType {
         let num_bits = Self::bounds_max_value_to_bit_size(&bounds);
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BitArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
-         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let bitarray_length_bits: usize = {num_bits};
          let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
          let (tail, value) = take_bit_array(tail, bitarray_length as usize)?;\n\
@@ -1418,7 +1417,7 @@ impl DecoderType {
         let num_bits = Self::bounds_max_value_to_bit_size(&bounds);
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BlobType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
-         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let (tail, _) = byte_align(input)?;
          let num_bits: usize = {num_bits};
          let (tail, value) = take_bit_array(tail, num_bits)?;\n\
@@ -1468,7 +1467,7 @@ impl DecoderType {
         let str_size_num_bits = (res.log2() + 1.).floor() as usize + 2;
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::StringType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
-         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let str_size_num_bits: usize = {str_size_num_bits};\n\
          let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;\n\
          let (tail, _) = byte_align(tail)?;
@@ -1525,7 +1524,7 @@ impl DecoderType {
         let array_length_num_bits = ((array_max_value as f32).log2() + 1.).floor() as usize;
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
-         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let array_length_num_bits: usize = {array_length_num_bits};\n\
          let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;\n\
          let (tail, value) = nom::multi::count({internal_type}::parse, array_length as usize)(tail)?;\n\
@@ -1546,7 +1545,7 @@ impl DecoderType {
     ) -> String {
         format!(
         "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
-         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
+         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
                  let (tail, _) = validate_array_tag(input)?;\n\
                  let (tail, array_length) = parse_vlq_int(tail)?;\n\
                  tracing::debug!(\"Reading array length: {{array_length}}\");\n\
@@ -1578,7 +1577,7 @@ impl DecoderType {
     pub fn open_byte_aligned_enum_main_parse_fn(proto_num: u64, name: &str) -> String {
         format!(
         "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
-         pub fn parse(input: &[u8]) -> IResult<&[u8], Self> {{\n\
+         pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, _) = validate_int_tag(input)?;\n\
          let (tail, variant_tag) = parse_vlq_int(tail)?;\n\
          match variant_tag {{\n\
@@ -1603,7 +1602,7 @@ impl DecoderType {
         let num_bits = (num_fields as f32).log2().ceil() as usize;
         format!(
         "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
-         pub fn parse(input: (&[u8], usize)) -> IResult<(&[u8], usize), Self> {{\n\
+         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          // Total fields: {num_fields}\n\
          let num_bits: usize = {num_bits};\n\
          let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;\n\

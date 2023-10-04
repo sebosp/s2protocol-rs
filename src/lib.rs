@@ -1,10 +1,16 @@
 //! S2 Protocol use of the MPQ archive
 
+#[cfg(feature = "arrow")]
+pub mod arrow;
 pub mod bit_packed_decoder;
+pub mod cli;
+pub mod common;
 pub mod details;
 pub mod error;
+pub mod filters;
 pub mod game_events;
 pub mod generator;
+pub mod init_data;
 pub mod message_events;
 pub mod protocol_version_decoder;
 pub mod state;
@@ -15,19 +21,32 @@ pub mod versions;
 use crate::game_events::ReplayGameEvent;
 pub use crate::state::*;
 use crate::tracker_events::ReplayTrackerEvent;
-use crate::versions::read_game_events;
-use crate::versions::read_tracker_events;
+pub use crate::versions::read_details;
+pub use crate::versions::read_game_events;
+pub use crate::versions::read_init_data;
+pub use crate::versions::read_message_events;
+pub use crate::versions::read_tracker_events;
+#[cfg(feature = "arrow")]
+pub use arrow::*;
 pub use bit_packed_decoder::*;
+pub use cli::*;
 use colored::*;
+pub use common::*;
 pub use error::*;
+pub use filters::*;
+pub use init_data::*;
 use nom::number::complete::u8;
 use nom::IResult;
-use nom_mpq::parser::peek_hex;
-use nom_mpq::{parser, MPQ};
 pub use protocol_version_decoder::read_protocol_header;
 use std::collections::HashMap;
+use std::io::Read;
+use std::path::PathBuf;
 use std::str;
 pub use versioned_decoder::*;
+
+/// Re-export to avoid having to also add this crate to other consumers.
+pub use nom_mpq::parser::{self, peek_hex};
+pub use nom_mpq::MPQ;
 
 /// Many fields are optional, this macro will return an Ok for the nom::IResult but the value will
 /// be an Err(S2ProtocolError::MissingField) if the field is not present.
@@ -48,6 +67,14 @@ macro_rules! ok_or_return_missing_field_err {
             }
         }
     };
+}
+
+/// Reads a file into memory.
+pub fn read_file(path: &PathBuf) -> Result<Vec<u8>, S2ProtocolError> {
+    let mut f = std::fs::File::open(path)?;
+    let mut buffer: Vec<u8> = vec![];
+    f.read_to_end(&mut buffer)?;
+    Ok(buffer)
 }
 
 /// Pre-allocating memory is a nice optimization but count fields can't
@@ -121,6 +148,7 @@ where
 
 /// Reads a VLQ Int that is prepend by its tag
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
+#[allow(clippy::unnecessary_cast)]
 pub fn parse_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
     let (mut tail, mut v_int_value) = dbg_peek_hex(u8, "v_int")(input)?;
     let is_negative = v_int_value & 1 != 0;
@@ -137,6 +165,30 @@ pub fn parse_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
         result = -result;
     }
     Ok((tail, result))
+}
+
+/// Transforms the details MPQ sector time utc and local offset into possibly chrono::NaiveDateTime
+pub fn transform_to_naivetime(
+    time_utc: i64,
+    time_local_offset: i64,
+) -> Option<chrono::NaiveDateTime> {
+    let micros = time_utc / 10 - 11_644_473_600_000_000 - time_local_offset / 10;
+    let secs = micros.div_euclid(1_000_000);
+    let nsecs = micros.rem_euclid(1_000_000) as u32 * 1000;
+    chrono::NaiveDateTime::from_timestamp_opt(secs, nsecs)
+}
+
+/// Converts the tracker loop to milliseconds,
+/// First scale the tracker loop to the same unit as the game loops.
+/// We also need to transform the adjusted game loop to seconds.
+/// This was observed in a game with max game_loop = 13735 and a duration of 15:42 = 942 seconds.
+/// 942000 / 13735 = 68.58391 loops in a second
+/// This will only work for the Faster speed.
+pub fn convert_tracker_loop_to_seconds(tracker_replay_loop: i64) -> u32 {
+    // TODO: For now let's use seconds, we'll move this to milliseconds as we need more precision.
+    let ext_replay_milliseconds =
+        crate::TRACKER_SPEED_RATIO * tracker_replay_loop as f32 * 68.58391;
+    (ext_replay_milliseconds / 1000.0) as u32
 }
 
 #[cfg(test)]

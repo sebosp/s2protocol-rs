@@ -2,7 +2,6 @@
 
 use super::bit_packed::*;
 use crate::game_events::GameEvent;
-use crate::game_events::GameEventError;
 use crate::game_events::ReplayGameEvent;
 use crate::*;
 use nom::*;
@@ -45,7 +44,6 @@ impl GameEEventId {
 
     /// Read the Tracker Events
     pub fn read_events(mpq: &MPQ, file_contents: &[u8]) -> Result<Vec<GameEvent>, S2ProtocolError> {
-        // TODO: Make it return an Iterator.
         let (_event_tail, game_events) =
             mpq.read_mpq_file_sector("replay.game.events", false, file_contents)?;
         let mut res = vec![];
@@ -94,50 +92,8 @@ impl From<GameSuiCoord> for crate::game_events::GameSuiCoord {
     }
 }
 
-impl From<Uint32> for u32 {
-    fn from(source: Uint32) -> u32 {
-        source.value as u32
-    }
-}
-
-impl From<Int8> for i8 {
-    fn from(source: Int8) -> i8 {
-        source.value as i8
-    }
-}
-
-impl From<Uint8> for u8 {
-    fn from(source: Uint8) -> u8 {
-        source.value as u8
-    }
-}
-
-impl From<Uint16> for u16 {
-    fn from(source: Uint16) -> u16 {
-        source.value as u16
-    }
-}
-
-impl From<Int16> for i16 {
-    fn from(source: Int16) -> i16 {
-        source.value as i16
-    }
-}
-
-impl From<Int32> for i32 {
-    fn from(source: Int32) -> i32 {
-        source.value as i32
-    }
-}
-
-impl From<TUserId> for u8 {
-    fn from(source: TUserId) -> u8 {
-        source.value as u8
-    }
-}
-
 impl TryFrom<GameEEventId> for ReplayGameEvent {
-    type Error = GameEventError;
+    type Error = S2ProtocolError;
     fn try_from(value: GameEEventId) -> Result<Self, Self::Error> {
         match value {
             GameEEventId::EDropUser(e) => Ok(e.into()),
@@ -146,7 +102,7 @@ impl TryFrom<GameEEventId> for ReplayGameEvent {
             GameEEventId::ESelectionDelta(e) => Ok(e.try_into()?),
             GameEEventId::EControlGroupUpdate(e) => Ok(e.try_into()?),
             GameEEventId::ESelectionSyncCheck(e) => Ok(e.into()),
-            GameEEventId::ETriggerChatMessage(e) => Ok(e.try_into()?),
+            GameEEventId::ETriggerChatMessage(e) => Ok(e.into()),
             GameEEventId::EUnitClick(e) => Ok(e.into()),
             GameEEventId::EUnitHighlight(e) => Ok(e.into()),
             GameEEventId::ETriggerReplySelected(e) => Ok(e.into()),
@@ -161,7 +117,7 @@ impl TryFrom<GameEEventId> for ReplayGameEvent {
             GameEEventId::ECommandManagerState(e) => Ok(e.into()),
             GameEEventId::ECmdUpdateTargetPoint(e) => Ok(e.into()),
             GameEEventId::ECmdUpdateTargetUnit(e) => Ok(e.into()),
-            _ => Err(GameEventError::UnsupportedEventType),
+            _ => Err(S2ProtocolError::UnsupportedEventType),
         }
     }
 }
@@ -211,14 +167,18 @@ impl From<GameTControlGroupCount> for game_events::GameTControlGroupCount {
     }
 }
 
-impl TryFrom<GameSTriggerChatMessageEvent> for game_events::ReplayGameEvent {
-    type Error = GameEventError;
-    fn try_from(source: GameSTriggerChatMessageEvent) -> Result<Self, Self::Error> {
-        Ok(ReplayGameEvent::TriggerChatMessage(
-            game_events::GameSTriggerChatMessageEvent {
-                m_chat_message: str::from_utf8(&source.m_chat_message.value)?.to_string(),
+impl From<GameSTriggerChatMessageEvent> for game_events::ReplayGameEvent {
+    fn from(source: GameSTriggerChatMessageEvent) -> Self {
+        ReplayGameEvent::TriggerChatMessage(game_events::GameSTriggerChatMessageEvent {
+            m_chat_message: match str::from_utf8(&source.m_chat_message.value) {
+                Ok(val) => val.to_string(),
+                Err(err) => {
+                    tracing::warn!("Invalid UTF8: {:?}", err);
+                    // return a format version of the bytes:
+                    format!("InvalidUTF8({:?})", source.m_chat_message.value)
+                }
             },
-        ))
+        })
     }
 }
 
@@ -249,7 +209,7 @@ impl From<GameSTriggerTargetModeUpdateEvent> for game_events::ReplayGameEvent {
         game_events::ReplayGameEvent::TriggerTargetModeUpdate(
             game_events::GameSTriggerTargetModeUpdateEvent {
                 m_abil_link: source.m_abil_link.value.into(),
-                m_abil_cmd_index: source.m_abil_cmd_index.into(),
+                m_abil_cmd_index: source.m_abil_cmd_index,
                 m_state: source.m_state.into(),
             },
         )
