@@ -66,7 +66,21 @@ This is behind a feature flag `arrow`.
 ```bash
 $ mkdir ipcs/
 $ cargo run --features arrow -r -- --source "/mnt/windows/Users/sebos/Documents/StarCraft II/Accounts/51504154/2-S2-1-8459957/Replays/Multiplayer/" --output ipcs/ write-arrow-ipc all
-Total time: 29.83001854s
+2023-10-04T18:53:36.030202Z  INFO s2protocol::arrow: Processing Arrow write request
+2023-10-04T18:53:36.441089Z  INFO s2protocol::arrow: Found 3600 files
+2023-10-04T18:53:36.441646Z  INFO s2protocol::arrow: Processing InitData IPC write request
+2023-10-04T18:53:38.515349Z  INFO s2protocol::arrow: Loaded 3600 records
+2023-10-04T18:53:38.575090Z  INFO s2protocol::arrow: Processing Details IPC write request
+2023-10-04T18:53:38.700572Z  INFO s2protocol::arrow: Loaded 3600 records
+2023-10-04T18:53:38.706659Z  INFO s2protocol::arrow: Processing TrackerEvents IPC write request: Stats
+2023-10-04T18:53:44.295524Z  INFO s2protocol::arrow: Loaded 1722783 records
+2023-10-04T18:53:44.515362Z  INFO s2protocol::arrow: Processing TrackerEvents IPC write request: Upgrades
+2023-10-04T18:53:49.963043Z  INFO s2protocol::arrow: Loaded 292898 records
+2023-10-04T18:53:50.036165Z  INFO s2protocol::arrow: Processing TrackerEvents IPC write request: UnitBorn
+2023-10-04T18:53:57.561082Z  INFO s2protocol::arrow: Loaded 22754591 records
+2023-10-04T18:54:00.502298Z  INFO s2protocol::arrow: Processing TrackerEvents IPC write request: UnitDied
+2023-10-04T18:54:07.387545Z  INFO s2protocol::arrow: Loaded 16118808 records
+Total time: 33.654286961s
 ```
 
 ### Jupyter Notebooks
