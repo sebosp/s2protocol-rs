@@ -50,7 +50,7 @@ pub fn handle_update_target_point(
     for selected_unit in &user_selected_units {
         let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
-            registered_unit.target = Some(unit_target_pos);
+            registered_unit.target = Some(unit_target_pos.clone());
             registered_unit.last_game_loop = game_loop;
         }
     }
@@ -79,7 +79,7 @@ pub fn handle_update_target_unit(
     for selected_unit in &user_selected_units {
         let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
-            registered_unit.target = Some(unit_target_pos);
+            registered_unit.target = Some(unit_target_pos.clone());
             registered_unit.last_game_loop = game_loop;
         }
     }
@@ -100,7 +100,7 @@ pub fn unmark_previously_selected_units(
             if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_index) {
                 if unit.is_selected {
                     unit.is_selected = false;
-                    unit.radius = unit.radius * 0.5;
+                    unit.radius *= 0.5;
                     updated_units.push(unit_index);
                 }
                 unit.last_game_loop = game_loop;
@@ -124,7 +124,7 @@ pub fn mark_selected_units(
         if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_index) {
             if !unit.is_selected {
                 unit.is_selected = true;
-                unit.radius = unit.radius * 2.0;
+                unit.radius *= 2.0;
                 updated_units.push(unit_index);
             }
             unit.last_game_loop = game_loop;

@@ -5,10 +5,7 @@ use crate::game_events::ReplayGameEvent;
 
 impl From<GameSCmdEvent> for ReplayGameEvent {
     fn from(source: GameSCmdEvent) -> ReplayGameEvent {
-        let m_abil = match source.m_abil {
-            Some(val) => Some(val.into()),
-            None => None,
-        };
+        let m_abil = source.m_abil.map(|val| val.into());
         ReplayGameEvent::Cmd(crate::game_events::GameSCmdEvent {
             m_cmd_flags: source.m_cmd_flags,
             m_abil,

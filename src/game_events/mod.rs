@@ -10,6 +10,8 @@ pub use iterator::*;
 #[cfg(feature = "arrow")]
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
+use crate::SC2ReplayFilters;
+
 pub type TUserId = u8;
 pub type GameTUnitTag = u32;
 pub type GameTUnitLink = u16;
@@ -73,6 +75,13 @@ pub enum ReplayGameEvent {
     CmdUpdateTargetUnit(GameSCmdUpdateTargetUnitEvent),
     /*TriggerAnimLengthQueryByName(GameSTriggerAnimLengthQueryByNameEvent),
     TriggerAnimLengthQueryByProps(GameSTriggerAnimLengthQueryByPropsEvent),*/
+}
+
+impl ReplayGameEvent {
+    pub fn should_skip(&self, _filters: &SC2ReplayFilters) -> bool {
+        // for now we do not filter GameEvents
+        false
+    }
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -336,8 +345,7 @@ pub enum GameSSelectionMask {
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct GameSelectionMaskType {
-    // Maybe needs to be Vec<u8>, trying as String first
-    pub value: String,
+    pub value: Vec<u8>,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]

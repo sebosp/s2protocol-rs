@@ -44,7 +44,6 @@ impl GameEEventId {
 
     /// Read the Tracker Events
     pub fn read_events(mpq: &MPQ, file_contents: &[u8]) -> Result<Vec<GameEvent>, S2ProtocolError> {
-        // TODO: Make it return an Iterator.
         let (_event_tail, game_events) =
             mpq.read_mpq_file_sector("replay.game.events", false, file_contents)?;
         let mut res = vec![];
@@ -103,7 +102,7 @@ impl TryFrom<GameEEventId> for ReplayGameEvent {
             GameEEventId::ESelectionDelta(e) => Ok(e.try_into()?),
             GameEEventId::EControlGroupUpdate(e) => Ok(e.try_into()?),
             GameEEventId::ESelectionSyncCheck(e) => Ok(e.into()),
-            GameEEventId::ETriggerChatMessage(e) => Ok(e.try_into()?),
+            GameEEventId::ETriggerChatMessage(e) => Ok(e.into()),
             GameEEventId::EUnitClick(e) => Ok(e.into()),
             GameEEventId::EUnitHighlight(e) => Ok(e.into()),
             GameEEventId::ETriggerReplySelected(e) => Ok(e.into()),
@@ -168,14 +167,18 @@ impl From<GameTControlGroupCount> for game_events::GameTControlGroupCount {
     }
 }
 
-impl TryFrom<GameSTriggerChatMessageEvent> for game_events::ReplayGameEvent {
-    type Error = S2ProtocolError;
-    fn try_from(source: GameSTriggerChatMessageEvent) -> Result<Self, Self::Error> {
-        Ok(ReplayGameEvent::TriggerChatMessage(
-            game_events::GameSTriggerChatMessageEvent {
-                m_chat_message: str::from_utf8(&source.m_chat_message.value)?.to_string(),
+impl From<GameSTriggerChatMessageEvent> for game_events::ReplayGameEvent {
+    fn from(source: GameSTriggerChatMessageEvent) -> Self {
+        ReplayGameEvent::TriggerChatMessage(game_events::GameSTriggerChatMessageEvent {
+            m_chat_message: match str::from_utf8(&source.m_chat_message.value) {
+                Ok(val) => val.to_string(),
+                Err(err) => {
+                    tracing::warn!("Invalid UTF8: {:?}", err);
+                    // return a format version of the bytes:
+                    format!("InvalidUTF8({:?})", source.m_chat_message.value)
+                }
             },
-        ))
+        })
     }
 }
 
@@ -206,7 +209,7 @@ impl From<GameSTriggerTargetModeUpdateEvent> for game_events::ReplayGameEvent {
         game_events::ReplayGameEvent::TriggerTargetModeUpdate(
             game_events::GameSTriggerTargetModeUpdateEvent {
                 m_abil_link: source.m_abil_link.value.into(),
-                m_abil_cmd_index: source.m_abil_cmd_index.into(),
+                m_abil_cmd_index: source.m_abil_cmd_index,
                 m_state: source.m_state.into(),
             },
         )

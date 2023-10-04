@@ -13,12 +13,11 @@ impl TryFrom<GameSSelectionDeltaEvent> for game_events::ReplayGameEvent {
         ))
     }
 }
-impl TryFrom<GameSelectionMaskType> for game_events::GameSelectionMaskType {
-    type Error = S2ProtocolError;
-    fn try_from(source: GameSelectionMaskType) -> Result<Self, Self::Error> {
-        Ok(Self {
-            value: str::from_utf8(&source.value)?.to_string(),
-        })
+impl From<GameSelectionMaskType> for game_events::GameSelectionMaskType {
+    fn from(source: GameSelectionMaskType) -> Self {
+        Self {
+            value: source.value,
+        }
     }
 }
 
@@ -47,9 +46,7 @@ impl TryFrom<GameSSelectionMask> for game_events::GameSSelectionMask {
     fn try_from(source: GameSSelectionMask) -> Result<Self, Self::Error> {
         match source {
             GameSSelectionMask::None(()) => Ok(game_events::GameSSelectionMask::None),
-            GameSSelectionMask::Mask(val) => {
-                Ok(game_events::GameSSelectionMask::Mask(val.try_into()?))
-            }
+            GameSSelectionMask::Mask(val) => Ok(game_events::GameSSelectionMask::Mask(val.into())),
             GameSSelectionMask::OneIndices(val) => {
                 Ok(game_events::GameSSelectionMask::OneIndices(val.into()))
             }
