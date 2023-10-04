@@ -4,9 +4,11 @@
 # s2protocol-rs
 
 A nom parser for the Starcraft 2 Protocol Replay format.
-Additionally transduces through the replays to provide SC2ReplayState that keeps track of units, players, buildings, movement, units initialized and died.
+Provides Iterators to transist a minimal state machine through the game loops
+Keeping track of unit groups, upgrades, targets, etc.
 
 ## Motivation
+
 The goal is to learn how to parse binary files format with `nom` and to learn
 how the Starcraft 2 Replay file is so incredibly small for the amount of
 information it packs.
@@ -23,12 +25,13 @@ by using
 
 ## Consuming events
 
+### Transition Iterators
 
-### Transition through time is doable through different iterators:
+These are different ways to consume the events:
 
 - `SC2EventIterator` collects both TrackerEvents and GameEvents. Events are provided as they appear, be them Tracker or Game
 - `TrackerEventIterator` allows consuming only Tracker Events
-- `GameEventIterator` allows consuming only the Game Events.
+- `GameEventIterator` allows consuming only the Game Events
 
 Event changes transist a minimal state machine that updates:
 - names
@@ -36,11 +39,10 @@ Event changes transist a minimal state machine that updates:
 - Attack events
 - etc.
 
-The iterator returns a tuple `(SC2EventType, UnitChangeHint)`
-The second item allows the consumers of the iterator to inspect the state to gather more information on what has changed.
+The iterators returns a tuple `(SC2EventType, UnitChangeHint)`
+The first item contains the event itself as it was deserialized from the SC2Replay.
+The second item hints the consumers of the iterator about the changes performed to the state machine due to this event.
 For example, units may have been deleted, added, changed position, etc.
-
-The changes to the state machine are returned by the iterator.
 
 ```rust
 let source: PathBuf = ""
@@ -56,24 +58,38 @@ for (event, change_hint) in res.into_iter() {
 
 In the directory ipcs/ one .ipc file will be created per implemented data type.
 The `--source` is the directory that contains the replay directory (Or a single file).
-Files are processed using parallel operations. For 3600 files (500 MBs) it takes 30 seconds to transform/split them.
+Files are processed using parallel operations.
+For 3600 files (500 MBs) it takes 30 seconds to transform/split them. YMMV
+
+This is behind a feature flag `arrow`.
 
 ```bash
 $ mkdir ipcs/
-$ cargo run -r -- --source "/mnt/windows/Users/sebos/Documents/StarCraft II/Accounts/51504154/2-S2-1-8459957/Replays/Multiplayer/" --output ipcs/ write-arrow-ipc all
+$ cargo run --features arrow -r -- --source "/mnt/windows/Users/sebos/Documents/StarCraft II/Accounts/51504154/2-S2-1-8459957/Replays/Multiplayer/" --output ipcs/ write-arrow-ipc all
 Total time: 29.83001854s
 ```
 
 ### Jupyter Notebooks
 
+```
+$ virtualenv new venv
+$ source ./venv/bin/activate
+$ pip install -r requirements.txt
+$ jupyter lab
+```
+
+Then open your browser and locate the Notebbooks, for example:
+
 [Basic UnitBorn Queries](./jupyter_notebooks/Basic-UnitBorn-Queries.ipynb)
+![All units born](https://github.com/sebosp/s2protocol-rs/assets/873436/2307780a-bc62-4cd4-9daf-a3e622bdb5b7)
+![Most effective units across all games](https://github.com/sebosp/s2protocol-rs/assets/873436/cba9da20-a034-47f3-9016-bfd6db21247b)
 
 ### polars-cli
 
 ```bash
 $ cargo install polars-cli
 $ # List the max number of minerals that were lost in per map when the army was killed.
-❯ echo "SELECT ext_fs_replay_file_name, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s2protocol-rs/stats.ipc') GROUP BY ext_fs_replay_file_name ORDER BY minerals_lost_army DESC;"|polars
+❯ echo "SELECT ext_fs_replay_file_name, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s2protocol-rs/ipcs/stats.ipc') GROUP BY ext_fs_replay_file_name ORDER BY minerals_lost_army DESC;"|polars
 ┌───────────────────────────────────┬────────────────────┐
 │ ext_fs_replay_file_name           ┆ minerals_lost_army │
 │ ---                               ┆ ---                │
