@@ -25,7 +25,7 @@ impl DecoderType {
     /// Further combinators will use `tail` instead of `input`.
     fn open_byte_aligned_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::byte_aligned::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::byte_aligned::{name}::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
              let (tail, _) = validate_struct_tag(input)?;\n\
              let (mut tail, struct_field_count) = parse_vlq_int(tail)?;\n\
@@ -57,7 +57,7 @@ impl DecoderType {
             "tail"
         };
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::bit_packed::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::bit_packed::{name}::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
              let {tail_str} = input;
          ",
@@ -316,7 +316,7 @@ impl DecoderType {
         _num_fields: usize,
     ) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, _) = validate_choice_tag(input)?;\n\
          let (tail, variant_tag) = parse_vlq_int(tail)?;\n\
@@ -337,7 +337,7 @@ impl DecoderType {
     ) -> String {
         let num_bits = (num_fields as f32).log2().ceil() as usize;
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
             // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
@@ -560,7 +560,7 @@ impl DecoderType {
                             continue;\n\
                         }} else {{\n\
                             tracing::error!(\"Field {field_name} with tag {proto_field_tag} was already provided\");\n\
-                            panic!(\"Unhandled duplicate field.\");
+                            return Err(S2ProtocolError::DuplicateTag(String::from(\"{field_name}\"), proto_field_tag));\n\
                         }}\n\
                     }},\n"
                 ));
@@ -575,11 +575,11 @@ impl DecoderType {
                 ));
             }
             struct_parse_return.push_str(&format!(
-                "{field_name}: ok_or_return_missing_field_err!({field_name})n"
+                "{field_name}: ok_or_return_missing_field_err!({field_name}),\n"
             ));
             // Create a parsing function
             type_impl_def.push_str(&format!(
-                    "#[tracing::instrument(level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+                    "#[tracing::instrument(level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
                      pub fn parse_{field_name}(input: &[u8]) -> S2ProtoResult<&[u8], {field_type}> {{\n\
                     "));
             if morph.is_optional {
@@ -599,7 +599,7 @@ impl DecoderType {
                 ));
                     if morph.do_try_from {
                         type_impl_def.push_str(
-                            "let array = array.iter().map(|val| <_>::try_from(*val).unwrap()).collect();\n",
+                            "let array = array.iter().map(|val| <_>::try_from(*val)?).collect();\n",
                         );
                     }
                     type_impl_def.push_str("(tail, Some(array))");
@@ -607,7 +607,7 @@ impl DecoderType {
                     type_impl_def
                         .push_str(&format!("let (tail, res) = {field_value_parser}(tail)?;\n"));
                     if morph.do_try_from {
-                        type_impl_def.push_str("    (tail, Some(<_>::try_from(res).unwrap()))\n");
+                        type_impl_def.push_str("    (tail, Some(<_>::try_from(res)?))\n");
                     } else {
                         type_impl_def.push_str("    (tail, Some(res))\n");
                     }
@@ -616,7 +616,7 @@ impl DecoderType {
                 type_impl_def.push_str("    (tail, None)\n");
                 type_impl_def.push_str("};\n");
                 type_impl_def.push_str(&format!(
-                    "    tracing::debug!(\"res: {{:?}}\", {field_name});\n\
+                    "    tracing::debug!(\"{field_name}: {{:?}}\", {field_name});\n\
                      Ok((tail, {field_name}))\n"
                 ));
             } else if morph.is_vec {
@@ -628,24 +628,23 @@ impl DecoderType {
                 ));
                 if morph.do_try_from {
                     type_impl_def.push_str(
-                    "let array = array.iter().map(|val| <_>::try_from(*val).unwrap()).collect();\n",
-                );
+                        "let array = array.iter().map(|val| <_>::try_from(*val)?).collect();\n",
+                    );
                 }
                 type_impl_def.push_str("Ok((tail, array))\n");
             } else if morph.is_sized_int {
                 type_impl_def.push_str(&format!(
                     " let (tail, {field_name}) = {field_value_parser}?;\n
-                      tracing::debug!(\"res: {{:?}}\", {field_name});\n
+                      tracing::debug!(\"{field_name}: {{:?}}\", {field_name});\n
                       Ok((tail, {field_name}))\n"
                 ));
             } else {
                 type_impl_def.push_str(&format!(
-                    " let (tail, {field_name}) = {field_value_parser}(input)?;\n
-                      tracing::debug!(\"res: {{:?}}\", {field_name});\n"
+                    " let (tail, {field_name}) = {field_value_parser}(input)?;\n"
                 ));
                 if morph.do_try_from {
                     type_impl_def.push_str(&format!(
-                        "        Ok((tail, {field_type}::try_from({field_name}).unwrap()))\n"
+                        "        Ok((tail, {field_type}::try_from({field_name})?))\n"
                     ));
                 } else {
                     type_impl_def.push_str(&format!("        Ok((tail, {field_name}))\n"));
@@ -659,7 +658,7 @@ impl DecoderType {
                 "
                 _ => {\n\
                     tracing::error!(\"Unknown tag {field_tag}\");\n\
-                    panic!(\"Unknown tag {field_tag}\");\n\
+                    Err(S2ProtocolError::UnknownTag(variant_tag))\n\
                 },\n\
             }\n\
           }",
@@ -853,7 +852,7 @@ impl DecoderType {
             ));
             // Create a parsing function
             type_impl_def.push_str(&format!(
-                    "#[tracing::instrument(level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+                    "#[tracing::instrument(level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
                      pub fn parse_{field_name}(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), {field_type}> {{\n\
                     "));
             if morph.is_optional {
@@ -890,8 +889,8 @@ impl DecoderType {
                     }
                     if morph.do_try_from {
                         type_impl_def.push_str(
-                        "let array = array.iter().map(|val| <_>::try_from(*val).unwrap()).collect();\n",
-                    );
+                            "let array = array.iter().map(|val| <_>::try_from(*val)?).collect();\n",
+                        );
                     }
                     type_impl_def.push_str("(tail, Some(array))");
                 } else {
@@ -903,7 +902,7 @@ impl DecoderType {
                             .push_str(&format!("let (tail, res) = {field_value_parser}(tail)?;\n"));
                     }
                     if morph.do_try_from {
-                        type_impl_def.push_str("    (tail, Some(<_>::try_from(res).unwrap()))\n");
+                        type_impl_def.push_str("    (tail, Some(<_>::try_from(res)?))\n");
                     } else {
                         type_impl_def.push_str("    (tail, Some(res))\n");
                     }
@@ -912,8 +911,7 @@ impl DecoderType {
                 type_impl_def.push_str("    (tail, None)\n");
                 type_impl_def.push_str("};\n");
                 type_impl_def.push_str(&format!(
-                    "    tracing::debug!(\"res: {{:?}}\", {field_name});\n\
-                     Ok((tail, {field_name}))\n\
+                    "    Ok((tail, {field_name}))\n\
                      }}\n"
                 ));
             } else if morph.is_vec {
@@ -942,8 +940,8 @@ impl DecoderType {
                 ));
                 if morph.do_try_from {
                     type_impl_def.push_str(
-                    "let array = array.iter().map(|val| <_>::try_from(*val).unwrap()).collect();\n",
-                );
+                        "let array = array.iter().map(|val| <_>::try_from(*val)?).collect();\n",
+                    );
                 }
                 type_impl_def.push_str(
                     "Ok((tail, array))\n\
@@ -961,12 +959,9 @@ impl DecoderType {
                         " let (tail, {field_name}) = {field_value_parser}(input)?;\n"
                     ));
                 }
-                type_impl_def.push_str(&format!(
-                    "    tracing::debug!(\"res: {{:?}}\", {field_name});\n"
-                ));
                 if morph.do_try_from {
                     type_impl_def.push_str(&format!(
-                        "        Ok((tail, {field_type}::try_from({field_name}).unwrap()))\n\
+                        "        Ok((tail, {field_type}::try_from({field_name})?))\n\
                          }}\n"
                     ));
                 } else {
@@ -1034,10 +1029,8 @@ impl DecoderType {
                 enum_parse_impl_def
                     .push_str("let (tail, is_provided) = nom::number::complete::u8(tail)?;\n");
                 enum_parse_impl_def.push_str("if is_provided != 0 {\n");
-                enum_parse_impl_def.push_str(&format!(
-                    "let (tail, res) = {field_value_parser}(tail)?;\n\
-                     tracing::debug!(\"res: {{:?}}\", res);\n"
-                ));
+                enum_parse_impl_def
+                    .push_str(&format!("let (tail, res) = {field_value_parser}(tail)?;\n"));
                 enum_parse_impl_def.push_str(&format!(
                     "    Ok((tail, Self::{variant_name}(Some(res))))\n"
                 ));
@@ -1046,14 +1039,12 @@ impl DecoderType {
                     .push_str(&format!("    Ok((tail, Self::{variant_name}(None)))\n"));
                 enum_parse_impl_def.push_str("}\n");
             } else {
-                enum_parse_impl_def.push_str(&format!(
-                    "let (tail, res) = {field_value_parser}(tail)?;\n\
-                     tracing::debug!(\"res: {{:?}}\", res);\n"
-                ));
+                enum_parse_impl_def
+                    .push_str(&format!("let (tail, res) = {field_value_parser}(tail)?;\n"));
                 if morph.do_try_from {
                     enum_parse_impl_def.push_str(&format!(
-                    "    Ok((tail, Self::{variant_name}({field_type}::try_from(res).unwrap())))\n"
-                ));
+                        "    Ok((tail, Self::{variant_name}({field_type}::try_from(res)?)))\n"
+                    ));
                 } else {
                     enum_parse_impl_def
                         .push_str(&format!("    Ok((tail, Self::{variant_name}(res)))\n"));
@@ -1065,7 +1056,7 @@ impl DecoderType {
             "
             _ => {\n\
                 tracing::error!(\"Unknown variant for tag {variant_tag}\");\n\
-                panic!(\"Unknown variant tag {variant_tag}\");\n\
+                Err(S2ProtocolError::UnknownTag(variant_tag))\n\
             },\n\
           }",
         ); // close the match
@@ -1129,8 +1120,7 @@ impl DecoderType {
                 );
                 enum_parse_impl_def.push_str("if is_provided {\n");
                 enum_parse_impl_def.push_str(&format!(
-                    "let (tail, res) = {field_value_parser}::parse(tail)?;\n\
-                     tracing::debug!(\"res: {{:?}}\", res);\n"
+                    "let (tail, res) = {field_value_parser}::parse(tail)?;\n"
                 ));
                 enum_parse_impl_def.push_str(&format!(
                     "    Ok((tail, Self::{variant_name}(Some(res))))\n"
@@ -1140,14 +1130,12 @@ impl DecoderType {
                     .push_str(&format!("    Ok((tail, Self::{variant_name}(None)))\n"));
                 enum_parse_impl_def.push_str("}\n");
             } else {
-                enum_parse_impl_def.push_str(&format!(
-                    "let (tail, res) = {field_value_parser}(tail)?;\n\
-                     tracing::debug!(\"res: {{:?}}\", res);\n"
-                ));
+                enum_parse_impl_def
+                    .push_str(&format!("let (tail, res) = {field_value_parser}(tail)?;\n"));
                 if morph.do_try_from {
                     enum_parse_impl_def.push_str(&format!(
-                    "    Ok((tail, Self::{variant_name}({field_type}::try_from(res).unwrap())))\n"
-                ));
+                        "    Ok((tail, Self::{variant_name}({field_type}::try_from(res)?)))\n"
+                    ));
                 } else {
                     enum_parse_impl_def
                         .push_str(&format!("    Ok((tail, Self::{variant_name}(res)))\n"));
@@ -1159,7 +1147,7 @@ impl DecoderType {
             "
             _ => {\n\
                 tracing::error!(\"Unknown variant for tag {variant_tag}\");\n\
-                panic!(\"Unknown variant tag {variant_tag}\");\n\
+                Err(S2ProtocolError::UnknownTag(variant_tag))\n\
             },\n\
           }",
         ); // close the match
@@ -1200,7 +1188,7 @@ impl DecoderType {
         name: &str,
     ) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, _) = validate_int_tag(input)?;\n\
          let (tail, value) = parse_vlq_int(tail)?;\n\
@@ -1267,12 +1255,12 @@ impl DecoderType {
             num_bits += 1;
         }
         format!(
-            "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse::{bound_type}\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse::{bound_type}\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let offset: i64 = {offset};
          let num_bits: usize = {num_bits};
          let (tail, res) = parse_packed_int(input, offset, num_bits)?;\n\
-         Ok((tail, Self {{ value: <_>::try_from(res).unwrap() }}))\n\
+         Ok((tail, Self {{ value: <_>::try_from(res)? }}))\n\
          ",
         )
     }
@@ -1305,7 +1293,7 @@ impl DecoderType {
             .as_str()
             .expect("type_info.fullname should be string");
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, value) = {type_info}::parse(input)?;\n\
          Ok((tail, Self {{ value }}))\n\
@@ -1326,7 +1314,7 @@ impl DecoderType {
         let type_info = proto_nnet_name_to_rust_name(type_info);
 
         format!(
-            "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let (tail, value) = {type_info}::parse(input)?;\n\
          Ok((tail, Self {{ value }}))\n\
@@ -1371,7 +1359,7 @@ impl DecoderType {
         assert!(bounds["min"]["evalue"] == "0");
         let num_bits = Self::bounds_max_value_to_bit_size(&bounds);
         format!(
-            "#[tracing::instrument(name=\"{proto_num}::{name}::BitArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::BitArrayType::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let bitarray_length_bits: usize = {num_bits};
          let (tail, bitarray_length) = take_n_bits_into_i64(input, bitarray_length_bits)?;
@@ -1416,7 +1404,7 @@ impl DecoderType {
         assert!(bounds["min"]["evalue"] == bounds["max"]["evalue"]);
         let num_bits = Self::bounds_max_value_to_bit_size(&bounds);
         format!(
-            "#[tracing::instrument(name=\"{proto_num}::{name}::BlobType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::BlobType::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let (tail, _) = byte_align(input)?;
          let num_bits: usize = {num_bits};
@@ -1466,7 +1454,7 @@ impl DecoderType {
         // 19 string max.evalue needs 7 bits read for its size
         let str_size_num_bits = (res.log2() + 1.).floor() as usize + 2;
         format!(
-            "#[tracing::instrument(name=\"{proto_num}::{name}::StringType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::StringType::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let str_size_num_bits: usize = {str_size_num_bits};\n\
          let (tail, str_size) = parse_packed_int(input, 0, str_size_num_bits)?;\n\
@@ -1523,7 +1511,7 @@ impl DecoderType {
         }
         let array_length_num_bits = ((array_max_value as f32).log2() + 1.).floor() as usize;
         format!(
-            "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          let array_length_num_bits: usize = {array_length_num_bits};\n\
          let (tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;\n\
@@ -1544,13 +1532,12 @@ impl DecoderType {
         internal_type: &str,
     ) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
                  let (tail, _) = validate_array_tag(input)?;\n\
                  let (tail, array_length) = parse_vlq_int(tail)?;\n\
                  tracing::debug!(\"Reading array length: {{array_length}}\");\n\
                  let (tail, value) = nom::multi::count({internal_type}::parse, array_length as usize)(tail)?;\n\
-                 // TODO: Unsure about this. \n\
                 Ok((tail, Self {{ value }}))\n\
          ",
         )
@@ -1576,7 +1563,7 @@ impl DecoderType {
 
     pub fn open_byte_aligned_enum_main_parse_fn(proto_num: u64, name: &str) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_hex(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, _) = validate_int_tag(input)?;\n\
          let (tail, variant_tag) = parse_vlq_int(tail)?;\n\
@@ -1601,7 +1588,7 @@ impl DecoderType {
     ) -> String {
         let num_bits = (num_fields as f32).log2().ceil() as usize;
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"debug\", skip(input), fields(peek = peek_bits(input)))]\n\
+        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          // Total fields: {num_fields}\n\
          let num_bits: usize = {num_bits};\n\
@@ -1688,7 +1675,7 @@ impl DecoderType {
             "
             _ => {\n\
                 tracing::error!(\"Unknown variant value {variant_tag}\");\n\
-                panic!(\"Unknown variant value {variant_tag}\");\n\
+                Err(S2ProtocolError::UnknownTag(variant_tag))\n\
             },\n",
         );
         type_impl_def.push_str(&enum_parse_impl_def);

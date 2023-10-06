@@ -65,8 +65,7 @@ impl ProtoMorphist {
         )?;
         self.output.write_all(
             b"use crate::*;\n\
-              use nom_mpq::parser::peek_hex;\n\
-              use nom::*;\n",
+              use nom_mpq::parser::peek_hex;\n",
         )
     }
 
@@ -80,10 +79,7 @@ impl ProtoMorphist {
             )
             .as_bytes(),
         )?;
-        self.output.write_all(
-            b"use crate::*;\n\
-              use nom::*;\n",
-        )
+        self.output.write_all(b"use crate::*;\n")
     }
 
     /// Opens the sub-module for byte aligned structs and parsing.

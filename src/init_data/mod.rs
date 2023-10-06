@@ -336,7 +336,7 @@ mod tests {
         let (tail, handicap) = GameSLobbySlot::parse_m_handicap(tail).unwrap();
         assert_eq!(handicap.value.value, 100);
         let (tail, observe) = GameSLobbySlot::parse_m_observe(tail).unwrap();
-        assert_eq!(observe.into::<u8>(), crate::common::OBSERVE_NONE);
+        assert_eq!(u8::from(observe), crate::common::OBSERVE_NONE);
         let (tail, logo) = GameSLobbySlot::parse_m_logo_index(tail).unwrap();
         assert_eq!(logo.value.value, 0);
         let (_tail, hero) = GameSLobbySlot::parse_m_hero(tail).unwrap();
