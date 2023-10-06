@@ -1201,7 +1201,7 @@ impl DecoderType {
         format!("}}")
     }
 
-    /// Transforms a bounds[max][evalue] possibly "inclusive" (i.e. "less than _or equal_) to the
+    /// Transforms a `bounds[max][evalue]` possibly "inclusive" (i.e. "less than _or equal_) to the
     /// number of bits needed to represent such max value.
     pub fn bounds_max_value_to_bit_size(bounds: &Value) -> usize {
         tracing::info!("Max bound: {:?}", bounds);
@@ -1770,7 +1770,7 @@ impl DecoderType {
         type_impl_def.push_str(&bit_packed_parse_impl_def);
     }
 
-    /// Creates a Rust Vec<u8> out of a BitArray type.
+    /// Creates a Rust `Vec<u8>` out of a BitArray type.
     /// The struct contains an interval .value field.
     #[tracing::instrument(
         level = "debug",
@@ -1805,7 +1805,7 @@ impl DecoderType {
         type_impl_def.push_str(&bit_packed_parse_impl_def);
     }
 
-    /// Creates a Rust Vec<u8> out of a BitArray type.
+    /// Creates a Rust `Vec<u8>` out of a BitArray type.
     /// The struct contains an interval .value field.
     #[tracing::instrument(
         level = "debug",

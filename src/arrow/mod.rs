@@ -24,7 +24,7 @@ pub enum ArrowIpcTypes {
     Details,
     /// Writes the [`crate::tracker_events::PlayerStatsEvent`] to an Arrow IPC file
     Stats,
-    /// Writes the [`crate::tracker_events::UpgradeEvents`] to an Arrow IPC file
+    /// Writes the [`crate::tracker_events::UpgradeEvent`] to an Arrow IPC file
     Upgrades,
     /// Writes the [`crate::tracker_events::UnitBornEvent`] to an Arrow IPC file
     UnitBorn,
