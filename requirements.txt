@@ -102,7 +102,7 @@ prompt-toolkit==3.0.39
 psutil==5.9.5
 ptyprocess==0.7.0
 pure-eval==0.2.2
-pyarrow==13.0.0
+pyarrow==14.0.1
 pycparser==2.21
 pyct==0.5.0
 Pygments==2.16.1
