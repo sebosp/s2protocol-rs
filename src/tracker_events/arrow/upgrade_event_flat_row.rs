@@ -31,7 +31,7 @@ impl UpgradeEventFlatRow {
         details: crate::details::Details,
     ) -> Self {
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        let ext_replay_detail_player_name = details.get_player_name(event.player_id - 1);
+        let ext_replay_detail_player_name = details.get_player_name(event.player_id);
         Self {
             player_id: event.player_id,
             name: event.upgrade_type_name,
