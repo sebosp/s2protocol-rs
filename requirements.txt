@@ -61,7 +61,7 @@ jupyter-contrib-core==0.4.2
 jupyter-contrib-nbextensions==0.7.0
 jupyter-events==0.9.0
 jupyter-highlight-selected-word==0.2.0
-jupyter-lsp==2.2.0
+jupyter-lsp==2.2.2
 jupyter-nbextensions-configurator==0.6.3
 jupyter-ydoc==1.1.1
 jupyter_client==8.6.0
