@@ -90,7 +90,7 @@ nbclient==0.9.0
 nbconvert==7.11.0
 nbformat==5.9.2
 nest-asyncio==1.5.8
-notebook==7.0.6
+notebook==7.0.7
 notebook_shim==0.2.3
 numba==0.58.1
 numcodecs==0.12.1
