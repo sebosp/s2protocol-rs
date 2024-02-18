@@ -10,5 +10,3 @@ Cargo.lock
 **/*.rs.bk
 
 ipcs/
-
-jupyter_notebooks/.ipynb_checkpoints/
