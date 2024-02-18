@@ -83,6 +83,10 @@ $ cargo run --features arrow -r -- --source "/mnt/windows/Users/sebos/Documents/
 Total time: 33.654286961s
 ```
 
+### Jupyter Notebooks
+
+The jupyter notebook with examples on how to interact with the data are available in [s2-polars-data-analysis](https://github.com/sebosp/s2-polars-data-analysis)
+
 ### polars-cli
 
 ```bash
