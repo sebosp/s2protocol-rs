@@ -1,12 +1,14 @@
 [package]
 name = "s2protocol"
-version = "3.0.0"
+description = "A parser for Starcraft II - Replay format, exports to different target formats"
+version = "3.0.3"
+authors = ["Seb Ospina <kraige@gmail.com>"]
 edition = "2021"
+readme = "README.md"
 license = "MIT"
-description = "A reader for Starcraft II - Replay format"
 repository = "https://github.com/sebosp/s2protocol-rs"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+keywords = ["sc2replay", "polars", "arrow"]
+categories = ["archive", "parsing", "sc2", "mpq"]
 
 [dependencies]
 nom = "7.1.1"

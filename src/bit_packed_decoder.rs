@@ -72,7 +72,7 @@ pub fn take_n_bits_into_i64(
 }
 
 /// Takes n total bits from the current u8 slice at the current offset and transforms the data into
-/// a Vec<u8>
+/// a `Vec<u8>`
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 pub fn take_bit_array(
     input: (&[u8], usize),

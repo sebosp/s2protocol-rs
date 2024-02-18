@@ -44,7 +44,7 @@ pub enum S2ProtocolError {
     /// consolidated-types
     #[error("Unsupported Event Type")]
     UnsupportedEventType,
-    /// Conversion to UTF-8 failed, from the Vec<u8> _name fields in the proto fields
+    /// Conversion to UTF-8 failed, from the `Vec<u8>` "name" fields in the proto fields
     #[error("Utf8 conversion error")]
     Utf8Error(#[from] std::str::Utf8Error),
 }
