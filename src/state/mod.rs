@@ -52,6 +52,8 @@ pub struct SC2Unit {
     pub is_selected: bool,
     /// Whether the unit is in Initializing state, for example morphing.
     pub is_init: bool,
+    /// The unit tag index
+    pub tag_index: u32,
 }
 
 /// Supported event types.

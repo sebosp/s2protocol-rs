@@ -23,6 +23,7 @@ impl TryFrom<ReplaySInitData> for InitData {
             sync_lobby_state,
             sha256: "".to_string(),
             file_name: "".to_string(),
+            version: 0,
         })
     }
 }

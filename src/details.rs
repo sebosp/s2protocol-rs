@@ -62,11 +62,12 @@ impl Details {
     }
 
     /// Attempts to find the player id from the player_list vector.
-    /// The player_id in this vector is off by one on the player_id in the tracker events.
+    /// The player_id in this vector is off by one on the player_id in the tracker events, or is
+    /// it? We should check this.
     pub fn get_player_name(&self, event_player_id: u8) -> String {
         self.player_list
             .iter()
-            .find(|player| player.working_set_slot_id == Some(event_player_id - 1))
+            .find(|player| player.working_set_slot_id == Some(event_player_id))
             .map(|player| {
                 // The player name may be prepend by its clan.
                 // The clan seems to be URL encoded like "&lt&CLAN&gt<sp/>PLAYERNAME"

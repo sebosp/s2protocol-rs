@@ -18,7 +18,7 @@ pub fn write_batches(
     schema: arrow2::datatypes::Schema,
     chunks: &[Chunk<Box<dyn Array>>],
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let file = std::fs::File::create(&path)?;
+    let file = std::fs::File::create(path)?;
 
     let options = arrow2::io::ipc::write::WriteOptions { compression: None };
     let mut writer = arrow2::io::ipc::write::FileWriter::new(file, schema, None, options);

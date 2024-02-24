@@ -29,6 +29,9 @@ pub struct UnitDiedEventFlatRow {
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
     pub ext_fs_replay_sha256: String,
+    // TODO: Deprecate this field, it can be calculated by joining the Details IPC.
+    // We'd need to enrich the Details player_list with the full name {}-{}-{}-{} with realm,
+    // user_id, etc and right nthe get_player_name may be wrong.
     pub ext_replay_detail_killer_player_name: String,
 }
 

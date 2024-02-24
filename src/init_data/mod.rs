@@ -15,25 +15,25 @@ use std::path::PathBuf;
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct InitData {
+    /// The lobby state
     pub sync_lobby_state: LobbySyncState,
+    /// The sha256 of the file, prevent duplicates and provide a unique identifier
     pub sha256: String,
+    /// The file name
     pub file_name: String,
+    /// The version of the protocol
+    pub version: u32,
 }
 
 impl InitData {
     /// Calls the per-protocol parser for the InitData and sets the metadadata.
+    #[tracing::instrument(level = "error", skip(file_contents, mpq))]
     pub fn new(file_name: &str, mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
-        let init_data = match crate::versions::read_init_data(file_name, mpq, file_contents) {
-            Ok(init_data) => init_data,
-            Err(err) => {
-                tracing::error!("Error reading init_data: {:?}", err);
-                return Err(err);
-            }
-        };
+        let init_data = crate::versions::read_init_data(file_name, mpq, file_contents)?;
         Ok(init_data.set_metadata(file_name, file_contents))
     }
 
-    #[tracing::instrument(level = "debug")]
+    #[tracing::instrument(level = "debug", skip(file_contents))]
     #[cfg(feature = "arrow")]
     pub fn set_metadata(mut self, file_name: &str, file_contents: &[u8]) -> Self {
         // TODO: We need to find a way to trim the sha just like git rev-parse,
@@ -43,6 +43,18 @@ impl InitData {
         self.sha256 = sha256::digest(file_contents);
         self.file_name = file_name.to_string();
         self
+    }
+
+    #[tracing::instrument(level = "error")]
+    pub fn set_version(&mut self, version: u32) {
+        self.version = version;
+    }
+
+    /// Trim the sha to n characters, this is done to reduce the size of the generated files
+    /// because every sha is unique and we don't need the full sha to identify the file.
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub fn trim_sha(&mut self, n: usize) {
+        self.sha256 = self.sha256.chars().take(n).collect()
     }
 }
 
@@ -60,10 +72,7 @@ impl TryFrom<PathBuf> for InitData {
             Ok(init_data) => {
                 Ok(init_data.set_metadata(path.to_str().unwrap_or_default(), &file_contents))
             }
-            Err(err) => {
-                tracing::error!("Error reading initdata: {:?}", err);
-                Err(err)
-            }
+            Err(err) => Err(err),
         }
     }
 }
