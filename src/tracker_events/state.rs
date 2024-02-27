@@ -147,7 +147,7 @@ pub fn handle_unit_position(
     }
     let updated_units = updated_unit_ids
         .iter()
-        .filter_map(|id| sc2_state.units.get(&id))
+        .filter_map(|id| sc2_state.units.get(id))
         .cloned()
         .collect();
     UnitChangeHint::Batch(updated_units)

@@ -34,6 +34,7 @@ impl DecoderType {
     }
 
     /// Closes the struct main parse function.
+    #[allow(clippy::useless_format)]
     fn close_byte_aligned_struct_main_parse_fn() -> String {
         format!("}}")
     }
@@ -65,6 +66,7 @@ impl DecoderType {
     }
 
     /// Closes the struct main parse function.
+    #[allow(clippy::useless_format)]
     fn close_bit_packed_struct_main_parse_fn() -> String {
         format!("}}")
     }
@@ -325,6 +327,7 @@ impl DecoderType {
     }
 
     #[tracing::instrument(level = "debug")]
+    #[allow(clippy::useless_format)]
     pub fn close_byte_aligned_choice_main_parse_fn() -> String {
         format!("}}")
     }
@@ -350,6 +353,7 @@ impl DecoderType {
     )
     }
     #[tracing::instrument(level = "debug")]
+    #[allow(clippy::useless_format)]
     pub fn close_bit_packed_choice_main_parse_fn() -> String {
         format!("}}")
     }
@@ -415,6 +419,7 @@ impl DecoderType {
         level = "debug",
         skip(proto_mod, proto_type_def, struct_parse_impl_def, type_impl_def,)
     )]
+    #[allow(clippy::useless_format)]
     pub fn gen_byte_aligned_proto_struct_code(
         proto_mod: &Value,
         proto_type_def: &mut String,
@@ -424,11 +429,7 @@ impl DecoderType {
         let decoder = DecoderType::ByteAligned;
         //output.write_all(format!("\n/*{:#}*/\n", proto_mod).as_bytes())?;
         let field_array = proto_mod["type_info"]["fields"].as_array().unwrap();
-        let has_tags = if field_array.len() == 1 && field_array[0]["tag"] == Value::Null {
-            false
-        } else {
-            true
-        };
+        let has_tags = !(field_array.len() == 1 && field_array[0]["tag"] == Value::Null);
         let mut struct_parse_return = String::from("Ok((tail, Self {");
         // Structs are prepend with the number of fields that follow, pressumably to account for
         // Optionals
@@ -537,7 +538,7 @@ impl DecoderType {
                     field["tag"]["type"]
                         .as_str()
                         .expect("Field should have .tag.type")
-                        == String::from("IntLiteral")
+                        == "IntLiteral"
                 );
                 struct_parse_fields.push_str(&format!(
                     " {proto_field_tag} => {{\n\
@@ -675,6 +676,7 @@ impl DecoderType {
         level = "debug",
         skip(proto_mod, proto_type_def, struct_parse_impl_def, type_impl_def,)
     )]
+    #[allow(clippy::useless_format)]
     pub fn gen_bit_packed_proto_struct_code(
         proto_mod: &Value,
         proto_type_def: &mut String,
@@ -1014,7 +1016,7 @@ impl DecoderType {
                 morph.rust_ty = morph.rust_ty.replace("{}", &enclosed_type);
             }
             let proto_field_tag = variant["tag"]["value"].as_str().unwrap();
-            assert!(variant["tag"]["type"].as_str().unwrap() == String::from("IntLiteral"));
+            assert!(variant["tag"]["type"].as_str().unwrap() == "IntLiteral");
             let field_type = &morph.rust_ty;
             let field_value_parser = &morph.parser;
             proto_type_def.push_str(&format!("({field_type}),\n"));
@@ -1104,7 +1106,7 @@ impl DecoderType {
                 morph.rust_ty = morph.rust_ty.replace("{}", &enclosed_type);
             }
             let proto_field_tag = variant["tag"]["value"].as_str().unwrap();
-            assert!(variant["tag"]["type"].as_str().unwrap() == String::from("IntLiteral"));
+            assert!(variant["tag"]["type"].as_str().unwrap() == "IntLiteral");
             let field_type = &morph.rust_ty;
             let field_value_parser = &morph.parser;
             proto_type_def.push_str(&format!("({field_type}),\n"));
@@ -1197,6 +1199,7 @@ impl DecoderType {
     )
     }
 
+    #[allow(clippy::useless_format)]
     pub fn close_byte_aligned_int_main_parse_fn() -> String {
         format!("}}")
     }
@@ -1210,17 +1213,15 @@ impl DecoderType {
             .expect("Missing have .max.evalue string")
             .parse::<f64>()
             .expect(".max.evalue must be parseable usize");
-        if bounds["min"]["inclusive"]
+        if !bounds["min"]["inclusive"]
             .as_bool()
             .expect("Missing .min.inclusive")
-            == false
         {
             res -= 1.;
         }
-        if bounds["max"]["inclusive"]
+        if !bounds["max"]["inclusive"]
             .as_bool()
             .expect("Missing .max.inclusive")
-            == false
         {
             res -= 1.;
         };
@@ -1245,7 +1246,7 @@ impl DecoderType {
             String::from("PowExpr")
         } else {
             if bounds["max"]["evalue"].as_str().is_some() {
-                num_bits = Self::bounds_max_value_to_bit_size(&bounds);
+                num_bits = Self::bounds_max_value_to_bit_size(bounds);
             }
             bounds["type"].as_str().unwrap().to_string()
         };
@@ -1265,6 +1266,7 @@ impl DecoderType {
         )
     }
 
+    #[allow(clippy::useless_format)]
     pub fn close_bit_packed_int_main_parse_fn() -> String {
         format!("}}")
     }
@@ -1301,6 +1303,7 @@ impl DecoderType {
     )
     }
 
+    #[allow(clippy::useless_format)]
     pub fn close_byte_aligned_user_type_main_parse_fn() -> String {
         format!("}}")
     }
@@ -1322,6 +1325,7 @@ impl DecoderType {
         )
     }
 
+    #[allow(clippy::useless_format)]
     pub fn close_bit_packed_user_type_main_parse_fn() -> String {
         format!("}}")
     }
@@ -1357,7 +1361,7 @@ impl DecoderType {
     ) -> String {
         assert!(bounds["type"] == "MinMaxConstraint");
         assert!(bounds["min"]["evalue"] == "0");
-        let num_bits = Self::bounds_max_value_to_bit_size(&bounds);
+        let num_bits = Self::bounds_max_value_to_bit_size(bounds);
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BitArrayType::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
@@ -1369,6 +1373,7 @@ impl DecoderType {
         )
     }
 
+    #[allow(clippy::useless_format)]
     pub fn close_bit_packed_bit_array_main_parse_fn() -> String {
         format!("}}")
     }
@@ -1402,7 +1407,7 @@ impl DecoderType {
     ) -> String {
         assert!(bounds["type"] == "ExactConstraint");
         assert!(bounds["min"]["evalue"] == bounds["max"]["evalue"]);
-        let num_bits = Self::bounds_max_value_to_bit_size(&bounds);
+        let num_bits = Self::bounds_max_value_to_bit_size(bounds);
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::BlobType::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
@@ -1414,6 +1419,7 @@ impl DecoderType {
         )
     }
 
+    #[allow(clippy::useless_format)]
     pub fn close_bit_packed_blob_main_parse_fn() -> String {
         format!("}}")
     }
@@ -1465,6 +1471,7 @@ impl DecoderType {
         )
     }
 
+    #[allow(clippy::useless_format)]
     pub fn close_bit_packed_string_main_parse_fn() -> String {
         format!("}}")
     }
@@ -1509,7 +1516,7 @@ impl DecoderType {
         if bounds["max"]["inclusive"].as_bool() == Some(true) {
             array_max_value += 1.;
         }
-        let array_length_num_bits = ((array_max_value as f32).log2() + 1.).floor() as usize;
+        let array_length_num_bits = (array_max_value.log2() + 1.).floor() as usize;
         format!(
             "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
@@ -1521,6 +1528,7 @@ impl DecoderType {
         )
     }
 
+    #[allow(clippy::useless_format)]
     pub fn close_bit_packed_array_main_parse_fn() -> String {
         format!("}}")
     }
@@ -1543,6 +1551,7 @@ impl DecoderType {
         )
     }
 
+    #[allow(clippy::useless_format)]
     pub fn close_byte_aligned_array_main_parse_fn() -> String {
         format!("}}")
     }
@@ -1572,6 +1581,7 @@ impl DecoderType {
     )
     }
 
+    #[allow(clippy::useless_format)]
     pub fn close_byte_aligned_enum_main_parse_fn() -> String {
         // Close both the match and the function
         format!(
@@ -1598,6 +1608,7 @@ impl DecoderType {
     )
     }
 
+    #[allow(clippy::useless_format)]
     pub fn close_bit_packed_enum_main_parse_fn() -> String {
         // Close both the match and the function
         format!(
@@ -1650,9 +1661,9 @@ impl DecoderType {
             if let Some(struct_name) = enum_tags.get(&variant_value_fullname) {
                 proto_type_def.push_str(&format!("({struct_name})"));
             }
-            proto_type_def.push_str(&format!(",\n",));
+            proto_type_def.push_str(",\n");
             let proto_variant_value = variant["value"]["value"].as_str().unwrap();
-            assert!(variant["value"]["type"].as_str().unwrap() == String::from("IntLiteral"));
+            assert!(variant["value"]["type"].as_str().unwrap() == "IntLiteral");
             enum_parse_impl_def.push_str(&format!(
                 " {proto_variant_value} => {{\n\
                  tracing::debug!(\"Variant {variant_name} for value '{proto_variant_value}'\");\n"
@@ -1714,7 +1725,7 @@ impl DecoderType {
         type_impl_def: &mut String,
     ) {
         // The int_parse_impl_def already contains the int parsing functionality.
-        proto_type_def.push_str(&format!("    pub value: i64,"));
+        proto_type_def.push_str("    pub value: i64,");
         type_impl_def.push_str(&int_parse_impl_def);
     }
 
@@ -1727,7 +1738,7 @@ impl DecoderType {
         int_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
-        proto_type_def.push_str(&format!("    pub value: i64,"));
+        proto_type_def.push_str("    pub value: i64,");
         type_impl_def.push_str(&int_parse_impl_def);
     }
 
@@ -1766,7 +1777,7 @@ impl DecoderType {
         bit_packed_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
-        proto_type_def.push_str(&format!("    pub value: Vec<u8>,"));
+        proto_type_def.push_str("    pub value: Vec<u8>,");
         type_impl_def.push_str(&bit_packed_parse_impl_def);
     }
 
@@ -1801,7 +1812,7 @@ impl DecoderType {
         bit_packed_parse_impl_def: String,
         type_impl_def: &mut String,
     ) {
-        proto_type_def.push_str(&format!("    pub value: Vec<u8>,"));
+        proto_type_def.push_str("    pub value: Vec<u8>,");
         type_impl_def.push_str(&bit_packed_parse_impl_def);
     }
 

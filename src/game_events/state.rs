@@ -56,7 +56,7 @@ pub fn handle_update_target_point(
     }
     let user_selected_units = user_selected_unit_ids
         .iter()
-        .filter_map(|id| sc2_state.units.get(&id))
+        .filter_map(|id| sc2_state.units.get(id))
         .cloned()
         .collect();
     UnitChangeHint::Batch(user_selected_units)
@@ -97,7 +97,7 @@ pub fn handle_update_target_unit(
     }
     let user_selected_units = user_selected_unit_ids
         .iter()
-        .filter_map(|id| sc2_state.units.get(&id))
+        .filter_map(|id| sc2_state.units.get(id))
         .cloned()
         .collect();
     UnitChangeHint::BatchWithTarget(user_selected_units, target_unit)
@@ -126,7 +126,7 @@ pub fn unmark_previously_selected_units(
     }
     let updated_units = updated_unit_ids
         .iter()
-        .filter_map(|id| sc2_state.units.get(&id))
+        .filter_map(|id| sc2_state.units.get(id))
         .cloned()
         .collect();
     UnitChangeHint::Batch(updated_units)
@@ -154,7 +154,7 @@ pub fn mark_selected_units(
     }
     let updated_units = updated_unit_ids
         .iter()
-        .filter_map(|id| sc2_state.units.get(&id))
+        .filter_map(|id| sc2_state.units.get(id))
         .cloned()
         .collect();
     UnitChangeHint::Batch(updated_units)
