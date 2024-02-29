@@ -9,7 +9,6 @@ use crate::read_message_events;
 use crate::tracker_events::iterator::TrackerEventIterator;
 use clap::{Args, Parser, Subcommand};
 use nom_mpq::parser;
-use std::iter::Iterator;
 use std::path::PathBuf;
 
 #[derive(Subcommand, Debug)]
