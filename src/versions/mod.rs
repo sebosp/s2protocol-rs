@@ -136,20 +136,20 @@ pub fn read_details(
 }
 
 /// Attempts to read the initData, panics under unknown protocol
-#[tracing::instrument(level = "debug", skip(mpq, file_contents))]
+#[tracing::instrument(level = "error", skip(mpq, file_contents, file_name))]
 pub fn read_init_data(
     file_name: &str,
     mpq: &MPQ,
     file_contents: &[u8],
 ) -> Result<InitData, S2ProtocolError> {
     let (_tail, proto_header) = crate::read_protocol_header(mpq)?;
-    tracing::debug!(
+    tracing::info!(
         "Proto version: {:?} reading InitData from {:?}",
         proto_header.m_version.m_base_build,
         file_name
     );
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
-    match proto_header.m_version.m_base_build {
+    let res = match proto_header.m_version.m_base_build {
         0..=75689 => protocol75689::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),
         83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870 => {
             protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents)
@@ -160,6 +160,16 @@ pub fn read_init_data(
                 proto_header.m_version.m_base_build
             );
             protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents)
+        }
+    };
+    match res {
+        Ok(mut res) => {
+            res.set_version(proto_header.m_version.m_base_build);
+            Ok(res)
+        }
+        Err(e) => {
+            tracing::error!("Error reading InitData: {:?}", e);
+            Err(e)
         }
     }
 }

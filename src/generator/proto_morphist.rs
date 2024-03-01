@@ -34,7 +34,7 @@ impl ProtoMorphist {
         // Try to get the numeric part of the protocol.
         // The source path is called like: ./s2protocol/json/protocol87702.json
         let mut proto_num: String = format!("{:?}", json_proto_path.file_name().unwrap());
-        proto_num.retain(|c| ('0'..='9').contains(&c));
+        proto_num.retain(|c| c.is_ascii_digit());
         let proto_num = proto_num.parse().unwrap();
         let output = File::create(output_name)?;
         let mut json_definition_file = File::open(&json_proto_path).unwrap();
@@ -576,7 +576,7 @@ pub fn open_type_impl_def(name: &str) -> String {
 }
 
 /// Closes the type impl scope.
-#[allow(clippy::useless_conversion)]
+#[allow(clippy::useless_format)]
 pub fn close_type_impl_def() -> String {
     format!("}}\n")
 }
@@ -589,7 +589,7 @@ pub fn proto_nnet_name_to_rust_name(nnet_name: &Value) -> String {
 /// Converts from a String Rust-friendly type, removing dots, "NNet" and making the case Pascal.
 pub fn str_nnet_name_to_rust_name(input: String) -> String {
     input
-        .replace(".", "")
+        .replace('.', "")
         .replace("NNet", "")
         .trim_matches('"')
         .to_case(Case::Pascal)

@@ -4918,7 +4918,6 @@ pub mod byte_aligned {
             ))
         }
     }
-
 }
 pub mod bit_packed {
     //! Generated code from source: ../s2protocol/json/protocol87702.json
@@ -7843,7 +7842,6 @@ pub mod bit_packed {
             for _ in 0..array_length {
                 let (new_tail, data) = Uint8::parse(tail)?;
                 tail = new_tail;
-                let data = data;
                 array.push(data);
             }
             Ok((tail, array))
@@ -9057,7 +9055,6 @@ pub mod bit_packed {
             for _ in 0..array_length {
                 let (new_tail, data) = Int32::parse(tail)?;
                 tail = new_tail;
-                let data = data;
                 array.push(data);
             }
             Ok((tail, array))
@@ -9817,7 +9814,6 @@ pub mod bit_packed {
             for _ in 0..array_length {
                 let (new_tail, data) = GameSHijackReplaySessionUserInfo::parse(tail)?;
                 tail = new_tail;
-                let data = data;
                 array.push(data);
             }
             Ok((tail, array))
@@ -9997,7 +9993,6 @@ pub mod bit_packed {
             for _ in 0..array_length {
                 let (new_tail, data) = GameSHijackReplayGameUserInfo::parse(tail)?;
                 tail = new_tail;
-                let data = data;
                 array.push(data);
             }
             Ok((tail, array))
@@ -17734,7 +17729,6 @@ pub mod bit_packed {
             for _ in 0..array_length {
                 let (new_tail, data) = GameSSelectionDeltaSubgroup::parse(tail)?;
                 tail = new_tail;
-                let data = data;
                 array.push(data);
             }
             Ok((tail, array))
@@ -17750,7 +17744,6 @@ pub mod bit_packed {
             for _ in 0..array_length {
                 let (new_tail, data) = GameTUnitTag::parse(tail)?;
                 tail = new_tail;
-                let data = data;
                 array.push(data);
             }
             Ok((tail, array))
@@ -17956,7 +17949,6 @@ pub mod bit_packed {
             for _ in 0..array_length {
                 let (new_tail, data) = GameTSyncChecksum::parse(tail)?;
                 tail = new_tail;
-                let data = data;
                 array.push(data);
             }
             Ok((tail, array))
@@ -17995,7 +17987,6 @@ pub mod bit_packed {
             for _ in 0..array_length {
                 let (new_tail, data) = GameTSyncChecksum::parse(tail)?;
                 tail = new_tail;
-                let data = data;
                 array.push(data);
             }
             Ok((tail, array))

@@ -28,8 +28,10 @@ pub const TRACKER_SPEED_RATIO: f32 = 0.70996;
 pub const ACTIVE_UNITS_GROUP_IDX: usize = 10usize;
 
 /// Unit Attributes, this changes through time as the state machine overwrites the values.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct SC2Unit {
+    /// The tag index of the unit.
+    pub tag_index: u32,
     /// The last time the unit was updated
     pub last_game_loop: i64,
     /// The owner user_id
@@ -53,6 +55,26 @@ pub struct SC2Unit {
     /// Whether the unit is in Initializing state, for example morphing.
     pub is_init: bool,
 }
+
+impl Ord for SC2Unit {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.tag_index.cmp(&other.tag_index)
+    }
+}
+
+impl PartialEq for SC2Unit {
+    fn eq(&self, other: &Self) -> bool {
+        self.tag_index == other.tag_index
+    }
+}
+
+impl PartialOrd for SC2Unit {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Eq for SC2Unit {}
 
 /// Supported event types.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -92,10 +114,10 @@ pub enum UnitChangeHint {
     /// A unit has been added, the full unit is returned in case the caller wants to inspect it.
     /// This covers UnitBorn, InitInit, UnitDone, and UnitTypeChange.
     Registered(SC2Unit),
-    /// Unit positions are being reported, the indexes in the unit registry are returned.
-    Batch(Vec<u32>),
+    /// Unit positions are being reported, a vector of units changed is returned.
+    Batch(Vec<SC2Unit>),
     /// Selected units in the first item of the tuple (.0) are targetting the unit on the second item of the tuple (.1)
-    BatchWithTarget(Vec<u32>, u32),
+    BatchWithTarget(Vec<SC2Unit>, SC2Unit),
     /// A unit has been deleted from the state registry, the full killer unit information and the
     /// killed unit is returned. Killer is cloned and may be expensive.
     Unregistered {
@@ -150,7 +172,7 @@ pub struct SC2EventIterator {
     /// The protocol version
     protocol_version: u32,
     /// The replay state machine transducer
-    sc2_state: SC2ReplayState,
+    pub sc2_state: SC2ReplayState,
     /// The tracker event iterator.
     tracker_iterator_state: TrackertEventIteratorState,
     /// The game event iterator.
@@ -221,7 +243,7 @@ impl Iterator for SC2EventIterator {
     type Item = (SC2EventType, UnitChangeHint);
 
     fn next(&mut self) -> Option<Self::Item> {
-        // Fill the next_tracker_event and next_game_event if they are empty.
+        // Fill the next_tracker_event if they are empty.
         if self.next_tracker_event.is_none() {
             self.next_tracker_event = self
                 .tracker_iterator_state
@@ -231,6 +253,7 @@ impl Iterator for SC2EventIterator {
                     &self.filters,
                 );
         }
+        // Likewise, fill the next game event if it's empty.
         if self.next_game_event.is_none() {
             self.next_game_event = self.game_iterator_state.transist_to_next_supported_event(
                 self.protocol_version,
@@ -238,6 +261,7 @@ impl Iterator for SC2EventIterator {
                 &self.filters,
             );
         }
+        // Now compare the adjusted game loops and return the event with the lowest one, be it game or tracker.
         let next_tracker_event_loop = self.get_tracker_loop();
         let next_game_event_loop = self.get_game_loop();
         if let Some(next_tracker_event_loop) = next_tracker_event_loop {

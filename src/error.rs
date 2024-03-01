@@ -34,8 +34,8 @@ pub enum S2ProtocolError {
     /// Unable to parse a value that should have been an integer
     #[error("TryFromIntError")]
     ValueError(#[from] TryFromIntError),
-    #[error("IO Error")]
     /// An I/O Error
+    #[error("IO Error")]
     IoError(#[from] std::io::Error),
     /// The path provided was not a file
     #[error("Expected a file, but got a directory")]

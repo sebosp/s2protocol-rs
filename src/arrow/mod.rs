@@ -5,6 +5,7 @@ use arrow2::{array::Array, chunk::Chunk, datatypes::DataType};
 use arrow2_convert::serialize::FlattenChunk;
 #[cfg(feature = "arrow")]
 use arrow2_convert::{field::ArrowField, serialize::TryIntoArrow};
+use init_data::InitData;
 #[cfg(feature = "arrow")]
 use rayon::prelude::*;
 
@@ -15,7 +16,9 @@ use clap::Subcommand;
 use std::path::PathBuf;
 pub mod ipc_writer;
 use ipc_writer::*;
+use std::collections::HashSet;
 
+/// The supported Arrow IPC types
 #[derive(Debug, Subcommand)]
 pub enum ArrowIpcTypes {
     /// Writes the [`crate::init_data::InitData`] flat row to an Arrow IPC file
@@ -92,7 +95,7 @@ impl ArrowIpcTypes {
     #[tracing::instrument(level = "debug")]
     pub fn handle_write_command(
         &self,
-        sources: Vec<PathBuf>,
+        sources: Vec<InitData>,
         output: PathBuf,
     ) -> Result<(), Box<dyn std::error::Error>> {
         match self {
@@ -131,17 +134,14 @@ impl ArrowIpcTypes {
     #[tracing::instrument(level = "debug")]
     pub fn handle_init_data_ipc_cmd(
         &self,
-        sources: Vec<PathBuf>,
+        sources: Vec<InitData>,
         output: PathBuf,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing InitData IPC write request");
 
         // process the sources in parallel consuming into the batch variable
-        let res: Box<dyn Array> = sources
-            .par_iter()
-            .filter_map(|source| crate::init_data::InitData::try_from(source.clone()).ok())
-            .collect::<Vec<init_data::InitData>>()
-            .try_into_arrow()?;
+        let res: Box<dyn Array> = sources.try_into_arrow()?;
+
         tracing::info!("Loaded {} records", res.len());
         let chunk = Chunk::new([res].to_vec()).flatten()?;
         write_batches(output, self.schema(), &[chunk])?;
@@ -154,7 +154,7 @@ impl ArrowIpcTypes {
     #[tracing::instrument(level = "debug")]
     pub fn handle_tracker_events(
         &self,
-        sources: Vec<PathBuf>,
+        sources: Vec<InitData>,
         output: PathBuf,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing TrackerEvents IPC write request: {:?}", self);
@@ -164,8 +164,9 @@ impl ArrowIpcTypes {
         let total_records = sources
             .par_iter()
             .filter_map(|source| {
+                let source = PathBuf::from(&source.file_name);
                 let details = crate::details::Details::try_from(source.clone()).ok()?;
-                let tracker_events = TrackerEventIterator::new(source).ok()?;
+                let tracker_events = TrackerEventIterator::new(&source).ok()?;
                 let (res, batch_len): (Box<dyn Array>, usize) = match self {
                     Self::Stats => {
                         let batch = tracker_events.collect_into_player_stats_flat_rows(&details);
@@ -196,14 +197,16 @@ impl ArrowIpcTypes {
     #[tracing::instrument(level = "debug")]
     pub fn handle_details_ipc_cmd(
         &self,
-        sources: Vec<PathBuf>,
+        sources: Vec<InitData>,
         output: PathBuf,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing Details IPC write request");
         // process the sources in parallel consuming into the batch variable
         let res: Box<dyn Array> = sources
             .par_iter()
-            .filter_map(|source| crate::details::Details::try_from(source.clone()).ok())
+            .filter_map(|source| {
+                crate::details::Details::try_from(PathBuf::from(&source.file_name)).ok()
+            })
             .collect::<Vec<details::Details>>()
             .try_into_arrow()?;
         tracing::info!("Loaded {} records", res.len());
@@ -218,14 +221,62 @@ impl ArrowIpcTypes {
         &self,
         source: PathBuf,
         output: PathBuf,
+        cmd: &WriteArrowIpcProps,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        tracing::info!("Processing Arrow write request");
-        let sources = get_matching_files(source)?;
+        tracing::info!(
+            "Processing Arrow write request with scan_max_files: {}, traverse_max_depth: {}, process_max_files: {}, min_version: {:?}, max_version: {:?}",
+            cmd.scan_max_files,
+            cmd.process_max_files,
+            cmd.traverse_max_depth,
+            cmd.min_version,
+            cmd.max_version
+        );
+        let sources = get_matching_files(source, cmd.scan_max_files, cmd.traverse_max_depth)?;
+        tracing::info!("Scanned {} files", sources.len());
+        let mut sources: Vec<InitData> = sources
+            .par_iter()
+            .filter_map(|source| crate::init_data::InitData::try_from(source.clone()).ok())
+            .collect::<Vec<InitData>>()
+            .into_iter()
+            .filter(|source| {
+                if let Some(min_version) = cmd.min_version {
+                    if source.version < min_version {
+                        return false;
+                    }
+                }
+                if let Some(max_version) = cmd.max_version {
+                    if source.version > max_version {
+                        return false;
+                    }
+                }
+                true
+            })
+            .take(cmd.process_max_files)
+            .collect();
         if sources.is_empty() {
             panic!("No files found");
-        } else {
-            tracing::info!("Found {} files", sources.len());
         }
+        // Identify the shortest unique sha256 hash fragment.
+        let mut smallest_fragment = 1;
+        while smallest_fragment < 64 {
+            let mut hash_set = HashSet::new();
+            for source in sources.iter() {
+                let hash = source.sha256.clone();
+                hash_set.insert(hash[..smallest_fragment].to_string());
+            }
+            if hash_set.len() == sources.len() {
+                break;
+            }
+            smallest_fragment += 1;
+        }
+        for source in sources.iter_mut() {
+            source.trim_sha(smallest_fragment)
+        }
+        tracing::info!(
+            "Found {} readable files, sha256 fragment size: {}",
+            sources.len(),
+            smallest_fragment
+        );
         self.handle_write_command(sources, output)
     }
 }
