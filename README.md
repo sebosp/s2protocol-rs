@@ -15,8 +15,8 @@ information it packs.
 
 From the available data, analytics, visualizations and generative art can be created, for example
 by using 
+- jupyter notebook in [s2-polars-data-analysis](https://github.com/sebosp/s2-polars-data-analysis)
 - [rerun](https://github.com/rerun-io/rerun) : See the repo [swarmy](https://github.com/sebosp/swarmy)
-- [lyon](https://github.com/nical/lyon) (PoC in progress in cooper)
 - [yew](https://github.com/yewstack/yew) [cooper](https://github.com/sebosp/cooper)
 - [eframe/egui](https://github.com/emilk/egui): See repo [eframes-c2](https://github.com/sebosp/eframe-sc2)
 - [bevyengine/bevy](https://github.com/bevyengine/bevy) can be used to see:
@@ -130,13 +130,6 @@ $ # List the max number of minerals that were lost in per map when the army was 
 - [ ] Support for MPQ embedded file: `replay.gamemetadata.json`
 - [ ] Support for MPQ embedded file: `replay.attributes.events`
 
-## Current issues
-
-In the arrow file generation, sha256 digest is used to detect duplication/etc.
-This inflates the size of the rows. Even tho it's slightly less than long directory names.
-Perhaps using short rev-parse for sha256 may be better, find something like 7-characters unique combinations
-And use that instead of the long sha256 form.
-
 ## version compatibility.
 
 After a bit of testing, it seems most of the types are compatible between versions, so only when they differ would they make part of the protocol version.
@@ -160,7 +153,7 @@ RUST_LOG_SPAN_EVENTS=full RUST_LOG=debug cargo watch -i src/versions/protocol897
 # Additionally some code to transform from Protocol-Specific to Protocol-Agnostic was added, TODO: Add to generator.rs
 ```
 
-## JSON Sources
+## JSON Spec Sources
 
 [Blizzard/s2protocol repo](https://github.com/Blizzard/s2protocol)
 
