@@ -1,7 +1,7 @@
 [package]
 name = "s2protocol"
 description = "A parser for Starcraft II - Replay format, exports to different target formats"
-version = "3.0.3"
+version = "3.0.4"
 authors = ["Seb Ospina <kraige@gmail.com>"]
 edition = "2021"
 readme = "README.md"
@@ -19,7 +19,7 @@ clap = { version = "4.4", features = ["derive"] }
 serde_json = "1.0.91"
 serde = { version = "1.0.164", features = ["derive"] }
 convert_case = "0.6.0"
-nom-mpq = "2.0.1"
+nom-mpq = "2.0.2"
 colored = "2.0.4"
 arrow2 = { version = "0.17.0", features = ["io_print", "io_ipc"], optional = true }
 arrow2_convert = { version = "0.5.0", optional = true }

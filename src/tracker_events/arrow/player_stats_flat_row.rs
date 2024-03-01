@@ -58,7 +58,6 @@ pub struct PlayerStatsFlatRow {
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
     pub ext_fs_replay_sha256: String,
-    pub ext_replay_detail_player_name: String,
 }
 
 impl PlayerStatsFlatRow {
@@ -69,7 +68,6 @@ impl PlayerStatsFlatRow {
         details: crate::details::Details,
     ) -> Self {
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        let ext_replay_detail_player_name = details.get_player_name(event.player_id);
         let stats = event.stats;
         Self {
             player_id: event.player_id,
@@ -115,7 +113,6 @@ impl PlayerStatsFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_replay_sha256: details.ext_fs_replay_sha256,
-            ext_replay_detail_player_name,
         }
     }
 }

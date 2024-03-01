@@ -49,7 +49,7 @@ impl ProtocolHeader {
 }
 
 /// Read the protocol header, this can be read with any protocol
-pub fn read_protocol_header<'a>(mpq: &'a MPQ) -> S2ProtoResult<&'a [u8], ReplaySHeader> {
+pub fn read_protocol_header(mpq: &MPQ) -> S2ProtoResult<&[u8], ReplaySHeader> {
     let user_data = mpq
         .user_data
         .as_ref()

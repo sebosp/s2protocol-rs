@@ -25,6 +25,7 @@ pub fn handle_unit_init(
         pos: Vec3D::new(unit_init.x as f32, unit_init.y as f32, 0.),
         init_game_loop: game_loop,
         is_init: true,
+        tag_index: unit_init.unit_tag_index,
         ..Default::default()
     };
     tracing::debug!("Initializing unit: {:?}", sc2_unit);
@@ -61,6 +62,7 @@ pub fn handle_unit_born(
             name: unit_born.unit_type_name.clone(),
             pos: Vec3D::new(unit_born.x as f32, unit_born.y as f32, 0.),
             init_game_loop: game_loop,
+            tag_index: unit_born.unit_tag_index,
             ..Default::default()
         };
         sc2_state
@@ -88,6 +90,7 @@ pub fn handle_unit_type_change(
             user_id: None,
             name: unit_change.unit_type_name.clone(),
             init_game_loop: game_loop,
+            tag_index: unit_change.unit_tag_index,
             ..Default::default()
         };
         sc2_state
@@ -124,11 +127,11 @@ pub fn handle_unit_position(
     game_loop: i64,
     unit_pos: &UnitPositionsEvent,
 ) -> UnitChangeHint {
-    let mut updated_units = vec![];
+    let mut updated_unit_ids = vec![];
     let unit_positions = unit_pos.clone().to_unit_positions_vec();
     for unit_pos_item in &unit_positions {
         if let Some(ref mut sc2_unit) = sc2_state.units.get_mut(&unit_pos_item.tag) {
-            updated_units.push(unit_pos_item.tag);
+            updated_unit_ids.push(unit_pos_item.tag);
             sc2_unit.pos = Vec3D::new(
                 unit_pos_item.x as f32 / UNIT_POSITION_RATIO,
                 unit_pos_item.y as f32 / UNIT_POSITION_RATIO,
@@ -142,6 +145,11 @@ pub fn handle_unit_position(
             );
         }
     }
+    let updated_units = updated_unit_ids
+        .iter()
+        .filter_map(|id| sc2_state.units.get(id))
+        .cloned()
+        .collect();
     UnitChangeHint::Batch(updated_units)
 }
 #[tracing::instrument(level = "debug", skip(sc2_state))]

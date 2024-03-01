@@ -29,7 +29,6 @@ pub struct UnitBornEventFlatRow {
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
     pub ext_fs_replay_sha256: String,
-    pub ext_replay_detail_player_name: String,
 }
 
 impl UnitBornEventFlatRow {
@@ -42,7 +41,6 @@ impl UnitBornEventFlatRow {
         details: &crate::details::Details,
     ) -> Self {
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        let ext_replay_detail_player_name = details.get_player_name(event.control_player_id);
         Self {
             unit_tag_index: event.unit_tag_index,
             unit_tag_recycle: event.unit_tag_recycle,
@@ -57,7 +55,6 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
-            ext_replay_detail_player_name,
         }
     }
 
@@ -76,7 +73,6 @@ impl UnitBornEventFlatRow {
             _ => unreachable!(),
         };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        let ext_replay_detail_player_name = details.get_player_name(unit.user_id.unwrap_or(99));
         Self {
             unit_tag_index: event.unit_tag_index,
             unit_tag_recycle: event.unit_tag_recycle,
@@ -91,7 +87,6 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
-            ext_replay_detail_player_name,
         }
     }
 
@@ -109,7 +104,6 @@ impl UnitBornEventFlatRow {
             _ => unreachable!(),
         };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        let ext_replay_detail_player_name = details.get_player_name(unit.user_id.unwrap_or(99));
         Self {
             unit_tag_index: event.unit_tag_index,
             unit_tag_recycle: event.unit_tag_recycle,
@@ -124,7 +118,6 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
-            ext_replay_detail_player_name,
         }
     }
 }
