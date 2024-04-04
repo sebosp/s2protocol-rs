@@ -6,6 +6,8 @@ pub mod state;
 pub use state::*;
 pub mod iterator;
 pub use iterator::*;
+pub mod ability;
+pub use ability::*;
 
 #[cfg(feature = "arrow")]
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
@@ -174,6 +176,7 @@ pub struct GameSCmdEvent {
 )]
 pub struct GameSCmdAbil {
     pub m_abil_link: GameTAbilLink,
+    pub ability: Ability,
     pub m_abil_cmd_index: i64,
     pub m_abil_cmd_data: Option<u8>,
 }
@@ -443,6 +446,7 @@ pub struct GameSTriggerHotkeyPressedEvent {
 )]
 pub struct GameSTriggerTargetModeUpdateEvent {
     pub m_abil_link: GameTAbilLink,
+    pub ability: Ability,
     pub m_abil_cmd_index: i64,
     pub m_state: i8,
 }

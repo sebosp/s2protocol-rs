@@ -15,8 +15,7 @@ information it packs.
 
 From the available data, analytics, visualizations and generative art can be created, for example
 by using 
-- jupyter notebook in [s2-polars-data-analysis](https://github.com/sebosp/s2-polars-data-analysis)
-- [rerun](https://github.com/rerun-io/rerun) : See the repo [swarmy](https://github.com/sebosp/swarmy)
+- jupyter notebook in [s2-polars-data-analysis](https://github.com/sebosp/s2-polars-data-analysis) - [rerun](https://github.com/rerun-io/rerun) : See the repo [swarmy](https://github.com/sebosp/swarmy)
 - [yew](https://github.com/yewstack/yew) [cooper](https://github.com/sebosp/cooper)
 - [eframe/egui](https://github.com/emilk/egui): See repo [eframes-c2](https://github.com/sebosp/eframe-sc2)
 - [bevyengine/bevy](https://github.com/bevyengine/bevy) can be used to see:
@@ -58,29 +57,25 @@ for (event, change_hint) in res.into_iter() {
 
 In the directory ipcs/ one .ipc file will be created per implemented data type.
 The `--source` is the directory that contains the replay directory (Or a single file).
+Multiple subdirectories are supported.
 Files are processed using parallel operations.
-For 3600 files (500 MBs) it takes 30 seconds to transform/split them. YMMV
-
-This is behind a feature flag `arrow`.
+For 17K replays (2.3 GBs) it takes 73 seconds to parse/transform/split them. YMMV, in this case only 10K files had valid init data (as in are supported protocol versions).
 
 ```bash
 $ mkdir ipcs/
-$ cargo run --features arrow -r -- --source "/mnt/windows/Users/sebos/Documents/StarCraft II/Accounts/51504154/2-S2-1-8459957/Replays/Multiplayer/" --output ipcs/ write-arrow-ipc all
-2023-10-04T18:53:36.030202Z  INFO s2protocol::arrow: Processing Arrow write request
-2023-10-04T18:53:36.441089Z  INFO s2protocol::arrow: Found 3600 files
-2023-10-04T18:53:36.441646Z  INFO s2protocol::arrow: Processing InitData IPC write request
-2023-10-04T18:53:38.515349Z  INFO s2protocol::arrow: Loaded 3600 records
-2023-10-04T18:53:38.575090Z  INFO s2protocol::arrow: Processing Details IPC write request
-2023-10-04T18:53:38.700572Z  INFO s2protocol::arrow: Loaded 3600 records
-2023-10-04T18:53:38.706659Z  INFO s2protocol::arrow: Processing TrackerEvents IPC write request: Stats
-2023-10-04T18:53:44.295524Z  INFO s2protocol::arrow: Loaded 1722783 records
-2023-10-04T18:53:44.515362Z  INFO s2protocol::arrow: Processing TrackerEvents IPC write request: Upgrades
-2023-10-04T18:53:49.963043Z  INFO s2protocol::arrow: Loaded 292898 records
-2023-10-04T18:53:50.036165Z  INFO s2protocol::arrow: Processing TrackerEvents IPC write request: UnitBorn
-2023-10-04T18:53:57.561082Z  INFO s2protocol::arrow: Loaded 22754591 records
-2023-10-04T18:54:00.502298Z  INFO s2protocol::arrow: Processing TrackerEvents IPC write request: UnitDied
-2023-10-04T18:54:07.387545Z  INFO s2protocol::arrow: Loaded 16118808 records
-Total time: 33.654286961s
+$ cargo run -r -v error --timing --source /home/seb/SCReplaysOnNVMe --output /home/seb/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 10000000 all
+Located 17021 matching files by extension
+10299 files have valid init data, processing...
+Total time: 73.794864841s
+$ du -sh ipcs
+11G     ipcs
+$ ls -ltra ipcs
+-rw-r--r--  1 seb seb   81070479 Mar  1 21:18 init_data.ipc
+-rw-r--r--  1 seb seb   10789826 Mar  1 21:18 details.ipc
+-rw-r--r--  1 seb seb  843902480 Mar  1 21:18 stats.ipc
+-rw-r--r--  1 seb seb   67967152 Mar  1 21:18 upgrades.ipc
+-rw-r--r--  1 seb seb 5712488337 Mar  1 21:19 unit_born.ipc
+-rw-r--r--  1 seb seb 4652841877 Mar  1 21:19 unit_died.ipc
 ```
 
 ### Jupyter Notebooks

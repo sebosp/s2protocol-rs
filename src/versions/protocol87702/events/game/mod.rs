@@ -201,7 +201,8 @@ impl From<GameSTriggerTargetModeUpdateEvent> for game_events::ReplayGameEvent {
     fn from(source: GameSTriggerTargetModeUpdateEvent) -> game_events::ReplayGameEvent {
         game_events::ReplayGameEvent::TriggerTargetModeUpdate(
             game_events::GameSTriggerTargetModeUpdateEvent {
-                m_abil_link: source.m_abil_link.value.into(),
+                m_abil_link: source.m_abil_link.value.clone().into(),
+                ability: (source.m_abil_link.value.value as u16).into(),
                 m_abil_cmd_index: source.m_abil_cmd_index,
                 m_state: source.m_state.into(),
             },

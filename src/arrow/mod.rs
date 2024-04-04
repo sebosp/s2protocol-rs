@@ -232,7 +232,7 @@ impl ArrowIpcTypes {
             cmd.max_version
         );
         let sources = get_matching_files(source, cmd.scan_max_files, cmd.traverse_max_depth)?;
-        tracing::info!("Scanned {} files", sources.len());
+        println!("Located {} matching files by extension", sources.len());
         let mut sources: Vec<InitData> = sources
             .par_iter()
             .filter_map(|source| crate::init_data::InitData::try_from(source.clone()).ok())
@@ -255,6 +255,11 @@ impl ArrowIpcTypes {
             .collect();
         if sources.is_empty() {
             panic!("No files found");
+        } else {
+            println!(
+                "{} files have valid init data, processing...",
+                sources.len()
+            );
         }
         // Identify the shortest unique sha256 hash fragment.
         let mut smallest_fragment = 1;

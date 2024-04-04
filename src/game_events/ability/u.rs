@@ -1,0 +1,96 @@
+
+#[cfg(feature = "arrow")]
+use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "arrow",
+  derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
+#[cfg_attr(feature = "arrow", arrow_field(type = "sparse"))]
+pub enum U {
+  UltraliskCavernResearch,
+  UltraliskCavernResearchEvolveAnabolicSynthesis2,
+  UltraliskCavernResearchEvolveChitinousPlating,
+  UltraliskWeaponCooldown,
+  UltrasonicPulse,
+  Unsiege,
+  UpgradeToGreaterSpire,
+  UpgradeToGreaterSpireCancelMutateMorph,
+  UpgradeToHive,
+  UpgradeToHiveCancelMutateMorph,
+  UpgradeToLair,
+  UpgradeToLairCancelMutateMorph,
+  UpgradeToLurkerDen,
+  UpgradeToLurkerDenCancel,
+  UpgradeToLurkerDenMpCancel,
+  UpgradeToLurkerDenMpMutateintoLurkerDen,
+  UpgradeToOrbitalCancelUpgradeMorph,
+  UpgradeToOrbitalOrbitalCommand,
+  UpgradeToPlanetaryFortress,
+  UpgradeToPlanetaryFortressCancelUpgradeMorph,
+  UpgradeToWarpGate,
+  UpgradeToWarpGateCancel,
+  Uproot,
+}
+impl U {
+    pub fn from_id(id: u16) -> Option<Self> {
+      match id {
+      264 => Some(Self::UltraliskCavernResearch),
+      266 => Some(Self::UltraliskCavernResearch),
+      267 => Some(Self::UltraliskCavernResearch),
+      268 => Some(Self::UltraliskCavernResearch),
+      269 => Some(Self::UltraliskCavernResearch),
+      270 => Some(Self::UltraliskCavernResearch),
+      271 => Some(Self::UltraliskCavernResearch),
+      272 => Some(Self::UltraliskCavernResearch),
+      273 => Some(Self::UltraliskCavernResearch),
+      274 => Some(Self::UltraliskCavernResearch),
+      275 => Some(Self::UltraliskCavernResearch),
+      276 => Some(Self::UltraliskCavernResearch),
+      277 => Some(Self::UltraliskCavernResearch),
+      278 => Some(Self::UltraliskCavernResearch),
+      279 => Some(Self::UltraliskCavernResearch),
+      280 => Some(Self::UltraliskCavernResearch),
+      281 => Some(Self::UltraliskCavernResearch),
+      282 => Some(Self::UltraliskCavernResearch),
+      283 => Some(Self::UltraliskCavernResearch),
+      284 => Some(Self::UltraliskCavernResearch),
+      285 => Some(Self::UltraliskCavernResearch),
+      286 => Some(Self::UltraliskCavernResearch),
+      287 => Some(Self::UltraliskCavernResearch),
+      288 => Some(Self::UltraliskCavernResearch),
+      289 => Some(Self::UltraliskCavernResearch),
+      290 => Some(Self::UltraliskCavernResearch),
+      291 => Some(Self::UltraliskCavernResearch),
+      292 => Some(Self::UltraliskCavernResearch),
+      263 => Some(Self::UltraliskCavernResearchEvolveAnabolicSynthesis2),
+      265 => Some(Self::UltraliskCavernResearchEvolveChitinousPlating),
+      2158 => Some(Self::UltraliskWeaponCooldown),
+      2159 => Some(Self::UltraliskWeaponCooldown),
+      2882 => Some(Self::UltrasonicPulse),
+      2883 => Some(Self::UltrasonicPulse),
+      390 => Some(Self::Unsiege),
+      391 => Some(Self::Unsiege),
+      1220 => Some(Self::UpgradeToGreaterSpire),
+      1221 => Some(Self::UpgradeToGreaterSpireCancelMutateMorph),
+      1218 => Some(Self::UpgradeToHive),
+      1219 => Some(Self::UpgradeToHiveCancelMutateMorph),
+      1216 => Some(Self::UpgradeToLair),
+      1217 => Some(Self::UpgradeToLairCancelMutateMorph),
+      2838 => Some(Self::UpgradeToLurkerDen),
+      2839 => Some(Self::UpgradeToLurkerDenCancel),
+      2113 => Some(Self::UpgradeToLurkerDenMpCancel),
+      2112 => Some(Self::UpgradeToLurkerDenMpMutateintoLurkerDen),
+      1517 => Some(Self::UpgradeToOrbitalCancelUpgradeMorph),
+      1516 => Some(Self::UpgradeToOrbitalOrbitalCommand),
+      1450 => Some(Self::UpgradeToPlanetaryFortress),
+      1451 => Some(Self::UpgradeToPlanetaryFortressCancelUpgradeMorph),
+      1518 => Some(Self::UpgradeToWarpGate),
+      1519 => Some(Self::UpgradeToWarpGateCancel),
+      3681 => Some(Self::Uproot),
+      _ => None,
+    }
+  }
+}
