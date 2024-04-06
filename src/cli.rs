@@ -44,8 +44,7 @@ enum Commands {
     WriteArrowIpc(WriteArrowIpcProps),
 }
 
-//  Create a subcommand that handles the max depth and max files to process
-
+///  Create a subcommand that handles the max depth and max files to process
 #[cfg(feature = "arrow")]
 #[derive(Args, Debug)]
 pub struct WriteArrowIpcProps {
@@ -91,6 +90,10 @@ struct Cli {
     /// Show basic performance metrics
     #[arg(short, long, default_value = "false")]
     timing: bool,
+
+    /// Show basic performance metrics
+    #[arg(short, long, default_value = "false")]
+    color: bool,
 }
 
 /// Matches a list of files in case the cli.source param is a directory
@@ -136,21 +139,25 @@ pub fn get_matching_files(
 }
 
 /// Prints the json strings either with Bat PrettyPrint or just plain json
-pub fn json_print(json_str: String) {
-    #[cfg(feature = "syntax")]
-    {
-        PrettyPrinter::new()
-            .language("json")
-            .header(false)
-            .grid(false)
-            .line_numbers(false)
-            .input(Input::from_bytes(json_str.as_bytes()))
-            .print()
-            .unwrap();
-        println!(",");
-    }
-    #[cfg(not(feature = "syntax"))]
-    {
+pub fn json_print(json_str: String, color: bool) {
+    if color {
+        #[cfg(feature = "syntax")]
+        {
+            PrettyPrinter::new()
+                .language("json")
+                .header(false)
+                .grid(false)
+                .line_numbers(false)
+                .input(Input::from_bytes(json_str.as_bytes()))
+                .print()
+                .unwrap();
+            println!(",");
+        }
+        #[cfg(not(feature = "syntax"))]
+        {
+            println!("{},", json_str);
+        }
+    } else {
         println!("{},", json_str);
     }
 }
@@ -171,6 +178,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             tracing::Level::INFO
         }
     };
+    let color = cli.color;
     tracing_subscriber::fmt()
         .with_max_level(level)
         .with_env_filter(level.to_string())
@@ -221,7 +229,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let res = TrackerEventIterator::new(&source)?;
                         println!("[");
                         for evt in res.into_iter() {
-                            json_print(serde_json::to_string(&evt).unwrap());
+                            json_print(serde_json::to_string(&evt).unwrap(), color);
                         }
                         println!("]");
                     }
@@ -230,7 +238,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let res = GameEventIterator::new(&source)?;
                         println!("[");
                         for evt in res.into_iter() {
-                            json_print(serde_json::to_string(&evt).unwrap());
+                            json_print(serde_json::to_string(&evt).unwrap(), color);
                         }
                         println!("]");
                     }
@@ -238,24 +246,24 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let res = read_message_events(&source_path, &mpq, &file_contents)?;
                         println!("[");
                         for evt in res {
-                            json_print(serde_json::to_string(&evt).unwrap());
+                            json_print(serde_json::to_string(&evt).unwrap(), color);
                         }
                         println!("]");
                     }
                     ReadTypes::Details => {
                         let evt = read_details(&source_path, &mpq, &file_contents)?;
-                        json_print(serde_json::to_string(&evt).unwrap());
+                        json_print(serde_json::to_string(&evt).unwrap(), color);
                     }
                     ReadTypes::InitData => {
                         let evt = read_init_data(&source_path, &mpq, &file_contents)?;
-                        json_print(serde_json::to_string(&evt).unwrap());
+                        json_print(serde_json::to_string(&evt).unwrap(), color);
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
                         println!("[");
                         let res = crate::state::SC2EventIterator::new(&source)?;
                         for evt in res.into_iter() {
-                            json_print(serde_json::to_string(&evt).unwrap());
+                            json_print(serde_json::to_string(&evt).unwrap(), color);
                         }
                         println!("]");
                     }

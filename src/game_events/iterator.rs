@@ -2,7 +2,7 @@
 
 use super::handle_game_event;
 use crate::error::S2ProtocolError;
-use crate::game_events::GameEvent;
+use crate::game_events::{self, GameEvent};
 use crate::versions::protocol75689::bit_packed::GameEEventId as Protocol75689GameEEventId;
 use crate::versions::protocol87702::bit_packed::GameEEventId as Protocol87702GameEEventId;
 use crate::SC2ReplayFilters;
@@ -209,6 +209,34 @@ impl GameEventIterator {
     pub fn with_filters(mut self, filters: SC2ReplayFilters) -> Self {
         self.filters = Some(filters);
         self
+    }
+
+    /// Consumes the Iterator collecting only the Cmd events into a vector of CmdEventFlatRow
+    pub fn collect_into_game_cmds_flat_rows(
+        self,
+        details: &crate::details::Details,
+    ) -> Vec<game_events::CmdEventFlatRow> {
+        self.into_iter()
+            .filter_map(|(sc2_event, change_hint)| match sc2_event {
+                SC2EventType::Game {
+                    event,
+                    game_loop,
+                    user_id,
+                } => match event {
+                    game_events::ReplayGameEvent::Cmd(event) => {
+                        Some(game_events::CmdEventFlatRow::new(
+                            details,
+                            event,
+                            game_loop,
+                            user_id,
+                            change_hint,
+                        ))
+                    }
+                    _ => None,
+                },
+                _ => None,
+            })
+            .collect()
     }
 }
 
