@@ -90,6 +90,13 @@ impl ArrowIpcTypes {
                     panic!("Invalid schema, expected struct");
                 }
             }
+            Self::Cmd => {
+                if let DataType::Struct(fields) = game_events::CmdEventFlatRow::data_type() {
+                    arrow2::datatypes::Schema::from(fields.clone())
+                } else {
+                    panic!("Invalid schema, expected struct");
+                }
+            }
             _ => unimplemented!(),
         }
     }
@@ -130,7 +137,7 @@ impl ArrowIpcTypes {
                     .handle_tracker_events(sources.clone(), output.join("unit_born.ipc"))?;
                 Self::UnitDied
                     .handle_tracker_events(sources.clone(), output.join("unit_died.ipc"))?;
-                Self::UnitDied.handle_game_events(sources.clone(), output.join("cmd.ipc"))?;
+                Self::Cmd.handle_game_events(sources.clone(), output.join("cmd.ipc"))?;
                 Ok(())
             }
             _ => todo!(),
@@ -222,7 +229,7 @@ impl ArrowIpcTypes {
                         let batch = game_events.collect_into_game_cmds_flat_rows(&details);
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
-                    _ => unimplemented!(),
+                    e => unimplemented!("{:?}", e),
                 };
                 write_to_arrow_mutex_writer(&writer, res, batch_len)
             })

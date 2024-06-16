@@ -34,6 +34,7 @@ default = ["tracing_off", "arrow", "syntax"]
 # A feature that allows extra tracing, disabled by default because of performance
 tracing_off = ["tracing/max_level_off", "tracing/release_max_level_off"]
 tracing_trace_level = ["tracing/max_level_trace", "tracing/release_max_level_trace"]
+tracing_debug_level = ["tracing/max_level_debug", "tracing/release_max_level_debug"]
 tracing_info_level = ["tracing/max_level_info", "tracing/release_max_level_info"]
 arrow = ["arrow2", "arrow2_convert", "sha256", "rayon"]
 syntax = ["bat"]
