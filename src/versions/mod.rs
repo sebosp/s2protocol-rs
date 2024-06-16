@@ -29,12 +29,11 @@ pub fn read_tracker_events(
             mpq,
             file_contents,
         ),
-        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870 => {
-            protocol87702::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
-                mpq,
-                file_contents,
-            )
-        }
+        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
+        | 91115 => protocol87702::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
+            mpq,
+            file_contents,
+        ),
         _ => {
             tracing::warn!(
                 "Protocol version {:?} is not supported, falling back to 87702",
@@ -64,9 +63,8 @@ pub fn read_game_events(
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         0..=75689 => protocol75689::bit_packed::GameEEventId::read_events(mpq, file_contents),
-        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870 => {
-            protocol87702::bit_packed::GameEEventId::read_events(mpq, file_contents)
-        }
+        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
+        | 91115 => protocol87702::bit_packed::GameEEventId::read_events(mpq, file_contents),
         _ => {
             tracing::warn!(
                 "Protocol version {:?} is not supported, falling back to 87702",
@@ -93,9 +91,8 @@ pub fn read_message_events(
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         0..=75689 => protocol75689::bit_packed::GameEMessageId::read_events(mpq, file_contents),
-        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870 => {
-            protocol87702::bit_packed::GameEMessageId::read_events(mpq, file_contents)
-        }
+        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
+        | 91115 => protocol87702::bit_packed::GameEMessageId::read_events(mpq, file_contents),
         _ => {
             tracing::warn!(
                 "Protocol version {:?} is not supported, falling back to 87702",
@@ -122,9 +119,8 @@ pub fn read_details(
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         0..=75689 => protocol75689::byte_aligned::GameSDetails::read_details(mpq, file_contents),
-        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870 => {
-            protocol87702::byte_aligned::GameSDetails::read_details(mpq, file_contents)
-        }
+        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
+        | 91115 => protocol87702::byte_aligned::GameSDetails::read_details(mpq, file_contents),
         _ => {
             tracing::warn!(
                 "Protocol version {:?} is not supported, falling back to 87702",
@@ -151,9 +147,8 @@ pub fn read_init_data(
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     let res = match proto_header.m_version.m_base_build {
         0..=75689 => protocol75689::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),
-        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870 => {
-            protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents)
-        }
+        83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
+        | 91115 => protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),
         _ => {
             tracing::warn!(
                 "Protocol version {:?} is not supported, falling back to 87702",
