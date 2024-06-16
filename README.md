@@ -59,23 +59,28 @@ In the directory ipcs/ one .ipc file will be created per implemented data type.
 The `--source` is the directory that contains the replay directory (Or a single file).
 Multiple subdirectories are supported.
 Files are processed using parallel operations.
-For 17K replays (2.3 GBs) it takes 73 seconds to parse/transform/split them. YMMV, in this case only 10K files had valid init data (as in are supported protocol versions).
+For 17K replays (2.3 GBs) it takes 120 seconds to parse/transform/split them. YMMV, in this case only 10K files had valid init data (as in are supported protocol versions).
 
 ```bash
 $ mkdir ipcs/
 $ cargo run -r -- -v error --timing --source /home/seb/SCReplaysOnNVMe --output /home/seb/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 10000000 all
 Located 17021 matching files by extension
 10299 files have valid init data, processing...
-Total time: 88.186235061s
-$ du -sh ipcs
-11G     ipcs
-$ ls -ltra ipcs
--rw-r--r--  1 seb seb   81070479 Mar  1 21:18 init_data.ipc
--rw-r--r--  1 seb seb   10789826 Mar  1 21:18 details.ipc
--rw-r--r--  1 seb seb  843902480 Mar  1 21:18 stats.ipc
--rw-r--r--  1 seb seb   67967152 Mar  1 21:18 upgrades.ipc
--rw-r--r--  1 seb seb 5712488337 Mar  1 21:19 unit_born.ipc
--rw-r--r--  1 seb seb 4652841877 Mar  1 21:19 unit_died.ipc
+Total time: 121.943999981s
+& du -sh ipcs
+13G     ipcs
+
+& ls -ltra ipcs
+total 13123004
+drwxr-xr-x  2 seb seb       4096 Jun 16 09:33 ./
+drwxr-xr-x 11 seb seb       4096 Jun 16 22:09 ../
+-rw-r--r--  1 seb seb   81070479 Jun 16 22:10 init_data.ipc
+-rw-r--r--  1 seb seb   10789826 Jun 16 22:10 details.ipc
+-rw-r--r--  1 seb seb  843902480 Jun 16 22:10 stats.ipc
+-rw-r--r--  1 seb seb   67967152 Jun 16 22:10 upgrades.ipc
+-rw-r--r--  1 seb seb 5712488337 Jun 16 22:10 unit_born.ipc
+-rw-r--r--  1 seb seb 4652841877 Jun 16 22:11 unit_died.ipc
+-rw-r--r--  1 seb seb 2068859942 Jun 16 22:12 cmd.ipc
 ```
 
 ### Jupyter Notebooks
