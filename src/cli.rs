@@ -1,6 +1,9 @@
 #[cfg(feature = "arrow")]
 use super::*;
 
+#[cfg(feature = "syntax")]
+use bat::{Input, PrettyPrinter};
+
 use crate::game_events::iterator::GameEventIterator;
 use crate::generator::proto_morphist::ProtoMorphist;
 use crate::read_details;
@@ -41,8 +44,7 @@ enum Commands {
     WriteArrowIpc(WriteArrowIpcProps),
 }
 
-//  Create a subcommand that handles the max depth and max files to process
-
+///  Create a subcommand that handles the max depth and max files to process
 #[cfg(feature = "arrow")]
 #[derive(Args, Debug)]
 pub struct WriteArrowIpcProps {
@@ -88,6 +90,10 @@ struct Cli {
     /// Show basic performance metrics
     #[arg(short, long, default_value = "false")]
     timing: bool,
+
+    /// Show basic performance metrics
+    #[arg(short, long, default_value = "false")]
+    color: bool,
 }
 
 /// Matches a list of files in case the cli.source param is a directory
@@ -132,6 +138,30 @@ pub fn get_matching_files(
     }
 }
 
+/// Prints the json strings either with Bat PrettyPrint or just plain json
+pub fn json_print(json_str: String, color: bool) {
+    if color {
+        #[cfg(feature = "syntax")]
+        {
+            PrettyPrinter::new()
+                .language("json")
+                .header(false)
+                .grid(false)
+                .line_numbers(false)
+                .input(Input::from_bytes(json_str.as_bytes()))
+                .print()
+                .unwrap();
+            println!(",");
+        }
+        #[cfg(not(feature = "syntax"))]
+        {
+            println!("{},", json_str);
+        }
+    } else {
+        println!("{},", json_str);
+    }
+}
+
 /// Handles the request from the CLI when used as a binary
 pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
     let init_time = std::time::Instant::now();
@@ -143,12 +173,17 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
         "info" => tracing::Level::INFO,
         "debug" => tracing::Level::DEBUG,
         "trace" => tracing::Level::TRACE,
-        _ => tracing::Level::INFO,
+        _ => {
+            tracing::warn!("Invalid verbosity level, defaulting to INFO");
+            tracing::Level::INFO
+        }
     };
+    let color = cli.color;
     tracing_subscriber::fmt()
         .with_max_level(level)
-        .with_env_filter("info")
+        .with_env_filter(level.to_string())
         .init();
+    #[cfg(feature = "syntax")]
     match &cli.command {
         Commands::Generate => {
             ProtoMorphist::gen(&cli.source, &cli.output.expect("Requires --output"))?;
@@ -169,7 +204,13 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             };
             for source in sources {
                 tracing::info!("Processing {:?}", source);
-                let file_contents = crate::read_file(&source).unwrap();
+                let file_contents = match crate::read_file(&source) {
+                    Ok(res) => res,
+                    Err(e) => {
+                        tracing::error!("Error reading file: {:?}", e);
+                        continue;
+                    }
+                };
                 let (_input, mpq) = match parser::parse(&file_contents) {
                     Ok(res) => res,
                     Err(e) => {
@@ -188,7 +229,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let res = TrackerEventIterator::new(&source)?;
                         println!("[");
                         for evt in res.into_iter() {
-                            println!("{},", serde_json::to_string(&evt)?);
+                            json_print(serde_json::to_string(&evt).unwrap(), color);
                         }
                         println!("]");
                     }
@@ -197,7 +238,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let res = GameEventIterator::new(&source)?;
                         println!("[");
                         for evt in res.into_iter() {
-                            println!("{},", serde_json::to_string(&evt)?);
+                            json_print(serde_json::to_string(&evt).unwrap(), color);
                         }
                         println!("]");
                     }
@@ -205,24 +246,24 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let res = read_message_events(&source_path, &mpq, &file_contents)?;
                         println!("[");
                         for evt in res {
-                            println!("{},", serde_json::to_string(&evt)?);
+                            json_print(serde_json::to_string(&evt).unwrap(), color);
                         }
                         println!("]");
                     }
                     ReadTypes::Details => {
-                        let res = read_details(&source_path, &mpq, &file_contents)?;
-                        println!("{},", serde_json::to_string(&res)?);
+                        let evt = read_details(&source_path, &mpq, &file_contents)?;
+                        json_print(serde_json::to_string(&evt).unwrap(), color);
                     }
                     ReadTypes::InitData => {
-                        let res = read_init_data(&source_path, &mpq, &file_contents)?;
-                        println!("{},", serde_json::to_string(&res)?);
+                        let evt = read_init_data(&source_path, &mpq, &file_contents)?;
+                        json_print(serde_json::to_string(&evt).unwrap(), color);
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
                         println!("[");
                         let res = crate::state::SC2EventIterator::new(&source)?;
                         for evt in res.into_iter() {
-                            println!("{},", serde_json::to_string(&evt)?);
+                            json_print(serde_json::to_string(&evt).unwrap(), color);
                         }
                         println!("]");
                     }

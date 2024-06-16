@@ -10,6 +10,7 @@ use init_data::InitData;
 use rayon::prelude::*;
 
 use crate::cli::get_matching_files;
+use crate::game_events::GameEventIterator;
 use crate::tracker_events::{self, TrackerEventIterator};
 use crate::*;
 use clap::Subcommand;
@@ -35,6 +36,8 @@ pub enum ArrowIpcTypes {
     UnitDied,
     /// Writes the [`crate::message_events::MessageEvent`] to an Arrow IPC file
     MessageEvents,
+    /// Writes the [`crate::game_events::Cmd`] to an Arrow IPC file
+    Cmd,
     /// Writes all the implemented flat row types to Arrow IPC files inside the output directory
     All,
 }
@@ -87,6 +90,13 @@ impl ArrowIpcTypes {
                     panic!("Invalid schema, expected struct");
                 }
             }
+            Self::Cmd => {
+                if let DataType::Struct(fields) = game_events::CmdEventFlatRow::data_type() {
+                    arrow2::datatypes::Schema::from(fields.clone())
+                } else {
+                    panic!("Invalid schema, expected struct");
+                }
+            }
             _ => unimplemented!(),
         }
     }
@@ -104,6 +114,8 @@ impl ArrowIpcTypes {
             Self::Stats => self.handle_tracker_events(sources, output),
             Self::Upgrades => self.handle_tracker_events(sources, output),
             Self::UnitBorn => self.handle_tracker_events(sources, output),
+            Self::UnitDied => self.handle_tracker_events(sources, output),
+            Self::Cmd => self.handle_game_events(sources, output),
             Self::All => {
                 if !output.is_dir() {
                     panic!("Output must be a directory for types 'all'");
@@ -125,6 +137,7 @@ impl ArrowIpcTypes {
                     .handle_tracker_events(sources.clone(), output.join("unit_born.ipc"))?;
                 Self::UnitDied
                     .handle_tracker_events(sources.clone(), output.join("unit_died.ipc"))?;
+                Self::Cmd.handle_game_events(sources.clone(), output.join("cmd.ipc"))?;
                 Ok(())
             }
             _ => todo!(),
@@ -148,7 +161,7 @@ impl ArrowIpcTypes {
         Ok(())
     }
 
-    /// Creates a new Arrow IPC file with the stats data
+    /// Creates a new Arrow IPC file with the tracker events data
     /// This seems to be small enough to not need to be chunked and is done in parallel
     /// This requires 1.5GB of RAM for 3600 files, so maybe not good for real players.
     #[tracing::instrument(level = "debug")]
@@ -185,6 +198,38 @@ impl ArrowIpcTypes {
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     _ => unimplemented!(),
+                };
+                write_to_arrow_mutex_writer(&writer, res, batch_len)
+            })
+            .sum::<usize>();
+        tracing::info!("Loaded {} records", total_records);
+        close_arrow_mutex_writer(writer)
+    }
+
+    /// Creates a new Arrow IPC file with the game events data
+    /// This requires 1.5GB of RAM for 3600 files, so maybe not good for real players.
+    #[tracing::instrument(level = "debug")]
+    pub fn handle_game_events(
+        &self,
+        sources: Vec<InitData>,
+        output: PathBuf,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        tracing::info!("Processing GameEvents IPC write request: {:?}", self);
+        let writer = open_arrow_mutex_writer(output, self.schema())?;
+
+        // process files in parallel, the internal iterators will fight for the lock
+        let total_records = sources
+            .par_iter()
+            .filter_map(|source| {
+                let source = PathBuf::from(&source.file_name);
+                let details = crate::details::Details::try_from(source.clone()).ok()?;
+                let game_events = GameEventIterator::new(&source).ok()?;
+                let (res, batch_len): (Box<dyn Array>, usize) = match self {
+                    Self::Cmd => {
+                        let batch = game_events.collect_into_game_cmds_flat_rows(&details);
+                        (batch.try_into_arrow().ok()?, batch.len())
+                    }
+                    e => unimplemented!("{:?}", e),
                 };
                 write_to_arrow_mutex_writer(&writer, res, batch_len)
             })
@@ -232,7 +277,7 @@ impl ArrowIpcTypes {
             cmd.max_version
         );
         let sources = get_matching_files(source, cmd.scan_max_files, cmd.traverse_max_depth)?;
-        tracing::info!("Scanned {} files", sources.len());
+        println!("Located {} matching files by extension", sources.len());
         let mut sources: Vec<InitData> = sources
             .par_iter()
             .filter_map(|source| crate::init_data::InitData::try_from(source.clone()).ok())
@@ -255,6 +300,11 @@ impl ArrowIpcTypes {
             .collect();
         if sources.is_empty() {
             panic!("No files found");
+        } else {
+            println!(
+                "{} files have valid init data, processing...",
+                sources.len()
+            );
         }
         // Identify the shortest unique sha256 hash fragment.
         let mut smallest_fragment = 1;

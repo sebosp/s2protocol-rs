@@ -185,9 +185,13 @@ pub fn transform_to_naivetime(
 /// 942000 / 13735 = 68.58391 loops in a second
 /// This will only work for the Faster speed.
 pub fn convert_tracker_loop_to_seconds(tracker_replay_loop: i64) -> u32 {
+    convert_game_loop_to_seconds((crate::TRACKER_SPEED_RATIO * tracker_replay_loop as f32) as i64)
+}
+
+/// Converts the game loop to milliseconds,
+pub fn convert_game_loop_to_seconds(game_replay_loop: i64) -> u32 {
     // TODO: For now let's use seconds, we'll move this to milliseconds as we need more precision.
-    let ext_replay_milliseconds =
-        crate::TRACKER_SPEED_RATIO * tracker_replay_loop as f32 * 68.58391;
+    let ext_replay_milliseconds = game_replay_loop as f32 * 68.58391;
     (ext_replay_milliseconds / 1000.0) as u32
 }
 
