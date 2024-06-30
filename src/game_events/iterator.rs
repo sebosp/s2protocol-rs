@@ -211,29 +211,67 @@ impl GameEventIterator {
         self
     }
 
-    /// Consumes the Iterator collecting only the Cmd events into a vector of CmdEventFlatRow
-    pub fn collect_into_game_cmds_flat_rows(
+    /// Consumes the Iterator collecting only the CmdTargetPoint events into a vector of CmdEventFlatRow
+    pub fn collect_into_game_cmd_target_points_flat_rows(
         self,
         details: &crate::details::Details,
-    ) -> Vec<game_events::CmdEventFlatRow> {
+    ) -> Vec<game_events::CmdTargetPointEventFlatRow> {
         self.into_iter()
             .filter_map(|(sc2_event, change_hint)| match sc2_event {
                 SC2EventType::Game {
                     event,
                     game_loop,
                     user_id,
-                } => match event {
-                    game_events::ReplayGameEvent::Cmd(event) => {
-                        Some(game_events::CmdEventFlatRow::new(
-                            details,
-                            event,
-                            game_loop,
-                            user_id,
-                            change_hint,
-                        ))
+                } => {
+                    if let game_events::ReplayGameEvent::Cmd(event) = event {
+                        if let game_events::GameSCmdData::TargetPoint(_) = event.m_data {
+                            Some(game_events::CmdTargetPointEventFlatRow::new(
+                                details,
+                                event,
+                                game_loop,
+                                user_id,
+                                change_hint,
+                            ))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
                     }
-                    _ => None,
-                },
+                }
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// Consumes the Iterator collecting only the CmdTargetUnit events into a vector of CmdEventFlatRow
+    pub fn collect_into_game_cmd_target_units_flat_rows(
+        self,
+        details: &crate::details::Details,
+    ) -> Vec<game_events::CmdTargetUnitEventFlatRow> {
+        self.into_iter()
+            .filter_map(|(sc2_event, change_hint)| match sc2_event {
+                SC2EventType::Game {
+                    event,
+                    game_loop,
+                    user_id,
+                } => {
+                    if let game_events::ReplayGameEvent::Cmd(event) = event {
+                        if let game_events::GameSCmdData::TargetUnit(_) = event.m_data {
+                            Some(game_events::CmdTargetUnitEventFlatRow::new(
+                                details,
+                                event,
+                                game_loop,
+                                user_id,
+                                change_hint,
+                            ))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    }
+                }
                 _ => None,
             })
             .collect()
