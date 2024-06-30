@@ -3,4 +3,5 @@
 //! unnest complex structs
 
 pub mod cmd_event_flat_row;
-pub use cmd_event_flat_row::CmdEventFlatRow;
+pub use cmd_event_flat_row::CmdTargetPointEventFlatRow;
+pub use cmd_event_flat_row::CmdTargetUnitEventFlatRow;

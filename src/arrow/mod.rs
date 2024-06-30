@@ -36,8 +36,10 @@ pub enum ArrowIpcTypes {
     UnitDied,
     /// Writes the [`crate::message_events::MessageEvent`] to an Arrow IPC file
     MessageEvents,
-    /// Writes the [`crate::game_events::Cmd`] to an Arrow IPC file
-    Cmd,
+    /// Writes the [`crate::game_events::Cmd::TargetPoint`] to an Arrow IPC file
+    CmdTargetPoint,
+    /// Writes the [`crate::game_events::Cmd::TargetUnit`] to an Arrow IPC file
+    CmdTargetUnit,
     /// Writes all the implemented flat row types to Arrow IPC files inside the output directory
     All,
 }
@@ -90,8 +92,19 @@ impl ArrowIpcTypes {
                     panic!("Invalid schema, expected struct");
                 }
             }
-            Self::Cmd => {
-                if let DataType::Struct(fields) = game_events::CmdEventFlatRow::data_type() {
+            Self::CmdTargetPoint => {
+                if let DataType::Struct(fields) =
+                    game_events::CmdTargetPointEventFlatRow::data_type()
+                {
+                    arrow2::datatypes::Schema::from(fields.clone())
+                } else {
+                    panic!("Invalid schema, expected struct");
+                }
+            }
+            Self::CmdTargetUnit => {
+                if let DataType::Struct(fields) =
+                    game_events::CmdTargetUnitEventFlatRow::data_type()
+                {
                     arrow2::datatypes::Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
@@ -115,7 +128,8 @@ impl ArrowIpcTypes {
             Self::Upgrades => self.handle_tracker_events(sources, output),
             Self::UnitBorn => self.handle_tracker_events(sources, output),
             Self::UnitDied => self.handle_tracker_events(sources, output),
-            Self::Cmd => self.handle_game_events(sources, output),
+            Self::CmdTargetPoint => self.handle_game_events(sources, output),
+            Self::CmdTargetUnit => self.handle_game_events(sources, output),
             Self::All => {
                 if !output.is_dir() {
                     panic!("Output must be a directory for types 'all'");
@@ -137,7 +151,10 @@ impl ArrowIpcTypes {
                     .handle_tracker_events(sources.clone(), output.join("unit_born.ipc"))?;
                 Self::UnitDied
                     .handle_tracker_events(sources.clone(), output.join("unit_died.ipc"))?;
-                Self::Cmd.handle_game_events(sources.clone(), output.join("cmd.ipc"))?;
+                Self::CmdTargetPoint
+                    .handle_game_events(sources.clone(), output.join("cmd_target_point.ipc"))?;
+                Self::CmdTargetUnit
+                    .handle_game_events(sources.clone(), output.join("cmd_target_unit.ipc"))?;
                 Ok(())
             }
             _ => todo!(),
@@ -225,8 +242,14 @@ impl ArrowIpcTypes {
                 let details = crate::details::Details::try_from(source.clone()).ok()?;
                 let game_events = GameEventIterator::new(&source).ok()?;
                 let (res, batch_len): (Box<dyn Array>, usize) = match self {
-                    Self::Cmd => {
-                        let batch = game_events.collect_into_game_cmds_flat_rows(&details);
+                    Self::CmdTargetPoint => {
+                        let batch =
+                            game_events.collect_into_game_cmd_target_points_flat_rows(&details);
+                        (batch.try_into_arrow().ok()?, batch.len())
+                    }
+                    Self::CmdTargetUnit => {
+                        let batch =
+                            game_events.collect_into_game_cmd_target_units_flat_rows(&details);
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     e => unimplemented!("{:?}", e),
