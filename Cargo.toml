@@ -7,7 +7,7 @@ edition = "2021"
 readme = "README.md"
 license = "MIT"
 repository = "https://github.com/sebosp/s2protocol-rs"
-keywords = ["sc2replay", "polars", "arrow", "starcraft2", "mpq", "sc2", "blizzard"]
+keywords = ["sc2replay", "polars", "arrow", "starcraft2", "mpq"]
 categories = ["games", "parsing"]
 
 [dependencies]
