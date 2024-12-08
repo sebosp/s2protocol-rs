@@ -187,7 +187,7 @@ pub fn ability_id_to_string(ability_id: u16) -> &'static str {
         182 => "SpawnChangeling",
         183 => "DisguiseAsZealot",
         184 => "DisguiseAsZealot",
-        185 => "DisguiseAsMarineWithShield",
+        185 => "MorphHatchery",
         186 => "DisguiseAsMarineWithShield",
         187 => "DisguiseAsMarineWithoutShield",
         188 => "DisguiseAsMarineWithoutShield",

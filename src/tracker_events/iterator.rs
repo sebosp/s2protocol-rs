@@ -64,7 +64,7 @@ impl TrackertEventIteratorState {
 
     /// Attempt to find the next possible supported event.
     /// If an event is not "de-versioned", then it is skipped, thus the internal loop
-    #[tracing::instrument(level = "debug", skip(self, sc2_state), fields(event_loop = self.event_loop))]
+    #[tracing::instrument(level = "debug", skip(self, sc2_state, filters), fields(event_loop = self.event_loop))]
     pub fn transist_to_next_supported_event(
         &mut self,
         protocol_version: u32,
@@ -83,7 +83,12 @@ impl TrackertEventIteratorState {
                     // game loops.
                     let adjusted_loop = (self.event_loop as f32 / TRACKER_SPEED_RATIO) as i64;
                     let updated_hint = handle_tracker_event(sc2_state, adjusted_loop, &val.event);
-                    tracing::debug!("Trac [{:>08}]: {:?}", adjusted_loop, val.event);
+                    tracing::info!(
+                        "Trac [{:>08}]: Evt:{:?} Hint:{:?}",
+                        adjusted_loop,
+                        val.event,
+                        updated_hint
+                    );
                     let event = SC2EventType::Tracker {
                         tracker_loop: adjusted_loop,
                         event: val.event,
