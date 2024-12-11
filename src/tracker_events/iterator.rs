@@ -272,12 +272,17 @@ impl TrackerEventIterator {
                         ))
                     }
                     tracker_events::ReplayTrackerEvent::UnitTypeChange(event) => {
-                        Some(tracker_events::UnitBornEventFlatRow::from_unit_type_change(
-                            event,
-                            tracker_loop,
-                            details,
-                            change_hint,
-                        ))
+                        match change_hint {
+                            UnitChangeHint::None => None,
+                            change_hint => {
+                                Some(tracker_events::UnitBornEventFlatRow::from_unit_type_change(
+                                    event,
+                                    tracker_loop,
+                                    details,
+                                    change_hint,
+                                ))
+                            }
+                        }
                     }
                     _ => None,
                 },
