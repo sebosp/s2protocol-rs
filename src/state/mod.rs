@@ -13,7 +13,12 @@ use crate::common::*;
 use crate::filters::SC2ReplayFilters;
 use crate::game_events::GameEventIteratorState;
 use crate::tracker_events::TrackertEventIteratorState;
+use game_events::GameSCmdEvent;
 use serde::{Deserialize, Serialize};
+pub mod unit_cmd;
+pub mod unit_props;
+pub use unit_cmd::*;
+pub use unit_props::*;
 
 pub const TRACKER_PRIORITY: i64 = 1;
 pub const GAME_PRIORITY: i64 = 2;
@@ -40,8 +45,6 @@ pub struct SC2Unit {
     pub name: String,
     /// The XYZ position.
     pub pos: Vec3D,
-    /// The target of this unit.
-    pub target: Option<Vec3D>,
     /// The game loop in which the unit was created.
     pub init_game_loop: i64,
     /// The creator ability name.
@@ -50,10 +53,14 @@ pub struct SC2Unit {
     /// by the client side better, since it's very specific to Swarmy.
     /// Maybe next version we can move it there.
     pub radius: f32,
+    /// The color of the unit, this should be later on allowed to be overridden by the client.
+    pub color: [u8; 4],
     /// Whether the unit is selected
     pub is_selected: bool,
     /// Whether the unit is in Initializing state, for example morphing.
     pub is_init: bool,
+    /// The current unit command.
+    pub cmd: SC2UnitCmd,
 }
 
 impl Ord for SC2Unit {
@@ -75,6 +82,15 @@ impl PartialOrd for SC2Unit {
 }
 
 impl Eq for SC2Unit {}
+
+impl SC2Unit {
+    /// Sets the unit properties based on the unit name.
+    pub fn set_unit_props(&mut self) {
+        let (radius, color) = get_unit_sized_color(&self.name, self.user_id.unwrap_or(0) as i64);
+        self.radius = radius;
+        self.color = color;
+    }
+}
 
 /// Supported event types.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -115,15 +131,24 @@ pub enum UnitChangeHint {
     /// This covers UnitBorn, InitInit, UnitDone, and UnitTypeChange.
     Registered(SC2Unit),
     /// Unit positions are being reported, a vector of units changed is returned.
-    Batch(Vec<SC2Unit>),
+    Positions(Vec<SC2Unit>),
+    /// Unit positions are being reported, a vector of units changed is returned.
+    TargetPoints(Vec<SC2Unit>),
     /// Selected units in the first item of the tuple (.0) are targetting the unit on the second item of the tuple (.1)
-    BatchWithTarget(Vec<SC2Unit>, SC2Unit),
+    TargetUnits {
+        units: Vec<SC2Unit>,
+        target: Box<SC2Unit>,
+    },
     /// A unit has been deleted from the state registry, the full killer unit information and the
     /// killed unit is returned. Killer is cloned and may be expensive.
     Unregistered {
         killer: Option<SC2Unit>,
-        killed: SC2Unit,
+        killed: Box<SC2Unit>,
     },
+    /// An ability has been used, the unit cmd abilities should be inspected.
+    Abilities(Vec<SC2Unit>, GameSCmdEvent),
+    /// A set of units has been selected and are in the active control group.
+    Selection(Vec<SC2Unit>),
     /// No units have changed, for example, PlayerStats are generated, so nothing to inspect
     None,
 }

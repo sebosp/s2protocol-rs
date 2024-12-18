@@ -1,6 +1,7 @@
 //! A collection of transformed enum variants to u8s.
 //! This is done for space efficiency in the Arrow IPC file.
 
+use super::game_events::{GameSMapCoord3D, GAME_EVENT_POS_RATIO};
 use serde::{Deserialize, Serialize};
 
 /// The user role as they observe
@@ -43,5 +44,15 @@ impl Vec3D {
     /// Returns the z coordinate from the vector.
     pub fn z(&self) -> f32 {
         self.0[2]
+    }
+}
+
+impl From<GameSMapCoord3D> for Vec3D {
+    fn from(coord: GameSMapCoord3D) -> Self {
+        Vec3D::new(
+            coord.x as f32 / GAME_EVENT_POS_RATIO,
+            -1. * coord.y as f32 / GAME_EVENT_POS_RATIO,
+            coord.z as f32 / GAME_EVENT_POS_RATIO,
+        )
     }
 }

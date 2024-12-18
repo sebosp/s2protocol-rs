@@ -80,7 +80,7 @@ impl GameEventIteratorState {
 
     /// Attempt to find the next possible supported event.
     /// If an event is not "de-versioned", then it is skipped, thus the internal loop
-    #[tracing::instrument(level = "debug", skip(self, sc2_state), fields(event_loop = self.event_loop))]
+    #[tracing::instrument(level = "debug", skip(self, sc2_state, filters), fields(event_loop = self.event_loop))]
     pub fn transist_to_next_supported_event(
         &mut self,
         protocol_version: u32,
@@ -100,10 +100,11 @@ impl GameEventIteratorState {
                     let updated_hint =
                         handle_game_event(sc2_state, self.event_loop, val.user_id, &val.event);
                     tracing::info!(
-                        "Game [{:>08}]: uid: {} {:?}",
+                        "Game [{:>08}]: uid: {} Evt:{:?} Hint:{:?}",
                         self.event_loop,
                         val.user_id,
-                        val.event
+                        val.event,
+                        updated_hint
                     );
                     let event = SC2EventType::Game {
                         game_loop: self.event_loop,
