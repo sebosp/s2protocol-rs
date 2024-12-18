@@ -18,7 +18,7 @@ pub fn handle_unit_init(
     game_loop: i64,
     unit_init: &UnitInitEvent,
 ) -> UnitChangeHint {
-    let sc2_unit = SC2Unit {
+    let mut sc2_unit = SC2Unit {
         last_game_loop: game_loop,
         user_id: Some(unit_init.control_player_id),
         name: unit_init.unit_type_name.clone(),
@@ -28,13 +28,14 @@ pub fn handle_unit_init(
         tag_index: unit_init.unit_tag_index,
         ..Default::default()
     };
-    tracing::debug!("Initializing unit: {:?}", sc2_unit);
+    sc2_unit.set_unit_props();
+    tracing::info!("Initializing unit: {:?}", sc2_unit);
     if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_init.unit_tag_index) {
         // This happens for example when a unit is burrowed.
         unit.last_game_loop = game_loop;
         unit.pos = Vec3D::new(unit_init.x as f32, unit_init.y as f32, 0.);
         unit.is_init = true;
-        unit.name = unit_init.unit_type_name.clone();
+        unit.name.clone_from(&unit_init.unit_type_name);
     } else {
         sc2_state
             .units
@@ -56,7 +57,7 @@ pub fn handle_unit_born(
         unit.last_game_loop = game_loop;
         UnitChangeHint::Registered(unit.clone())
     } else {
-        let sc2_unit = SC2Unit {
+        let mut sc2_unit = SC2Unit {
             last_game_loop: game_loop,
             user_id: Some(unit_born.control_player_id),
             name: unit_born.unit_type_name.clone(),
@@ -65,6 +66,7 @@ pub fn handle_unit_born(
             tag_index: unit_born.unit_tag_index,
             ..Default::default()
         };
+        sc2_unit.set_unit_props();
         sc2_state
             .units
             .insert(unit_born.unit_tag_index, sc2_unit.clone());
@@ -81,11 +83,13 @@ pub fn handle_unit_type_change(
     unit_change: &UnitTypeChangeEvent,
 ) -> UnitChangeHint {
     if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_change.unit_tag_index) {
-        unit.name = unit_change.unit_type_name.clone();
+        let old_unit = unit.clone();
+        unit.name.clone_from(&unit_change.unit_type_name);
         unit.last_game_loop = game_loop;
-        UnitChangeHint::Registered(unit.clone())
+        unit.set_unit_props();
+        UnitChangeHint::Registered(old_unit)
     } else {
-        let sc2_unit = SC2Unit {
+        let mut sc2_unit = SC2Unit {
             last_game_loop: game_loop,
             user_id: None,
             name: unit_change.unit_type_name.clone(),
@@ -93,10 +97,11 @@ pub fn handle_unit_type_change(
             tag_index: unit_change.unit_tag_index,
             ..Default::default()
         };
+        sc2_unit.set_unit_props();
         sc2_state
             .units
             .insert(unit_change.unit_tag_index, sc2_unit.clone());
-        UnitChangeHint::Registered(sc2_unit)
+        UnitChangeHint::None
     }
 }
 
@@ -111,6 +116,7 @@ pub fn handle_unit_done(
     if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_done.unit_tag_index) {
         unit.last_game_loop = game_loop;
         unit.is_init = false;
+        unit.set_unit_props();
         UnitChangeHint::Registered(unit.clone())
     } else {
         tracing::warn!(
@@ -150,7 +156,7 @@ pub fn handle_unit_position(
         .filter_map(|id| sc2_state.units.get(id))
         .cloned()
         .collect();
-    UnitChangeHint::Batch(updated_units)
+    UnitChangeHint::Positions(updated_units)
 }
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_unit_died(
@@ -181,7 +187,7 @@ pub fn handle_unit_died(
             };
             UnitChangeHint::Unregistered {
                 killer: killer_unit,
-                killed: val,
+                killed: Box::new(val),
             }
         }
     }

@@ -4,7 +4,14 @@
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::game_events::GameSCmdEvent;
-use crate::game_events::{GameSCmdData, GameSCmdDataTargetUnit, GameSMapCoord3D, GameTUnitTag};
+use crate::game_events::{
+    GameSCmdData,
+    // GameSCmdDataTargetUnit,
+    GameSMapCoord3D,
+    GameTPlayerId,
+    GameTUnitLink,
+    GameTUnitTag,
+};
 use serde::{Deserialize, Serialize};
 
 /// Arrow compatible Cmd Event for Target Point
@@ -68,7 +75,13 @@ pub struct CmdTargetUnitEventFlatRow {
     pub user_id: i64,
     pub m_cmd_flags: i64,
     pub m_abil: String,
-    pub unit: GameSCmdDataTargetUnit,
+    pub m_target_unit_flags: u16,
+    pub m_timer: u8,
+    pub m_tag: GameTUnitTag,
+    pub m_snapshot_unit_link: GameTUnitLink,
+    pub m_snapshot_control_player_id: Option<GameTPlayerId>,
+    pub m_snapshot_upkeep_player_id: Option<GameTPlayerId>,
+    pub m_snapshot_point: GameSMapCoord3D,
     pub m_sequence: i64,
     pub m_other_unit: Option<GameTUnitTag>,
     pub m_unit_group: Option<u32>,
@@ -98,7 +111,13 @@ impl CmdTargetUnitEventFlatRow {
                 Some(abil) => abil.ability.clone(),
                 None => String::new(),
             },
-            unit,
+            m_target_unit_flags: unit.m_target_unit_flags,
+            m_timer: unit.m_timer,
+            m_tag: unit.m_tag,
+            m_snapshot_unit_link: unit.m_snapshot_unit_link,
+            m_snapshot_control_player_id: unit.m_snapshot_control_player_id,
+            m_snapshot_upkeep_player_id: unit.m_snapshot_upkeep_player_id,
+            m_snapshot_point: unit.m_snapshot_point,
             m_sequence: event.m_sequence,
             m_other_unit: event.m_other_unit,
             m_unit_group: event.m_unit_group,

@@ -7,27 +7,28 @@ use crate::*;
 /// The game events seem to be at this ratio when compared to Tracker Events.
 pub const GAME_EVENT_POS_RATIO: f32 = 4096f32;
 
+/// The selected units for a specific players are given a specific target point to move towards.
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_cmd(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
-    game_cmd: &GameSCmdEvent,
+    cmd: &GameSCmdEvent,
 ) -> UnitChangeHint {
-    match &game_cmd.m_data {
-        GameSCmdData::TargetPoint(target) => {
-            handle_update_target_point(sc2_state, game_loop, user_id, target)
-        }
-        GameSCmdData::TargetUnit(target_unit) => {
-            handle_update_target_unit(sc2_state, game_loop, user_id, target_unit)
-        }
-        GameSCmdData::Data(data) => {
-            // Unknown for now.
-            tracing::info!("GameSCmdData::Data: {}", data);
-            UnitChangeHint::None
-        }
-        GameSCmdData::None => UnitChangeHint::None,
+    let mut user_selected_unit_ids: Vec<u32> = vec![];
+    let mut user_selected_units: Vec<SC2Unit> = vec![];
+    if let Some(state) = sc2_state.user_state.get(&user_id) {
+        user_selected_unit_ids = state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
     }
+    for selected_unit in &user_selected_unit_ids {
+        let unit_index = unit_tag_index(*selected_unit as i64);
+        if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
+            registered_unit.cmd = cmd.clone().into();
+            registered_unit.last_game_loop = game_loop;
+            user_selected_units.push(registered_unit.clone());
+        }
+    }
+    UnitChangeHint::Abilities(user_selected_units, cmd.clone())
 }
 
 /// The selected units for a specific players are given a specific target point to move towards.
@@ -38,28 +39,22 @@ pub fn handle_update_target_point(
     user_id: i64,
     target_point: &GameSMapCoord3D,
 ) -> UnitChangeHint {
-    let unit_target_pos = Vec3D::new(
-        target_point.x as f32 / GAME_EVENT_POS_RATIO,
-        -1. * target_point.y as f32 / GAME_EVENT_POS_RATIO,
-        target_point.z as f32 / GAME_EVENT_POS_RATIO,
-    );
     let mut user_selected_unit_ids: Vec<u32> = vec![];
+    let mut user_selected_units: Vec<SC2Unit> = vec![];
     if let Some(state) = sc2_state.user_state.get(&user_id) {
         user_selected_unit_ids = state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
     }
     for selected_unit in &user_selected_unit_ids {
         let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
-            registered_unit.target = Some(unit_target_pos.clone());
+            registered_unit
+                .cmd
+                .set_data_target_point(target_point.clone());
             registered_unit.last_game_loop = game_loop;
+            user_selected_units.push(registered_unit.clone());
         }
     }
-    let user_selected_units = user_selected_unit_ids
-        .iter()
-        .filter_map(|id| sc2_state.units.get(id))
-        .cloned()
-        .collect();
-    UnitChangeHint::Batch(user_selected_units)
+    UnitChangeHint::TargetPoints(user_selected_units)
 }
 
 /// Handles the change of target for the currently selected units.
@@ -72,12 +67,7 @@ pub fn handle_update_target_unit(
     user_id: i64,
     target_unit: &GameSCmdDataTargetUnit,
 ) -> UnitChangeHint {
-    let unit_target_pos = Vec3D::new(
-        target_unit.m_snapshot_point.x as f32 / GAME_EVENT_POS_RATIO,
-        -1. * target_unit.m_snapshot_point.y as f32 / GAME_EVENT_POS_RATIO,
-        target_unit.m_snapshot_point.z as f32 / GAME_EVENT_POS_RATIO,
-    );
-    let target_unit = match sc2_state.units.get(&target_unit.m_tag) {
+    let registered_target_unit = match sc2_state.units.get(&target_unit.m_tag) {
         Some(x) => x.clone(),
         None => {
             tracing::warn!("Unit not found for target unit: {}", target_unit.m_tag);
@@ -85,22 +75,24 @@ pub fn handle_update_target_unit(
         }
     };
     let mut user_selected_unit_ids: Vec<u32> = vec![];
+    let mut user_selected_units: Vec<SC2Unit> = vec![];
     if let Some(state) = sc2_state.user_state.get(&user_id) {
         user_selected_unit_ids = state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
     }
     for selected_unit in &user_selected_unit_ids {
         let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
-            registered_unit.target = Some(unit_target_pos.clone());
+            registered_unit
+                .cmd
+                .set_data_target_unit(target_unit.clone().into());
             registered_unit.last_game_loop = game_loop;
+            user_selected_units.push(registered_unit.clone());
         }
     }
-    let user_selected_units = user_selected_unit_ids
-        .iter()
-        .filter_map(|id| sc2_state.units.get(id))
-        .cloned()
-        .collect();
-    UnitChangeHint::BatchWithTarget(user_selected_units, target_unit)
+    UnitChangeHint::TargetUnits {
+        units: user_selected_units,
+        target: Box::new(registered_target_unit),
+    }
 }
 
 /// Removes the changes to the units that signify they are selected.
@@ -129,7 +121,7 @@ pub fn unmark_previously_selected_units(
         .filter_map(|id| sc2_state.units.get(id))
         .cloned()
         .collect();
-    UnitChangeHint::Batch(updated_units)
+    UnitChangeHint::Selection(updated_units)
 }
 
 /// Marks a group of units as selected by increasing the radius.
@@ -157,7 +149,7 @@ pub fn mark_selected_units(
         .filter_map(|id| sc2_state.units.get(id))
         .cloned()
         .collect();
-    UnitChangeHint::Batch(updated_units)
+    UnitChangeHint::Selection(updated_units)
 }
 
 /// Registers units as being selected.
@@ -179,7 +171,7 @@ pub fn handle_selection_delta(
     if selection_delta.m_control_group_id == ACTIVE_UNITS_GROUP_IDX as u8 {
         let mut unmarked_units =
             match unmark_previously_selected_units(sc2_state, game_loop, user_id) {
-                UnitChangeHint::Batch(units) => units,
+                UnitChangeHint::Selection(units) => units,
                 _ => unreachable!(),
             };
         updated_units.append(&mut unmarked_units);
@@ -189,7 +181,7 @@ pub fn handle_selection_delta(
             user_id,
             &selection_delta.m_delta.m_add_unit_tags,
         ) {
-            UnitChangeHint::Batch(units) => units,
+            UnitChangeHint::Selection(units) => units,
             _ => unreachable!(),
         };
         updated_units.append(&mut marked_units);
@@ -200,7 +192,7 @@ pub fn handle_selection_delta(
     }
     updated_units.sort_unstable();
     updated_units.dedup();
-    UnitChangeHint::Batch(updated_units)
+    UnitChangeHint::Selection(updated_units)
 }
 
 /// Handles control group update events
@@ -213,7 +205,7 @@ pub fn update_control_group(
     ctrl_group_evt: &GameSControlGroupUpdateEvent,
 ) -> UnitChangeHint {
     let mut updated_units = match unmark_previously_selected_units(sc2_state, game_loop, user_id) {
-        UnitChangeHint::Batch(units) => units,
+        UnitChangeHint::Selection(units) => units,
         _ => unreachable!(),
     };
     match ctrl_group_evt.m_control_group_update {
@@ -281,13 +273,13 @@ pub fn update_control_group(
             }
             let mut curr_units =
                 match mark_selected_units(sc2_state, game_loop, user_id, &current_selected_units) {
-                    UnitChangeHint::Batch(units) => units,
+                    UnitChangeHint::Selection(units) => units,
                     _ => unreachable!(),
                 };
             updated_units.append(&mut curr_units);
         }
     }
-    UnitChangeHint::Batch(updated_units)
+    UnitChangeHint::Selection(updated_units)
 }
 
 /// Handles a game event as it steps through the SC2 State.
