@@ -28,55 +28,55 @@ pub const INT_TAG: &[u8; 1] = b"\x09";
 /// The arrays are prepend by the [`ARRAY_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_array_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek_hex(tag(ARRAY_TAG), "array tag")(input)
+    dbg_peek_hex(tag(&ARRAY_TAG[..]), "array tag")(input)
 }
 
 /// The bitarrays are prepend by the [`BIT_ARRAY_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_bitarray_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek_hex(tag(BIT_ARRAY_TAG), "bitarray tag")(input)
+    dbg_peek_hex(tag(&BIT_ARRAY_TAG[..]), "bitarray tag")(input)
 }
 
 /// The blobs are prepend by the [`BLOB_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_blob_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek_hex(tag(BLOB_TAG), "blob tag")(input)
+    dbg_peek_hex(tag(&BLOB_TAG[..]), "blob tag")(input)
 }
 
 /// The choice/enums are prepend by the [`CHOICE_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_choice_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek_hex(tag(CHOICE_TAG), "choice tag")(input)
+    dbg_peek_hex(tag(&CHOICE_TAG[..]), "choice tag")(input)
 }
 
 /// The optionals are prepend by the [`OPT_TAG`] if provided.
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_opt_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek_hex(tag(OPT_TAG), "opt tag")(input)
+    dbg_peek_hex(tag(&OPT_TAG[..]), "opt tag")(input)
 }
 
 /// The structs are prepend by the [`STRUCT_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_struct_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek_hex(tag(STRUCT_TAG), "struct tag")(input)
+    dbg_peek_hex(tag(&STRUCT_TAG[..]), "struct tag")(input)
 }
 
 /// The bools are prepend by the [`BOOL_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_bool_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek_hex(tag(BOOL_TAG), "bool tag")(input)
+    dbg_peek_hex(tag(&BOOL_TAG[..]), "bool tag")(input)
 }
 
 /// The FourCC and Real32 are prepend by the [`FOURCC_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_fourcc_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek_hex(tag(FOURCC_TAG), "fourcc tag")(input)
+    dbg_peek_hex(tag(&FOURCC_TAG[..]), "fourcc tag")(input)
 }
 
 /// The ints are prepend by the [`INT_TAG`]
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
 pub fn validate_int_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
-    dbg_peek_hex(tag(INT_TAG), "int tag")(input)
+    dbg_peek_hex(tag(&INT_TAG[..]), "int tag")(input)
 }
 
 /// Reads a bitarray that is prepend by its tag.

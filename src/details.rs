@@ -52,7 +52,6 @@ impl Details {
     }
 
     /// Sets the metadata related to the filesystem entry and the replay time
-    #[cfg(feature = "arrow")]
     pub fn set_metadata(mut self, file_name: &str, file_contents: &[u8]) -> Self {
         self.ext_fs_replay_file_name = file_name.to_string();
         self.ext_fs_replay_sha256 = sha256::digest(file_contents);
@@ -67,7 +66,15 @@ impl Details {
     pub fn get_player_name(&self, event_player_id: u8) -> String {
         self.player_list
             .iter()
-            .find(|player| player.working_set_slot_id == Some(event_player_id))
+            .find(|player| {
+                let adjusted_player_id = match player.working_set_slot_id {
+                    // NOTE: The working_set_slot_id is 0-based
+                    // while the incoming event_player_id is 1-based
+                    Some(val) => val + 1,
+                    _ => return false,
+                };
+                adjusted_player_id == event_player_id
+            })
             .map(|player| {
                 // The player name may be prepend by its clan.
                 // The clan seems to be URL encoded like "&lt&CLAN&gt<sp/>PLAYERNAME"

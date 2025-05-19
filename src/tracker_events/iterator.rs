@@ -69,7 +69,7 @@ impl TrackertEventIteratorState {
         &mut self,
         protocol_version: u32,
         sc2_state: &mut SC2ReplayState,
-        filters: &Option<SC2ReplayFilters>,
+        filters: &mut Option<SC2ReplayFilters>,
     ) -> Option<(SC2EventType, UnitChangeHint)> {
         loop {
             let current_slice: &[u8] = &self.event_data[self.byte_index..];
@@ -96,6 +96,10 @@ impl TrackertEventIteratorState {
                     if let Some(filters) = filters {
                         if self.shoud_skip_event(&event, filters) {
                             continue;
+                        }
+                        filters.decrease_allowed_event_counter();
+                        if filters.is_max_event_reached() {
+                            return None;
                         }
                     }
                     return Some((event, updated_hint));
@@ -188,6 +192,7 @@ impl TrackerEventIterator {
     }
 
     /// Consumes the Iterator collecting only the PlayerStats events into a vector of PlayerStatsFlatRow
+    #[cfg(feature = "arrow")]
     pub fn collect_into_player_stats_flat_rows(
         self,
         details: &crate::details::Details,
@@ -220,6 +225,7 @@ impl TrackerEventIterator {
     }
 
     /// Consumes the Iterator collecting only the Upgrade events into a vector of UpgradeEventFlatRow
+    #[cfg(feature = "arrow")]
     pub fn collect_into_upgrades_flat_rows(
         self,
         details: &crate::details::Details,
@@ -246,6 +252,7 @@ impl TrackerEventIterator {
     }
 
     /// Consumes the Iterator collecting only the UnitBorn events into a vector of UnitBornEventFlatRow
+    #[cfg(feature = "arrow")]
     pub fn collect_into_unit_born_flat_rows(
         self,
         details: &crate::details::Details,
@@ -261,6 +268,7 @@ impl TrackerEventIterator {
                             event,
                             tracker_loop,
                             details,
+                            change_hint,
                         ))
                     }
                     tracker_events::ReplayTrackerEvent::UnitDone(event) => {
@@ -292,6 +300,7 @@ impl TrackerEventIterator {
     }
 
     /// Consumes the Iterator collecting only the UnitDied events into a vector of UnitBornEventFlatRow
+    #[cfg(feature = "arrow")]
     pub fn collect_into_unit_died_flat_rows(
         self,
         details: &crate::details::Details,
@@ -328,7 +337,7 @@ impl Iterator for TrackerEventIterator {
         self.iterator_state.transist_to_next_supported_event(
             self.protocol_version,
             &mut self.sc2_state,
-            &self.filters,
+            &mut self.filters,
         )
     }
 }

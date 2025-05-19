@@ -20,7 +20,7 @@ use ipc_writer::*;
 use std::collections::HashSet;
 
 /// The supported Arrow IPC types
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Subcommand, Clone)]
 pub enum ArrowIpcTypes {
     /// Writes the [`crate::init_data::InitData`] flat row to an Arrow IPC file
     InitData,
