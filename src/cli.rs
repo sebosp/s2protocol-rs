@@ -10,11 +10,13 @@ use crate::read_details;
 use crate::read_init_data;
 use crate::read_message_events;
 use crate::tracker_events::iterator::TrackerEventIterator;
-use clap::{Args, Parser, Subcommand};
+
+use clap::Args;
+use clap::{Parser, Subcommand};
 use nom_mpq::parser;
 use std::path::PathBuf;
 
-#[derive(Subcommand, Debug)]
+#[derive(Subcommand, Debug, Clone)]
 enum ReadTypes {
     /// Reads the tracker events from an SC2Replay MPQ Archive
     TrackerEvents,
@@ -30,7 +32,7 @@ enum ReadTypes {
     TransistEvents,
 }
 
-#[derive(Subcommand, Debug)]
+#[derive(Subcommand, Debug, Clone)]
 enum Commands {
     /// Generates Rust code for a specific protocol.
     Generate,
@@ -46,7 +48,7 @@ enum Commands {
 
 ///  Create a subcommand that handles the max depth and max files to process
 #[cfg(feature = "arrow")]
-#[derive(Args, Debug)]
+#[derive(Args, Debug, Clone)]
 pub struct WriteArrowIpcProps {
     /// Reads these many  files recursing, these files may or may not be valid.
     #[arg(long, default_value = "1000000")]
@@ -68,9 +70,9 @@ pub struct WriteArrowIpcProps {
     kind: ArrowIpcTypes,
 }
 
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, Clone)]
 #[command(author, version, about, long_about = None)]
-struct Cli {
+pub struct Cli {
     /// Sets the source of the data, can be a file or directory.
     #[arg(short, long, value_name = "PATH")]
     source: String,
@@ -91,9 +93,37 @@ struct Cli {
     #[arg(short, long, default_value = "false")]
     timing: bool,
 
-    /// Show basic performance metrics
+    /// colorize the output
     #[arg(short, long, default_value = "false")]
     color: bool,
+
+    /// filters a specific player id.
+    #[arg(long)]
+    pub player_id: Option<u8>,
+
+    /// Filters a min event loop, in game_event units
+    #[arg(long)]
+    pub min_loop: Option<i64>,
+
+    /// Filters a max event loop
+    #[arg(long)]
+    pub max_loop: Option<i64>,
+
+    /// Only show game of specific types
+    #[arg(long)]
+    pub event_type: Option<String>,
+
+    /// Only show game of specific types
+    #[arg(long)]
+    pub unit_name: Option<String>,
+
+    /// Allows setting up a max number of events of each type
+    #[arg(long)]
+    pub max_events: Option<usize>,
+
+    /// Whether or not the PlayerStats event should be shown. To be replaced by a proper filter
+    #[arg(long)]
+    pub include_stats: bool,
 }
 
 /// Matches a list of files in case the cli.source param is a directory
@@ -179,11 +209,19 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
     let color = cli.color;
-    tracing_subscriber::fmt()
-        .with_max_level(level)
-        .with_env_filter(level.to_string())
-        .init();
-    #[cfg(feature = "syntax")]
+    if color {
+        tracing_subscriber::fmt()
+            .with_max_level(level)
+            .with_ansi(true)
+            .with_env_filter(level.to_string())
+            .init();
+    } else {
+        tracing_subscriber::fmt()
+            .with_max_level(level)
+            .with_ansi(false)
+            .with_env_filter(level.to_string())
+            .init();
+    }
     match &cli.command {
         Commands::Generate => {
             ProtoMorphist::gen(&cli.source, &cli.output.expect("Requires --output"))?;
@@ -262,6 +300,8 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         tracing::info!("Transducing through both Game and Tracker Events");
                         println!("[");
                         let res = crate::state::SC2EventIterator::new(&source)?;
+                        let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
+                        let res = res.with_filters(filters);
                         for evt in res.into_iter() {
                             json_print(serde_json::to_string(&evt).unwrap(), color);
                         }
@@ -270,6 +310,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
         }
+        #[cfg(feature = "arrow")]
         Commands::WriteArrowIpc(cmd) => {
             cmd.kind.handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),

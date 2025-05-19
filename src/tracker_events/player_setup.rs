@@ -3,8 +3,8 @@
 #[cfg(feature = "arrow")]
 use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
-use serde::{Deserialize, Serialize};
 use crate::filters::SC2ReplayFilters;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
@@ -28,4 +28,3 @@ impl PlayerSetupEvent {
         false
     }
 }
-

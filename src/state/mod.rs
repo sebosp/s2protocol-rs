@@ -49,6 +49,8 @@ pub struct SC2Unit {
     pub init_game_loop: i64,
     /// The creator ability name.
     pub creator_ability_name: Option<String>,
+    // Potentially a creator of the unit
+    pub creator_tag_index: Option<String>,
     /// The radius of the unit, this is a parameter that may be stored
     /// by the client side better, since it's very specific to Swarmy.
     /// Maybe next version we can move it there.
@@ -129,7 +131,10 @@ impl SC2EventType {
 pub enum UnitChangeHint {
     /// A unit has been added, the full unit is returned in case the caller wants to inspect it.
     /// This covers UnitBorn, InitInit, UnitDone, and UnitTypeChange.
-    Registered(SC2Unit),
+    Registered {
+        unit: Box<SC2Unit>,
+        creator: Option<SC2Unit>,
+    },
     /// Unit positions are being reported, a vector of units changed is returned.
     Positions(Vec<SC2Unit>),
     /// Unit positions are being reported, a vector of units changed is returned.
@@ -275,7 +280,7 @@ impl Iterator for SC2EventIterator {
                 .transist_to_next_supported_event(
                     self.protocol_version,
                     &mut self.sc2_state,
-                    &self.filters,
+                    &mut self.filters,
                 );
         }
         // Likewise, fill the next game event if it's empty.
@@ -283,7 +288,7 @@ impl Iterator for SC2EventIterator {
             self.next_game_event = self.game_iterator_state.transist_to_next_supported_event(
                 self.protocol_version,
                 &mut self.sc2_state,
-                &self.filters,
+                &mut self.filters,
             );
         }
         // Now compare the adjusted game loops and return the event with the lowest one, be it game or tracker.

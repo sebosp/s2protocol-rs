@@ -29,6 +29,8 @@ pub use crate::versions::read_tracker_events;
 #[cfg(feature = "arrow")]
 pub use arrow::*;
 pub use bit_packed_decoder::*;
+use chrono::DateTime;
+use chrono::Utc;
 pub use cli::*;
 use colored::*;
 pub use common::*;
@@ -114,11 +116,11 @@ pub fn peek_bits(input: (&[u8], usize)) -> String {
 
 /// Returns the 8 bytes following where the error was found for context.
 pub fn dbg_peek_bits<'a, F, O, E: std::fmt::Debug>(
-    f: F,
+    mut f: F,
     context: &'static str,
-) -> impl Fn((&'a [u8], usize)) -> IResult<(&'a [u8], usize), O, E>
+) -> impl FnMut((&'a [u8], usize)) -> IResult<(&'a [u8], usize), O, E>
 where
-    F: Fn((&'a [u8], usize)) -> IResult<(&'a [u8], usize), O, E>,
+    F: FnMut((&'a [u8], usize)) -> IResult<(&'a [u8], usize), O, E>,
 {
     move |i: (&'a [u8], usize)| match f(i) {
         Err(e) => {
@@ -131,11 +133,11 @@ where
 
 /// Returns the 8 bytes following where the error was found for context.
 pub fn dbg_peek_hex<'a, F, O, E: std::fmt::Debug>(
-    f: F,
+    mut f: F,
     context: &'static str,
-) -> impl Fn(&'a [u8]) -> IResult<&'a [u8], O, E>
+) -> impl FnMut(&'a [u8]) -> IResult<&'a [u8], O, E>
 where
-    F: Fn(&'a [u8]) -> IResult<&'a [u8], O, E>,
+    F: FnMut(&'a [u8]) -> IResult<&'a [u8], O, E>,
 {
     move |i: &'a [u8]| match f(i) {
         Err(e) => {
@@ -175,7 +177,9 @@ pub fn transform_to_naivetime(
     let micros = time_utc / 10 - 11_644_473_600_000_000 - time_local_offset / 10;
     let secs = micros.div_euclid(1_000_000);
     let nsecs = micros.rem_euclid(1_000_000) as u32 * 1000;
-    chrono::NaiveDateTime::from_timestamp_opt(secs, nsecs)
+    // Some(chrono::NaiveDateTime::from_timestamp(secs, nsecs))
+    // Use DateTime::from_timestamp and transform into NaiveDateTime:
+    Some(DateTime::<Utc>::from_timestamp(secs, nsecs)?.naive_utc())
 }
 
 /// Converts the tracker loop to milliseconds,

@@ -25,11 +25,11 @@ impl ProtocolHeader {
     #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
         let (tail, _) = validate_struct_tag(input)?;
-        let (tail, _) = dbg_dmp(tag(b"\x12"), "Protocol Header struct size")(tail)?;
+        let (tail, _) = dbg_dmp(tag(&b"\x12"[..]), "Protocol Header struct size")(tail)?;
         // This 0x12 translates to a 9 decimal, which is the number of fields
         // expected in the Protocol Version
         let (tail, m_signature) = Self::parse_m_signature(tail)?;
-        let (tail, _) = dbg_dmp(tag(b"\x02"), "Protocol Header.Version struct Tag")(tail)?;
+        let (tail, _) = dbg_dmp(tag(&b"\x02"[..]), "Protocol Header.Version struct Tag")(tail)?;
         let (tail, m_version) = SVersion::parse(tail)?;
         Ok((
             tail,
@@ -42,7 +42,7 @@ impl ProtocolHeader {
 
     #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
     pub fn parse_m_signature(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
-        let (tail, _) = dbg_dmp(tag(b"\x00"), "m_signature field tag")(input)?;
+        let (tail, _) = dbg_dmp(tag(&b"\x00"[..]), "m_signature field tag")(input)?;
         let (tail, m_signature) = tagged_blob(tail)?;
         Ok((tail, m_signature))
     }
