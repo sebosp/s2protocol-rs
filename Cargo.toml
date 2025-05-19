@@ -1,7 +1,7 @@
 [package]
 name = "s2protocol"
 description = "A parser for Starcraft II - Replay format, exports to different target formats"
-version = "3.1.2"
+version = "3.1.3"
 authors = ["Seb Ospina <kraige@gmail.com>"]
 edition = "2021"
 readme = "README.md"
@@ -11,26 +11,26 @@ keywords = ["sc2replay", "polars", "arrow", "starcraft2", "mpq"]
 categories = ["games", "parsing"]
 
 [dependencies]
-nom = "7.1.1"
-thiserror = "1.0.40"
+nom-mpq = "2.0.4"
+nom = "8.0.0"
+thiserror = "2"
 tracing = "0.1"
-tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
-clap = { version = "4.4", features = ["derive"] }
-serde_json = "1.0.91"
-serde = { version = "1.0.164", features = ["derive"] }
-convert_case = "0.6.0"
-nom-mpq = "2.0.3"
-colored = "2.0.4"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+clap = { version = "4.5", features = ["derive"] }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+convert_case = "0.8"
+colored = "3.0"
 arrow2 = { version = "0.17.0", features = [
   "io_print",
   "io_ipc",
 ], optional = true }
 arrow2_convert = { version = "0.5.0", optional = true }
-sha256 = { version = "1.4.0", optional = true, default-features = false }
-rayon = { version = "1.7.0", optional = true }
-chrono = { version = "0.4.31", features = ["serde"] }
+sha256 = { version = "1.6", default-features = false }
+rayon = { version = "1.10", optional = true }
+chrono = { version = "0.4", features = ["serde"] }
 libc = "0.2"
-bat = { version = "0.24.0", optional = true }
+bat = { version = "0.25.0", optional = true }
 
 [features]
 default = ["tracing_debug_level", "arrow"]
@@ -48,9 +48,9 @@ tracing_info_level = [
   "tracing/max_level_info",
   "tracing/release_max_level_info",
 ]
-arrow = ["arrow2", "arrow2_convert", "sha256", "rayon"]
+arrow = ["arrow2", "arrow2_convert", "rayon"]
 syntax = ["bat"]
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }
-tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }

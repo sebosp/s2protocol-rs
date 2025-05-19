@@ -85,7 +85,7 @@ impl GameEventIteratorState {
         &mut self,
         protocol_version: u32,
         sc2_state: &mut SC2ReplayState,
-        filters: &Option<SC2ReplayFilters>,
+        filters: &mut Option<SC2ReplayFilters>,
     ) -> Option<(SC2EventType, UnitChangeHint)> {
         loop {
             let current_slice: &[u8] = &self.event_data[self.byte_index..];
@@ -114,6 +114,10 @@ impl GameEventIteratorState {
                     if let Some(filters) = filters {
                         if self.shoud_skip_event(&event, filters) {
                             continue;
+                        }
+                        filters.decrease_allowed_event_counter();
+                        if filters.is_max_event_reached() {
+                            return None;
                         }
                     }
                     return Some((event, updated_hint));
@@ -213,6 +217,7 @@ impl GameEventIterator {
     }
 
     /// Consumes the Iterator collecting only the CmdTargetPoint events into a vector of CmdEventFlatRow
+    #[cfg(feature = "arrow")]
     pub fn collect_into_game_cmd_target_points_flat_rows(
         self,
         details: &crate::details::Details,
@@ -246,6 +251,7 @@ impl GameEventIterator {
     }
 
     /// Consumes the Iterator collecting only the CmdTargetUnit events into a vector of CmdEventFlatRow
+    #[cfg(feature = "arrow")]
     pub fn collect_into_game_cmd_target_units_flat_rows(
         self,
         details: &crate::details::Details,
@@ -288,7 +294,7 @@ impl Iterator for GameEventIterator {
         self.iterator_state.transist_to_next_supported_event(
             self.protocol_version,
             &mut self.sc2_state,
-            &self.filters,
+            &mut self.filters,
         )
     }
 }

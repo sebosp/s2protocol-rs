@@ -4,6 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::cli::Cli;
 use crate::details::Details;
 
 /// A set of known filters for users of the library
@@ -42,6 +43,39 @@ impl SC2ReplayFilters {
             if details_player.name == username {
                 self.player_id = details_player.working_set_slot_id;
             }
+        }
+    }
+
+    /// Decreases the amount of processed event counters.
+    pub fn decrease_allowed_event_counter(&mut self) {
+        if let Some(max_events) = self.max_events {
+            if max_events > 0 {
+                self.max_events = Some(max_events - 1);
+            }
+        }
+    }
+
+    pub fn is_max_event_reached(&self) -> bool {
+        if let Some(max_events) = self.max_events {
+            if max_events == 0 {
+                return true;
+            }
+        }
+        false
+    }
+}
+
+impl From<Cli> for SC2ReplayFilters {
+    fn from(cli: Cli) -> Self {
+        SC2ReplayFilters {
+            player_id: cli.player_id,
+            min_loop: cli.min_loop,
+            max_loop: cli.max_loop,
+            event_type: cli.event_type,
+            unit_name: cli.unit_name,
+            max_events: cli.max_events,
+            include_stats: cli.include_stats,
+            ..Default::default()
         }
     }
 }

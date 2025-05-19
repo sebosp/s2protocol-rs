@@ -41,7 +41,10 @@ pub fn handle_unit_init(
             .units
             .insert(unit_init.unit_tag_index, sc2_unit.clone());
     }
-    UnitChangeHint::Registered(sc2_unit)
+    UnitChangeHint::Registered {
+        unit: Box::new(sc2_unit),
+        creator: None,
+    }
 }
 
 /// Handles the state management for unit born messages
@@ -52,10 +55,24 @@ pub fn handle_unit_born(
     game_loop: i64,
     unit_born: &UnitBornEvent,
 ) -> UnitChangeHint {
+    let creator: Option<SC2Unit> = if let Some(creator_unit_tag) = unit_born.creator_unit_tag_index
+    {
+        if let Some(ref mut unit) = sc2_state.units.get_mut(&creator_unit_tag) {
+            unit.last_game_loop = game_loop;
+            Some(unit.clone())
+        } else {
+            None
+        }
+    } else {
+        None
+    };
     if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_born.unit_tag_index) {
         unit.creator_ability_name = unit_born.creator_ability_name.clone();
         unit.last_game_loop = game_loop;
-        UnitChangeHint::Registered(unit.clone())
+        UnitChangeHint::Registered {
+            unit: Box::new(unit.clone()),
+            creator,
+        }
     } else {
         let mut sc2_unit = SC2Unit {
             last_game_loop: game_loop,
@@ -70,7 +87,10 @@ pub fn handle_unit_born(
         sc2_state
             .units
             .insert(unit_born.unit_tag_index, sc2_unit.clone());
-        UnitChangeHint::Registered(sc2_unit)
+        UnitChangeHint::Registered {
+            unit: Box::new(sc2_unit),
+            creator,
+        }
     }
 }
 
@@ -83,11 +103,14 @@ pub fn handle_unit_type_change(
     unit_change: &UnitTypeChangeEvent,
 ) -> UnitChangeHint {
     if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_change.unit_tag_index) {
-        let old_unit = unit.clone();
+        let old_unit_state = unit.clone();
         unit.name.clone_from(&unit_change.unit_type_name);
         unit.last_game_loop = game_loop;
         unit.set_unit_props();
-        UnitChangeHint::Registered(old_unit)
+        UnitChangeHint::Registered {
+            unit: Box::new(unit.clone()),
+            creator: Some(old_unit_state),
+        }
     } else {
         let mut sc2_unit = SC2Unit {
             last_game_loop: game_loop,
@@ -117,7 +140,10 @@ pub fn handle_unit_done(
         unit.last_game_loop = game_loop;
         unit.is_init = false;
         unit.set_unit_props();
-        UnitChangeHint::Registered(unit.clone())
+        UnitChangeHint::Registered {
+            unit: Box::new(unit.clone()),
+            creator: None,
+        }
     } else {
         tracing::warn!(
             "Unit {} done but not init before.",

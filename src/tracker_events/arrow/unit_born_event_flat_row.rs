@@ -25,6 +25,7 @@ pub struct UnitBornEventFlatRow {
     pub y: f32,
     pub creator_unit_tag_index: Option<u32>,
     pub creator_unit_tag_recycle: Option<u32>,
+    pub creator_unit_type_name: Option<String>,
     pub creator_ability_name: Option<String>,
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
@@ -39,7 +40,16 @@ impl UnitBornEventFlatRow {
         event: UnitBornEvent,
         ext_replay_loop: i64,
         details: &crate::details::Details,
+        change_hint: UnitChangeHint,
     ) -> Self {
+        let (_unit, creator) = match change_hint {
+            UnitChangeHint::Registered { unit, creator } => (unit, creator),
+            _ => unreachable!(),
+        };
+        let creator_unit_type_name = match creator {
+            Some(val) => Some(val.name.clone()),
+            None => None,
+        };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
         Self {
             unit_tag_index: event.unit_tag_index,
@@ -52,13 +62,14 @@ impl UnitBornEventFlatRow {
             creator_unit_tag_index: event.creator_unit_tag_index,
             creator_unit_tag_recycle: event.creator_unit_tag_recycle,
             creator_ability_name: event.creator_ability_name,
+            creator_unit_type_name,
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
         }
     }
 
-    /// Create a new UpgradeEventFlatRow from a UnitDoneEvent.
+    /// Create a new UnitBornEventFlatRow from a UnitDoneEvent.
     /// These are units that were previously under construction and are now finished.
     /// A UnitChangeHint is needed so that we can collect the x and y coordinates of when
     /// the unit began the UnitInit event.
@@ -68,9 +79,13 @@ impl UnitBornEventFlatRow {
         details: &crate::details::Details,
         change_hint: UnitChangeHint,
     ) -> Self {
-        let unit = match change_hint {
-            UnitChangeHint::Registered(unit) => unit,
+        let (unit, creator) = match change_hint {
+            UnitChangeHint::Registered { unit, creator } => (unit, creator),
             _ => unreachable!(),
+        };
+        let creator_unit_type_name = match creator {
+            Some(val) => Some(val.name.clone()),
+            None => None,
         };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
         Self {
@@ -84,6 +99,7 @@ impl UnitBornEventFlatRow {
             creator_unit_tag_index: None,
             creator_unit_tag_recycle: None,
             creator_ability_name: unit.creator_ability_name,
+            creator_unit_type_name,
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
@@ -99,9 +115,13 @@ impl UnitBornEventFlatRow {
         details: &crate::details::Details,
         change_hint: UnitChangeHint,
     ) -> Self {
-        let unit = match change_hint {
-            UnitChangeHint::Registered(unit) => unit,
+        let (unit, creator) = match change_hint {
+            UnitChangeHint::Registered { unit, creator } => (unit, creator),
             _ => unreachable!(),
+        };
+        let creator_unit_type_name = match creator {
+            Some(val) => Some(val.name.clone()),
+            None => None,
         };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
         Self {
@@ -114,6 +134,7 @@ impl UnitBornEventFlatRow {
             y: unit.pos.y(),
             creator_unit_tag_index: None,
             creator_unit_tag_recycle: None,
+            creator_unit_type_name,
             creator_ability_name: unit.creator_ability_name,
             ext_replay_loop,
             ext_replay_seconds,

@@ -79,6 +79,10 @@ pub fn get_unit_sized_color(unit_name: &str, user_id: i64) -> (f32, [u8; 4]) {
             unit_size = 0.06;
             FREYA_LIGHT_GRAY
         }
+        "Infestor" => {
+            unit_size = 0.5;
+            FREYA_VIOLET
+        }
         _ => {
             // Ignore the Beacons for now.
             if !unit_name.starts_with("Beacon") {
