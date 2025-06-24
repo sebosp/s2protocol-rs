@@ -1,7 +1,7 @@
 //! Upgrade Events in a flat row for Arrow usage
 
 #[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::tracker_events::UpgradeEvent;
 use serde::{Deserialize, Serialize};

@@ -3,9 +3,9 @@
 //! But not sure this would be advantageous.
 
 #[cfg(feature = "arrow")]
-use arrow2::{array::Array, chunk::Chunk};
+use arrow::{array::Array, chunk::Chunk};
 #[cfg(feature = "arrow")]
-use arrow2_convert::serialize::FlattenChunk;
+use arrow_convert::serialize::FlattenChunk;
 
 use std::path::PathBuf;
 
@@ -15,13 +15,13 @@ use std::path::PathBuf;
 #[cfg(feature = "arrow")]
 pub fn write_batches(
     path: PathBuf,
-    schema: arrow2::datatypes::Schema,
+    schema: arrow::datatypes::Schema,
     chunks: &[Chunk<Box<dyn Array>>],
 ) -> Result<(), Box<dyn std::error::Error>> {
     let file = std::fs::File::create(path)?;
 
-    let options = arrow2::io::ipc::write::WriteOptions { compression: None };
-    let mut writer = arrow2::io::ipc::write::FileWriter::new(file, schema, None, options);
+    let options = arrow::io::ipc::write::WriteOptions { compression: None };
+    let mut writer = arrow::io::ipc::write::FileWriter::new(file, schema, None, options);
 
     writer.start()?;
     for chunk in chunks {
@@ -35,15 +35,15 @@ pub fn write_batches(
 #[cfg(feature = "arrow")]
 pub fn open_arrow_mutex_writer(
     output: PathBuf,
-    schema: arrow2::datatypes::Schema,
+    schema: arrow::datatypes::Schema,
 ) -> Result<
-    std::sync::Mutex<arrow2::io::ipc::write::FileWriter<std::fs::File>>,
+    std::sync::Mutex<arrow::io::ipc::write::FileWriter<std::fs::File>>,
     Box<dyn std::error::Error>,
 > {
     let file = std::fs::File::create(output)?;
 
-    let options = arrow2::io::ipc::write::WriteOptions { compression: None };
-    let mut writer = arrow2::io::ipc::write::FileWriter::new(file, schema, None, options);
+    let options = arrow::io::ipc::write::WriteOptions { compression: None };
+    let mut writer = arrow::io::ipc::write::FileWriter::new(file, schema, None, options);
     writer.start()?;
     Ok(std::sync::Mutex::new(writer))
 }
@@ -51,7 +51,7 @@ pub fn open_arrow_mutex_writer(
 /// Writes the batch to the Arrow IPC file held over a mutex, to be called from within a parallel iterator
 #[cfg(feature = "arrow")]
 pub fn write_to_arrow_mutex_writer(
-    writer: &std::sync::Mutex<arrow2::io::ipc::write::FileWriter<std::fs::File>>,
+    writer: &std::sync::Mutex<arrow::io::ipc::write::FileWriter<std::fs::File>>,
     res: Box<dyn Array>,
     batch_length: usize,
 ) -> Option<usize> {
@@ -86,7 +86,7 @@ pub fn write_to_arrow_mutex_writer(
 /// Closes the Arrow IPC file held over a mutex
 #[cfg(feature = "arrow")]
 pub fn close_arrow_mutex_writer(
-    writer: std::sync::Mutex<arrow2::io::ipc::write::FileWriter<std::fs::File>>,
+    writer: std::sync::Mutex<arrow::io::ipc::write::FileWriter<std::fs::File>>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut writer = match writer.lock() {
         Ok(writer) => writer,

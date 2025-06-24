@@ -1,7 +1,7 @@
 //! Player stats flat row
 
 #[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::tracker_events::PlayerStatsEvent;
 use serde::{Deserialize, Serialize};

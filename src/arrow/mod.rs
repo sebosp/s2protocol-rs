@@ -1,10 +1,10 @@
 //! Arrow Specific handling of data.
 
 #[cfg(feature = "arrow")]
-use arrow2::{array::Array, chunk::Chunk, datatypes::DataType};
-use arrow2_convert::serialize::FlattenChunk;
+use arrow::{array::Array, chunk::Chunk, datatypes::DataType};
+use arrow_convert::serialize::FlattenChunk;
 #[cfg(feature = "arrow")]
-use arrow2_convert::{field::ArrowField, serialize::TryIntoArrow};
+use arrow_convert::{field::ArrowField, serialize::TryIntoArrow};
 use init_data::InitData;
 #[cfg(feature = "arrow")]
 use rayon::prelude::*;
@@ -46,32 +46,32 @@ pub enum ArrowIpcTypes {
 
 impl ArrowIpcTypes {
     /// Returns the schema for the chosen output type
-    pub fn schema(&self) -> arrow2::datatypes::Schema {
+    pub fn schema(&self) -> arrow::datatypes::Schema {
         match self {
             Self::InitData => {
                 if let DataType::Struct(fields) = init_data::InitData::data_type() {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    arrow::datatypes::Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Details => {
                 if let DataType::Struct(fields) = details::Details::data_type() {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    arrow::datatypes::Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Stats => {
                 if let DataType::Struct(fields) = tracker_events::PlayerStatsFlatRow::data_type() {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    arrow::datatypes::Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Upgrades => {
                 if let DataType::Struct(fields) = tracker_events::UpgradeEventFlatRow::data_type() {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    arrow::datatypes::Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -79,7 +79,7 @@ impl ArrowIpcTypes {
             Self::UnitBorn => {
                 if let DataType::Struct(fields) = tracker_events::UnitBornEventFlatRow::data_type()
                 {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    arrow::datatypes::Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -87,7 +87,7 @@ impl ArrowIpcTypes {
             Self::UnitDied => {
                 if let DataType::Struct(fields) = tracker_events::UnitDiedEventFlatRow::data_type()
                 {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    arrow::datatypes::Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -96,7 +96,7 @@ impl ArrowIpcTypes {
                 if let DataType::Struct(fields) =
                     game_events::CmdTargetPointEventFlatRow::data_type()
                 {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    arrow::datatypes::Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -105,7 +105,7 @@ impl ArrowIpcTypes {
                 if let DataType::Struct(fields) =
                     game_events::CmdTargetUnitEventFlatRow::data_type()
                 {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    arrow::datatypes::Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }

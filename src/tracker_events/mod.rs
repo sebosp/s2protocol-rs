@@ -2,7 +2,7 @@
 //! These are stored in an embebdded file in the MPQ file called 'replay.tracker.events'
 
 #[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 #[cfg(feature = "arrow")]
 pub mod arrow;
 #[cfg(feature = "arrow")]

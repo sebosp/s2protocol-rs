@@ -1,7 +1,7 @@
 //! Unit Born Event Flat Row
 
 #[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::state::UnitChangeHint;
 use crate::tracker_events::{UnitBornEvent, UnitDoneEvent, UnitTypeChangeEvent};

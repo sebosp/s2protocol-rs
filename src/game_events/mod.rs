@@ -14,7 +14,7 @@ pub mod arrow;
 pub use arrow::*;
 
 #[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::SC2ReplayFilters;
 
