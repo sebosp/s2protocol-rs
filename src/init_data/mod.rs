@@ -1,6 +1,6 @@
 //! Decodes the initData
 
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::S2ProtocolError;
@@ -11,7 +11,7 @@ use std::path::PathBuf;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct InitData {
@@ -79,7 +79,7 @@ impl TryFrom<PathBuf> for InitData {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct LobbySyncState {
@@ -90,7 +90,7 @@ pub struct LobbySyncState {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct UserInitialData {
@@ -117,7 +117,7 @@ pub struct UserInitialData {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct GameDescription {
@@ -153,7 +153,7 @@ pub struct GameDescription {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct GameOptions {
@@ -177,10 +177,10 @@ pub struct GameOptions {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum GameType {
     EMelee,
     EFreeForAll,
@@ -193,10 +193,10 @@ pub enum GameType {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub struct SlotDescription {
     pub allowed_colors: i64,
     pub allowed_races: i64,
@@ -208,10 +208,10 @@ pub struct SlotDescription {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum OptionFog {
     EDefault,
     EHideTerrain,
@@ -221,10 +221,10 @@ pub enum OptionFog {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum OptionObservers {
     ENone,
     EOnJoin,
@@ -234,10 +234,10 @@ pub enum OptionObservers {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum OptionUserDifficulty {
     ENone,
     EGlobal,
@@ -246,10 +246,10 @@ pub enum OptionUserDifficulty {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub struct LobbyState {
     pub phase: GamePhase,
     pub max_users: i64,
@@ -266,10 +266,10 @@ pub struct LobbyState {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum GamePhase {
     EInitializing,
     ELobby,
@@ -281,10 +281,10 @@ pub enum GamePhase {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub struct LobbySlot {
     pub control: i64,
     pub user_id: Option<i64>,
@@ -322,10 +322,10 @@ pub struct LobbySlot {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub struct RewardOverride {
     pub key: u32,
     pub rewards: Vec<u32>,

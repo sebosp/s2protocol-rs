@@ -1,6 +1,6 @@
 //! A protocol agnostic Unit Born Definition
 
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::filters::SC2ReplayFilters;
@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 /// units appear already full, there is no construction time.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct UnitBornEvent {

@@ -1,6 +1,6 @@
 //! A protocol agnostic Unit Done Event
 
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::filters::SC2ReplayFilters;
@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 /// A single unit position
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct UnitPosition {
@@ -25,7 +25,7 @@ pub struct UnitPosition {
 /// Not all units are reported.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct UnitPositionsEvent {

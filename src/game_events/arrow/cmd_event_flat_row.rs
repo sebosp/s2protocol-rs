@@ -1,6 +1,6 @@
 //! Cmd Events in a flat row for Arrow usage
 
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::game_events::GameSCmdEvent;
@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 /// Arrow compatible Cmd Event for Target Point
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct CmdTargetPointEventFlatRow {
@@ -68,7 +68,7 @@ impl CmdTargetPointEventFlatRow {
 /// Arrow compatible Cmd Event for Target Unit
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct CmdTargetUnitEventFlatRow {

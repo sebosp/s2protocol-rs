@@ -2,9 +2,9 @@
 //! Currently it's using Mutex, maybe in the future we can try mpsc channels.
 //! But not sure this would be advantageous.
 
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow::{array::Array, chunk::Chunk};
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::serialize::FlattenChunk;
 
 use std::path::PathBuf;
@@ -12,7 +12,7 @@ use std::path::PathBuf;
 /// Converts the data into an Arrow IPC file, this is useful for small batches of data,
 /// for example if we are reading all the details from all the files, they should fit in memory
 /// (famous last words)
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 pub fn write_batches(
     path: PathBuf,
     schema: arrow::datatypes::Schema,
@@ -32,7 +32,7 @@ pub fn write_batches(
 }
 
 /// Opens a mutex protected Arrow IPC file writer
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 pub fn open_arrow_mutex_writer(
     output: PathBuf,
     schema: arrow::datatypes::Schema,
@@ -49,7 +49,7 @@ pub fn open_arrow_mutex_writer(
 }
 
 /// Writes the batch to the Arrow IPC file held over a mutex, to be called from within a parallel iterator
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 pub fn write_to_arrow_mutex_writer(
     writer: &std::sync::Mutex<arrow::io::ipc::write::FileWriter<std::fs::File>>,
     res: Box<dyn Array>,
@@ -84,7 +84,7 @@ pub fn write_to_arrow_mutex_writer(
 }
 
 /// Closes the Arrow IPC file held over a mutex
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 pub fn close_arrow_mutex_writer(
     writer: std::sync::Mutex<arrow::io::ipc::write::FileWriter<std::fs::File>>,
 ) -> Result<(), Box<dyn std::error::Error>> {

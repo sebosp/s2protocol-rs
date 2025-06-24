@@ -1,12 +1,12 @@
 //! Arrow Specific handling of data.
 
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow::{array::Array, chunk::Chunk, datatypes::DataType};
 use arrow_convert::serialize::FlattenChunk;
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{field::ArrowField, serialize::TryIntoArrow};
 use init_data::InitData;
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use rayon::prelude::*;
 
 use crate::cli::get_matching_files;

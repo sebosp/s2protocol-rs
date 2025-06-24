@@ -1,6 +1,6 @@
 //! Upgrade Events in a flat row for Arrow usage
 
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::tracker_events::UpgradeEvent;
@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 /// An experiment creating a flat row of PlayerStats for Arrow usage
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct UpgradeEventFlatRow {

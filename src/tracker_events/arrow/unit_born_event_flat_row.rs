@@ -1,6 +1,6 @@
 //! Unit Born Event Flat Row
 
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::state::UnitChangeHint;
@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 /// cancelled.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct UnitBornEventFlatRow {

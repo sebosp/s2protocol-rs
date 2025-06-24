@@ -1,6 +1,6 @@
 //! Unit Died Event Flat Row
 //!
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::details::Details;
@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 /// A protocol agnostic Unit Died
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct UnitDiedEventFlatRow {

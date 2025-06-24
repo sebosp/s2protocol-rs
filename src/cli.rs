@@ -1,4 +1,4 @@
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use super::*;
 
 #[cfg(feature = "syntax")]
@@ -42,12 +42,12 @@ enum Commands {
     Get(ReadTypes),
 
     /// Writes Arrow IPC files for a specific event type from the SC2Replay MPQ Archive
-    #[cfg(feature = "arrow")]
+    #[cfg(feature = "dep_arrow")]
     WriteArrowIpc(WriteArrowIpcProps),
 }
 
 ///  Create a subcommand that handles the max depth and max files to process
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 #[derive(Args, Debug, Clone)]
 pub struct WriteArrowIpcProps {
     /// Reads these many  files recursing, these files may or may not be valid.
@@ -310,7 +310,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
         }
-        #[cfg(feature = "arrow")]
+        #[cfg(feature = "dep_arrow")]
         Commands::WriteArrowIpc(cmd) => {
             cmd.kind.handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),

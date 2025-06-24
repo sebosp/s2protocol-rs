@@ -1,6 +1,6 @@
 //! Player stats flat row
 
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::tracker_events::PlayerStatsEvent;
@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 /// and the file system (fs) itself.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct PlayerStatsFlatRow {

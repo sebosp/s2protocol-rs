@@ -1,6 +1,6 @@
 //! S2 Protocol use of the MPQ archive
 
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 pub mod arrow;
 pub mod bit_packed_decoder;
 pub mod cli;
@@ -26,7 +26,7 @@ pub use crate::versions::read_game_events;
 pub use crate::versions::read_init_data;
 pub use crate::versions::read_message_events;
 pub use crate::versions::read_tracker_events;
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 pub use arrow::*;
 pub use bit_packed_decoder::*;
 use chrono::DateTime;
