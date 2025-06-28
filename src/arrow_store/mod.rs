@@ -1,9 +1,12 @@
 //! Arrow Specific handling of data.
 
 #[cfg(feature = "dep_arrow")]
-use ::arrow::{array::Array, datatypes::DataType, datatypes::Schema, record_batch::RecordBatch};
+use arrow::{
+    array::Array, array::ArrayRef, datatypes::DataType, datatypes::Schema,
+    record_batch::RecordBatch,
+};
 #[cfg(feature = "dep_arrow")]
-use arrow_convert::{field::ArrowField, serialize::TryIntoArrow};
+use arrow_convert::{field::ArrowField, serialize::FlattenRecordBatch, serialize::TryIntoArrow};
 use init_data::InitData;
 #[cfg(feature = "dep_arrow")]
 use rayon::prelude::*;
@@ -17,6 +20,7 @@ use std::path::PathBuf;
 pub mod ipc_writer;
 use ipc_writer::*;
 use std::collections::HashSet;
+use std::sync::Arc;
 
 /// The supported Arrow IPC types
 #[derive(Debug, Subcommand, Clone)]
@@ -49,28 +53,28 @@ impl ArrowIpcTypes {
         match self {
             Self::InitData => {
                 if let DataType::Struct(fields) = init_data::InitData::data_type() {
-                    Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Details => {
                 if let DataType::Struct(fields) = details::Details::data_type() {
-                    Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Stats => {
                 if let DataType::Struct(fields) = tracker_events::PlayerStatsFlatRow::data_type() {
-                    Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Upgrades => {
                 if let DataType::Struct(fields) = tracker_events::UpgradeEventFlatRow::data_type() {
-                    Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -78,7 +82,7 @@ impl ArrowIpcTypes {
             Self::UnitBorn => {
                 if let DataType::Struct(fields) = tracker_events::UnitBornEventFlatRow::data_type()
                 {
-                    Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -86,7 +90,7 @@ impl ArrowIpcTypes {
             Self::UnitDied => {
                 if let DataType::Struct(fields) = tracker_events::UnitDiedEventFlatRow::data_type()
                 {
-                    Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -95,7 +99,7 @@ impl ArrowIpcTypes {
                 if let DataType::Struct(fields) =
                     game_events::CmdTargetPointEventFlatRow::data_type()
                 {
-                    Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -104,7 +108,7 @@ impl ArrowIpcTypes {
                 if let DataType::Struct(fields) =
                     game_events::CmdTargetUnitEventFlatRow::data_type()
                 {
-                    Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -169,10 +173,11 @@ impl ArrowIpcTypes {
         tracing::info!("Processing InitData IPC write request");
 
         // process the sources in parallel consuming into the batch variable
-        let res: Box<dyn Array> = sources.try_into_arrow()?;
+        let res: ArrayRef = sources.try_into_arrow()?;
 
         tracing::info!("Loaded {} records", res.len());
-        let chunk: RecordBatch = RecordBatch::try_from_iter([res].to_vec()).flatten()?;
+        let chunk: RecordBatch =
+            RecordBatch::try_new(Arc::new(self.schema()), [res].to_vec())?.flatten()?;
         write_batches(output, self.schema(), &[chunk])?;
         Ok(())
     }
@@ -194,28 +199,45 @@ impl ArrowIpcTypes {
             .par_iter()
             .filter_map(|source| {
                 let source = PathBuf::from(&source.file_name);
-                let details = crate::details::Details::try_from(source.clone()).ok()?;
+                let details: crate::details::Details =
+                    crate::details::Details::try_from(source.clone()).ok()?;
                 let tracker_events = TrackerEventIterator::new(&source).ok()?;
-                let (res, batch_len): (Box<dyn Array>, usize) = match self {
+                let (schema, res, batch_len): (Schema, ArrayRef, usize) = match self {
                     Self::Stats => {
                         let batch = tracker_events.collect_into_player_stats_flat_rows(&details);
-                        (batch.try_into_arrow().ok()?, batch.len())
+                        (
+                            Self::Stats.schema(),
+                            batch.try_into_arrow().ok()?,
+                            batch.len(),
+                        )
                     }
                     Self::Upgrades => {
                         let batch = tracker_events.collect_into_upgrades_flat_rows(&details);
-                        (batch.try_into_arrow().ok()?, batch.len())
+                        (
+                            Self::Upgrades.schema(),
+                            batch.try_into_arrow().ok()?,
+                            batch.len(),
+                        )
                     }
                     Self::UnitBorn => {
                         let batch = tracker_events.collect_into_unit_born_flat_rows(&details);
-                        (batch.try_into_arrow().ok()?, batch.len())
+                        (
+                            Self::UnitBorn.schema(),
+                            batch.try_into_arrow().ok()?,
+                            batch.len(),
+                        )
                     }
                     Self::UnitDied => {
                         let batch = tracker_events.collect_into_unit_died_flat_rows(&details);
-                        (batch.try_into_arrow().ok()?, batch.len())
+                        (
+                            Self::UnitDied.schema(),
+                            batch.try_into_arrow().ok()?,
+                            batch.len(),
+                        )
                     }
                     _ => unimplemented!(),
                 };
-                write_to_arrow_mutex_writer(&writer, res, batch_len)
+                write_to_arrow_mutex_writer(&writer, schema, res, batch_len)
             })
             .sum::<usize>();
         tracing::info!("Loaded {} records", total_records);
@@ -240,20 +262,28 @@ impl ArrowIpcTypes {
                 let source = PathBuf::from(&source.file_name);
                 let details = crate::details::Details::try_from(source.clone()).ok()?;
                 let game_events = GameEventIterator::new(&source).ok()?;
-                let (res, batch_len): (Box<dyn Array>, usize) = match self {
+                let (schema, res, batch_len): (Schema, ArrayRef, usize) = match self {
                     Self::CmdTargetPoint => {
                         let batch =
                             game_events.collect_into_game_cmd_target_points_flat_rows(&details);
-                        (batch.try_into_arrow().ok()?, batch.len())
+                        (
+                            Self::CmdTargetPoint.schema(),
+                            batch.try_into_arrow().ok()?,
+                            batch.len(),
+                        )
                     }
                     Self::CmdTargetUnit => {
                         let batch =
                             game_events.collect_into_game_cmd_target_units_flat_rows(&details);
-                        (batch.try_into_arrow().ok()?, batch.len())
+                        (
+                            Self::CmdTargetPoint.schema(),
+                            batch.try_into_arrow().ok()?,
+                            batch.len(),
+                        )
                     }
                     e => unimplemented!("{:?}", e),
                 };
-                write_to_arrow_mutex_writer(&writer, res, batch_len)
+                write_to_arrow_mutex_writer(&writer, schema, res, batch_len)
             })
             .sum::<usize>();
         tracing::info!("Loaded {} records", total_records);
@@ -269,7 +299,7 @@ impl ArrowIpcTypes {
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing Details IPC write request");
         // process the sources in parallel consuming into the batch variable
-        let res: Box<dyn Array> = sources
+        let res: ArrayRef = sources
             .par_iter()
             .filter_map(|source| {
                 crate::details::Details::try_from(PathBuf::from(&source.file_name)).ok()
@@ -277,7 +307,7 @@ impl ArrowIpcTypes {
             .collect::<Vec<details::Details>>()
             .try_into_arrow()?;
         tracing::info!("Loaded {} records", res.len());
-        let chunk = RecordBatch::try_from_iter([res].to_vec()).flatten()?;
+        let chunk = RecordBatch::try_new(Arc::new(Self::Details.schema()), [res].to_vec())?;
         write_batches(output, self.schema(), &[chunk])?;
         Ok(())
     }

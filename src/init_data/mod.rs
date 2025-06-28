@@ -3,6 +3,9 @@
 #[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
+#[cfg(feature = "dep_arrow")]
+use arrow::array::*;
+
 use crate::S2ProtocolError;
 use nom_mpq::MPQ;
 use serde::{Deserialize, Serialize};

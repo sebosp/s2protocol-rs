@@ -9,9 +9,9 @@ pub use iterator::*;
 pub mod ability;
 pub use ability::*;
 #[cfg(feature = "dep_arrow")]
-pub mod arrow;
+pub mod arrow_store;
 #[cfg(feature = "dep_arrow")]
-pub use arrow::*;
+pub use arrow_store::*;
 
 #[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};

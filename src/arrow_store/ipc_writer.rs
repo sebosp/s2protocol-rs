@@ -4,9 +4,11 @@
 
 #[cfg(feature = "dep_arrow")]
 use ::arrow::{
-    array::Array, datatypes::Schema, ipc::writer::FileWriter, record_batch::RecordBatch,
+    array::ArrayRef, datatypes::Schema, ipc::writer::FileWriter, record_batch::RecordBatch,
 };
 use std::path::PathBuf;
+#[cfg(feature = "dep_arrow")]
+use std::sync::Arc;
 
 /// Converts the data into an Arrow IPC file, this is useful for small batches of data,
 /// for example if we are reading all the details from all the files, they should fit in memory
@@ -18,11 +20,10 @@ pub fn write_batches(
     chunks: &[RecordBatch],
 ) -> Result<(), Box<dyn std::error::Error>> {
     let file = std::fs::File::create(path)?;
-    let mut writer = FileWriter::try_new(file, &schema);
+    let mut writer = FileWriter::try_new(file, &schema)?;
 
-    writer.start()?;
     for chunk in chunks {
-        writer.write(chunk, None)?
+        writer.write(&chunk)?
     }
     writer.finish()?;
     Ok(())
@@ -36,8 +37,7 @@ pub fn open_arrow_mutex_writer(
 ) -> Result<std::sync::Mutex<FileWriter<std::fs::File>>, Box<dyn std::error::Error>> {
     let file = std::fs::File::create(output)?;
 
-    let mut writer = FileWriter::new(file, schema);
-    writer.start()?;
+    let writer = FileWriter::try_new(file, &schema)?;
     Ok(std::sync::Mutex::new(writer))
 }
 
@@ -45,7 +45,8 @@ pub fn open_arrow_mutex_writer(
 #[cfg(feature = "dep_arrow")]
 pub fn write_to_arrow_mutex_writer(
     writer: &std::sync::Mutex<FileWriter<std::fs::File>>,
-    res: Box<dyn Array>,
+    schema: Schema,
+    res: ArrayRef,
     batch_length: usize,
 ) -> Option<usize> {
     if batch_length == 0 {
@@ -58,14 +59,14 @@ pub fn write_to_arrow_mutex_writer(
             return None;
         }
     };
-    let chunk: RecordBatch = match RecordBatch::try_from_iter([res].to_vec()).flatten() {
+    let chunk: RecordBatch = match RecordBatch::try_new(Arc::new(schema), [res].to_vec()) {
         Ok(chunk) => chunk,
         Err(err) => {
             tracing::error!("Error converting to arrow: {:?}", err);
             return None;
         }
     };
-    match file_lock.write(&chunk, None) {
+    match file_lock.write(&chunk) {
         Ok(_) => Some(batch_length),
         Err(err) => {
             // At this point maybe we should fail because the lock write
