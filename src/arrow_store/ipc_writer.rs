@@ -23,7 +23,7 @@ pub fn write_batches(
     let mut writer = FileWriter::try_new(file, &schema)?;
 
     for chunk in chunks {
-        writer.write(&chunk)?
+        writer.write(chunk)?
     }
     writer.finish()?;
     Ok(())

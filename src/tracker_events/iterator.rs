@@ -156,7 +156,7 @@ impl TrackerEventIterator {
     pub fn new(source: &PathBuf) -> Result<Self, S2ProtocolError> {
         tracing::debug!("Processing {:?}", source);
         let file_contents = crate::read_file(source)?;
-        let source_filename = format!("{:?}", source);
+        let source_filename = format!("{source:?}");
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
         let (_tail, proto_header) = crate::read_protocol_header(&mpq)?;
         let (_event_tail, tracker_events) =

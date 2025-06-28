@@ -173,7 +173,7 @@ impl GameEventIterator {
     #[tracing::instrument(level = "debug")]
     pub fn new(source: &PathBuf) -> Result<Self, S2ProtocolError> {
         tracing::info!("Processing {:?}", source);
-        let source_filename = format!("{:?}", source);
+        let source_filename = format!("{source:?}");
         let file_contents = crate::read_file(source)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
         let (_tail, proto_header) = crate::read_protocol_header(&mpq)?;

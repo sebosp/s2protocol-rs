@@ -185,10 +185,10 @@ pub fn json_print(json_str: String, color: bool) {
         }
         #[cfg(not(feature = "syntax"))]
         {
-            println!("{},", json_str);
+            println!("{json_str},");
         }
     } else {
-        println!("{},", json_str);
+        println!("{json_str},");
     }
 }
 

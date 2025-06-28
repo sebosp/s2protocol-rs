@@ -33,7 +33,7 @@ impl TryFrom<GameSDetails> for Details {
             for cache_handle in m_cache_handles {
                 let mut cache_str = String::from("0x");
                 for cache_byte in cache_handle {
-                    cache_str.push_str(&format!("{:x}", cache_byte));
+                    cache_str.push_str(&format!("{cache_byte:x}"));
                 }
                 cache_handles.push(cache_str);
             }

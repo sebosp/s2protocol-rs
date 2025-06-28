@@ -51,7 +51,7 @@ impl From<GameSMapCoord3D> for Vec3D {
     fn from(coord: GameSMapCoord3D) -> Self {
         Vec3D::new(
             coord.x as f32 / GAME_EVENT_POS_RATIO,
-            -1. * coord.y as f32 / GAME_EVENT_POS_RATIO,
+            -(coord.y as f32) / GAME_EVENT_POS_RATIO,
             coord.z as f32 / GAME_EVENT_POS_RATIO,
         )
     }
