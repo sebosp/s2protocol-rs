@@ -1,8 +1,7 @@
 //! Arrow Specific handling of data.
 
 #[cfg(feature = "dep_arrow")]
-use arrow::{array::Array, chunk::Chunk, datatypes::DataType};
-use arrow_convert::serialize::FlattenChunk;
+use ::arrow::{array::Array, datatypes::DataType, datatypes::Schema, record_batch::RecordBatch};
 #[cfg(feature = "dep_arrow")]
 use arrow_convert::{field::ArrowField, serialize::TryIntoArrow};
 use init_data::InitData;
@@ -46,32 +45,32 @@ pub enum ArrowIpcTypes {
 
 impl ArrowIpcTypes {
     /// Returns the schema for the chosen output type
-    pub fn schema(&self) -> arrow::datatypes::Schema {
+    pub fn schema(&self) -> Schema {
         match self {
             Self::InitData => {
                 if let DataType::Struct(fields) = init_data::InitData::data_type() {
-                    arrow::datatypes::Schema::from(fields.clone())
+                    Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Details => {
                 if let DataType::Struct(fields) = details::Details::data_type() {
-                    arrow::datatypes::Schema::from(fields.clone())
+                    Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Stats => {
                 if let DataType::Struct(fields) = tracker_events::PlayerStatsFlatRow::data_type() {
-                    arrow::datatypes::Schema::from(fields.clone())
+                    Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Upgrades => {
                 if let DataType::Struct(fields) = tracker_events::UpgradeEventFlatRow::data_type() {
-                    arrow::datatypes::Schema::from(fields.clone())
+                    Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -79,7 +78,7 @@ impl ArrowIpcTypes {
             Self::UnitBorn => {
                 if let DataType::Struct(fields) = tracker_events::UnitBornEventFlatRow::data_type()
                 {
-                    arrow::datatypes::Schema::from(fields.clone())
+                    Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -87,7 +86,7 @@ impl ArrowIpcTypes {
             Self::UnitDied => {
                 if let DataType::Struct(fields) = tracker_events::UnitDiedEventFlatRow::data_type()
                 {
-                    arrow::datatypes::Schema::from(fields.clone())
+                    Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -96,7 +95,7 @@ impl ArrowIpcTypes {
                 if let DataType::Struct(fields) =
                     game_events::CmdTargetPointEventFlatRow::data_type()
                 {
-                    arrow::datatypes::Schema::from(fields.clone())
+                    Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -105,7 +104,7 @@ impl ArrowIpcTypes {
                 if let DataType::Struct(fields) =
                     game_events::CmdTargetUnitEventFlatRow::data_type()
                 {
-                    arrow::datatypes::Schema::from(fields.clone())
+                    Schema::from(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -173,7 +172,7 @@ impl ArrowIpcTypes {
         let res: Box<dyn Array> = sources.try_into_arrow()?;
 
         tracing::info!("Loaded {} records", res.len());
-        let chunk = Chunk::new([res].to_vec()).flatten()?;
+        let chunk: RecordBatch = RecordBatch::try_from_iter([res].to_vec()).flatten()?;
         write_batches(output, self.schema(), &[chunk])?;
         Ok(())
     }
@@ -278,7 +277,7 @@ impl ArrowIpcTypes {
             .collect::<Vec<details::Details>>()
             .try_into_arrow()?;
         tracing::info!("Loaded {} records", res.len());
-        let chunk = Chunk::new([res].to_vec()).flatten()?;
+        let chunk = RecordBatch::try_from_iter([res].to_vec()).flatten()?;
         write_batches(output, self.schema(), &[chunk])?;
         Ok(())
     }
