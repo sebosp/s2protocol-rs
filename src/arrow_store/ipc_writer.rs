@@ -3,9 +3,11 @@
 //! But not sure this would be advantageous.
 
 #[cfg(feature = "dep_arrow")]
-use ::arrow::{
+use arrow::{
     array::ArrayRef, datatypes::Schema, ipc::writer::FileWriter, record_batch::RecordBatch,
 };
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::serialize::*;
 use std::path::PathBuf;
 #[cfg(feature = "dep_arrow")]
 use std::sync::Arc;
@@ -59,7 +61,10 @@ pub fn write_to_arrow_mutex_writer(
             return None;
         }
     };
-    let chunk: RecordBatch = match RecordBatch::try_new(Arc::new(schema), [res].to_vec()) {
+    let chunk: RecordBatch = match RecordBatch::try_new(Arc::new(schema), [res].to_vec())
+        .ok()?
+        .flatten()
+    {
         Ok(chunk) => chunk,
         Err(err) => {
             tracing::error!("Error converting to arrow: {:?}", err);

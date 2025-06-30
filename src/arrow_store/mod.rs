@@ -6,7 +6,7 @@ use arrow::{
     record_batch::RecordBatch,
 };
 #[cfg(feature = "dep_arrow")]
-use arrow_convert::{field::ArrowField, serialize::FlattenRecordBatch, serialize::TryIntoArrow};
+use arrow_convert::{field::ArrowField, serialize::TryIntoArrow};
 use init_data::InitData;
 #[cfg(feature = "dep_arrow")]
 use rayon::prelude::*;
@@ -20,7 +20,6 @@ use std::path::PathBuf;
 pub mod ipc_writer;
 use ipc_writer::*;
 use std::collections::HashSet;
-use std::sync::Arc;
 
 /// The supported Arrow IPC types
 #[derive(Debug, Subcommand, Clone)]
@@ -174,10 +173,12 @@ impl ArrowIpcTypes {
 
         // process the sources in parallel consuming into the batch variable
         let res: ArrayRef = sources.try_into_arrow()?;
+        let chunk: RecordBatch = res
+            .as_any()
+            .downcast_ref::<arrow::array::StructArray>()
+            .unwrap()
+            .into();
 
-        tracing::info!("Loaded {} records", res.len());
-        let chunk: RecordBatch =
-            RecordBatch::try_new(Arc::new(self.schema()), [res].to_vec())?.flatten()?;
         write_batches(output, self.schema(), &[chunk])?;
         Ok(())
     }
@@ -307,7 +308,13 @@ impl ArrowIpcTypes {
             .collect::<Vec<details::Details>>()
             .try_into_arrow()?;
         tracing::info!("Loaded {} records", res.len());
-        let chunk = RecordBatch::try_new(Arc::new(Self::Details.schema()), [res].to_vec())?;
+        let res: ArrayRef = sources.try_into_arrow()?;
+        let chunk: RecordBatch = res
+            .as_any()
+            .downcast_ref::<arrow::array::StructArray>()
+            .unwrap()
+            .into();
+
         write_batches(output, self.schema(), &[chunk])?;
         Ok(())
     }
