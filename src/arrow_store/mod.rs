@@ -203,42 +203,26 @@ impl ArrowIpcTypes {
                 let details: crate::details::Details =
                     crate::details::Details::try_from(source.clone()).ok()?;
                 let tracker_events = TrackerEventIterator::new(&source).ok()?;
-                let (schema, res, batch_len): (Schema, ArrayRef, usize) = match self {
+                let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::Stats => {
                         let batch = tracker_events.collect_into_player_stats_flat_rows(&details);
-                        (
-                            Self::Stats.schema(),
-                            batch.try_into_arrow().ok()?,
-                            batch.len(),
-                        )
+                        (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::Upgrades => {
                         let batch = tracker_events.collect_into_upgrades_flat_rows(&details);
-                        (
-                            Self::Upgrades.schema(),
-                            batch.try_into_arrow().ok()?,
-                            batch.len(),
-                        )
+                        (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::UnitBorn => {
                         let batch = tracker_events.collect_into_unit_born_flat_rows(&details);
-                        (
-                            Self::UnitBorn.schema(),
-                            batch.try_into_arrow().ok()?,
-                            batch.len(),
-                        )
+                        (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::UnitDied => {
                         let batch = tracker_events.collect_into_unit_died_flat_rows(&details);
-                        (
-                            Self::UnitDied.schema(),
-                            batch.try_into_arrow().ok()?,
-                            batch.len(),
-                        )
+                        (batch.try_into_arrow().ok()?, batch.len())
                     }
                     _ => unimplemented!(),
                 };
-                write_to_arrow_mutex_writer(&writer, schema, res, batch_len)
+                write_to_arrow_mutex_writer(&writer, res, batch_len)
             })
             .sum::<usize>();
         tracing::info!("Loaded {} records", total_records);
@@ -263,28 +247,20 @@ impl ArrowIpcTypes {
                 let source = PathBuf::from(&source.file_name);
                 let details = crate::details::Details::try_from(source.clone()).ok()?;
                 let game_events = GameEventIterator::new(&source).ok()?;
-                let (schema, res, batch_len): (Schema, ArrayRef, usize) = match self {
+                let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::CmdTargetPoint => {
                         let batch =
                             game_events.collect_into_game_cmd_target_points_flat_rows(&details);
-                        (
-                            Self::CmdTargetPoint.schema(),
-                            batch.try_into_arrow().ok()?,
-                            batch.len(),
-                        )
+                        (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::CmdTargetUnit => {
                         let batch =
                             game_events.collect_into_game_cmd_target_units_flat_rows(&details);
-                        (
-                            Self::CmdTargetPoint.schema(),
-                            batch.try_into_arrow().ok()?,
-                            batch.len(),
-                        )
+                        (batch.try_into_arrow().ok()?, batch.len())
                     }
                     e => unimplemented!("{:?}", e),
                 };
-                write_to_arrow_mutex_writer(&writer, schema, res, batch_len)
+                write_to_arrow_mutex_writer(&writer, res, batch_len)
             })
             .sum::<usize>();
         tracing::info!("Loaded {} records", total_records);

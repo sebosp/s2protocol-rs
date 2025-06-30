@@ -6,11 +6,8 @@
 use arrow::{
     array::ArrayRef, datatypes::Schema, ipc::writer::FileWriter, record_batch::RecordBatch,
 };
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::serialize::*;
 use std::path::PathBuf;
 #[cfg(feature = "dep_arrow")]
-use std::sync::Arc;
 
 /// Converts the data into an Arrow IPC file, this is useful for small batches of data,
 /// for example if we are reading all the details from all the files, they should fit in memory
@@ -47,7 +44,6 @@ pub fn open_arrow_mutex_writer(
 #[cfg(feature = "dep_arrow")]
 pub fn write_to_arrow_mutex_writer(
     writer: &std::sync::Mutex<FileWriter<std::fs::File>>,
-    schema: Schema,
     res: ArrayRef,
     batch_length: usize,
 ) -> Option<usize> {
@@ -61,16 +57,11 @@ pub fn write_to_arrow_mutex_writer(
             return None;
         }
     };
-    let chunk: RecordBatch = match RecordBatch::try_new(Arc::new(schema), [res].to_vec())
-        .ok()?
-        .flatten()
-    {
-        Ok(chunk) => chunk,
-        Err(err) => {
-            tracing::error!("Error converting to arrow: {:?}", err);
-            return None;
-        }
-    };
+    let chunk: RecordBatch = res
+        .as_any()
+        .downcast_ref::<arrow::array::StructArray>()
+        .unwrap()
+        .into();
     match file_lock.write(&chunk) {
         Ok(_) => Some(batch_length),
         Err(err) => {
