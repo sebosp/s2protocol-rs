@@ -319,8 +319,7 @@ impl ArrowIpcTypes {
             .par_iter()
             .enumerate()
             .filter_map(|(idx, source)| {
-                crate::init_data::InitData::try_from((source.clone(), u64::try_from(idx).unwrap()))
-                    .ok()
+                InitData::try_from((source.clone(), u64::try_from(idx).unwrap())).ok()
             })
             .collect::<Vec<InitData>>()
             .into_iter()

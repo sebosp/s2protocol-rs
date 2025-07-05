@@ -51,13 +51,9 @@ impl InitData {
 
     #[tracing::instrument(level = "debug", skip(file_contents))]
     pub fn set_metadata(mut self, file_name: &str, ext_fs_id: u64, file_contents: &[u8]) -> Self {
-        // TODO: We need to find a way to trim the sha just like git rev-parse,
-        // just so that we reduce the size of the files, but providing unicity.
-        // This also means that generating of the files must be done at the same time
-        // or we will have different sha references (different length) in different files.
-        // OOOOOR HOW ABOUT one table of <SEQUENTIAL>:<SHA256>?
         self.sha256 = sha256::digest(file_contents);
         self.file_name = file_name.to_string();
+        self.ext_fs_id = ext_fs_id;
         self
     }
 
