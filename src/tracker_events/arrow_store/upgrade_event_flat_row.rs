@@ -19,7 +19,7 @@ pub struct UpgradeEventFlatRow {
     // TODO: consider deprecating the replay loop and just using seconds
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
-    pub ext_fs_replay_sha256: String,
+    pub ext_fs_id: u64,
 }
 
 impl UpgradeEventFlatRow {
@@ -36,7 +36,7 @@ impl UpgradeEventFlatRow {
             count: event.count,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_replay_sha256: details.ext_fs_replay_sha256,
+            ext_fs_id: details.ext_fs_id,
         }
     }
 }

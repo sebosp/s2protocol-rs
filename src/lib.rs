@@ -115,6 +115,7 @@ pub fn peek_bits(input: (&[u8], usize)) -> String {
 }
 
 /// Returns the 8 bytes following where the error was found for context.
+#[allow(clippy::type_complexity)]
 pub fn dbg_peek_bits<'a, F, O, E: std::fmt::Debug>(
     mut f: F,
     context: &'static str,

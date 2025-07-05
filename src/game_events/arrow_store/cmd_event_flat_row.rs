@@ -30,7 +30,7 @@ pub struct CmdTargetPointEventFlatRow {
     pub m_unit_group: Option<u32>,
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
-    pub ext_fs_replay_sha256: String,
+    pub ext_fs_id: u64,
 }
 
 impl CmdTargetPointEventFlatRow {
@@ -60,7 +60,7 @@ impl CmdTargetPointEventFlatRow {
             m_unit_group: event.m_unit_group,
             ext_replay_loop: game_loop,
             ext_replay_seconds,
-            ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
+            ext_fs_id: details.ext_fs_id,
         }
     }
 }
@@ -87,7 +87,7 @@ pub struct CmdTargetUnitEventFlatRow {
     pub m_unit_group: Option<u32>,
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
-    pub ext_fs_replay_sha256: String,
+    pub ext_fs_id: u64,
 }
 
 impl CmdTargetUnitEventFlatRow {
@@ -123,7 +123,7 @@ impl CmdTargetUnitEventFlatRow {
             m_unit_group: event.m_unit_group,
             ext_replay_loop: game_loop,
             ext_replay_seconds,
-            ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
+            ext_fs_id: details.ext_fs_id,
         }
     }
 }

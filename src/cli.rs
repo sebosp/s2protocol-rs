@@ -65,9 +65,6 @@ pub struct WriteArrowIpcProps {
     /// The maximum protocol version
     #[arg(long)]
     pub max_version: Option<u32>,
-    /// Writes the [`crate::init_data::InitData`] flat row to an Arrow IPC file
-    #[command(subcommand)]
-    kind: ArrowIpcTypes,
 }
 
 #[derive(Parser, Debug, Clone)]
@@ -312,7 +309,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
         }
         #[cfg(feature = "dep_arrow")]
         Commands::WriteArrowIpc(cmd) => {
-            cmd.kind.handle_arrow_ipc_cmd(
+            ArrowIpcTypes::handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),
                 PathBuf::from(&cli.output.expect("Requires --output")),
                 cmd,

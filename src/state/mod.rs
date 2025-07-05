@@ -222,7 +222,7 @@ impl SC2EventIterator {
         // The sc2 replay state is not shared between the two iterators...
         tracing::debug!("Processing {:?}", source);
         let file_contents = crate::read_file(source)?;
-        let source_filename = format!("{:?}", source);
+        let source_filename = format!("{source:?}");
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
         let (_tail, proto_header) = crate::read_protocol_header(&mpq)?;
         let (_event_tail, tracker_events) =

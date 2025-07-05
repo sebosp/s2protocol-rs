@@ -7,7 +7,6 @@ use arrow::{
     array::ArrayRef, datatypes::Schema, ipc::writer::FileWriter, record_batch::RecordBatch,
 };
 use std::path::PathBuf;
-#[cfg(feature = "dep_arrow")]
 
 /// Converts the data into an Arrow IPC file, this is useful for small batches of data,
 /// for example if we are reading all the details from all the files, they should fit in memory
@@ -16,14 +15,12 @@ use std::path::PathBuf;
 pub fn write_batches(
     path: PathBuf,
     schema: Schema,
-    chunks: &[RecordBatch],
+    chunk: RecordBatch,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let file = std::fs::File::create(path)?;
     let mut writer = FileWriter::try_new(file, &schema)?;
 
-    for chunk in chunks {
-        writer.write(chunk)?
-    }
+    writer.write(&chunk)?;
     writer.finish()?;
     Ok(())
 }
