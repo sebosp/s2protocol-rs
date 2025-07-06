@@ -295,14 +295,22 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
-                        println!("[");
                         let res = crate::state::SC2EventIterator::new(&source)?;
                         let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
                         let res = res.with_filters(filters);
-                        for evt in res.into_iter() {
-                            json_print(serde_json::to_string(&evt).unwrap(), color);
+                        let details = read_details(&source_path, &mpq, &file_contents)?;
+                        #[cfg(feature = "dep_ratatui")]
+                        {
+                            return Ok(crate::tui::ratatui_main(res, details)?);
                         }
-                        println!("]");
+                        #[cfg(not(feature = "dep_ratatui"))]
+                        {
+                            println!("[");
+                            for evt in res.into_iter() {
+                                json_print(serde_json::to_string(&evt).unwrap(), color);
+                            }
+                            println!("]");
+                        }
                     }
                 }
             }

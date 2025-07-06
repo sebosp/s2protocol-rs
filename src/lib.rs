@@ -50,6 +50,11 @@ pub use versioned_decoder::*;
 pub use nom_mpq::parser::{self, peek_hex};
 pub use nom_mpq::MPQ;
 
+#[cfg(feature = "dep_ratatui")]
+pub mod tui;
+#[cfg(feature = "dep_ratatui")]
+pub use tui::*;
+
 /// Many fields are optional, this macro will return an Ok for the nom::IResult but the value will
 /// be an Err(S2ProtocolError::MissingField) if the field is not present.
 /// This allows for avoiding panic!() and instead can be ?

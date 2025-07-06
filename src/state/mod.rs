@@ -9,10 +9,10 @@
 //! This means 10 max events types are supported.
 
 use super::*;
-use crate::common::*;
 use crate::filters::SC2ReplayFilters;
 use crate::game_events::GameEventIteratorState;
 use crate::tracker_events::TrackertEventIteratorState;
+use crate::{common::*, game_events::GameSPointMini};
 use game_events::GameSCmdEvent;
 use serde::{Deserialize, Serialize};
 pub mod unit_cmd;
@@ -164,6 +164,9 @@ pub struct SC2UserState {
     /// An array of registered control groups per user, the control group indexed as 10th is the
     /// currently selected units.
     pub control_groups: Vec<Vec<u32>>,
+
+    /// The camera position.
+    pub camera_pos: GameSPointMini,
 }
 
 impl SC2UserState {
@@ -173,7 +176,10 @@ impl SC2UserState {
         for _ in 0..11 {
             control_groups.push(vec![]);
         }
-        Self { control_groups }
+        Self {
+            control_groups,
+            camera_pos: GameSPointMini { x: 0, y: 0 },
+        }
     }
 }
 

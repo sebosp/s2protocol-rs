@@ -149,7 +149,7 @@ pub struct CameraUpdateEvent {
     pub m_follow: bool,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
