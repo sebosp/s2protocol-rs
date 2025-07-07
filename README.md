@@ -51,6 +51,8 @@ for (event, change_hint) in res.into_iter() {
 }
 ```
 
+[!Ratatui display](https://asciinema.org/a/C1rGmHXhI4IkfdPAoyNhlOwVn)
+
 ## BREAKING CHANGES
 - Feature `arrow`  has been renamed to `dep_arrow` as we now use the `arrow` crate.
 
