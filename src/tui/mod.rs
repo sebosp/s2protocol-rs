@@ -4,10 +4,7 @@
 //! https://github.com/ratatui/ratatui/blob/main/examples/apps/canvas/src/main.rs
 //!
 
-use crate::{
-    game_events::ReplayGameEvent,
-    state::{SC2EventIterator, SC2EventType, UnitChangeHint},
-};
+use crate::state::{SC2EventIterator, SC2EventType, UnitChangeHint};
 use std::{
     io::stdout,
     time::{Duration, Instant},
@@ -20,14 +17,13 @@ use crossterm::{
 };
 use ratatui::{
     crossterm::event::{self, Event, KeyCode, MouseEventKind},
-    layout::{Constraint, Layout, Position, Rect},
+    layout::{Constraint, Layout, Position},
     style::{Color, Modifier, Style},
     symbols::Marker,
     text::{self, Line, Span},
     widgets::{
-        canvas::{Canvas, Circle, Points, Rectangle},
-        Axis, BarChart, Block, Cell, Chart, Dataset, Gauge, LineGauge, List, ListItem, Paragraph,
-        Row, Sparkline, Table, Tabs, Widget, Wrap,
+        canvas::{Canvas, Circle, Rectangle},
+        Block, Paragraph, Widget, Wrap,
     },
     DefaultTerminal, Frame,
 };
@@ -62,10 +58,6 @@ struct S2ProtoRatatuiApp {
     exit: bool,
     x: f64,
     y: f64,
-    ball: Circle,
-    playground: Rect,
-    vx: f64,
-    vy: f64,
     tick_count: u64,
     marker: Marker,
     points: Vec<Position>,
@@ -81,15 +73,6 @@ impl S2ProtoRatatuiApp {
             exit: false,
             x: 0.0,
             y: 0.0,
-            ball: Circle {
-                x: 20.0,
-                y: 40.0,
-                radius: 10.0,
-                color: Color::Yellow,
-            },
-            playground: Rect::new(10, 10, 200, 100),
-            vx: 1.0,
-            vy: 1.0,
             tick_count: 0,
             marker: Marker::Dot,
             points: vec![],
@@ -153,14 +136,7 @@ impl S2ProtoRatatuiApp {
     fn on_tick(&mut self) {
         self.tick_count += 1;
         if (self.tick_count % 10) == 0 {
-            /*self.current_event = self.sc2_event_iter.next();
-            *self.marker = match self.marker {
-                Marker::Dot => Marker::Braille,
-                Marker::Braille => Marker::Block,
-                Marker::Block => Marker::HalfBlock,
-                Marker::HalfBlock => Marker::Bar,
-                Marker::Bar => Marker::Dot,
-            };*/
+            self.current_event = self.sc2_event_iter.next();
         }
         // bounce the ball by flipping the velocity vector
     }
