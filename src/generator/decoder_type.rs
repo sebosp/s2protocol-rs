@@ -240,7 +240,7 @@ impl DecoderType {
                 parser: "GameSColor::parse".to_string(),
                 ..Default::default()
             },
-            _ => panic!("Unsupported type: {}", nnet_name),
+            _ => panic!("Unsupported type: {nnet_name}"),
         }
     }
 
@@ -251,7 +251,7 @@ impl DecoderType {
             let proto_unit_type_name = str_nnet_name_to_rust_name(nnet_name.to_string());
             return ProtoTypeConversion {
                 rust_ty: proto_unit_type_name.clone(),
-                parser: format!("{}::parse", proto_unit_type_name),
+                parser: format!("{proto_unit_type_name}::parse"),
                 ..Default::default()
             };
         }
@@ -299,7 +299,7 @@ impl DecoderType {
                 parser: "take_null".to_string(),
                 ..Default::default()
             },
-            _ => panic!("Unsupported type: {}", nnet_name),
+            _ => panic!("Unsupported type: {nnet_name}"),
         }
     }
 
@@ -784,7 +784,7 @@ impl DecoderType {
                     tracing::info!("IntType offset: {}, num_bits: {}", offset, num_bits);
                     morph.parser = morph
                         .parser
-                        .replace("{}", &format!("input, {}, {}usize", offset, num_bits));
+                        .replace("{}", &format!("input, {offset}, {num_bits}usize"));
                 }
             } else if proto_field_type_info == "ArrayType"
                 || proto_field_type_info == "BitArrayType"
@@ -818,7 +818,7 @@ impl DecoderType {
                 tracing::info!("IntType offset: {}, num_bits: {}", offset, num_bits);
                 morph.parser = morph
                     .parser
-                    .replace("{}", &format!("input, {}, {}usize", offset, num_bits));
+                    .replace("{}", &format!("input, {offset}, {num_bits}usize"));
             }
             let field_type = &morph.rust_ty;
             let field_value_parser = &morph.parser;
@@ -1887,7 +1887,7 @@ impl DecoderType {
         type_impl_def: &mut String,
         internal_type: &str,
     ) {
-        proto_type_def.push_str(&format!("    pub value: Vec<{}>,", internal_type));
+        proto_type_def.push_str(&format!("    pub value: Vec<{internal_type}>,"));
         type_impl_def.push_str(&byte_aligned_parse_impl_def);
     }
 
@@ -1901,7 +1901,7 @@ impl DecoderType {
         type_impl_def: &mut String,
         internal_type: &str,
     ) {
-        proto_type_def.push_str(&format!("    pub value: Vec<{}>,", internal_type));
+        proto_type_def.push_str(&format!("    pub value: Vec<{internal_type}>,"));
         type_impl_def.push_str(&bit_packed_parse_impl_def);
     }
 

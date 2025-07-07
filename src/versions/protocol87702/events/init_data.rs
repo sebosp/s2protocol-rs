@@ -24,6 +24,7 @@ impl TryFrom<ReplaySInitData> for InitData {
             sha256: "".to_string(),
             file_name: "".to_string(),
             version: 0,
+            ext_fs_id: 0,
         })
     }
 }

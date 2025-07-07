@@ -51,6 +51,22 @@ for (event, change_hint) in res.into_iter() {
 }
 ```
 
+## Displaying the replay on the terminal
+
+Suppose you wanted to debug/inspect a replay, you can draw the events to the terminal, for example:
+
+```bash
+$ cargo run --features syntax,dep_ratatui -- --max-loop 1000 --color --source /mnt/replays/"Pylon LE.SC2Replay" get transist-events
+```
+
+[![Ratatui asciicast](https://asciinema.org/a/726584.svg)](https://asciinema.org/a/726584)
+
+## BREAKING CHANGES
+- Feature `arrow`  has been renamed to `dep_arrow` as we now use the `arrow` crate.
+- Previously the generated arrow IPC files relied on a sha256 of the file as "key", this wasted a lot of space and has been changed into a sequential
+  As a result, queries must use the new `ext_fs_id`, which also means all the files must be generated in bulk and are no longer independent.
+  The IPCs then is valid as a snapshot generated as a whole.
+
 ## Interacting with polars
 
 ### Generating the IPC Arrow datasets
@@ -64,23 +80,23 @@ For 17K replays (2.3 GBs) it takes 120 seconds to parse/transform/split them. YM
 ```bash
 $ mkdir ipcs/
 $ cargo run -r -- -v error --timing --source /home/seb/SCReplaysOnNVMe --output /home/seb/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 10000000 all
-Located 17021 matching files by extension
-10299 files have valid init data, processing...
-Total time: 121.943999981s
-& du -sh ipcs
-13G     ipcs
+11386 files have valid init data, processing...
+Total time: 116.254317547s
+$ du -sh ipcs
+12G     ipcs
 
-& ls -ltra ipcs
-total 13123004
-drwxr-xr-x  2 seb seb       4096 Jun 16 09:33 ./
-drwxr-xr-x 11 seb seb       4096 Jun 16 22:09 ../
--rw-r--r--  1 seb seb   81070479 Jun 16 22:10 init_data.ipc
--rw-r--r--  1 seb seb   10789826 Jun 16 22:10 details.ipc
--rw-r--r--  1 seb seb  843902480 Jun 16 22:10 stats.ipc
--rw-r--r--  1 seb seb   67967152 Jun 16 22:10 upgrades.ipc
--rw-r--r--  1 seb seb 5712488337 Jun 16 22:10 unit_born.ipc
--rw-r--r--  1 seb seb 4652841877 Jun 16 22:11 unit_died.ipc
--rw-r--r--  1 seb seb 2068859942 Jun 16 22:12 cmd.ipc
+❯ ls -ltra ipcs/
+total 11942492
+drwxr-xr-x  2 seb seb       4096 Jul  5 13:53 .
+drwxr-xr-x 11 seb seb       4096 Jul  7 19:26 ..
+-rw-r--r--  1 seb seb    6300626 Jul  7 19:28 init_data.ipc
+-rw-r--r--  1 seb seb    4104282 Jul  7 19:28 details.ipc
+-rw-r--r--  1 seb seb  879061082 Jul  7 19:28 stats.ipc
+-rw-r--r--  1 seb seb   42656986 Jul  7 19:28 upgrades.ipc
+-rw-r--r--  1 seb seb 6262789202 Jul  7 19:29 unit_born.ipc
+-rw-r--r--  1 seb seb 4241504290 Jul  7 19:29 unit_died.ipc
+-rw-r--r--  1 seb seb  538273098 Jul  7 19:30 cmd_target_point.ipc
+-rw-r--r--  1 seb seb  254371282 Jul  7 19:30 cmd_target_unit.ipc
 ```
 
 ### Jupyter Notebooks

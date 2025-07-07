@@ -1,12 +1,12 @@
 //! Decodes the Tracker Events.
 //! These are stored in an embebdded file in the MPQ file called 'replay.tracker.events'
 
-#[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
-#[cfg(feature = "arrow")]
-pub mod arrow;
-#[cfg(feature = "arrow")]
-pub use arrow::*;
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+#[cfg(feature = "dep_arrow")]
+pub mod arrow_store;
+#[cfg(feature = "dep_arrow")]
+pub use arrow_store::*;
 
 use crate::filters::SC2ReplayFilters;
 use serde::{Deserialize, Serialize};
@@ -39,7 +39,7 @@ pub use unit_type_change::*;
 /// A Tracker Event is an event in the gameloop for a specific user id
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct TrackerEvent {
@@ -53,10 +53,10 @@ pub struct TrackerEvent {
 /// relevant  for `swarmy` repo.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "sparse"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "sparse"))]
 pub enum ReplayTrackerEvent {
     PlayerStats(PlayerStatsEvent),
     UnitBorn(UnitBornEvent),

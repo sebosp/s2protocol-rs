@@ -1,15 +1,19 @@
 //! Arrow Specific handling of data.
 
-#[cfg(feature = "arrow")]
-use arrow2::{array::Array, chunk::Chunk, datatypes::DataType};
-use arrow2_convert::serialize::FlattenChunk;
-#[cfg(feature = "arrow")]
-use arrow2_convert::{field::ArrowField, serialize::TryIntoArrow};
+#[cfg(feature = "dep_arrow")]
+use arrow::{
+    array::Array, array::ArrayRef, datatypes::DataType, datatypes::Schema,
+    record_batch::RecordBatch,
+};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::{field::ArrowField, serialize::TryIntoArrow};
 use init_data::InitData;
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use rayon::prelude::*;
 
 use crate::cli::get_matching_files;
+use crate::details::Details;
+use crate::details::PlayerDetailsFlatRow;
 use crate::game_events::GameEventIterator;
 use crate::tracker_events::{self, TrackerEventIterator};
 use crate::*;
@@ -24,7 +28,7 @@ use std::collections::HashSet;
 pub enum ArrowIpcTypes {
     /// Writes the [`crate::init_data::InitData`] flat row to an Arrow IPC file
     InitData,
-    /// Writes the [`crate::details::Details`] flat row to an Arrow IPC file
+    /// Writes the [`crate::details::PlayerDetailsFlatRow`] flat row to an Arrow IPC file
     Details,
     /// Writes the [`crate::tracker_events::PlayerStatsEvent`] to an Arrow IPC file
     Stats,
@@ -36,9 +40,9 @@ pub enum ArrowIpcTypes {
     UnitDied,
     /// Writes the [`crate::message_events::MessageEvent`] to an Arrow IPC file
     MessageEvents,
-    /// Writes the [`crate::game_events::Cmd::TargetPoint`] to an Arrow IPC file
+    /// Writes the [`crate::game_events::CmdTargetPointEventFlatRow`] to an Arrow IPC file
     CmdTargetPoint,
-    /// Writes the [`crate::game_events::Cmd::TargetUnit`] to an Arrow IPC file
+    /// Writes the [`crate::game_events::CmdTargetUnitEventFlatRow`] to an Arrow IPC file
     CmdTargetUnit,
     /// Writes all the implemented flat row types to Arrow IPC files inside the output directory
     All,
@@ -46,32 +50,32 @@ pub enum ArrowIpcTypes {
 
 impl ArrowIpcTypes {
     /// Returns the schema for the chosen output type
-    pub fn schema(&self) -> arrow2::datatypes::Schema {
+    pub fn schema(&self) -> Schema {
         match self {
             Self::InitData => {
-                if let DataType::Struct(fields) = init_data::InitData::data_type() {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                if let DataType::Struct(fields) = init_data::UserInitDataFlatRow::data_type() {
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Details => {
-                if let DataType::Struct(fields) = details::Details::data_type() {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                if let DataType::Struct(fields) = details::PlayerDetailsFlatRow::data_type() {
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Stats => {
                 if let DataType::Struct(fields) = tracker_events::PlayerStatsFlatRow::data_type() {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
             }
             Self::Upgrades => {
                 if let DataType::Struct(fields) = tracker_events::UpgradeEventFlatRow::data_type() {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -79,7 +83,7 @@ impl ArrowIpcTypes {
             Self::UnitBorn => {
                 if let DataType::Struct(fields) = tracker_events::UnitBornEventFlatRow::data_type()
                 {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -87,7 +91,7 @@ impl ArrowIpcTypes {
             Self::UnitDied => {
                 if let DataType::Struct(fields) = tracker_events::UnitDiedEventFlatRow::data_type()
                 {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -96,7 +100,7 @@ impl ArrowIpcTypes {
                 if let DataType::Struct(fields) =
                     game_events::CmdTargetPointEventFlatRow::data_type()
                 {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -105,7 +109,7 @@ impl ArrowIpcTypes {
                 if let DataType::Struct(fields) =
                     game_events::CmdTargetUnitEventFlatRow::data_type()
                 {
-                    arrow2::datatypes::Schema::from(fields.clone())
+                    Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
                 }
@@ -114,51 +118,41 @@ impl ArrowIpcTypes {
         }
     }
 
-    /// Handles the write command for the chosen output type
+    /// Writes a snapshot of the replay collection.
+    /// A snapshot is a collection of generated files that work together.
+    /// The consistency of the files is not yet implemented.
+    /// But the files should have been generated at around the same time.
+    /// If one file lags behind, it may be from an incomplete data generation.
+    /// i.e. this function is called but it errors in the middle and no retries/fixes are done.
+    /// Two things todo:
+    /// First delete all the files in the snapshot directory.
+    /// Add a snashopt generation timestamp and when reads are done, they are checked for
+    /// very basic timepstamp write consistency.
     #[tracing::instrument(level = "debug")]
-    pub fn handle_write_command(
-        &self,
+    pub fn handle_write_snapshot(
         sources: Vec<InitData>,
         output: PathBuf,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        match self {
-            Self::InitData => self.handle_init_data_ipc_cmd(sources, output),
-            Self::Details => self.handle_details_ipc_cmd(sources, output),
-            Self::Stats => self.handle_tracker_events(sources, output),
-            Self::Upgrades => self.handle_tracker_events(sources, output),
-            Self::UnitBorn => self.handle_tracker_events(sources, output),
-            Self::UnitDied => self.handle_tracker_events(sources, output),
-            Self::CmdTargetPoint => self.handle_game_events(sources, output),
-            Self::CmdTargetUnit => self.handle_game_events(sources, output),
-            Self::All => {
-                if !output.is_dir() {
-                    panic!("Output must be a directory for types 'all'");
-                }
-                // output must be a directory, for this directory we will create the following files:
-                // init_data.ipc
-                // details.ipc
-                // stats.ipc
-                // upgrades.ipc
-                // unit_born.ipc
-                Self::InitData
-                    .handle_init_data_ipc_cmd(sources.clone(), output.join("init_data.ipc"))?;
-                Self::Details
-                    .handle_details_ipc_cmd(sources.clone(), output.join("details.ipc"))?;
-                Self::Stats.handle_tracker_events(sources.clone(), output.join("stats.ipc"))?;
-                Self::Upgrades
-                    .handle_tracker_events(sources.clone(), output.join("upgrades.ipc"))?;
-                Self::UnitBorn
-                    .handle_tracker_events(sources.clone(), output.join("unit_born.ipc"))?;
-                Self::UnitDied
-                    .handle_tracker_events(sources.clone(), output.join("unit_died.ipc"))?;
-                Self::CmdTargetPoint
-                    .handle_game_events(sources.clone(), output.join("cmd_target_point.ipc"))?;
-                Self::CmdTargetUnit
-                    .handle_game_events(sources.clone(), output.join("cmd_target_unit.ipc"))?;
-                Ok(())
-            }
-            _ => todo!(),
+        if !output.is_dir() {
+            panic!("Output must be a directory for types 'all'");
         }
+        // output must be a directory, for this directory we will create the following files:
+        // init_data.ipc
+        // details.ipc
+        // stats.ipc
+        // upgrades.ipc
+        // unit_born.ipc
+        Self::InitData.handle_init_data_ipc_cmd(sources.clone(), output.join("init_data.ipc"))?;
+        Self::Details.handle_details_ipc_cmd(sources.clone(), output.join("details.ipc"))?;
+        Self::Stats.handle_tracker_events(sources.clone(), output.join("stats.ipc"))?;
+        Self::Upgrades.handle_tracker_events(sources.clone(), output.join("upgrades.ipc"))?;
+        Self::UnitBorn.handle_tracker_events(sources.clone(), output.join("unit_born.ipc"))?;
+        Self::UnitDied.handle_tracker_events(sources.clone(), output.join("unit_died.ipc"))?;
+        Self::CmdTargetPoint
+            .handle_game_events(sources.clone(), output.join("cmd_target_point.ipc"))?;
+        Self::CmdTargetUnit
+            .handle_game_events(sources.clone(), output.join("cmd_target_unit.ipc"))?;
+        Ok(())
     }
 
     #[tracing::instrument(level = "debug")]
@@ -169,12 +163,21 @@ impl ArrowIpcTypes {
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing InitData IPC write request");
 
-        // process the sources in parallel consuming into the batch variable
-        let res: Box<dyn Array> = sources.try_into_arrow()?;
+        let init_data_flaw_rows: Vec<init_data::UserInitDataFlatRow> = sources
+            .iter()
+            .flat_map(|source| {
+                let res: Vec<init_data::UserInitDataFlatRow> = source.into();
+                res
+            })
+            .collect();
+        let res: ArrayRef = init_data_flaw_rows.try_into_arrow()?;
+        let chunk: RecordBatch = res
+            .as_any()
+            .downcast_ref::<arrow::array::StructArray>()
+            .unwrap()
+            .into();
 
-        tracing::info!("Loaded {} records", res.len());
-        let chunk = Chunk::new([res].to_vec()).flatten()?;
-        write_batches(output, self.schema(), &[chunk])?;
+        write_batches(output, Self::InitData.schema(), chunk)?;
         Ok(())
     }
 
@@ -194,10 +197,10 @@ impl ArrowIpcTypes {
         let total_records = sources
             .par_iter()
             .filter_map(|source| {
-                let source = PathBuf::from(&source.file_name);
-                let details = crate::details::Details::try_from(source.clone()).ok()?;
-                let tracker_events = TrackerEventIterator::new(&source).ok()?;
-                let (res, batch_len): (Box<dyn Array>, usize) = match self {
+                let details: Details = Details::try_from(source).ok()?;
+                let source_path = PathBuf::from(&source.file_name);
+                let tracker_events = TrackerEventIterator::new(&source_path).ok()?;
+                let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::Stats => {
                         let batch = tracker_events.collect_into_player_stats_flat_rows(&details);
                         (batch.try_into_arrow().ok()?, batch.len())
@@ -238,10 +241,10 @@ impl ArrowIpcTypes {
         let total_records = sources
             .par_iter()
             .filter_map(|source| {
-                let source = PathBuf::from(&source.file_name);
-                let details = crate::details::Details::try_from(source.clone()).ok()?;
-                let game_events = GameEventIterator::new(&source).ok()?;
-                let (res, batch_len): (Box<dyn Array>, usize) = match self {
+                let details = Details::try_from(source).ok()?;
+                let source_path = PathBuf::from(&source.file_name);
+                let game_events = GameEventIterator::new(&source_path).ok()?;
+                let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::CmdTargetPoint => {
                         let batch =
                             game_events.collect_into_game_cmd_target_points_flat_rows(&details);
@@ -270,23 +273,34 @@ impl ArrowIpcTypes {
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing Details IPC write request");
         // process the sources in parallel consuming into the batch variable
-        let res: Box<dyn Array> = sources
-            .par_iter()
-            .filter_map(|source| {
-                crate::details::Details::try_from(PathBuf::from(&source.file_name)).ok()
+
+        let details_flaw_rows: Vec<PlayerDetailsFlatRow> = sources
+            .iter()
+            .flat_map(|source| {
+                let res: Vec<PlayerDetailsFlatRow> = match Details::try_from(source) {
+                    Ok(details) => details.into(),
+                    Err(err) => {
+                        tracing::error!("Error reading details: {:?}", err);
+                        return vec![];
+                    }
+                };
+                res
             })
-            .collect::<Vec<details::Details>>()
-            .try_into_arrow()?;
-        tracing::info!("Loaded {} records", res.len());
-        let chunk = Chunk::new([res].to_vec()).flatten()?;
-        write_batches(output, self.schema(), &[chunk])?;
+            .collect();
+        let res: ArrayRef = details_flaw_rows.try_into_arrow()?;
+        let chunk: RecordBatch = res
+            .as_any()
+            .downcast_ref::<arrow::array::StructArray>()
+            .unwrap()
+            .into();
+
+        write_batches(output, Self::Details.schema(), chunk)?;
         Ok(())
     }
 
     /// Handles the Arrow IPC command variants
     #[tracing::instrument(level = "debug")]
     pub fn handle_arrow_ipc_cmd(
-        &self,
         source: PathBuf,
         output: PathBuf,
         cmd: &WriteArrowIpcProps,
@@ -303,7 +317,10 @@ impl ArrowIpcTypes {
         println!("Located {} matching files by extension", sources.len());
         let mut sources: Vec<InitData> = sources
             .par_iter()
-            .filter_map(|source| crate::init_data::InitData::try_from(source.clone()).ok())
+            .enumerate()
+            .filter_map(|(idx, source)| {
+                InitData::try_from((source.clone(), u64::try_from(idx).unwrap())).ok()
+            })
             .collect::<Vec<InitData>>()
             .into_iter()
             .filter(|source| {
@@ -350,6 +367,6 @@ impl ArrowIpcTypes {
             sources.len(),
             smallest_fragment
         );
-        self.handle_write_command(sources, output)
+        Self::handle_write_snapshot(sources, output)
     }
 }

@@ -1,4 +1,4 @@
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 use super::*;
 
 #[cfg(feature = "syntax")]
@@ -42,12 +42,12 @@ enum Commands {
     Get(ReadTypes),
 
     /// Writes Arrow IPC files for a specific event type from the SC2Replay MPQ Archive
-    #[cfg(feature = "arrow")]
+    #[cfg(feature = "dep_arrow")]
     WriteArrowIpc(WriteArrowIpcProps),
 }
 
 ///  Create a subcommand that handles the max depth and max files to process
-#[cfg(feature = "arrow")]
+#[cfg(feature = "dep_arrow")]
 #[derive(Args, Debug, Clone)]
 pub struct WriteArrowIpcProps {
     /// Reads these many  files recursing, these files may or may not be valid.
@@ -65,9 +65,6 @@ pub struct WriteArrowIpcProps {
     /// The maximum protocol version
     #[arg(long)]
     pub max_version: Option<u32>,
-    /// Writes the [`crate::init_data::InitData`] flat row to an Arrow IPC file
-    #[command(subcommand)]
-    kind: ArrowIpcTypes,
 }
 
 #[derive(Parser, Debug, Clone)]
@@ -185,10 +182,10 @@ pub fn json_print(json_str: String, color: bool) {
         }
         #[cfg(not(feature = "syntax"))]
         {
-            println!("{},", json_str);
+            println!("{json_str},");
         }
     } else {
-        println!("{},", json_str);
+        println!("{json_str},");
     }
 }
 
@@ -298,21 +295,29 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
-                        println!("[");
                         let res = crate::state::SC2EventIterator::new(&source)?;
                         let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
                         let res = res.with_filters(filters);
-                        for evt in res.into_iter() {
-                            json_print(serde_json::to_string(&evt).unwrap(), color);
+                        let details = read_details(&source_path, &mpq, &file_contents)?;
+                        #[cfg(feature = "dep_ratatui")]
+                        {
+                            return Ok(crate::tui::ratatui_main(res, details)?);
                         }
-                        println!("]");
+                        #[cfg(not(feature = "dep_ratatui"))]
+                        {
+                            println!("[");
+                            for evt in res.into_iter() {
+                                json_print(serde_json::to_string(&evt).unwrap(), color);
+                            }
+                            println!("]");
+                        }
                     }
                 }
             }
         }
-        #[cfg(feature = "arrow")]
+        #[cfg(feature = "dep_arrow")]
         Commands::WriteArrowIpc(cmd) => {
-            cmd.kind.handle_arrow_ipc_cmd(
+            ArrowIpcTypes::handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),
                 PathBuf::from(&cli.output.expect("Requires --output")),
                 cmd,

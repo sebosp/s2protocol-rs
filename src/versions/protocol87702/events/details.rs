@@ -33,7 +33,7 @@ impl TryFrom<GameSDetails> for Details {
             for cache_handle in m_cache_handles {
                 let mut cache_str = String::from("0x");
                 for cache_byte in cache_handle {
-                    cache_str.push_str(&format!("{:x}", cache_byte));
+                    cache_str.push_str(&format!("{cache_byte:x}"));
                 }
                 cache_handles.push(cache_str);
             }
@@ -63,9 +63,7 @@ impl TryFrom<GameSDetails> for Details {
             game_speed: source.m_game_speed.into(),
             default_difficulty: source.m_default_difficulty,
             mod_paths,
-            ext_fs_replay_file_name: String::from(""),
-            ext_fs_replay_sha256: String::from(""),
-            ext_datetime: Default::default(),
+            ext_fs_id: 0u64, // The ext_fs_id is filled later by `set_metadata`
         })
     }
 }

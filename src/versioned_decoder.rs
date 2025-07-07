@@ -84,7 +84,7 @@ pub fn validate_int_tag(input: &[u8]) -> IResult<&[u8], &[u8]> {
 pub fn tagged_bitarray(input: &[u8]) -> IResult<&[u8], Vec<u8>> {
     let (tail, _) = validate_bitarray_tag(input)?;
     let (tail, array_length) = parse_vlq_int(tail)?;
-    let array_length = (array_length as usize + 7usize) / 8usize;
+    let array_length = (array_length as usize).div_ceil(8usize);
     tracing::trace!("Reading array length: {}", array_length);
     let (tail, array) = dbg_peek_hex(take(array_length), "bitarray")(tail)?;
     Ok((tail, array.to_vec()))

@@ -59,8 +59,8 @@ where
             nom::Err::Incomplete(_) => {
                 unreachable!("This library is compatible with only complete parsers, not streaming")
             }
-            nom::Err::Error(e) => S2ProtocolError::ByteAligned(format!("{:?}", e)),
-            nom::Err::Failure(e) => S2ProtocolError::ByteAligned(format!("{:?}", e)),
+            nom::Err::Error(e) => S2ProtocolError::ByteAligned(format!("{e:?}")),
+            nom::Err::Failure(e) => S2ProtocolError::ByteAligned(format!("{e:?}")),
         }
     }
 }
@@ -70,7 +70,7 @@ where
     I: Clone,
 {
     fn from_error_kind(_input: I, kind: ErrorKind) -> Self {
-        S2ProtocolError::ByteAligned(format!("{:?}", kind))
+        S2ProtocolError::ByteAligned(format!("{kind:?}"))
     }
 
     fn append(_input: I, _kind: ErrorKind, other: Self) -> Self {

@@ -348,7 +348,7 @@ impl ProtoMorphist {
                 type_variant,
                 type_variant_value,
             );
-            let key = format!("{}::{}", type_variant, type_variant_value);
+            let key = format!("{type_variant}::{type_variant_value}");
             let new_val = str_nnet_name_to_rust_name(mod_decl["fullname"].to_string());
             if let Some(existing_tags) = self.enum_tags.get(&key) {
                 tracing::info!(
@@ -548,9 +548,9 @@ impl ProtoMorphist {
         type_impl_def.push_str(&close_type_impl_def());
         //
         self.output
-            .write_all(format!("\n{}", proto_type_def).as_bytes())?;
+            .write_all(format!("\n{proto_type_def}").as_bytes())?;
         self.output
-            .write_all(format!("{}\n", type_impl_def).as_bytes())?;
+            .write_all(format!("{type_impl_def}\n").as_bytes())?;
         Ok(())
     }
 }

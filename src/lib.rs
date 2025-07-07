@@ -1,7 +1,7 @@
 //! S2 Protocol use of the MPQ archive
 
-#[cfg(feature = "arrow")]
-pub mod arrow;
+#[cfg(feature = "dep_arrow")]
+pub mod arrow_store;
 pub mod bit_packed_decoder;
 pub mod cli;
 pub mod common;
@@ -26,8 +26,8 @@ pub use crate::versions::read_game_events;
 pub use crate::versions::read_init_data;
 pub use crate::versions::read_message_events;
 pub use crate::versions::read_tracker_events;
-#[cfg(feature = "arrow")]
-pub use arrow::*;
+#[cfg(feature = "dep_arrow")]
+pub use arrow_store::*;
 pub use bit_packed_decoder::*;
 use chrono::DateTime;
 use chrono::Utc;
@@ -49,6 +49,11 @@ pub use versioned_decoder::*;
 /// Re-export to avoid having to also add this crate to other consumers.
 pub use nom_mpq::parser::{self, peek_hex};
 pub use nom_mpq::MPQ;
+
+#[cfg(feature = "dep_ratatui")]
+pub mod tui;
+#[cfg(feature = "dep_ratatui")]
+pub use tui::*;
 
 /// Many fields are optional, this macro will return an Ok for the nom::IResult but the value will
 /// be an Err(S2ProtocolError::MissingField) if the field is not present.
@@ -104,9 +109,9 @@ pub fn peek_bits(input: (&[u8], usize)) -> String {
     let mut res = String::from("[0b");
     for (idx, bit_str) in input_str.chars().enumerate() {
         match idx.cmp(&input.1) {
-            std::cmp::Ordering::Less => res.push_str(&format!("{}", bit_str).blue()),
-            std::cmp::Ordering::Equal => res.push_str(&format!(">{}<", bit_str).green()),
-            std::cmp::Ordering::Greater => res.push_str(&format!("{}", bit_str).yellow()),
+            std::cmp::Ordering::Less => res.push_str(&format!("{bit_str}").blue()),
+            std::cmp::Ordering::Equal => res.push_str(&format!(">{bit_str}<").green()),
+            std::cmp::Ordering::Greater => res.push_str(&format!("{bit_str}").yellow()),
         };
     }
     res.push(']');
@@ -115,6 +120,7 @@ pub fn peek_bits(input: (&[u8], usize)) -> String {
 }
 
 /// Returns the 8 bytes following where the error was found for context.
+#[allow(clippy::type_complexity)]
 pub fn dbg_peek_bits<'a, F, O, E: std::fmt::Debug>(
     mut f: F,
     context: &'static str,
