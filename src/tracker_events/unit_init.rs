@@ -1,7 +1,7 @@
 //! A protocol agnostic Unit Init Event
 
-#[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::filters::SC2ReplayFilters;
 use serde::{Deserialize, Serialize};
@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 /// Emitted when a unit takes time to be created and may be cancelled.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct UnitInitEvent {

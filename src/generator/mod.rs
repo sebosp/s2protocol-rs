@@ -7,6 +7,7 @@
 //! can properly:
 //! - RustFmt
 //! - Document it.
+//!
 //! Thus, `syn` and `quote` crates were not involved.
 //! This is really ugly and probably only works for a handful of versions.
 

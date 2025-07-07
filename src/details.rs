@@ -2,19 +2,106 @@
 
 use std::path::PathBuf;
 
-#[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 use nom_mpq::MPQ;
 
-use crate::error::S2ProtocolError;
+use crate::{error::S2ProtocolError, InitData};
 use serde::{Deserialize, Serialize};
+
+/// A Flat row of PlayerDetails for Arrow usage.
+/// without the cache_handles and mod_paths.
+/// because I haven't seen what they are used for yet.
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "dep_arrow",
+    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
+)]
+pub struct PlayerDetailsFlatRow {
+    pub player_name: String,
+    pub player_toon_region: u8,
+    pub player_toon_program_id: u32,
+    pub player_toon_realm: u32,
+    pub player_toon_id: u64,
+    pub player_race: String,
+    pub player_color_a: u8,
+    pub player_color_r: u8,
+    pub player_color_g: u8,
+    pub player_color_b: u8,
+    pub player_control: u8,
+    pub player_team_id: u8,
+    pub player_handicap: u32,
+    pub player_observe: u8,
+    pub player_result: u8,
+    pub player_working_set_slot_id: Option<u8>,
+    pub player_hero: String,
+    pub title: String,
+    pub difficulty: String,
+    pub is_blizzard_map: bool,
+    pub time_utc: i64,
+    pub time_local_offset: i64,
+    pub restart_as_transition_map: Option<bool>,
+    pub disable_recover_game: bool,
+    pub description: String,
+    pub image_file_path: String,
+    pub campaign_index: u8,
+    pub map_file_name: String,
+    pub mini_save: bool,
+    pub game_speed: u8,
+    pub default_difficulty: u32,
+    pub ext_fs_id: u64,
+}
+
+impl From<Details> for Vec<PlayerDetailsFlatRow> {
+    fn from(details: Details) -> Self {
+        details
+            .player_list
+            .into_iter()
+            .map(|player| PlayerDetailsFlatRow {
+                player_name: player.name,
+                player_toon_region: player.toon.region,
+                player_toon_program_id: player.toon.program_id,
+                player_toon_realm: player.toon.realm,
+                player_toon_id: player.toon.id,
+                player_race: player.race,
+                player_color_a: player.color.a,
+                player_color_r: player.color.r,
+                player_color_g: player.color.g,
+                player_color_b: player.color.b,
+                player_control: player.control,
+                player_team_id: player.team_id,
+                player_handicap: player.handicap,
+                player_observe: player.observe,
+                player_result: player.result,
+                player_working_set_slot_id: player.working_set_slot_id,
+                player_hero: player.hero,
+                title: details.title.clone(),
+                difficulty: details.difficulty.clone(),
+                is_blizzard_map: details.is_blizzard_map,
+                time_utc: details.time_utc,
+                time_local_offset: details.time_local_offset,
+                restart_as_transition_map: details.restart_as_transition_map,
+                disable_recover_game: details.disable_recover_game,
+                description: details.description.clone(),
+                image_file_path: details.image_file_path.clone(),
+                campaign_index: details.campaign_index,
+                map_file_name: details.map_file_name.clone(),
+                mini_save: details.mini_save,
+                game_speed: details.game_speed,
+                default_difficulty: details.default_difficulty,
+                ext_fs_id: details.ext_fs_id,
+            })
+            .collect()
+    }
+}
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct Details {
+    pub ext_fs_id: u64,
     pub player_list: Vec<PlayerDetails>,
     pub title: String,
     pub difficulty: String,
@@ -33,14 +120,16 @@ pub struct Details {
     pub game_speed: u8,
     pub default_difficulty: u32,
     pub mod_paths: Vec<String>,
-    pub ext_fs_replay_file_name: String,
-    pub ext_fs_replay_sha256: String,
-    pub ext_datetime: chrono::NaiveDateTime,
 }
 
 impl Details {
     /// Calls the per-protocol parser for the Details and sets the metadadata.
-    pub fn new(file_name: &str, mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
+    pub fn new(
+        file_name: &str,
+        ext_fs_id: u64,
+        mpq: &MPQ,
+        file_contents: &[u8],
+    ) -> Result<Self, S2ProtocolError> {
         let details = match crate::versions::read_details(file_name, mpq, file_contents) {
             Ok(details) => details,
             Err(err) => {
@@ -48,15 +137,12 @@ impl Details {
                 return Err(err);
             }
         };
-        Ok(details.set_metadata(file_name, file_contents))
+        Ok(details.set_metadata(ext_fs_id))
     }
 
     /// Sets the metadata related to the filesystem entry and the replay time
-    pub fn set_metadata(mut self, file_name: &str, file_contents: &[u8]) -> Self {
-        self.ext_fs_replay_file_name = file_name.to_string();
-        self.ext_fs_replay_sha256 = sha256::digest(file_contents);
-        self.ext_datetime = crate::transform_to_naivetime(self.time_utc, self.time_local_offset)
-            .unwrap_or_default();
+    pub fn set_metadata(mut self, ext_fs_id: u64) -> Self {
+        self.ext_fs_id = ext_fs_id;
         self
     }
 
@@ -91,16 +177,20 @@ impl Details {
     }
 }
 
-impl TryFrom<PathBuf> for Details {
+impl TryFrom<&InitData> for Details {
     type Error = S2ProtocolError;
 
-    fn try_from(path: PathBuf) -> Result<Self, Self::Error> {
+    fn try_from(init: &InitData) -> Result<Self, Self::Error> {
+        let path = PathBuf::from(init.file_name.clone());
         let file_contents = crate::read_file(&path)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
-        match Self::new(path.to_str().unwrap_or_default(), &mpq, &file_contents) {
-            Ok(details) => {
-                Ok(details.set_metadata(path.to_str().unwrap_or_default(), &file_contents))
-            }
+        match Self::new(
+            path.to_str().unwrap_or_default(),
+            init.ext_fs_id,
+            &mpq,
+            &file_contents,
+        ) {
+            Ok(details) => Ok(details.set_metadata(init.ext_fs_id)),
             Err(err) => {
                 tracing::error!("Error reading details: {:?}", err);
                 Err(err)
@@ -111,7 +201,7 @@ impl TryFrom<PathBuf> for Details {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct PlayerDetails {
@@ -130,7 +220,7 @@ pub struct PlayerDetails {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct ToonNameDetails {
@@ -142,7 +232,7 @@ pub struct ToonNameDetails {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct Color {
@@ -154,7 +244,7 @@ pub struct Color {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct Thumbnail {

@@ -1,15 +1,15 @@
 //! A version agnostic Player Stats Event, their transformation and some massaging for users of the
 //! data.
 
-#[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::filters::SC2ReplayFilters;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct PlayerStatsEvent {
@@ -33,7 +33,7 @@ impl PlayerStatsEvent {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct PlayerStats {

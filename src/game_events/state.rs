@@ -7,6 +7,39 @@ use crate::*;
 /// The game events seem to be at this ratio when compared to Tracker Events.
 pub const GAME_EVENT_POS_RATIO: f32 = 4096f32;
 
+/// There are multiple camera positions that can be hotkeyed, I think 8, maybe 10.
+/// m_which is the index of the camera
+#[tracing::instrument(level = "debug", skip(sc2_state))]
+pub fn handle_camera_save(
+    sc2_state: &mut SC2ReplayState,
+    game_loop: i64,
+    user_id: i64,
+    camera_update: &CameraSaveEvent,
+) -> UnitChangeHint {
+    if let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id) {
+        user_state.camera_pos.x = camera_update.m_target.x;
+        user_state.camera_pos.y = camera_update.m_target.y;
+    }
+    UnitChangeHint::None
+}
+
+/// Unsure  why the camera target may be None, but for now let's just handle the Some()
+#[tracing::instrument(level = "debug", skip(sc2_state))]
+pub fn handle_camera_update(
+    sc2_state: &mut SC2ReplayState,
+    game_loop: i64,
+    user_id: i64,
+    camera_update: &CameraUpdateEvent,
+) -> UnitChangeHint {
+    if let Some(target) = &camera_update.m_target {
+        if let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id) {
+            user_state.camera_pos.x = target.x;
+            user_state.camera_pos.y = target.y;
+        }
+    }
+    UnitChangeHint::None
+}
+
 /// The selected units for a specific players are given a specific target point to move towards.
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_cmd(
@@ -291,10 +324,11 @@ pub fn handle_game_event(
     evt: &ReplayGameEvent,
 ) -> UnitChangeHint {
     match &evt {
-        ReplayGameEvent::CameraUpdate(_camera_update) => {
-            // Unhandled for now
-            // handle_camera_update(&sc2_state, game_loop, user_id, camera_update)?;
-            UnitChangeHint::None
+        ReplayGameEvent::CameraSave(camera_save) => {
+            handle_camera_save(sc2_state, game_loop, user_id, camera_save)
+        }
+        ReplayGameEvent::CameraUpdate(camera_update) => {
+            handle_camera_update(sc2_state, game_loop, user_id, camera_update)
         }
         ReplayGameEvent::Cmd(game_cmd) => handle_cmd(sc2_state, game_loop, user_id, game_cmd),
         ReplayGameEvent::CmdUpdateTargetPoint(target_point) => {

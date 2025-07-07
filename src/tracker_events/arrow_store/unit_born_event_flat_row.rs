@@ -1,7 +1,7 @@
 //! Unit Born Event Flat Row
 
-#[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::state::UnitChangeHint;
 use crate::tracker_events::{UnitBornEvent, UnitDoneEvent, UnitTypeChangeEvent};
@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 /// cancelled.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct UnitBornEventFlatRow {
@@ -29,7 +29,7 @@ pub struct UnitBornEventFlatRow {
     pub creator_ability_name: Option<String>,
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
-    pub ext_fs_replay_sha256: String,
+    pub ext_fs_id: u64,
 }
 
 impl UnitBornEventFlatRow {
@@ -65,7 +65,7 @@ impl UnitBornEventFlatRow {
             creator_unit_type_name,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
+            ext_fs_id: details.ext_fs_id,
         }
     }
 
@@ -102,7 +102,7 @@ impl UnitBornEventFlatRow {
             creator_unit_type_name,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
+            ext_fs_id: details.ext_fs_id,
         }
     }
 
@@ -138,7 +138,7 @@ impl UnitBornEventFlatRow {
             creator_ability_name: unit.creator_ability_name,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
+            ext_fs_id: details.ext_fs_id,
         }
     }
 }

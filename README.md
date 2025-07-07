@@ -51,6 +51,11 @@ for (event, change_hint) in res.into_iter() {
 }
 ```
 
+[![Ratatui asciicast](https://asciinema.org/a/726584.svg)](https://asciinema.org/a/726584)
+
+## BREAKING CHANGES
+- Feature `arrow`  has been renamed to `dep_arrow` as we now use the `arrow` crate.
+
 ## Interacting with polars
 
 ### Generating the IPC Arrow datasets

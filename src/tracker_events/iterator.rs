@@ -156,7 +156,7 @@ impl TrackerEventIterator {
     pub fn new(source: &PathBuf) -> Result<Self, S2ProtocolError> {
         tracing::debug!("Processing {:?}", source);
         let file_contents = crate::read_file(source)?;
-        let source_filename = format!("{:?}", source);
+        let source_filename = format!("{source:?}");
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
         let (_tail, proto_header) = crate::read_protocol_header(&mpq)?;
         let (_event_tail, tracker_events) =
@@ -192,7 +192,7 @@ impl TrackerEventIterator {
     }
 
     /// Consumes the Iterator collecting only the PlayerStats events into a vector of PlayerStatsFlatRow
-    #[cfg(feature = "arrow")]
+    #[cfg(feature = "dep_arrow")]
     pub fn collect_into_player_stats_flat_rows(
         self,
         details: &crate::details::Details,
@@ -225,7 +225,7 @@ impl TrackerEventIterator {
     }
 
     /// Consumes the Iterator collecting only the Upgrade events into a vector of UpgradeEventFlatRow
-    #[cfg(feature = "arrow")]
+    #[cfg(feature = "dep_arrow")]
     pub fn collect_into_upgrades_flat_rows(
         self,
         details: &crate::details::Details,
@@ -252,7 +252,7 @@ impl TrackerEventIterator {
     }
 
     /// Consumes the Iterator collecting only the UnitBorn events into a vector of UnitBornEventFlatRow
-    #[cfg(feature = "arrow")]
+    #[cfg(feature = "dep_arrow")]
     pub fn collect_into_unit_born_flat_rows(
         self,
         details: &crate::details::Details,
@@ -300,7 +300,7 @@ impl TrackerEventIterator {
     }
 
     /// Consumes the Iterator collecting only the UnitDied events into a vector of UnitBornEventFlatRow
-    #[cfg(feature = "arrow")]
+    #[cfg(feature = "dep_arrow")]
     pub fn collect_into_unit_died_flat_rows(
         self,
         details: &crate::details::Details,

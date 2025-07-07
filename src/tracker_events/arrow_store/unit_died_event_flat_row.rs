@@ -1,7 +1,7 @@
 //! Unit Died Event Flat Row
 //!
-#[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::details::Details;
 use crate::tracker_events::UnitDiedEvent;
@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 /// A protocol agnostic Unit Died
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct UnitDiedEventFlatRow {
@@ -28,7 +28,7 @@ pub struct UnitDiedEventFlatRow {
     // We should corroborate these numbers and remove the loop in favor of the seconds.
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
-    pub ext_fs_replay_sha256: String,
+    pub ext_fs_id: u64,
 }
 
 impl UnitDiedEventFlatRow {
@@ -62,7 +62,7 @@ impl UnitDiedEventFlatRow {
             killer_unit_tag_recycle: event.killer_unit_tag_recycle,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
+            ext_fs_id: details.ext_fs_id,
         }
     }
 }

@@ -1,7 +1,7 @@
 //! Cmd Events in a flat row for Arrow usage
 
-#[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::game_events::GameSCmdEvent;
 use crate::game_events::{
@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 /// Arrow compatible Cmd Event for Target Point
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct CmdTargetPointEventFlatRow {
@@ -30,7 +30,7 @@ pub struct CmdTargetPointEventFlatRow {
     pub m_unit_group: Option<u32>,
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
-    pub ext_fs_replay_sha256: String,
+    pub ext_fs_id: u64,
 }
 
 impl CmdTargetPointEventFlatRow {
@@ -60,7 +60,7 @@ impl CmdTargetPointEventFlatRow {
             m_unit_group: event.m_unit_group,
             ext_replay_loop: game_loop,
             ext_replay_seconds,
-            ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
+            ext_fs_id: details.ext_fs_id,
         }
     }
 }
@@ -68,7 +68,7 @@ impl CmdTargetPointEventFlatRow {
 /// Arrow compatible Cmd Event for Target Unit
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct CmdTargetUnitEventFlatRow {
@@ -87,7 +87,7 @@ pub struct CmdTargetUnitEventFlatRow {
     pub m_unit_group: Option<u32>,
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
-    pub ext_fs_replay_sha256: String,
+    pub ext_fs_id: u64,
 }
 
 impl CmdTargetUnitEventFlatRow {
@@ -123,7 +123,7 @@ impl CmdTargetUnitEventFlatRow {
             m_unit_group: event.m_unit_group,
             ext_replay_loop: game_loop,
             ext_replay_seconds,
-            ext_fs_replay_sha256: details.ext_fs_replay_sha256.clone(),
+            ext_fs_id: details.ext_fs_id,
         }
     }
 }

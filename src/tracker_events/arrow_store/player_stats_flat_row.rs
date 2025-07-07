@@ -1,7 +1,7 @@
 //! Player stats flat row
 
-#[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::tracker_events::PlayerStatsEvent;
 use serde::{Deserialize, Serialize};
@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 /// and the file system (fs) itself.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct PlayerStatsFlatRow {
@@ -57,7 +57,7 @@ pub struct PlayerStatsFlatRow {
     pub vespene_friendly_fire_technology: i32,
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
-    pub ext_fs_replay_sha256: String,
+    pub ext_fs_id: u64,
 }
 
 impl PlayerStatsFlatRow {
@@ -112,7 +112,7 @@ impl PlayerStatsFlatRow {
             vespene_friendly_fire_technology: stats.vespene_friendly_fire_technology,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_replay_sha256: details.ext_fs_replay_sha256,
+            ext_fs_id: details.ext_fs_id,
         }
     }
 }

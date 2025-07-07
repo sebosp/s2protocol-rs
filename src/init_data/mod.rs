@@ -1,7 +1,16 @@
 //! Decodes the initData
 
-#[cfg(feature = "arrow")]
-use arrow2_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+
+#[cfg(feature = "dep_arrow")]
+use arrow::array::*;
+
+#[cfg(feature = "dep_arrow")]
+pub mod arrow_store;
+
+#[cfg(feature = "dep_arrow")]
+pub use arrow_store::*;
 
 use crate::S2ProtocolError;
 use nom_mpq::MPQ;
@@ -11,7 +20,7 @@ use std::path::PathBuf;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct InitData {
@@ -23,25 +32,28 @@ pub struct InitData {
     pub file_name: String,
     /// The version of the protocol
     pub version: u32,
+    /// The snapshot sequential
+    pub ext_fs_id: u64,
 }
 
 impl InitData {
     /// Calls the per-protocol parser for the InitData and sets the metadadata.
     #[tracing::instrument(level = "error", skip(file_contents, mpq))]
-    pub fn new(file_name: &str, mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
+    pub fn new(
+        file_name: &str,
+        ext_fs_id: u64,
+        mpq: &MPQ,
+        file_contents: &[u8],
+    ) -> Result<Self, S2ProtocolError> {
         let init_data = crate::versions::read_init_data(file_name, mpq, file_contents)?;
-        Ok(init_data.set_metadata(file_name, file_contents))
+        Ok(init_data.set_metadata(file_name, ext_fs_id, file_contents))
     }
 
     #[tracing::instrument(level = "debug", skip(file_contents))]
-    pub fn set_metadata(mut self, file_name: &str, file_contents: &[u8]) -> Self {
-        // TODO: We need to find a way to trim the sha just like git rev-parse,
-        // just so that we reduce the size of the files, but providing unicity.
-        // This also means that generating of the files must be done at the same time
-        // or we will have different sha references (different length) in different files.
-        // OOOOOR HOW ABOUT one table of <SEQUENTIAL>:<SHA256>?
+    pub fn set_metadata(mut self, file_name: &str, ext_fs_id: u64, file_contents: &[u8]) -> Self {
         self.sha256 = sha256::digest(file_contents);
         self.file_name = file_name.to_string();
+        self.ext_fs_id = ext_fs_id;
         self
     }
 
@@ -58,20 +70,28 @@ impl InitData {
     }
 }
 
-impl TryFrom<PathBuf> for InitData {
+impl TryFrom<(PathBuf, u64)> for InitData {
     type Error = S2ProtocolError;
 
     /// Reads the file from the path and calls the per-protocol parser for the InitData.
     /// Sets the metadata if successful.
     /// Returns an error if the file cannot be read or the parser fails.
     #[tracing::instrument(level = "debug")]
-    fn try_from(path: PathBuf) -> Result<Self, Self::Error> {
+    fn try_from(replay: (PathBuf, u64)) -> Result<Self, Self::Error> {
+        let (path, ext_fs_id) = replay;
         let file_contents = crate::read_file(&path)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
-        match Self::new(path.to_str().unwrap_or_default(), &mpq, &file_contents) {
-            Ok(init_data) => {
-                Ok(init_data.set_metadata(path.to_str().unwrap_or_default(), &file_contents))
-            }
+        match Self::new(
+            path.to_str().unwrap_or_default(),
+            ext_fs_id,
+            &mpq,
+            &file_contents,
+        ) {
+            Ok(init_data) => Ok(init_data.set_metadata(
+                path.to_str().unwrap_or_default(),
+                ext_fs_id,
+                &file_contents,
+            )),
             Err(err) => Err(err),
         }
     }
@@ -79,7 +99,7 @@ impl TryFrom<PathBuf> for InitData {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct LobbySyncState {
@@ -90,7 +110,7 @@ pub struct LobbySyncState {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct UserInitialData {
@@ -117,7 +137,7 @@ pub struct UserInitialData {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct GameDescription {
@@ -153,7 +173,7 @@ pub struct GameDescription {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct GameOptions {
@@ -177,10 +197,10 @@ pub struct GameOptions {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum GameType {
     EMelee,
     EFreeForAll,
@@ -193,10 +213,10 @@ pub enum GameType {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub struct SlotDescription {
     pub allowed_colors: i64,
     pub allowed_races: i64,
@@ -208,10 +228,10 @@ pub struct SlotDescription {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum OptionFog {
     EDefault,
     EHideTerrain,
@@ -221,10 +241,10 @@ pub enum OptionFog {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum OptionObservers {
     ENone,
     EOnJoin,
@@ -234,10 +254,10 @@ pub enum OptionObservers {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum OptionUserDifficulty {
     ENone,
     EGlobal,
@@ -246,10 +266,10 @@ pub enum OptionUserDifficulty {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub struct LobbyState {
     pub phase: GamePhase,
     pub max_users: i64,
@@ -266,10 +286,10 @@ pub struct LobbyState {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum GamePhase {
     EInitializing,
     ELobby,
@@ -281,10 +301,10 @@ pub enum GamePhase {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub struct LobbySlot {
     pub control: i64,
     pub user_id: Option<i64>,
@@ -322,10 +342,10 @@ pub struct LobbySlot {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
-    feature = "arrow",
+    feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-#[cfg_attr(feature = "arrow", arrow_field(type = "dense"))]
+#[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub struct RewardOverride {
     pub key: u32,
     pub rewards: Vec<u32>,

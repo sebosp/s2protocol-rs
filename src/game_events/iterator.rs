@@ -173,7 +173,7 @@ impl GameEventIterator {
     #[tracing::instrument(level = "debug")]
     pub fn new(source: &PathBuf) -> Result<Self, S2ProtocolError> {
         tracing::info!("Processing {:?}", source);
-        let source_filename = format!("{:?}", source);
+        let source_filename = format!("{source:?}");
         let file_contents = crate::read_file(source)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
         let (_tail, proto_header) = crate::read_protocol_header(&mpq)?;
@@ -217,7 +217,7 @@ impl GameEventIterator {
     }
 
     /// Consumes the Iterator collecting only the CmdTargetPoint events into a vector of CmdEventFlatRow
-    #[cfg(feature = "arrow")]
+    #[cfg(feature = "dep_arrow")]
     pub fn collect_into_game_cmd_target_points_flat_rows(
         self,
         details: &crate::details::Details,
@@ -251,7 +251,7 @@ impl GameEventIterator {
     }
 
     /// Consumes the Iterator collecting only the CmdTargetUnit events into a vector of CmdEventFlatRow
-    #[cfg(feature = "arrow")]
+    #[cfg(feature = "dep_arrow")]
     pub fn collect_into_game_cmd_target_units_flat_rows(
         self,
         details: &crate::details::Details,
