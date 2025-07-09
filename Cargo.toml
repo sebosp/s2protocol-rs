@@ -34,7 +34,7 @@ color-eyre = { version = "0.6", optional = true }
 itertools = { version = "0.14", optional = true }
 
 [features]
-default = ["tracing_off", "dep_arrow", "dep_ratatui"]
+default = ["dep_arrow", "dep_ratatui"]
 # A feature that allows extra tracing, disabled by default because of performance
 dep_arrow = ["arrow", "arrow_convert", "rayon"]
 tracing_off = ["tracing/max_level_off", "tracing/release_max_level_off"]

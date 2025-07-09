@@ -50,6 +50,8 @@ pub struct PlayerDetailsFlatRow {
     pub game_speed: u8,
     pub default_difficulty: u32,
     pub ext_fs_id: u64,
+    pub ext_fs_replay_file_name: String,
+    pub ext_datetime: chrono::NaiveDateTime,
 }
 
 impl From<Details> for Vec<PlayerDetailsFlatRow> {
@@ -58,6 +60,9 @@ impl From<Details> for Vec<PlayerDetailsFlatRow> {
             .player_list
             .into_iter()
             .map(|player| PlayerDetailsFlatRow {
+                ext_fs_id: details.ext_fs_id,
+                ext_fs_replay_file_name: details.ext_fs_replay_file_name.clone(),
+                ext_datetime: details.ext_datetime,
                 player_name: player.name,
                 player_toon_region: player.toon.region,
                 player_toon_program_id: player.toon.program_id,
@@ -89,7 +94,6 @@ impl From<Details> for Vec<PlayerDetailsFlatRow> {
                 mini_save: details.mini_save,
                 game_speed: details.game_speed,
                 default_difficulty: details.default_difficulty,
-                ext_fs_id: details.ext_fs_id,
             })
             .collect()
     }
@@ -102,6 +106,8 @@ impl From<Details> for Vec<PlayerDetailsFlatRow> {
 )]
 pub struct Details {
     pub ext_fs_id: u64,
+    pub ext_fs_replay_file_name: String,
+    pub ext_datetime: chrono::NaiveDateTime,
     pub player_list: Vec<PlayerDetails>,
     pub title: String,
     pub difficulty: String,
@@ -137,12 +143,15 @@ impl Details {
                 return Err(err);
             }
         };
-        Ok(details.set_metadata(ext_fs_id))
+        Ok(details.set_metadata(ext_fs_id, file_name))
     }
 
     /// Sets the metadata related to the filesystem entry and the replay time
-    pub fn set_metadata(mut self, ext_fs_id: u64) -> Self {
+    pub fn set_metadata(mut self, ext_fs_id: u64, file_name: &str) -> Self {
+        self.ext_datetime = crate::transform_to_naivetime(self.time_utc, self.time_local_offset)
+            .unwrap_or_default();
         self.ext_fs_id = ext_fs_id;
+        self.ext_fs_replay_file_name = file_name.to_string();
         self
     }
 
@@ -184,18 +193,12 @@ impl TryFrom<&InitData> for Details {
         let path = PathBuf::from(init.file_name.clone());
         let file_contents = crate::read_file(&path)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
-        match Self::new(
+        Self::new(
             path.to_str().unwrap_or_default(),
             init.ext_fs_id,
             &mpq,
             &file_contents,
-        ) {
-            Ok(details) => Ok(details.set_metadata(init.ext_fs_id)),
-            Err(err) => {
-                tracing::error!("Error reading details: {:?}", err);
-                Err(err)
-            }
-        }
+        )
     }
 }
 
