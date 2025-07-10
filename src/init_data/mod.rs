@@ -24,16 +24,16 @@ use std::path::PathBuf;
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 pub struct InitData {
-    /// The lobby state
-    pub sync_lobby_state: LobbySyncState,
+    /// The snapshot sequential
+    pub ext_fs_id: u64,
     /// The sha256 of the file, prevent duplicates and provide a unique identifier
     pub sha256: String,
     /// The file name
     pub file_name: String,
     /// The version of the protocol
     pub version: u32,
-    /// The snapshot sequential
-    pub ext_fs_id: u64,
+    /// The lobby state
+    pub sync_lobby_state: LobbySyncState,
 }
 
 impl InitData {

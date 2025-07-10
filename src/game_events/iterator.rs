@@ -2,7 +2,10 @@
 
 use super::handle_game_event;
 use crate::error::S2ProtocolError;
-use crate::game_events::{self, GameEvent};
+#[cfg(feature = "dep_arrow")]
+use crate::game_events;
+
+use crate::game_events::GameEvent;
 use crate::versions::protocol75689::bit_packed::GameEEventId as Protocol75689GameEEventId;
 use crate::versions::protocol87702::bit_packed::GameEEventId as Protocol87702GameEEventId;
 use crate::SC2ReplayFilters;
