@@ -11,7 +11,9 @@ use crate::read_init_data;
 use crate::read_message_events;
 use crate::tracker_events::iterator::TrackerEventIterator;
 
+#[cfg(feature = "dep_arrow")]
 use clap::Args;
+
 use clap::{Parser, Subcommand};
 use nom_mpq::parser;
 use std::path::PathBuf;
@@ -298,9 +300,9 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let res = crate::state::SC2EventIterator::new(&source)?;
                         let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
                         let res = res.with_filters(filters);
-                        let details = read_details(&source_path, &mpq, &file_contents)?;
                         #[cfg(feature = "dep_ratatui")]
                         {
+                            let details = read_details(&source_path, &mpq, &file_contents)?;
                             return Ok(crate::tui::ratatui_main(res, details)?);
                         }
                         #[cfg(not(feature = "dep_ratatui"))]

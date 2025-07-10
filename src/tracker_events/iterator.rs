@@ -2,7 +2,10 @@
 
 use super::handle_tracker_event;
 use crate::error::S2ProtocolError;
-use crate::tracker_events::{self, TrackerEvent};
+#[cfg(feature = "dep_arrow")]
+use crate::tracker_events;
+
+use crate::tracker_events::TrackerEvent;
 use crate::versions::protocol75689::byte_aligned::ReplayTrackerEEventId as Protocol75689ReplayTrackerEEventId;
 use crate::versions::protocol87702::byte_aligned::ReplayTrackerEEventId as Protocol87702ReplayTrackerEEventId;
 use crate::{SC2EventType, SC2ReplayFilters, SC2ReplayState, UnitChangeHint, TRACKER_SPEED_RATIO};
