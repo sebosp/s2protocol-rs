@@ -1,7 +1,7 @@
 [package]
 name = "s2protocol"
 description = "A parser for Starcraft II - Replay format, exports to different target formats"
-version = "3.2.0"
+version = "3.2.1"
 authors = ["Seb Ospina <kraige@gmail.com>"]
 edition = "2021"
 readme = "README.md"
