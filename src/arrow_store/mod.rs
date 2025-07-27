@@ -21,13 +21,14 @@ use clap::Subcommand;
 use std::path::PathBuf;
 pub mod ipc_writer;
 use ipc_writer::*;
-use std::collections::HashSet;
 
 /// The supported Arrow IPC types
 #[derive(Debug, Subcommand, Clone)]
 pub enum ArrowIpcTypes {
-    /// Writes the [`crate::init_data::InitData`] flat row to an Arrow IPC file
-    InitData,
+    /// Writes the [`crate::init_data::UserInitDataFlatRow`] flat row to an Arrow IPC file
+    UserInitData,
+    /// Writes the [`crate::init_data::LobbySlotInitDataFlatRow`] flat row to an Arrow IPC file
+    LobbySlotInitData,
     /// Writes the [`crate::details::PlayerDetailsFlatRow`] flat row to an Arrow IPC file
     Details,
     /// Writes the [`crate::tracker_events::PlayerStatsEvent`] to an Arrow IPC file
@@ -52,8 +53,15 @@ impl ArrowIpcTypes {
     /// Returns the schema for the chosen output type
     pub fn schema(&self) -> Schema {
         match self {
-            Self::InitData => {
+            Self::UserInitData => {
                 if let DataType::Struct(fields) = init_data::UserInitDataFlatRow::data_type() {
+                    Schema::new(fields.clone())
+                } else {
+                    panic!("Invalid schema, expected struct");
+                }
+            }
+            Self::LobbySlotInitData => {
+                if let DataType::Struct(fields) = init_data::LobbySlotInitDataFlatRow::data_type() {
                     Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
@@ -127,7 +135,7 @@ impl ArrowIpcTypes {
     /// Two things todo:
     /// First delete all the files in the snapshot directory.
     /// Add a snashopt generation timestamp and when reads are done, they are checked for
-    /// very basic timepstamp write consistency.
+    /// very basic timestamp write consistency.
     #[tracing::instrument(level = "debug")]
     pub fn handle_write_snapshot(
         sources: Vec<InitData>,
@@ -142,7 +150,12 @@ impl ArrowIpcTypes {
         // stats.ipc
         // upgrades.ipc
         // unit_born.ipc
-        Self::InitData.handle_init_data_ipc_cmd(sources.clone(), output.join("init_data.ipc"))?;
+        Self::UserInitData
+            .handle_user_init_data_ipc_cmd(sources.clone(), output.join("user_init_data.ipc"))?;
+        Self::LobbySlotInitData.handle_lobby_slot_init_data_ipc_cmd(
+            sources.clone(),
+            output.join("lobby_init_data.ipc"),
+        )?;
         Self::Details.handle_details_ipc_cmd(sources.clone(), output.join("details.ipc"))?;
         Self::Stats.handle_tracker_events(sources.clone(), output.join("stats.ipc"))?;
         Self::Upgrades.handle_tracker_events(sources.clone(), output.join("upgrades.ipc"))?;
@@ -156,7 +169,7 @@ impl ArrowIpcTypes {
     }
 
     #[tracing::instrument(level = "debug")]
-    pub fn handle_init_data_ipc_cmd(
+    pub fn handle_user_init_data_ipc_cmd(
         &self,
         sources: Vec<InitData>,
         output: PathBuf,
@@ -177,7 +190,33 @@ impl ArrowIpcTypes {
             .unwrap()
             .into();
 
-        write_batches(output, Self::InitData.schema(), chunk)?;
+        write_batches(output, Self::UserInitData.schema(), chunk)?;
+        Ok(())
+    }
+
+    #[tracing::instrument(level = "debug")]
+    pub fn handle_lobby_slot_init_data_ipc_cmd(
+        &self,
+        sources: Vec<InitData>,
+        output: PathBuf,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        tracing::info!("Processing InitData IPC write request");
+
+        let init_data_flaw_rows: Vec<init_data::LobbySlotInitDataFlatRow> = sources
+            .iter()
+            .flat_map(|source| {
+                let res: Vec<init_data::LobbySlotInitDataFlatRow> = source.into();
+                res
+            })
+            .collect();
+        let res: ArrayRef = init_data_flaw_rows.try_into_arrow()?;
+        let chunk: RecordBatch = res
+            .as_any()
+            .downcast_ref::<arrow::array::StructArray>()
+            .unwrap()
+            .into();
+
+        write_batches(output, Self::LobbySlotInitData.schema(), chunk)?;
         Ok(())
     }
 
@@ -198,7 +237,7 @@ impl ArrowIpcTypes {
             .par_iter()
             .filter_map(|source| {
                 let details: Details = Details::try_from(source).ok()?;
-                let source_path = PathBuf::from(&source.file_name);
+                let source_path = PathBuf::from(&source.ext_fs_file_name);
                 let tracker_events = TrackerEventIterator::new(&source_path).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::Stats => {
@@ -242,7 +281,7 @@ impl ArrowIpcTypes {
             .par_iter()
             .filter_map(|source| {
                 let details = Details::try_from(source).ok()?;
-                let source_path = PathBuf::from(&source.file_name);
+                let source_path = PathBuf::from(&source.ext_fs_file_name);
                 let game_events = GameEventIterator::new(&source_path).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::CmdTargetPoint => {
@@ -315,7 +354,7 @@ impl ArrowIpcTypes {
         );
         let sources = get_matching_files(source, cmd.scan_max_files, cmd.traverse_max_depth)?;
         println!("Located {} matching files by extension", sources.len());
-        let mut sources: Vec<InitData> = sources
+        let sources: Vec<InitData> = sources
             .par_iter()
             .enumerate()
             .filter_map(|(idx, source)| {
@@ -346,27 +385,6 @@ impl ArrowIpcTypes {
                 sources.len()
             );
         }
-        // Identify the shortest unique sha256 hash fragment.
-        let mut smallest_fragment = 1;
-        while smallest_fragment < 64 {
-            let mut hash_set = HashSet::new();
-            for source in sources.iter() {
-                let hash = source.sha256.clone();
-                hash_set.insert(hash[..smallest_fragment].to_string());
-            }
-            if hash_set.len() == sources.len() {
-                break;
-            }
-            smallest_fragment += 1;
-        }
-        for source in sources.iter_mut() {
-            source.trim_sha(smallest_fragment)
-        }
-        tracing::info!(
-            "Found {} readable files, sha256 fragment size: {}",
-            sources.len(),
-            smallest_fragment
-        );
         Self::handle_write_snapshot(sources, output)
     }
 }
