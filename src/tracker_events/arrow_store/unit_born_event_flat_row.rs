@@ -41,17 +41,17 @@ impl UnitBornEventFlatRow {
         ext_replay_loop: i64,
         details: &crate::details::Details,
         change_hint: UnitChangeHint,
-    ) -> Self {
+    ) -> Option<Self> {
         let (_unit, creator) = match change_hint {
             UnitChangeHint::Registered { unit, creator } => (unit, creator),
-            _ => unreachable!(),
+            _ => return None,
         };
         let creator_unit_type_name = match creator {
             Some(val) => Some(val.name.clone()),
             None => None,
         };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        Self {
+        Some(Self {
             unit_tag_index: event.unit_tag_index,
             unit_tag_recycle: event.unit_tag_recycle,
             unit_type_name: event.unit_type_name,
@@ -66,7 +66,7 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
-        }
+        })
     }
 
     /// Create a new UnitBornEventFlatRow from a UnitDoneEvent.
@@ -78,17 +78,18 @@ impl UnitBornEventFlatRow {
         ext_replay_loop: i64,
         details: &crate::details::Details,
         change_hint: UnitChangeHint,
-    ) -> Self {
+    ) -> Option<Self> {
+        // NOTE: It seems this can be "None" but our code (state) may not be able to handle this.
         let (unit, creator) = match change_hint {
             UnitChangeHint::Registered { unit, creator } => (unit, creator),
-            _ => unreachable!(),
+            _ => return None,
         };
         let creator_unit_type_name = match creator {
             Some(val) => Some(val.name.clone()),
             None => None,
         };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        Self {
+        Some(Self {
             unit_tag_index: event.unit_tag_index,
             unit_tag_recycle: event.unit_tag_recycle,
             unit_type_name: unit.name,
@@ -103,7 +104,7 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
-        }
+        })
     }
 
     /// Create a new UpgradeEventFlatRow from a UnitTypeChange.
@@ -114,17 +115,17 @@ impl UnitBornEventFlatRow {
         ext_replay_loop: i64,
         details: &crate::details::Details,
         change_hint: UnitChangeHint,
-    ) -> Self {
+    ) -> Option<Self> {
         let (unit, creator) = match change_hint {
             UnitChangeHint::Registered { unit, creator } => (unit, creator),
-            _ => unreachable!(),
+            _ => return None,
         };
         let creator_unit_type_name = match creator {
             Some(val) => Some(val.name.clone()),
             None => None,
         };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        Self {
+        Some(Self {
             unit_tag_index: event.unit_tag_index,
             unit_tag_recycle: event.unit_tag_recycle,
             unit_type_name: unit.name,
@@ -139,6 +140,6 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
-        }
+        })
     }
 }

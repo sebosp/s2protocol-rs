@@ -145,13 +145,12 @@ impl ArrowIpcTypes {
             panic!("Output must be a directory for types 'all'");
         }
         // output must be a directory, for this directory we will create the following files:
-        // init_data.ipc
         // details.ipc
         // stats.ipc
         // upgrades.ipc
         // unit_born.ipc
-        Self::UserInitData
-            .handle_user_init_data_ipc_cmd(sources.clone(), output.join("user_init_data.ipc"))?;
+        // unit_cmd_target_point.ipc
+        // unit_cmd_target_unit.ipc
         Self::LobbySlotInitData.handle_lobby_slot_init_data_ipc_cmd(
             sources.clone(),
             output.join("lobby_init_data.ipc"),
@@ -303,6 +302,39 @@ impl ArrowIpcTypes {
         close_arrow_mutex_writer(writer)
     }
 
+    /// Creates a new Arrow IPC file with the details data
+    #[tracing::instrument(level = "debug")]
+    pub fn handle_read_once_write_all(
+        &self,
+        sources: Vec<InitData>,
+        output: PathBuf,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        tracing::info!("Processing Read Once Write All IPC request");
+        // process the sources in parallel consuming into the batch variable
+
+        let details_flaw_rows: Vec<PlayerDetailsFlatRow> = sources
+            .iter()
+            .flat_map(|source| {
+                let res: Vec<PlayerDetailsFlatRow> = match Details::try_from(source) {
+                    Ok(details) => details.into(),
+                    Err(err) => {
+                        tracing::error!("Error reading details: {:?}", err);
+                        return vec![];
+                    }
+                };
+                res
+            })
+            .collect();
+        let res: ArrayRef = details_flaw_rows.try_into_arrow()?;
+        let chunk: RecordBatch = res
+            .as_any()
+            .downcast_ref::<arrow::array::StructArray>()
+            .unwrap()
+            .into();
+
+        write_batches(output, Self::Details.schema(), chunk)?;
+        Ok(())
+    }
     /// Creates a new Arrow IPC file with the details data
     #[tracing::instrument(level = "debug")]
     pub fn handle_details_ipc_cmd(

@@ -214,9 +214,9 @@ pub struct SC2EventIterator {
     /// The game event iterator.
     game_iterator_state: GameEventIteratorState,
     /// The next event coming from the tracker iterator.
-    next_tracker_event: Option<(SC2EventType, UnitChangeHint)>,
+    next_tracker_event: Option<SC2EventIteratorItem>,
     /// The next event coming from the game iterator.
-    next_game_event: Option<(SC2EventType, UnitChangeHint)>,
+    next_game_event: Option<SC2EventIteratorItem>,
     /// The iterator filter helpers
     filters: Option<SC2ReplayFilters>,
 }
@@ -256,17 +256,35 @@ impl SC2EventIterator {
 
     /// Returns the tracker loop inside the next_tracker_event collected.
     fn get_tracker_loop(&self) -> Option<i64> {
-        match &self.next_tracker_event {
-            Some((SC2EventType::Tracker { tracker_loop, .. }, _)) => Some(*tracker_loop),
+        match self.next_tracker_event.as_ref()?.event_type {
+            SC2EventType::Tracker { tracker_loop, .. } => Some(tracker_loop),
             _ => None,
         }
     }
 
     /// Returns the game loop inside the next_game_event collected.
     fn get_game_loop(&self) -> Option<i64> {
-        match &self.next_game_event {
-            Some((SC2EventType::Game { game_loop, .. }, _)) => Some(*game_loop),
+        match self.next_game_event.as_ref()?.event_type {
+            SC2EventType::Game { game_loop, .. } => Some(game_loop),
             _ => None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SC2EventIteratorItem {
+    /// The event type, either Tracker or Game
+    pub event_type: SC2EventType,
+    /// The unit change hint, if any.
+    pub change_hint: UnitChangeHint,
+}
+
+impl SC2EventIteratorItem {
+    /// Creates a new SC2EventIteratorItem from the event type and change hint.
+    pub fn new(event_type: SC2EventType, change_hint: UnitChangeHint) -> Self {
+        Self {
+            event_type,
+            change_hint,
         }
     }
 }
@@ -276,7 +294,7 @@ impl Iterator for SC2EventIterator {
     /// hint of what has changed. An adjusted game loop is the `event_loop` adjusted to be in the same units as the game loops.
     /// Events may be of Game or Tracker type.
     /// They are produced in absolute order between them.
-    type Item = (SC2EventType, UnitChangeHint);
+    type Item = SC2EventIteratorItem;
 
     fn next(&mut self) -> Option<Self::Item> {
         // Fill the next_tracker_event if they are empty.

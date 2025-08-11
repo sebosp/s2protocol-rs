@@ -8,8 +8,8 @@ use crate::game_events;
 use crate::game_events::GameEvent;
 use crate::versions::protocol75689::bit_packed::GameEEventId as Protocol75689GameEEventId;
 use crate::versions::protocol87702::bit_packed::GameEEventId as Protocol87702GameEEventId;
-use crate::SC2ReplayFilters;
-use crate::{SC2EventType, SC2ReplayState, UnitChangeHint};
+use crate::{SC2EventIteratorItem, SC2ReplayFilters};
+use crate::{SC2EventType, SC2ReplayState};
 use nom::*;
 use serde::{Deserialize, Serialize};
 use std::iter::Iterator;
@@ -89,7 +89,7 @@ impl GameEventIteratorState {
         protocol_version: u32,
         sc2_state: &mut SC2ReplayState,
         filters: &mut Option<SC2ReplayFilters>,
-    ) -> Option<(SC2EventType, UnitChangeHint)> {
+    ) -> Option<SC2EventIteratorItem> {
         loop {
             let current_slice: &[u8] = &self.event_data[self.byte_index..];
             if current_slice.input_len() == 0 {
@@ -123,7 +123,7 @@ impl GameEventIteratorState {
                             return None;
                         }
                     }
-                    return Some((event, updated_hint));
+                    return Some(SC2EventIteratorItem::new(event, updated_hint));
                 }
                 Err(S2ProtocolError::UnsupportedEventType) => {}
                 Err(err) => {
@@ -226,7 +226,7 @@ impl GameEventIterator {
         details: &crate::details::Details,
     ) -> Vec<game_events::CmdTargetPointEventFlatRow> {
         self.into_iter()
-            .filter_map(|(sc2_event, change_hint)| match sc2_event {
+            .filter_map(|event_item| match event_item.event_type {
                 SC2EventType::Game {
                     event,
                     game_loop,
@@ -234,13 +234,13 @@ impl GameEventIterator {
                 } => {
                     if let game_events::ReplayGameEvent::Cmd(event) = event {
                         if let game_events::GameSCmdData::TargetPoint(_) = event.m_data {
-                            Some(game_events::CmdTargetPointEventFlatRow::new(
+                            game_events::CmdTargetPointEventFlatRow::new(
                                 details,
                                 event,
                                 game_loop,
                                 user_id,
-                                change_hint,
-                            ))
+                                event_item.change_hint,
+                            )
                         } else {
                             None
                         }
@@ -260,7 +260,7 @@ impl GameEventIterator {
         details: &crate::details::Details,
     ) -> Vec<game_events::CmdTargetUnitEventFlatRow> {
         self.into_iter()
-            .filter_map(|(sc2_event, change_hint)| match sc2_event {
+            .filter_map(|event_item| match event_item.event_type {
                 SC2EventType::Game {
                     event,
                     game_loop,
@@ -268,13 +268,13 @@ impl GameEventIterator {
                 } => {
                     if let game_events::ReplayGameEvent::Cmd(event) = event {
                         if let game_events::GameSCmdData::TargetUnit(_) = event.m_data {
-                            Some(game_events::CmdTargetUnitEventFlatRow::new(
+                            game_events::CmdTargetUnitEventFlatRow::new(
                                 details,
                                 event,
                                 game_loop,
                                 user_id,
-                                change_hint,
-                            ))
+                                event_item.change_hint,
+                            )
                         } else {
                             None
                         }
@@ -291,7 +291,7 @@ impl GameEventIterator {
 impl Iterator for GameEventIterator {
     /// The item is a tuple of the SC2EventType with the accumulated game loop, and a
     /// hint of what has changed.
-    type Item = (SC2EventType, UnitChangeHint);
+    type Item = SC2EventIteratorItem;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.iterator_state.transist_to_next_supported_event(

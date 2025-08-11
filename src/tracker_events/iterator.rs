@@ -4,11 +4,15 @@ use super::handle_tracker_event;
 use crate::error::S2ProtocolError;
 #[cfg(feature = "dep_arrow")]
 use crate::tracker_events;
+#[cfg(feature = "dep_arrow")]
+use crate::UnitChangeHint;
 
 use crate::tracker_events::TrackerEvent;
 use crate::versions::protocol75689::byte_aligned::ReplayTrackerEEventId as Protocol75689ReplayTrackerEEventId;
 use crate::versions::protocol87702::byte_aligned::ReplayTrackerEEventId as Protocol87702ReplayTrackerEEventId;
-use crate::{SC2EventType, SC2ReplayFilters, SC2ReplayState, UnitChangeHint, TRACKER_SPEED_RATIO};
+use crate::{
+    SC2EventIteratorItem, SC2EventType, SC2ReplayFilters, SC2ReplayState, TRACKER_SPEED_RATIO,
+};
 use nom::*;
 use serde::{Deserialize, Serialize};
 use std::iter::Iterator;
@@ -73,7 +77,7 @@ impl TrackertEventIteratorState {
         protocol_version: u32,
         sc2_state: &mut SC2ReplayState,
         filters: &mut Option<SC2ReplayFilters>,
-    ) -> Option<(SC2EventType, UnitChangeHint)> {
+    ) -> Option<SC2EventIteratorItem> {
         loop {
             let current_slice: &[u8] = &self.event_data[self.byte_index..];
             if current_slice.input_len() == 0 {
@@ -105,7 +109,7 @@ impl TrackertEventIteratorState {
                             return None;
                         }
                     }
-                    return Some((event, updated_hint));
+                    return Some(SC2EventIteratorItem::new(event, updated_hint));
                 }
                 Err(S2ProtocolError::UnsupportedEventType) => {}
                 Err(err) => {
@@ -201,7 +205,7 @@ impl TrackerEventIterator {
         details: &crate::details::Details,
     ) -> Vec<tracker_events::PlayerStatsFlatRow> {
         self.into_iter()
-            .filter_map(|(sc2_event, _change_hint)| match sc2_event {
+            .filter_map(|event_item| match event_item.event_type {
                 SC2EventType::Tracker {
                     tracker_loop,
                     event,
@@ -234,7 +238,7 @@ impl TrackerEventIterator {
         details: &crate::details::Details,
     ) -> Vec<tracker_events::UpgradeEventFlatRow> {
         self.into_iter()
-            .filter_map(|(sc2_event, _change_hint)| match sc2_event {
+            .filter_map(|event_item| match event_item.event_type {
                 SC2EventType::Tracker {
                     tracker_loop,
                     event,
@@ -261,37 +265,37 @@ impl TrackerEventIterator {
         details: &crate::details::Details,
     ) -> Vec<tracker_events::UnitBornEventFlatRow> {
         self.into_iter()
-            .filter_map(|(sc2_event, change_hint)| match sc2_event {
+            .filter_map(|event_item| match event_item.event_type {
                 SC2EventType::Tracker {
                     tracker_loop,
                     event,
                 } => match event {
                     tracker_events::ReplayTrackerEvent::UnitBorn(event) => {
-                        Some(tracker_events::UnitBornEventFlatRow::from_unit_born(
+                        tracker_events::UnitBornEventFlatRow::from_unit_born(
                             event,
                             tracker_loop,
                             details,
-                            change_hint,
-                        ))
+                            event_item.change_hint,
+                        )
                     }
                     tracker_events::ReplayTrackerEvent::UnitDone(event) => {
-                        Some(tracker_events::UnitBornEventFlatRow::from_unit_done(
+                        tracker_events::UnitBornEventFlatRow::from_unit_done(
                             event,
                             tracker_loop,
                             details,
-                            change_hint,
-                        ))
+                            event_item.change_hint,
+                        )
                     }
                     tracker_events::ReplayTrackerEvent::UnitTypeChange(event) => {
-                        match change_hint {
+                        match event_item.change_hint {
                             UnitChangeHint::None => None,
                             change_hint => {
-                                Some(tracker_events::UnitBornEventFlatRow::from_unit_type_change(
+                                tracker_events::UnitBornEventFlatRow::from_unit_type_change(
                                     event,
                                     tracker_loop,
                                     details,
                                     change_hint,
-                                ))
+                                )
                             }
                         }
                     }
@@ -309,18 +313,18 @@ impl TrackerEventIterator {
         details: &crate::details::Details,
     ) -> Vec<tracker_events::UnitDiedEventFlatRow> {
         self.into_iter()
-            .filter_map(|(sc2_event, change_hint)| match sc2_event {
+            .filter_map(|event_item| match event_item.event_type {
                 SC2EventType::Tracker {
                     tracker_loop,
                     event,
                 } => {
                     if let tracker_events::ReplayTrackerEvent::UnitDied(event) = event {
-                        Some(tracker_events::UnitDiedEventFlatRow::new(
+                        tracker_events::UnitDiedEventFlatRow::new(
                             details,
                             event,
                             tracker_loop,
-                            change_hint,
-                        ))
+                            event_item.change_hint,
+                        )
                     } else {
                         None
                     }
@@ -334,7 +338,7 @@ impl TrackerEventIterator {
 impl Iterator for TrackerEventIterator {
     /// The item is a tuple of the SC2EventType with the accumulated (adjusted) game loop, and a
     /// hint of what has changed. An adjusted game loop is the `event_loop` adjusted to be in the same units as the game loops.
-    type Item = (SC2EventType, UnitChangeHint);
+    type Item = SC2EventIteratorItem;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.iterator_state.transist_to_next_supported_event(

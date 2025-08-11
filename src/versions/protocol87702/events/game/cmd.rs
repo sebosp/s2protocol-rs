@@ -20,9 +20,10 @@ impl From<GameSCmdEvent> for ReplayGameEvent {
 
 impl From<GameSCmdAbil> for crate::game_events::GameSCmdAbil {
     fn from(source: GameSCmdAbil) -> crate::game_events::GameSCmdAbil {
+        let abil_id = source.m_abil_link.value.value << 5 | source.m_abil_cmd_index;
         crate::game_events::GameSCmdAbil {
             m_abil_link: source.m_abil_link.value.clone().into(),
-            ability: ability_id_to_string(source.m_abil_link.value.value as u16).into(),
+            ability: ability_id_to_string(abil_id as u16).into(),
             m_abil_cmd_index: source.m_abil_cmd_index,
             m_abil_cmd_data: source.m_abil_cmd_data.map(|d| d.value as u8),
         }

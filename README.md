@@ -62,12 +62,16 @@ $ cargo run --features syntax,dep_ratatui -- --max-loop 1000 --color --source /m
 [![Ratatui asciicast](https://asciinema.org/a/726584.svg)](https://asciinema.org/a/726584)
 
 ## BREAKING CHANGES
+
 - Feature `arrow`  has been renamed to `dep_arrow` as we now use the `arrow` crate.
 - Previously the generated arrow IPC files relied on a sha256 of the file as "key", this wasted a lot of space and has been changed into a sequential
   As a result, queries must use the new `ext_fs_id`, which also means all the files must be generated in bulk and are no longer independent.
   The IPCs then is valid as a snapshot generated as a whole.
 
 ## Interacting with polars
+
+## TODO:
+- remove user_init_data
 
 ### Generating the IPC Arrow datasets
 
