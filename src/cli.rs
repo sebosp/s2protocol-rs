@@ -46,6 +46,9 @@ enum Commands {
     /// Writes Arrow IPC files for a specific event type from the SC2Replay MPQ Archive
     #[cfg(feature = "dep_arrow")]
     WriteArrowIpc(WriteArrowIpcProps),
+
+    /// Generates Rust code for a specific protocol.
+    ReadAbilities,
 }
 
 ///  Create a subcommand that handles the max depth and max files to process
@@ -180,14 +183,13 @@ pub fn json_print(json_str: String, color: bool) {
                 .input(Input::from_bytes(json_str.as_bytes()))
                 .print()
                 .unwrap();
-            println!(",");
         }
         #[cfg(not(feature = "syntax"))]
         {
-            println!("{json_str},");
+            println!("{json_str}");
         }
     } else {
-        println!("{json_str},");
+        println!("{json_str}");
     }
 }
 
@@ -310,6 +312,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                             println!("[");
                             for evt in res.into_iter() {
                                 json_print(serde_json::to_string(&evt).unwrap(), color);
+                                println!(",");
                             }
                             println!("]");
                         }
@@ -324,6 +327,11 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                 PathBuf::from(&cli.output.expect("Requires --output")),
                 cmd,
             )?;
+        }
+        Commands::ReadAbilities => {
+            crate::game_events::ability::traverse_versioned_balance_abilities(PathBuf::from(
+                &cli.source,
+            ))?;
         }
     }
     if cli.timing {
