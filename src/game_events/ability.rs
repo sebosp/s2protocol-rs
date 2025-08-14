@@ -23,6 +23,10 @@ impl UnitMeta {
         path: &str,
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
+        if path != "/unit/meta" {
+            tracing::warn!("Unexpected path for UnitMeta: {}", path);
+            return;
+        }
         for attr in attributes {
             match attr.name.local_name.as_str() {
                 "icon" => self.icon = attr.value,
@@ -62,6 +66,10 @@ impl UnitLife {
         path: &str,
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
+        if path != "/unit/life" {
+            tracing::warn!("Unexpected path for UnitLife: {}", path);
+            return;
+        }
         for attr in attributes {
             match attr.name.local_name.as_str() {
                 "start" => self.start = attr.value.parse().unwrap_or_default(),
@@ -92,6 +100,10 @@ impl UnitArmor {
         path: &str,
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
+        if path != "/unit/armor" {
+            tracing::warn!("Unexpected path for UnitArmor: {}", path);
+            return;
+        }
         for attr in attributes {
             match attr.name.local_name.as_str() {
                 "start" => self.start = attr.value.parse().unwrap_or_default(),
@@ -123,6 +135,10 @@ impl UnitShields {
         path: &str,
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
+        if path != "/unit/shields" {
+            tracing::warn!("Unexpected path for UnitShields: {}", path);
+            return;
+        }
         for attr in attributes {
             match attr.name.local_name.as_str() {
                 "start" => self.start = attr.value.parse().unwrap_or_default(),
@@ -154,6 +170,10 @@ impl UnitShieldArmor {
         path: &str,
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
+        if path != "/unit/shieldArmor" {
+            tracing::warn!("Unexpected path for UnitShieldArmor: {}", path);
+            return;
+        }
         for attr in attributes {
             match attr.name.local_name.as_str() {
                 "start" => self.start = attr.value.parse().unwrap_or_default(),
@@ -186,6 +206,10 @@ impl UnitCost {
         path: &str,
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
+        if path != "/unit/cost" {
+            tracing::warn!("Unexpected path for UnitCost: {}", path);
+            return;
+        }
         for attr in attributes {
             match attr.name.local_name.as_str() {
                 "minerals" => self.minerals = attr.value.parse().unwrap_or_default(),
@@ -207,11 +231,11 @@ impl UnitCost {
 
 // Unit references contain an "id" string attribute inside.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct UnitIdRef {
+pub struct NamedIdRef {
     pub id: String,
 }
 
-impl UnitIdRef {
+impl NamedIdRef {
     /// Creates a new `Self` from the XML attributes
     pub fn from_owned_attributes(
         &mut self,
@@ -253,13 +277,17 @@ impl UnitMovement {
         path: &str,
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
+        if path != "/unit/movement" {
+            tracing::warn!("Unexpected path for UnitMovement: {}", path);
+            return;
+        }
         for attr in attributes {
             match attr.name.local_name.as_str() {
                 "type" => self.kind = attr.value,
                 "speed" => self.speed = attr.value.parse().unwrap_or_default(),
                 "acceleration" => self.acceleration = attr.value.parse().unwrap_or_default(),
                 "deceleration" => self.deceleration = attr.value.parse().unwrap_or_default(),
-                "turn_rate" => self.turn_rate = attr.value.parse().unwrap_or_default(),
+                "turnRate" => self.turn_rate = attr.value.parse().unwrap_or_default(),
                 _ => {
                     tracing::warn!(
                         "{path} Unknown attribute: {} with value: {}",
@@ -286,6 +314,10 @@ impl UnitScore {
         path: &str,
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
+        if path != "/unit/score" {
+            tracing::warn!("Unexpected path for UnitScore: {}", path);
+            return;
+        }
         for attr in attributes {
             match attr.name.local_name.as_str() {
                 "build" => self.build = attr.value.parse().unwrap_or_default(),
@@ -308,7 +340,7 @@ pub struct UnitMiscValues {
     pub radius: f32,
     pub cargo_size: u32,
     pub sight_radius: u32,
-    pub supply: u32,
+    pub supply: f32,
     pub footprint: Option<String>,
 }
 
@@ -353,7 +385,7 @@ pub struct VersionedBalanceUnit {
     /// The shields of the unit, with regeneration and delay.
     pub shields: Option<UnitShields>,
     /// The requirements for the unit to be created.
-    pub requires: Vec<UnitIdRef>,
+    pub requires: Vec<NamedIdRef>,
     /// The movement speed of the unit, some units such as Nexus have no movement speed.
     pub movement: Option<UnitMovement>,
     /// A score for the unit, with "build score" and "kill score"
@@ -365,7 +397,7 @@ pub struct VersionedBalanceUnit {
     /// The cost of the unit, in minerals, vespene, supply, time and cooldown.
     pub cost: UnitCost,
     /// The producer of the unit.
-    pub producer: Option<UnitIdRef>,
+    pub producer: Option<NamedIdRef>,
 }
 
 impl VersionedBalanceUnit {
@@ -389,7 +421,7 @@ impl VersionedBalanceUnit {
                 }
             }
         } else if path == "/unit/requires/unit" {
-            let mut requires = UnitIdRef::default();
+            let mut requires = NamedIdRef::default();
             requires.from_owned_attributes(path, attributes);
             self.requires.push(requires);
         } else {
@@ -426,11 +458,27 @@ impl VersionedBalanceUnit {
                 shields.from_owned_attributes(path, attributes);
                 self.shields = Some(shields);
             }
+            "requires" => {
+                // the requires contain subunit references caught by the /unit in this match
+            }
             "cost" => {
                 self.cost.from_owned_attributes(path, attributes);
             }
-            "requires" => {
-                // the requires contain subunit references caught by the /unit in this match
+            "movement" => {
+                let mut movement = UnitMovement::default();
+                movement.from_owned_attributes(path, attributes);
+                self.movement = Some(movement);
+            }
+            "score" => {
+                self.score.from_owned_attributes(path, attributes);
+            }
+            "misc" => {
+                self.misc.from_owned_attributes(path, attributes);
+            }
+            "producer" => {
+                let mut producer = NamedIdRef::default();
+                producer.from_owned_attributes(path, attributes);
+                self.producer = Some(producer);
             }
             _ => {
                 tracing::warn!("Unknown start element: {}", name);
