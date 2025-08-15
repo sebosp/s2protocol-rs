@@ -351,6 +351,10 @@ impl UnitMiscValues {
         path: &str,
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
+        if path != "/unit/misc" {
+            tracing::warn!("Unexpected path for UnitScore: {}", path);
+            return;
+        }
         for attr in attributes {
             match attr.name.local_name.as_str() {
                 "radius" => self.radius = attr.value.parse().unwrap_or_default(),
@@ -398,6 +402,14 @@ pub struct VersionedBalanceUnit {
     pub cost: UnitCost,
     /// The producer of the unit.
     pub producer: Option<NamedIdRef>,
+    /// The attributes of the unit
+    pub attributes: Vec<String>,
+    /// The unit is strong vs these types of units
+    pub strengths: Vec<NamedIdRef>,
+    /// The unit is weak vs these types of units
+    pub weaknesses: Vec<NamedIdRef>,
+    /// The wstate of the current parsing, it may be the active ability, weaponn, etc.
+    pub state: VersionedBalanceUnitState,
 }
 
 impl VersionedBalanceUnit {
@@ -424,6 +436,14 @@ impl VersionedBalanceUnit {
             let mut requires = NamedIdRef::default();
             requires.from_owned_attributes(path, attributes);
             self.requires.push(requires);
+        } else if path == "/unit/strengths/unit" {
+            let mut strength = NamedIdRef::default();
+            strength.from_owned_attributes(path, attributes);
+            self.strengths.push(strength);
+        } else if path == "/unit/weaknesses/unit" {
+            let mut weakness = NamedIdRef::default();
+            weakness.from_owned_attributes(path, attributes);
+            self.weaknesses.push(weakness);
         } else {
             tracing::warn!("Unknown path: {}", path);
         }
@@ -458,9 +478,6 @@ impl VersionedBalanceUnit {
                 shields.from_owned_attributes(path, attributes);
                 self.shields = Some(shields);
             }
-            "requires" => {
-                // the requires contain subunit references caught by the /unit in this match
-            }
             "cost" => {
                 self.cost.from_owned_attributes(path, attributes);
             }
@@ -479,6 +496,22 @@ impl VersionedBalanceUnit {
                 let mut producer = NamedIdRef::default();
                 producer.from_owned_attributes(path, attributes);
                 self.producer = Some(producer);
+            }
+            "attribute" => {
+                if path == "/unit/attributes/attribute" {
+                    if let Some(attr) = attributes.first() {
+                        self.attributes.push(attr.value.clone());
+                    } else {
+                        tracing::warn!("No attribute value found in /unit/attributes");
+                    }
+                } else {
+                    tracing::warn!("Unexpected path for attribute: {}", path);
+                }
+            }
+            "attributes" | "requires" | "strengths" | "weaknesses" | "weapons" | "weapon"
+            | "effect" | "abilities" => {
+                // NOTE: Most are unknown so far.
+                // TODO: hanndle "weapeons.weapon.effect"
             }
             _ => {
                 tracing::warn!("Unknown start element: {}", name);
