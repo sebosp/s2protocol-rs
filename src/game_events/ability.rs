@@ -375,6 +375,26 @@ impl UnitMiscValues {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct UnitAbilityCommand {
+    pub icon: String,
+    pub range: String,
+    pub requires: Option<NamedIdRef>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct UnitAbility {
+    pub id: u16,
+    pub index: i64,
+    pub cmd: UnitAbilityCommand,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct VersionedBalanceUnitState {
+    /// The current ability being parsed, if any.
+    pub current_ability: Option<UnitAbility>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct VersionedBalanceUnit {
     /// A unique identifier for the unit, typically a string like "Zergling" or "Stalker".
     pub id: String,
@@ -408,8 +428,10 @@ pub struct VersionedBalanceUnit {
     pub strengths: Vec<NamedIdRef>,
     /// The unit is weak vs these types of units
     pub weaknesses: Vec<NamedIdRef>,
-    /// The wstate of the current parsing, it may be the active ability, weaponn, etc.
-    pub state: VersionedBalanceUnitState,
+    /// The abilities of the unit, such as "ZerglingAttack" or "StalkerBlink"
+    pub abilities: Vec<UnitAbility>,
+    /// The state of the current XML parsing, it may be the active ability, weaponn, etc.
+    pub state: Option<VersionedBalanceUnitState>,
 }
 
 impl VersionedBalanceUnit {
@@ -449,6 +471,20 @@ impl VersionedBalanceUnit {
         }
     }
 
+    pub fn finish_current_ability(&mut self) {
+        if let Some(ref mut state) = &self.state {
+            tracing::info!(
+                "Finishing ability: {} (id: {}, index: {}, icon: {}, range: {})",
+                state.id,
+                state.index,
+                state.icon,
+                state.range
+            );
+        } else {
+            tracing::warn!("No current ability to finish");
+        }
+        self.state = None;
+    }
     pub fn from_xml_start_element(
         &mut self,
         name: &str,
@@ -560,6 +596,9 @@ pub fn read_balance_xml(fname: PathBuf) -> std::io::Result<Vec<VersionedBalanceU
                 current_path = current_path
                     .rsplit_once('/')
                     .map_or(String::new(), |(prefix, _)| prefix.to_string());
+                if name == "ability" {
+                    current_unit.finish_current_ability();
+                }
             }
             Err(e) => {
                 tracing::warn!("Error: {e}");
