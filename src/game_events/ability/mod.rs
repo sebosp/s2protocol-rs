@@ -1,13 +1,11 @@
+//! Transforms an ability ID into a string.
+//! TODO: Create arrow table.
+//!
 use serde::{Deserialize, Serialize};
-/// Transforms an ability ID into a string.
-/// TODO: Create arrow table.
-///
-use std::fs::File;
-use std::io::BufReader;
-use std::path::PathBuf;
 use tracing;
 
-use xml::reader::{EventReader, XmlEvent};
+pub mod xml_reader;
+pub use xml_reader::*;
 
 //<meta name="27" icon="btn-unit-zerg-zergling" race="Zerg" hotkey="1103" tooltip="203" source="Liberty.SC2Mod" index="128"/>
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -374,24 +372,23 @@ impl UnitMiscValues {
     }
 }
 
+pub fn ability_id_to_string(_ability_id: u16) -> &'static str {
+    "unimplemented"
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct UnitAbilityCommand {
-    pub icon: String,
-    pub range: String,
+    pub id: String,
+    pub index: u32,
     pub requires: Option<NamedIdRef>,
+    pub cost: Option<UnitCost>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct UnitAbility {
-    pub id: u16,
+    pub id: String,
     pub index: i64,
-    pub cmd: UnitAbilityCommand,
-}
-
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct VersionedBalanceUnitState {
-    /// The current ability being parsed, if any.
-    pub current_ability: Option<UnitAbility>,
+    pub cmds: Vec<UnitAbilityCommand>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -431,7 +428,7 @@ pub struct VersionedBalanceUnit {
     /// The abilities of the unit, such as "ZerglingAttack" or "StalkerBlink"
     pub abilities: Vec<UnitAbility>,
     /// The state of the current XML parsing, it may be the active ability, weaponn, etc.
-    pub state: Option<VersionedBalanceUnitState>,
+    pub state: VersionedBalanceUnitState,
 }
 
 impl VersionedBalanceUnit {
@@ -471,20 +468,6 @@ impl VersionedBalanceUnit {
         }
     }
 
-    pub fn finish_current_ability(&mut self) {
-        if let Some(ref mut state) = &self.state {
-            tracing::info!(
-                "Finishing ability: {} (id: {}, index: {}, icon: {}, range: {})",
-                state.id,
-                state.index,
-                state.icon,
-                state.range
-            );
-        } else {
-            tracing::warn!("No current ability to finish");
-        }
-        self.state = None;
-    }
     pub fn from_xml_start_element(
         &mut self,
         name: &str,
@@ -544,6 +527,15 @@ impl VersionedBalanceUnit {
                     tracing::warn!("Unexpected path for attribute: {}", path);
                 }
             }
+            "command" => {
+                self.state
+                    .ability
+                    .current_cmd
+                    .from_owned_attributes(path, attributes);
+            }
+            "ability" => {
+                self.state.ability.from_owned_attributes(path, attributes);
+            }
             "attributes" | "requires" | "strengths" | "weaknesses" | "weapons" | "weapon"
             | "effect" | "abilities" => {
                 // NOTE: Most are unknown so far.
@@ -554,108 +546,4 @@ impl VersionedBalanceUnit {
             }
         }
     }
-}
-
-pub fn read_balance_xml(fname: PathBuf) -> std::io::Result<Vec<VersionedBalanceUnit>> {
-    let mut res: Vec<VersionedBalanceUnit> = vec![];
-    let mut current_unit = VersionedBalanceUnit::default();
-    let file = File::open(fname)?;
-    let file = BufReader::new(file); // Buffering is important for performance
-
-    let parser = EventReader::new(file);
-    let mut depth = 0;
-    let mut current_path = String::new();
-    for e in parser {
-        match e {
-            Ok(XmlEvent::StartElement {
-                name,
-                attributes,
-                namespace,
-            }) => {
-                tracing::debug!(
-                    "{:spaces$}+{name}+[{namespace:?}] attrs={attributes:?}",
-                    "",
-                    spaces = depth * 2
-                );
-                current_path.push_str(&format!("/{name}"));
-                current_unit.from_xml_start_element(
-                    name.local_name.as_str(),
-                    &current_path,
-                    attributes,
-                );
-                depth += 1;
-            }
-            Ok(XmlEvent::EndElement { name }) => {
-                depth -= 1;
-                tracing::debug!("{:spaces$}-{name}", "", spaces = depth * 2);
-                if current_path == "/unit" {
-                    // End of a unit element, push it to the result
-                    res.push(current_unit.clone());
-                    current_unit = VersionedBalanceUnit::default(); // Reset for the next unit
-                }
-                current_path = current_path
-                    .rsplit_once('/')
-                    .map_or(String::new(), |(prefix, _)| prefix.to_string());
-                if name == "ability" {
-                    current_unit.finish_current_ability();
-                }
-            }
-            Err(e) => {
-                tracing::warn!("Error: {e}");
-                break;
-            }
-            // There's more: https://docs.rs/xml-rs/latest/xml/reader/enum.XmlEvent.html
-            _ => {}
-        }
-    }
-    tracing::info!("Parsed {} units", res.len());
-    crate::json_print(serde_json::to_string(&res).unwrap(), false);
-
-    Ok(res)
-}
-
-pub fn traverse_versioned_balance_abilities(root_dir: impl Into<PathBuf>) -> std::io::Result<()> {
-    let root_dir: PathBuf = root_dir.into();
-    tracing::info!(
-        "Traversing versioned balance abilities in {}",
-        root_dir.display()
-    );
-    if !root_dir.is_dir() {
-        return Ok(());
-    }
-    for versioned_dir in std::fs::read_dir(root_dir)? {
-        let versioned_dir = versioned_dir?.path();
-        tracing::info!("Traversing versioned directory: {:?}", versioned_dir);
-        if !versioned_dir.is_dir() {
-            continue;
-        }
-        let versioned_balance_data_dir = versioned_dir.join("BalanceData");
-        if !versioned_balance_data_dir.is_dir() {
-            continue;
-        }
-        tracing::info!(
-            "Traversing versioned balance data directory: {:?}",
-            versioned_balance_data_dir
-        );
-        for entry in std::fs::read_dir(versioned_balance_data_dir)? {
-            let entry = entry?;
-            let path = entry.path();
-            if !path.ends_with("Zergling.xml") || !path.is_file() {
-                continue;
-            }
-            tracing::info!("Processing entry: {:?}", path);
-            if let Some(ext) = path.extension() {
-                if ext == "xml" && path.is_file() {
-                    tracing::info!("Found XML file: {:?}", path);
-                    let _ = read_balance_xml(path);
-                }
-            }
-        }
-    }
-
-    Ok(())
-}
-
-pub fn ability_id_to_string(_ability_id: u16) -> &'static str {
-    "unimplemented"
 }
