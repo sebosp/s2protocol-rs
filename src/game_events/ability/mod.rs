@@ -22,7 +22,7 @@ impl UnitMeta {
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
         if path != "/unit/meta" {
-            tracing::warn!("Unexpected path for UnitMeta: {}", path);
+            tracing::debug!("Unexpected path for UnitMeta: {}", path);
             return;
         }
         for attr in attributes {
@@ -39,7 +39,7 @@ impl UnitMeta {
                     // Zergling.strengths.Stalker points to name 128.
                 }
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -65,7 +65,7 @@ impl UnitLife {
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
         if path != "/unit/life" {
-            tracing::warn!("Unexpected path for UnitLife: {}", path);
+            tracing::debug!("Unexpected path for UnitLife: {}", path);
             return;
         }
         for attr in attributes {
@@ -74,7 +74,7 @@ impl UnitLife {
                 "max" => self.max = attr.value.parse().unwrap_or_default(),
                 "regenRate" => self.regen = attr.value.parse().unwrap_or_default(),
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -99,7 +99,7 @@ impl UnitArmor {
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
         if path != "/unit/armor" {
-            tracing::warn!("Unexpected path for UnitArmor: {}", path);
+            tracing::debug!("Unexpected path for UnitArmor: {}", path);
             return;
         }
         for attr in attributes {
@@ -107,7 +107,7 @@ impl UnitArmor {
                 "start" => self.start = attr.value.parse().unwrap_or_default(),
                 "max" => self.max = attr.value.parse().unwrap_or_default(),
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -134,7 +134,7 @@ impl UnitShields {
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
         if path != "/unit/shields" {
-            tracing::warn!("Unexpected path for UnitShields: {}", path);
+            tracing::debug!("Unexpected path for UnitShields: {}", path);
             return;
         }
         for attr in attributes {
@@ -144,7 +144,7 @@ impl UnitShields {
                 "regenRate" => self.regen_rate = attr.value.parse().unwrap_or_default(),
                 "delay" => self.delay = attr.value.parse().unwrap_or_default(),
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -169,7 +169,7 @@ impl UnitShieldArmor {
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
         if path != "/unit/shieldArmor" {
-            tracing::warn!("Unexpected path for UnitShieldArmor: {}", path);
+            tracing::debug!("Unexpected path for UnitShieldArmor: {}", path);
             return;
         }
         for attr in attributes {
@@ -177,7 +177,7 @@ impl UnitShieldArmor {
                 "start" => self.start = attr.value.parse().unwrap_or_default(),
                 "max" => self.max = attr.value.parse().unwrap_or_default(),
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -205,7 +205,7 @@ impl UnitCost {
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
         if path != "/unit/cost" {
-            tracing::warn!("Unexpected path for UnitCost: {}", path);
+            tracing::debug!("Unexpected path for UnitCost: {}", path);
             return;
         }
         for attr in attributes {
@@ -216,7 +216,7 @@ impl UnitCost {
                 "time" => self.time = attr.value.parse().unwrap_or_default(),
                 "cooldown" => self.cooldown = attr.value.parse().unwrap_or_default(),
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -247,7 +247,7 @@ impl NamedIdRef {
                     // This is a "name" that is numeric, not sure what it pertains to.
                 }
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -276,7 +276,7 @@ impl UnitMovement {
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
         if path != "/unit/movement" {
-            tracing::warn!("Unexpected path for UnitMovement: {}", path);
+            tracing::debug!("Unexpected path for UnitMovement: {}", path);
             return;
         }
         for attr in attributes {
@@ -287,7 +287,7 @@ impl UnitMovement {
                 "deceleration" => self.deceleration = attr.value.parse().unwrap_or_default(),
                 "turnRate" => self.turn_rate = attr.value.parse().unwrap_or_default(),
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -313,7 +313,7 @@ impl UnitScore {
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
         if path != "/unit/score" {
-            tracing::warn!("Unexpected path for UnitScore: {}", path);
+            tracing::debug!("Unexpected path for UnitScore: {}", path);
             return;
         }
         for attr in attributes {
@@ -321,7 +321,7 @@ impl UnitScore {
                 "build" => self.build = attr.value.parse().unwrap_or_default(),
                 "kill" => self.kill = attr.value.parse().unwrap_or_default(),
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -350,7 +350,7 @@ impl UnitMiscValues {
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
         if path != "/unit/misc" {
-            tracing::warn!("Unexpected path for UnitScore: {}", path);
+            tracing::debug!("Unexpected path for UnitScore: {}", path);
             return;
         }
         for attr in attributes {
@@ -361,7 +361,7 @@ impl UnitMiscValues {
                 "supply" => self.supply = attr.value.parse().unwrap_or_default(),
                 "footprint" => self.footprint = Some(attr.value),
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -372,22 +372,52 @@ impl UnitMiscValues {
     }
 }
 
-pub fn ability_id_to_string(_ability_id: u16) -> &'static str {
-    "unimplemented"
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct UnitAbilityCommandMeta {
+    pub icon: String,
+    pub kind: String,
+}
+
+impl UnitAbilityCommandMeta {
+    /// Creates a new `Self` from the XML attributes
+    pub fn from_owned_attributes(
+        &mut self,
+        path: &str,
+        attributes: Vec<xml::attribute::OwnedAttribute>,
+    ) {
+        if path != "/unit/abilities/ability/command/meta" {
+            tracing::trace!("Unexpected path for UnitAbilityCommandMeta: {}", path);
+            return;
+        }
+        for attr in attributes {
+            match attr.name.local_name.as_str() {
+                "icon" => self.icon = attr.value,
+                "type" => self.kind = attr.value,
+                _ => {
+                    tracing::trace!(
+                        "{path} Unknown attribute: {} with value: {}",
+                        attr.name.local_name,
+                        attr.value
+                    );
+                }
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct UnitAbilityCommand {
     pub id: String,
-    pub index: u32,
+    pub index: i64,
     pub requires: Option<NamedIdRef>,
     pub cost: Option<UnitCost>,
+    pub meta: UnitAbilityCommandMeta,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct UnitAbility {
     pub id: String,
-    pub index: i64,
+    pub index: u16,
     pub cmds: Vec<UnitAbilityCommand>,
 }
 
@@ -443,7 +473,7 @@ impl VersionedBalanceUnit {
                 match attr.name.local_name.as_str() {
                     "id" => self.id = attr.value,
                     _ => {
-                        tracing::warn!(
+                        tracing::debug!(
                             "{path} Unknown attribute: {} with value: {}",
                             attr.name.local_name,
                             attr.value
@@ -464,7 +494,7 @@ impl VersionedBalanceUnit {
             weakness.from_owned_attributes(path, attributes);
             self.weaknesses.push(weakness);
         } else {
-            tracing::warn!("Unknown path: {}", path);
+            tracing::debug!("Unknown path: {}", path);
         }
     }
 
@@ -479,7 +509,15 @@ impl VersionedBalanceUnit {
                 self.from_owned_attributes(path, attributes);
             }
             "meta" => {
-                self.meta.from_owned_attributes(path, attributes);
+                if path == "/unit/meta" {
+                    self.meta.from_owned_attributes(path, attributes);
+                } else if path == "/unit/abilities/ability/command/meta" {
+                    self.state
+                        .ability
+                        .current_cmd
+                        .meta
+                        .from_owned_attributes(path, attributes);
+                }
             }
             "life" => {
                 self.life.from_owned_attributes(path, attributes);
@@ -521,10 +559,10 @@ impl VersionedBalanceUnit {
                     if let Some(attr) = attributes.first() {
                         self.attributes.push(attr.value.clone());
                     } else {
-                        tracing::warn!("No attribute value found in /unit/attributes");
+                        tracing::debug!("No attribute value found in /unit/attributes");
                     }
                 } else {
-                    tracing::warn!("Unexpected path for attribute: {}", path);
+                    tracing::debug!("Unexpected path for attribute: {}", path);
                 }
             }
             "command" => {
@@ -542,7 +580,7 @@ impl VersionedBalanceUnit {
                 // TODO: hanndle "weapeons.weapon.effect"
             }
             _ => {
-                tracing::warn!("Unknown start element: {}", name);
+                tracing::debug!("Unknown start element: {}", name);
             }
         }
     }

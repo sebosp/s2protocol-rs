@@ -1,21 +1,37 @@
 use super::*;
 use serde::{Deserialize, Serialize};
-use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
+use std::{collections::HashMap, fs::File};
 use tracing;
 use xml::reader::{EventReader, XmlEvent};
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct UnitAbilityCommandBuilder {
     pub id: Option<String>,
-    pub index: Option<u32>,
+    pub index: Option<i64>,
     pub requires: Option<NamedIdRef>,
     pub cost: Option<UnitCost>,
+    pub meta: UnitAbilityCommandMeta,
 }
 
 impl UnitAbilityCommandBuilder {
     pub fn build(self) -> Result<UnitAbilityCommand, String> {
+        if self.meta.kind == "passive" {
+            // Not sure how to handle passive as they do not have id.
+            return Ok(UnitAbilityCommand {
+                id: String::new(),
+                index: 99,
+                requires: None,
+                cost: None,
+                meta: self.meta,
+            });
+        } else if self.meta.kind != "command" {
+            return Err(format!(
+                "UnitAbilityCommandBuilder: unexpected kind: {}",
+                self.meta.kind
+            ));
+        }
         let id = self.id.ok_or("UnitAbilityCommandBuilder: id is required")?;
         let index = self
             .index
@@ -27,6 +43,7 @@ impl UnitAbilityCommandBuilder {
             index,
             requires,
             cost,
+            meta: self.meta,
         })
     }
 
@@ -37,7 +54,7 @@ impl UnitAbilityCommandBuilder {
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
         if path != "/unit/abilities/ability/command" {
-            tracing::warn!("Unexpected path for UnitMeta: {}", path);
+            tracing::debug!("Unexpected path for UnitMeta: {}", path);
             return;
         }
         for attr in attributes {
@@ -45,7 +62,7 @@ impl UnitAbilityCommandBuilder {
                 "id" => self.id = Some(attr.value),
                 "index" => self.index = Some(attr.value.parse().unwrap_or(0)),
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -59,21 +76,26 @@ impl UnitAbilityCommandBuilder {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct UnitAbilityBuilder {
     pub id: Option<String>,
-    pub index: Option<i64>,
+    pub index: Option<u16>,
     /// The current ability being parsed, if any.
     pub current_cmd: UnitAbilityCommandBuilder,
     pub cmds: Vec<UnitAbilityCommand>,
 }
 
 impl UnitAbilityBuilder {
-    pub fn build(self) -> Result<UnitAbility, String> {
+    pub fn build(self) -> Result<Option<UnitAbility>, String> {
+        if self.cmds.len() == 1 && self.cmds[0].meta.kind == "passive" {
+            // If there is only one command and it is passive, we skip this ability.
+            // Not sure how to handle it yet.
+            return Ok(None);
+        }
         let id = self.id.ok_or("UnitAbilityBuilder: id is required")?;
         let index = self.index.ok_or("UnitAbilityBuilder: index is required")?;
-        Ok(UnitAbility {
+        Ok(Some(UnitAbility {
             id,
             index,
             cmds: self.cmds,
-        })
+        }))
     }
 
     pub fn finish_current_command(&mut self) -> Result<(), String> {
@@ -90,7 +112,7 @@ impl UnitAbilityBuilder {
         attributes: Vec<xml::attribute::OwnedAttribute>,
     ) {
         if path != "/unit/abilities/ability" {
-            tracing::warn!("Unexpected path for UnitMeta: {}", path);
+            tracing::debug!("Unexpected path for UnitMeta: {}", path);
             return;
         }
         for attr in attributes {
@@ -98,7 +120,7 @@ impl UnitAbilityBuilder {
                 "id" => self.id = Some(attr.value),
                 "index" => self.index = Some(attr.value.parse().unwrap_or(0)),
                 _ => {
-                    tracing::warn!(
+                    tracing::debug!(
                         "{path} Unknown attribute: {} with value: {}",
                         attr.name.local_name,
                         attr.value
@@ -109,9 +131,9 @@ impl UnitAbilityBuilder {
     }
 }
 
-pub fn read_balance_xml(fname: PathBuf) -> std::io::Result<Vec<VersionedBalanceUnit>> {
-    let mut res: Vec<VersionedBalanceUnit> = vec![];
-    let mut current_unit = VersionedBalanceUnit::default();
+/// Load a specific Unit XML attributes
+pub fn read_balance_xml(fname: PathBuf) -> std::io::Result<VersionedBalanceUnit> {
+    let mut unit = VersionedBalanceUnit::default();
     let file = File::open(fname)?;
     let file = BufReader::new(file); // Buffering is important for performance
 
@@ -125,66 +147,65 @@ pub fn read_balance_xml(fname: PathBuf) -> std::io::Result<Vec<VersionedBalanceU
                 attributes,
                 namespace,
             }) => {
-                tracing::debug!(
+                tracing::trace!(
                     "{:spaces$}+{name}+[{namespace:?}] attrs={attributes:?}",
                     "",
                     spaces = depth * 2
                 );
                 current_path.push_str(&format!("/{name}"));
-                current_unit.from_xml_start_element(
-                    name.local_name.as_str(),
-                    &current_path,
-                    attributes,
-                );
+                unit.from_xml_start_element(name.local_name.as_str(), &current_path, attributes);
                 depth += 1;
             }
             Ok(XmlEvent::EndElement { name }) => {
                 depth -= 1;
                 tracing::debug!("{:spaces$}-{name}", "", spaces = depth * 2);
                 if current_path == "/unit" {
-                    // End of a unit element, push it to the result
-                    res.push(current_unit.clone());
-                    current_unit = VersionedBalanceUnit::default(); // Reset for the next unit
+                    return Ok(unit);
                 }
                 current_path = current_path
                     .rsplit_once('/')
                     .map_or(String::new(), |(prefix, _)| prefix.to_string());
                 if current_path == "/unit/abilities" && name.local_name.as_str() == "ability" {
-                    let ability = current_unit.state.finish_current_ability().unwrap();
-                    current_unit.abilities.push(ability);
+                    let ability = unit.state.finish_current_ability().unwrap();
+                    if let Some(ability) = ability {
+                        unit.abilities.push(ability);
+                    }
                 }
                 if current_path == "/unit/abilities/ability"
                     && name.local_name.as_str() == "command"
                 {
-                    current_unit.state.finish_current_command().unwrap();
+                    unit.state.finish_current_command().unwrap();
                 }
             }
             Err(e) => {
-                tracing::warn!("Error: {e}");
+                tracing::error!("Error: {e}");
                 break;
             }
             // There's more: https://docs.rs/xml-rs/latest/xml/reader/enum.XmlEvent.html
             _ => {}
         }
     }
-    tracing::info!("Parsed {} units", res.len());
-    crate::json_print(serde_json::to_string(&res).unwrap(), false);
+    // crate::json_print(serde_json::to_string(&res).unwrap(), false);
 
-    Ok(res)
+    // If we get this far we may not have found the end </unit> tag.
+    tracing::warn!("Reached end of file without finding </unit> tag");
+    Ok(unit)
 }
 
-pub fn traverse_versioned_balance_abilities(root_dir: impl Into<PathBuf>) -> std::io::Result<()> {
+pub fn traverse_versioned_balance_abilities(
+    root_dir: impl Into<PathBuf>,
+) -> std::io::Result<HashMap<(u32, String), VersionedBalanceUnit>> {
+    let mut res: HashMap<(u32, String), VersionedBalanceUnit> = HashMap::new();
     let root_dir: PathBuf = root_dir.into();
-    tracing::info!(
+    tracing::debug!(
         "Traversing versioned balance abilities in {}",
         root_dir.display()
     );
     if !root_dir.is_dir() {
-        return Ok(());
+        return Ok(res);
     }
     for versioned_dir in std::fs::read_dir(root_dir)? {
         let versioned_dir = versioned_dir?.path();
-        tracing::info!("Traversing versioned directory: {:?}", versioned_dir);
         if !versioned_dir.is_dir() {
             continue;
         }
@@ -192,27 +213,42 @@ pub fn traverse_versioned_balance_abilities(root_dir: impl Into<PathBuf>) -> std
         if !versioned_balance_data_dir.is_dir() {
             continue;
         }
-        tracing::info!(
+        let protocol_version: u32 = match versioned_dir
+            .file_name()
+            .and_then(|s| s.to_str())
+            .and_then(|s| s.parse().ok())
+        {
+            Some(v) => v,
+            None => {
+                tracing::warn!(
+                    "Skipping versioned directory {:?} as it does not contain a number",
+                    versioned_dir
+                );
+                continue;
+            }
+        };
+        tracing::debug!(
             "Traversing versioned balance data directory: {:?}",
             versioned_balance_data_dir
         );
         for entry in std::fs::read_dir(versioned_balance_data_dir)? {
             let entry = entry?;
             let path = entry.path();
-            if !path.ends_with("Zergling.xml") || !path.is_file() {
+            if !path.is_file() {
                 continue;
             }
-            tracing::info!("Processing entry: {:?}", path);
             if let Some(ext) = path.extension() {
                 if ext == "xml" && path.is_file() {
-                    tracing::info!("Found XML file: {:?}", path);
-                    let _ = read_balance_xml(path);
+                    tracing::debug!("Processing XML file: {:?}", path);
+                    let unit = read_balance_xml(path)?;
+                    res.insert((protocol_version, unit.id.clone()), unit);
                 }
             }
         }
     }
+    tracing::info!("Processed {} total units", res.len(),);
 
-    Ok(())
+    Ok(res)
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -223,7 +259,7 @@ pub struct VersionedBalanceUnitState {
 
 impl VersionedBalanceUnitState {
     /// When reading the XML, a </ability> tag may be found
-    pub fn finish_current_ability(&mut self) -> Result<UnitAbility, String> {
+    pub fn finish_current_ability(&mut self) -> Result<Option<UnitAbility>, String> {
         let ability = self.ability.clone().build()?;
         self.ability = UnitAbilityBuilder::default();
         Ok(ability)

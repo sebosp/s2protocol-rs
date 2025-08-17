@@ -5,6 +5,7 @@ use super::*;
 use bat::{Input, PrettyPrinter};
 
 use crate::game_events::iterator::GameEventIterator;
+use crate::game_events::VersionedBalanceUnit;
 use crate::generator::proto_morphist::ProtoMorphist;
 use crate::read_details;
 use crate::read_init_data;
@@ -46,9 +47,6 @@ enum Commands {
     /// Writes Arrow IPC files for a specific event type from the SC2Replay MPQ Archive
     #[cfg(feature = "dep_arrow")]
     WriteArrowIpc(WriteArrowIpcProps),
-
-    /// Generates Rust code for a specific protocol.
-    ReadAbilities,
 }
 
 ///  Create a subcommand that handles the max depth and max files to process
@@ -76,8 +74,20 @@ pub struct WriteArrowIpcProps {
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
     /// Sets the source of the data, can be a file or directory.
-    #[arg(short, long, value_name = "PATH")]
+    #[arg(short, long)]
     source: String,
+
+    /// BalanceData directory path, these are directories exported from StarCraft II Editor.
+    /// Main menu -> Export -> Balance Data.
+    /// The data exported must then be saved into a versioned directory matching
+    /// the protocol version used to export.
+    #[arg(short, long, default_value = "")]
+    xml_balance_data_dir: String,
+
+    /// The xml balance data can be processed and exported into json files that are friendly to
+    /// deser and store in git.
+    #[arg(short, long, default_value = "")]
+    json_balance_data_dir: String,
 
     /// Turn debugging information on
     #[arg(short, long, default_value = "info")]
@@ -223,6 +233,15 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             .with_env_filter(level.to_string())
             .init();
     }
+    let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
+        if !cli.xml_balance_data_dir.is_empty() {
+            tracing::info!("Using balance data directory: {}", cli.xml_balance_data_dir);
+            crate::game_events::ability::traverse_versioned_balance_abilities(PathBuf::from(
+                &cli.xml_balance_data_dir,
+            ))?
+        } else {
+            HashMap::new()
+        };
     match &cli.command {
         Commands::Generate => {
             ProtoMorphist::gen(&cli.source, &cli.output.expect("Requires --output"))?;
@@ -274,7 +293,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
 
                     ReadTypes::GameEvents => {
-                        let res = GameEventIterator::new(&source)?;
+                        let res = GameEventIterator::new(&source, &versioned_abilities)?;
                         println!("[");
                         for evt in res.into_iter() {
                             json_print(serde_json::to_string(&evt).unwrap(), color);
@@ -299,7 +318,10 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
-                        let res = crate::state::SC2EventIterator::new(&source)?;
+                        let res = crate::state::SC2EventIterator::new(
+                            &source,
+                            versioned_abilities.clone(),
+                        )?;
                         let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
                         let res = res.with_filters(filters);
                         #[cfg(feature = "dep_ratatui")]
@@ -326,12 +348,8 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                 PathBuf::from(&cli.source),
                 PathBuf::from(&cli.output.expect("Requires --output")),
                 cmd,
+                &versioned_abilities,
             )?;
-        }
-        Commands::ReadAbilities => {
-            crate::game_events::ability::traverse_versioned_balance_abilities(PathBuf::from(
-                &cli.source,
-            ))?;
         }
     }
     if cli.timing {

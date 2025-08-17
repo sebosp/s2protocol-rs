@@ -15,6 +15,7 @@ use crate::cli::get_matching_files;
 use crate::details::Details;
 use crate::details::PlayerDetailsFlatRow;
 use crate::game_events::GameEventIterator;
+use crate::game_events::VersionedBalanceUnit;
 use crate::tracker_events::{self, TrackerEventIterator};
 use crate::*;
 use clap::Subcommand;
@@ -140,6 +141,7 @@ impl ArrowIpcTypes {
     pub fn handle_write_snapshot(
         sources: Vec<InitData>,
         output: PathBuf,
+        unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if !output.is_dir() {
             panic!("Output must be a directory for types 'all'");
@@ -160,10 +162,16 @@ impl ArrowIpcTypes {
         Self::Upgrades.handle_tracker_events(sources.clone(), output.join("upgrades.ipc"))?;
         Self::UnitBorn.handle_tracker_events(sources.clone(), output.join("unit_born.ipc"))?;
         Self::UnitDied.handle_tracker_events(sources.clone(), output.join("unit_died.ipc"))?;
-        Self::CmdTargetPoint
-            .handle_game_events(sources.clone(), output.join("cmd_target_point.ipc"))?;
-        Self::CmdTargetUnit
-            .handle_game_events(sources.clone(), output.join("cmd_target_unit.ipc"))?;
+        Self::CmdTargetPoint.handle_game_events(
+            sources.clone(),
+            output.join("cmd_target_point.ipc"),
+            unit_abilities,
+        )?;
+        Self::CmdTargetUnit.handle_game_events(
+            sources.clone(),
+            output.join("cmd_target_unit.ipc"),
+            unit_abilities,
+        )?;
         Ok(())
     }
 
@@ -271,6 +279,7 @@ impl ArrowIpcTypes {
         &self,
         sources: Vec<InitData>,
         output: PathBuf,
+        versioned_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing GameEvents IPC write request: {:?}", self);
         let writer = open_arrow_mutex_writer(output, self.schema())?;
@@ -281,7 +290,7 @@ impl ArrowIpcTypes {
             .filter_map(|source| {
                 let details = Details::try_from(source).ok()?;
                 let source_path = PathBuf::from(&source.ext_fs_file_name);
-                let game_events = GameEventIterator::new(&source_path).ok()?;
+                let game_events = GameEventIterator::new(&source_path, versioned_abilities).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::CmdTargetPoint => {
                         let batch =
@@ -375,6 +384,7 @@ impl ArrowIpcTypes {
         source: PathBuf,
         output: PathBuf,
         cmd: &WriteArrowIpcProps,
+        unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!(
             "Processing Arrow write request with scan_max_files: {}, traverse_max_depth: {}, process_max_files: {}, min_version: {:?}, max_version: {:?}",
@@ -417,6 +427,6 @@ impl ArrowIpcTypes {
                 sources.len()
             );
         }
-        Self::handle_write_snapshot(sources, output)
+        Self::handle_write_snapshot(sources, output, unit_abilities)
     }
 }

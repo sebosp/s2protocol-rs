@@ -10,7 +10,7 @@
 
 use super::*;
 use crate::filters::SC2ReplayFilters;
-use crate::game_events::GameEventIteratorState;
+use crate::game_events::{GameEventIteratorState, VersionedBalanceUnit};
 use crate::tracker_events::TrackertEventIteratorState;
 use crate::{common::*, game_events::GameSPointMini};
 use game_events::GameSCmdEvent;
@@ -219,12 +219,17 @@ pub struct SC2EventIterator {
     next_game_event: Option<SC2EventIteratorItem>,
     /// The iterator filter helpers
     filters: Option<SC2ReplayFilters>,
+    /// The current protocol version abilities, containing a possible string translation.
+    abilities: HashMap<String, VersionedBalanceUnit>,
 }
 
 impl SC2EventIterator {
     /// Creates a new SC2EventIterator from a PathBuf
     #[tracing::instrument(level = "debug")]
-    pub fn new(source: &PathBuf) -> Result<Self, S2ProtocolError> {
+    pub fn new(
+        source: &PathBuf,
+        versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit>,
+    ) -> Result<Self, S2ProtocolError> {
         // The sc2 replay state is not shared between the two iterators...
         tracing::debug!("Processing {:?}", source);
         let file_contents = crate::read_file(source)?;
@@ -239,11 +244,27 @@ impl SC2EventIterator {
             filename: source_filename,
             ..Default::default()
         };
+        let abilities: HashMap<String, VersionedBalanceUnit> = versioned_abilities
+            .into_iter()
+            .filter_map(|((version, name), unit)| {
+                if version == proto_header.m_version.m_base_build {
+                    Some((name, unit))
+                } else {
+                    None
+                }
+            })
+            .collect();
+        tracing::info!(
+            "Collected {} unit abilities for protocol version {}",
+            abilities.len(),
+            proto_header.m_version.m_base_build
+        );
         Ok(Self {
             protocol_version: proto_header.m_version.m_base_build,
             sc2_state,
             tracker_iterator_state: tracker_events.into(),
             game_iterator_state: game_events.into(),
+            abilities,
             ..Default::default()
         })
     }
@@ -313,6 +334,7 @@ impl Iterator for SC2EventIterator {
                 self.protocol_version,
                 &mut self.sc2_state,
                 &mut self.filters,
+                &self.abilities,
             );
         }
         // Now compare the adjusted game loops and return the event with the lowest one, be it game or tracker.

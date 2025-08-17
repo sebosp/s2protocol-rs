@@ -1,7 +1,6 @@
 //! Converts events from protocol-version specific to protocol-agnostic versions.
 
 use super::bit_packed::*;
-use crate::game_events::ability_id_to_string;
 use crate::game_events::GameEvent;
 use crate::game_events::ReplayGameEvent;
 use crate::*;
@@ -203,7 +202,7 @@ impl From<GameSTriggerTargetModeUpdateEvent> for game_events::ReplayGameEvent {
         game_events::ReplayGameEvent::TriggerTargetModeUpdate(
             game_events::GameSTriggerTargetModeUpdateEvent {
                 m_abil_link: source.m_abil_link.value.clone().into(),
-                ability: ability_id_to_string(source.m_abil_link.value.value as u16).into(),
+                ability: String::new(),
                 m_abil_cmd_index: source.m_abil_cmd_index,
                 m_state: source.m_state.into(),
             },

@@ -90,15 +90,9 @@ impl TrackertEventIteratorState {
                     // game loops.
                     let adjusted_loop = (self.event_loop as f32 / TRACKER_SPEED_RATIO) as i64;
                     let updated_hint = handle_tracker_event(sc2_state, adjusted_loop, &val.event);
-                    tracing::info!(
-                        "Trac [{:>08}]: Evt:{:?} Hint:{:?}",
-                        adjusted_loop,
-                        val.event,
-                        updated_hint
-                    );
                     let event = SC2EventType::Tracker {
                         tracker_loop: adjusted_loop,
-                        event: val.event,
+                        event: val.event.clone(),
                     };
                     if let Some(filters) = filters {
                         if self.shoud_skip_event(&event, filters) {
@@ -109,6 +103,12 @@ impl TrackertEventIteratorState {
                             return None;
                         }
                     }
+                    tracing::info!(
+                        "Trac [{:>08}]: Evt:{:?} Hint:{:?}",
+                        adjusted_loop,
+                        val.event,
+                        updated_hint
+                    );
                     return Some(SC2EventIteratorItem::new(event, updated_hint));
                 }
                 Err(S2ProtocolError::UnsupportedEventType) => {}

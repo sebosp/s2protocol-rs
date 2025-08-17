@@ -5,13 +5,14 @@ use crate::error::S2ProtocolError;
 #[cfg(feature = "dep_arrow")]
 use crate::game_events;
 
-use crate::game_events::GameEvent;
+use crate::game_events::{GameEvent, VersionedBalanceUnit};
 use crate::versions::protocol75689::bit_packed::GameEEventId as Protocol75689GameEEventId;
 use crate::versions::protocol87702::bit_packed::GameEEventId as Protocol87702GameEEventId;
 use crate::{SC2EventIteratorItem, SC2ReplayFilters};
 use crate::{SC2EventType, SC2ReplayState};
 use nom::*;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::iter::Iterator;
 use std::path::PathBuf;
 
@@ -89,6 +90,7 @@ impl GameEventIteratorState {
         protocol_version: u32,
         sc2_state: &mut SC2ReplayState,
         filters: &mut Option<SC2ReplayFilters>,
+        abilities: &HashMap<String, VersionedBalanceUnit>,
     ) -> Option<SC2EventIteratorItem> {
         loop {
             let current_slice: &[u8] = &self.event_data[self.byte_index..];
@@ -100,19 +102,18 @@ impl GameEventIteratorState {
             // game loops.
             match self.read_versioned_game_event(protocol_version) {
                 Ok(val) => {
-                    let updated_hint =
-                        handle_game_event(sc2_state, self.event_loop, val.user_id, &val.event);
-                    tracing::info!(
-                        "Game [{:>08}]: uid: {} Evt:{:?} Hint:{:?}",
-                        self.event_loop,
-                        val.user_id,
-                        val.event,
-                        updated_hint
-                    );
+                    // destructure the event into separate variables:
+                    let GameEvent {
+                        delta: _,
+                        user_id,
+                        event,
+                    } = val;
+                    let (enriched_event, updated_hint) =
+                        handle_game_event(sc2_state, self.event_loop, user_id, event, abilities);
                     let event = SC2EventType::Game {
                         game_loop: self.event_loop,
-                        event: val.event,
-                        user_id: val.user_id,
+                        event: enriched_event.clone(),
+                        user_id,
                     };
                     if let Some(filters) = filters {
                         if self.shoud_skip_event(&event, filters) {
@@ -123,6 +124,13 @@ impl GameEventIteratorState {
                             return None;
                         }
                     }
+                    tracing::info!(
+                        "Game [{:>08}]: uid: {} Evt:{:?} Hint:{:?}",
+                        self.event_loop,
+                        user_id,
+                        enriched_event,
+                        updated_hint
+                    );
                     return Some(SC2EventIteratorItem::new(event, updated_hint));
                 }
                 Err(S2ProtocolError::UnsupportedEventType) => {}
@@ -138,16 +146,18 @@ impl GameEventIteratorState {
 
     /// Returns true if the event should be skipped based on the filters
     fn shoud_skip_event(&self, event: &SC2EventType, filters: &SC2ReplayFilters) -> bool {
+        // BUG: THis isn't woking, the event is handled in the state, however afterwards the unit
+        // is not in the sc2state.units hashmap?
         if let Some(min_loop) = filters.min_loop {
-            if let SC2EventType::Tracker { tracker_loop, .. } = event {
-                if *tracker_loop < min_loop {
+            if let SC2EventType::Game { game_loop, .. } = event {
+                if *game_loop < min_loop {
                     return true;
                 }
             }
         }
         if let Some(max_loop) = filters.max_loop {
-            if let SC2EventType::Tracker { tracker_loop, .. } = event {
-                if *tracker_loop > max_loop {
+            if let SC2EventType::Game { game_loop, .. } = event {
+                if *game_loop > max_loop {
                     return true;
                 }
             }
@@ -169,12 +179,18 @@ pub struct GameEventIterator {
     iterator_state: GameEventIteratorState,
     /// The filters to the iterator
     filters: Option<SC2ReplayFilters>,
+    /// The versioned abilities
+    abilities: HashMap<String, VersionedBalanceUnit>,
 }
 
 impl GameEventIterator {
     /// Creates a new GameEventIterator from a PathBuf
     #[tracing::instrument(level = "debug")]
-    pub fn new(source: &PathBuf) -> Result<Self, S2ProtocolError> {
+    pub fn new(
+        source: &PathBuf,
+        multi_version_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+    ) -> Result<Self, S2ProtocolError> {
+        let mut abilities: HashMap<String, VersionedBalanceUnit> = HashMap::new();
         tracing::info!("Processing {:?}", source);
         let source_filename = format!("{source:?}");
         let file_contents = crate::read_file(source)?;
@@ -182,10 +198,21 @@ impl GameEventIterator {
         let (_tail, proto_header) = crate::read_protocol_header(&mpq)?;
         let (_event_tail, game_events) =
             mpq.read_mpq_file_sector("replay.game.events", false, &file_contents)?;
+        for ((version, id), unit) in multi_version_abilities {
+            if *version == proto_header.m_version.m_base_build {
+                abilities.insert(id.to_string(), unit.clone());
+            }
+        }
+        tracing::info!(
+            "Collected {} unit abilities for protocol version {}",
+            abilities.len(),
+            proto_header.m_version.m_base_build
+        );
         Self::from_versioned_mpq(
             source_filename,
             game_events,
             proto_header.m_version.m_base_build,
+            abilities,
         )
     }
 
@@ -195,11 +222,17 @@ impl GameEventIterator {
         source_filename: String,
         game_events: Vec<u8>,
         protocol_version: u32,
+        abilities: HashMap<String, VersionedBalanceUnit>,
     ) -> Result<Self, S2ProtocolError> {
         let sc2_state = SC2ReplayState {
             filename: source_filename,
             ..Default::default()
         };
+        tracing::warn!(
+            "Collected {} abilities for protocol version {}",
+            abilities.len(),
+            protocol_version
+        );
         Ok(Self {
             protocol_version,
             sc2_state,
@@ -209,7 +242,8 @@ impl GameEventIterator {
                 byte_index: 0,
                 bit_index: 0,
             },
-            ..Default::default()
+            abilities,
+            filters: Default::default(),
         })
     }
 
@@ -298,6 +332,7 @@ impl Iterator for GameEventIterator {
             self.protocol_version,
             &mut self.sc2_state,
             &mut self.filters,
+            &self.abilities,
         )
     }
 }
