@@ -122,6 +122,9 @@ $ cargo run --features syntax,dep_ratatui -- --max-loop 1000 --color --source /m
 
 ## Interacting with polars
 
+### TODO:
+- The UpdateTargetPoint Cmd arrow snapshot should contain the unit name, otherwise kindof to have an ability withouth it.
+
 ### Generating the IPC Arrow datasets
 
 In the directory ipcs/ one .ipc file will be created per implemented data type.
@@ -133,23 +136,22 @@ For 17K replays (2.3 GBs) it takes 120 seconds to parse/transform/split them. YM
 ```bash
 $ mkdir ipcs/
 $ cargo watch -i ipcs -x "run -r -- -v error --timing --source $HOME/SCReplaysOnNVMe --xml-balance-data-dir $HOME/SC2Replays/BalanceData/ --output $HOME/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 1000000"
-11386 files have valid init data, processing...
-Total time: 116.254317547s
+36752 files have valid init data, processing...
+Total time: 280.125785662s
 $ du -sh ipcs
-12G     ipcs
-
-❯ ls -ltra ipcs/
-total 11942492
-drwxr-xr-x  2 seb seb       4096 Jul  5 13:53 .
-drwxr-xr-x 11 seb seb       4096 Jul  7 19:26 ..
--rw-r--r--  1 seb seb    6300626 Jul  7 19:28 init_data.ipc
--rw-r--r--  1 seb seb    4104282 Jul  7 19:28 details.ipc
--rw-r--r--  1 seb seb  879061082 Jul  7 19:28 stats.ipc
--rw-r--r--  1 seb seb   42656986 Jul  7 19:28 upgrades.ipc
--rw-r--r--  1 seb seb 6262789202 Jul  7 19:29 unit_born.ipc
--rw-r--r--  1 seb seb 4241504290 Jul  7 19:29 unit_died.ipc
--rw-r--r--  1 seb seb  538273098 Jul  7 19:30 cmd_target_point.ipc
--rw-r--r--  1 seb seb  254371282 Jul  7 19:30 cmd_target_unit.ipc
+20G     ipcs
+$ ls -ltra ipc
+total 20575896
+drwxr-xr-x 11 seb seb       4096 Aug 16 18:14 ..
+drwxr-xr-x  2 seb seb       4096 Aug 17 18:27 .
+-rw-r--r--  1 seb seb  117183106 Aug 17 19:35 lobby_init_data.ipc
+-rw-r--r--  1 seb seb   10095306 Aug 17 19:35 details.ipc
+-rw-r--r--  1 seb seb 2173322874 Aug 17 19:35 stats.ipc
+-rw-r--r--  1 seb seb  179426002 Aug 17 19:35 upgrades.ipc
+-rw-r--r--  1 seb seb 9958263882 Aug 17 19:36 unit_born.ipc
+-rw-r--r--  1 seb seb 5859714578 Aug 17 19:37 unit_died.ipc
+-rw-r--r--  1 seb seb 1950258354 Aug 17 19:38 cmd_target_point.ipc
+-rw-r--r--  1 seb seb  821400850 Aug 17 19:39 cmd_target_unit.ipc
 ```
 
 ### Jupyter Notebooks
