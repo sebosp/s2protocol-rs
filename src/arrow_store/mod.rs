@@ -14,7 +14,6 @@ use rayon::prelude::*;
 use crate::cli::get_matching_files;
 use crate::details::Details;
 use crate::details::PlayerDetailsFlatRow;
-use crate::game_events::GameEventIterator;
 use crate::game_events::VersionedBalanceUnit;
 use crate::tracker_events::{self, TrackerEventIterator};
 use crate::*;
@@ -290,7 +289,8 @@ impl ArrowIpcTypes {
             .filter_map(|source| {
                 let details = Details::try_from(source).ok()?;
                 let source_path = PathBuf::from(&source.ext_fs_file_name);
-                let game_events = GameEventIterator::new(&source_path, versioned_abilities).ok()?;
+                let game_events =
+                    SC2EventIterator::new(&source_path, versioned_abilities.clone()).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::CmdTargetPoint => {
                         let batch =
@@ -386,7 +386,7 @@ impl ArrowIpcTypes {
         cmd: &WriteArrowIpcProps,
         unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        tracing::info!(
+        println!(
             "Processing Arrow write request with scan_max_files: {}, traverse_max_depth: {}, process_max_files: {}, min_version: {:?}, max_version: {:?}",
             cmd.scan_max_files,
             cmd.process_max_files,
