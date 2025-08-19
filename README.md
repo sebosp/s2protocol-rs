@@ -38,9 +38,9 @@ Event changes transist a minimal state machine that updates:
 - Attack events
 - etc.
 
-The iterators returns a tuple `(SC2EventType, UnitChangeHint)`
-The first item contains the event itself as it was deserialized from the SC2Replay.
-The second item hints the consumers of the iterator about the changes performed to the state machine due to this event.
+The iterators returns a struct of type `SC2EventIteratorItem`.
+The `event` field contains the event itself as it was deserialized from the SC2Replay.
+The `change_hint` field hints the consumers of the iterator about the changes performed to the state machine due to this event.
 For example, units may have been deleted, added, changed position, etc.
 
 ```rust
@@ -50,6 +50,58 @@ for (event, change_hint) in res.into_iter() {
     println!("{},", serde_json::to_string(&event)?);
 }
 ```
+
+## Balance Data
+
+Units perform abilities that are specific to different patches.
+The SCII Editor allows the balance data to be exported.
+This includes:
+- The abilities for each unit (in XML format)
+- The ability Icons in DDS format
+- The map in .tga format.
+So, a unit, say, for an Overlord, may run ability link "43", within this ability, a command indexed as "1",
+Inside the `Overlord.xml` there is:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<unit id="Overlord">
+  <abilities>
+    <ability id="move" index="43">
+      <command id="Move" index="0">
+        <! <meta icon, hotkey, range, etc -->
+      </command>
+      <command id="Patrol" index="1">
+        <! <meta icon, hotkey, range, etc -->
+      </command>
+    </ability>
+  </abilities>
+</unit>
+```
+
+To use the exported balance data, data must be exported and stored in per-version directory with the following structure:
+`<somepath>/94137/BalanceData/Overlord.xml`
+where `94137` is the version of the exported XMLs.
+
+To use such exported data, the `--xml-balance-data-dir` must be used. This will be traversed at startup and the data loaded into memory for potentially multiple versions will be used to try to translate the event data into strings.
+For example:
+
+```
+$ cargo run -- --source assets/FieldsDeath202507.SC2Replay --max-events 450 --color --xml-balance-data-dir $HOME/SC2Replays/BalanceData/ --verbosity-level info get transist-events
+     Running `target/debug/s2protocol --source assets/FieldsDeath202507.SC2Replay --max-events 450 --color --xml-balance-data-dir /home/seb/SC2Replays/BalanceData/ --verbosity-level warning get transist-events`
+2025-08-17T16:08:08.989828Z  INFO s2protocol::cli: Using balance data directory: /home/seb/SC2Replays/BalanceData/
+2025-08-17T16:08:09.476143Z  INFO s2protocol::game_events::ability::xml_reader: Processed 1058 total units
+2025-08-17T16:08:09.476165Z  INFO s2protocol::cli: Processing "assets/FieldsDeath202507.SC2Replay"
+2025-08-17T16:08:09.477162Z  INFO s2protocol::cli: Transducing through both Game and Tracker Events
+2025-08-17T16:08:09.571608Z  INFO s2protocol::state: Collected 1058 unit abilities for protocol version 94137
+```
+
+If the XMLs for a specific version doesn't exist, all ability Strings will appear as "".
+
+### TODO:
+
+- When balance data is parsed from the XMLs, it should be exported as JSON and use the `--json-balance-data-dir` to load the serialized version of the XMLs, this could be stored in github for posterity.
+- Not all the data in the XMLs is currently loaded (see `./src/game_events/ability/mod.rs`)
+- `src/state/mod.rs` has an `SC2Unit` that could use all the data available in the XMLs/exported JSON.
 
 ## Displaying the replay on the terminal
 
@@ -62,12 +114,16 @@ $ cargo run --features syntax,dep_ratatui -- --max-loop 1000 --color --source /m
 [![Ratatui asciicast](https://asciinema.org/a/726584.svg)](https://asciinema.org/a/726584)
 
 ## BREAKING CHANGES
+
 - Feature `arrow`  has been renamed to `dep_arrow` as we now use the `arrow` crate.
 - Previously the generated arrow IPC files relied on a sha256 of the file as "key", this wasted a lot of space and has been changed into a sequential
   As a result, queries must use the new `ext_fs_id`, which also means all the files must be generated in bulk and are no longer independent.
   The IPCs then is valid as a snapshot generated as a whole.
 
 ## Interacting with polars
+
+### TODO:
+- The UpdateTargetPoint Cmd arrow snapshot should contain the unit name, otherwise kindof to have an ability withouth it.
 
 ### Generating the IPC Arrow datasets
 
@@ -79,24 +135,23 @@ For 17K replays (2.3 GBs) it takes 120 seconds to parse/transform/split them. YM
 
 ```bash
 $ mkdir ipcs/
-$ cargo run -r -- -v error --timing --source /home/seb/SCReplaysOnNVMe --output /home/seb/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 10000000 all
-11386 files have valid init data, processing...
-Total time: 116.254317547s
+$ cargo watch -i ipcs -x "run -r -- -v error --timing --source $HOME/SCReplaysOnNVMe --xml-balance-data-dir $HOME/SC2Replays/BalanceData/ --output $HOME/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 1000000"
+36752 files have valid init data, processing...
+Total time: 280.125785662s
 $ du -sh ipcs
-12G     ipcs
-
-❯ ls -ltra ipcs/
-total 11942492
-drwxr-xr-x  2 seb seb       4096 Jul  5 13:53 .
-drwxr-xr-x 11 seb seb       4096 Jul  7 19:26 ..
--rw-r--r--  1 seb seb    6300626 Jul  7 19:28 init_data.ipc
--rw-r--r--  1 seb seb    4104282 Jul  7 19:28 details.ipc
--rw-r--r--  1 seb seb  879061082 Jul  7 19:28 stats.ipc
--rw-r--r--  1 seb seb   42656986 Jul  7 19:28 upgrades.ipc
--rw-r--r--  1 seb seb 6262789202 Jul  7 19:29 unit_born.ipc
--rw-r--r--  1 seb seb 4241504290 Jul  7 19:29 unit_died.ipc
--rw-r--r--  1 seb seb  538273098 Jul  7 19:30 cmd_target_point.ipc
--rw-r--r--  1 seb seb  254371282 Jul  7 19:30 cmd_target_unit.ipc
+20G     ipcs
+$ ls -ltra ipc
+total 20575896
+drwxr-xr-x 11 seb seb       4096 Aug 16 18:14 ..
+drwxr-xr-x  2 seb seb       4096 Aug 17 18:27 .
+-rw-r--r--  1 seb seb  117183106 Aug 17 19:35 lobby_init_data.ipc
+-rw-r--r--  1 seb seb   10095306 Aug 17 19:35 details.ipc
+-rw-r--r--  1 seb seb 2173322874 Aug 17 19:35 stats.ipc
+-rw-r--r--  1 seb seb  179426002 Aug 17 19:35 upgrades.ipc
+-rw-r--r--  1 seb seb 9958263882 Aug 17 19:36 unit_born.ipc
+-rw-r--r--  1 seb seb 5859714578 Aug 17 19:37 unit_died.ipc
+-rw-r--r--  1 seb seb 1950258354 Aug 17 19:38 cmd_target_point.ipc
+-rw-r--r--  1 seb seb  821400850 Aug 17 19:39 cmd_target_unit.ipc
 ```
 
 ### Jupyter Notebooks

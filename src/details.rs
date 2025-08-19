@@ -9,6 +9,18 @@ use nom_mpq::MPQ;
 use crate::{error::S2ProtocolError, InitData};
 use serde::{Deserialize, Serialize};
 
+/* Removed fields:
+* player_handicap is always 100 in this dataset
+* difficulty is always empty
+* restart_as_transition map is always false
+* disable_recover_game is veeeeeeery rarely true, only 69 out 32K user-map-details.
+* description always empty
+* image_file_path always empty
+* campaign_index always 0
+* map_file_name always empty
+* mini_save always false
+*/
+
 /// A Flat row of PlayerDetails for Arrow usage.
 /// without the cache_handles and mod_paths.
 /// because I haven't seen what they are used for yet.
@@ -30,27 +42,15 @@ pub struct PlayerDetailsFlatRow {
     pub player_color_b: u8,
     pub player_control: u8,
     pub player_team_id: u8,
-    pub player_handicap: u32,
     pub player_observe: u8,
     pub player_result: u8,
     pub player_working_set_slot_id: Option<u8>,
     pub player_hero: String,
     pub title: String,
-    pub difficulty: String,
     pub is_blizzard_map: bool,
     pub time_utc: i64,
     pub time_local_offset: i64,
-    pub restart_as_transition_map: Option<bool>,
-    pub disable_recover_game: bool,
-    pub description: String,
-    pub image_file_path: String,
-    pub campaign_index: u8,
-    pub map_file_name: String,
-    pub mini_save: bool,
-    pub game_speed: u8,
-    pub default_difficulty: u32,
     pub ext_fs_id: u64,
-    pub ext_fs_replay_file_name: String,
     pub ext_datetime: chrono::NaiveDateTime,
 }
 
@@ -61,7 +61,6 @@ impl From<Details> for Vec<PlayerDetailsFlatRow> {
             .into_iter()
             .map(|player| PlayerDetailsFlatRow {
                 ext_fs_id: details.ext_fs_id,
-                ext_fs_replay_file_name: details.ext_fs_replay_file_name.clone(),
                 ext_datetime: details.ext_datetime,
                 player_name: player.name,
                 player_toon_region: player.toon.region,
@@ -75,25 +74,14 @@ impl From<Details> for Vec<PlayerDetailsFlatRow> {
                 player_color_b: player.color.b,
                 player_control: player.control,
                 player_team_id: player.team_id,
-                player_handicap: player.handicap,
                 player_observe: player.observe,
                 player_result: player.result,
                 player_working_set_slot_id: player.working_set_slot_id,
                 player_hero: player.hero,
                 title: details.title.clone(),
-                difficulty: details.difficulty.clone(),
                 is_blizzard_map: details.is_blizzard_map,
                 time_utc: details.time_utc,
                 time_local_offset: details.time_local_offset,
-                restart_as_transition_map: details.restart_as_transition_map,
-                disable_recover_game: details.disable_recover_game,
-                description: details.description.clone(),
-                image_file_path: details.image_file_path.clone(),
-                campaign_index: details.campaign_index,
-                map_file_name: details.map_file_name.clone(),
-                mini_save: details.mini_save,
-                game_speed: details.game_speed,
-                default_difficulty: details.default_difficulty,
             })
             .collect()
     }
@@ -106,7 +94,6 @@ impl From<Details> for Vec<PlayerDetailsFlatRow> {
 )]
 pub struct Details {
     pub ext_fs_id: u64,
-    pub ext_fs_replay_file_name: String,
     pub ext_datetime: chrono::NaiveDateTime,
     pub player_list: Vec<PlayerDetails>,
     pub title: String,
@@ -143,15 +130,14 @@ impl Details {
                 return Err(err);
             }
         };
-        Ok(details.set_metadata(ext_fs_id, file_name))
+        Ok(details.set_metadata(ext_fs_id))
     }
 
     /// Sets the metadata related to the filesystem entry and the replay time
-    pub fn set_metadata(mut self, ext_fs_id: u64, file_name: &str) -> Self {
+    pub fn set_metadata(mut self, ext_fs_id: u64) -> Self {
         self.ext_datetime = crate::transform_to_naivetime(self.time_utc, self.time_local_offset)
             .unwrap_or_default();
         self.ext_fs_id = ext_fs_id;
-        self.ext_fs_replay_file_name = file_name.to_string();
         self
     }
 
@@ -190,7 +176,7 @@ impl TryFrom<&InitData> for Details {
     type Error = S2ProtocolError;
 
     fn try_from(init: &InitData) -> Result<Self, Self::Error> {
-        let path = PathBuf::from(init.file_name.clone());
+        let path = PathBuf::from(init.ext_fs_file_name.clone());
         let file_contents = crate::read_file(&path)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
         Self::new(

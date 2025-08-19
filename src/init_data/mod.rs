@@ -27,9 +27,9 @@ pub struct InitData {
     /// The snapshot sequential
     pub ext_fs_id: u64,
     /// The sha256 of the file, prevent duplicates and provide a unique identifier
-    pub sha256: String,
+    pub ext_fs_sha256: String,
     /// The file name
-    pub file_name: String,
+    pub ext_fs_file_name: String,
     /// The version of the protocol
     pub version: u32,
     /// The lobby state
@@ -51,8 +51,8 @@ impl InitData {
 
     #[tracing::instrument(level = "debug", skip(file_contents))]
     pub fn set_metadata(mut self, file_name: &str, ext_fs_id: u64, file_contents: &[u8]) -> Self {
-        self.sha256 = sha256::digest(file_contents);
-        self.file_name = file_name.to_string();
+        self.ext_fs_sha256 = sha256::digest(file_contents);
+        self.ext_fs_file_name = file_name.to_string();
         self.ext_fs_id = ext_fs_id;
         self
     }
@@ -60,13 +60,6 @@ impl InitData {
     #[tracing::instrument(level = "error")]
     pub fn set_version(&mut self, version: u32) {
         self.version = version;
-    }
-
-    /// Trim the sha to n characters, this is done to reduce the size of the generated files
-    /// because every sha is unique and we don't need the full sha to identify the file.
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub fn trim_sha(&mut self, n: usize) {
-        self.sha256 = self.sha256.chars().take(n).collect()
     }
 }
 

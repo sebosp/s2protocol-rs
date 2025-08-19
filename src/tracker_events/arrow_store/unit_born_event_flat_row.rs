@@ -19,8 +19,8 @@ pub struct UnitBornEventFlatRow {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,
     pub unit_type_name: String,
-    pub control_player_id: u8,
-    pub upkeep_player_id: u8,
+    pub control_player_id: Option<u8>,
+    pub upkeep_player_id: Option<u8>,
     pub x: f32,
     pub y: f32,
     pub creator_unit_tag_index: Option<u32>,
@@ -41,22 +41,22 @@ impl UnitBornEventFlatRow {
         ext_replay_loop: i64,
         details: &crate::details::Details,
         change_hint: UnitChangeHint,
-    ) -> Self {
+    ) -> Option<Self> {
         let (_unit, creator) = match change_hint {
             UnitChangeHint::Registered { unit, creator } => (unit, creator),
-            _ => unreachable!(),
+            _ => return None,
         };
         let creator_unit_type_name = match creator {
             Some(val) => Some(val.name.clone()),
             None => None,
         };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        Self {
+        Some(Self {
             unit_tag_index: event.unit_tag_index,
             unit_tag_recycle: event.unit_tag_recycle,
             unit_type_name: event.unit_type_name,
-            control_player_id: event.control_player_id,
-            upkeep_player_id: event.upkeep_player_id,
+            control_player_id: Some(event.control_player_id),
+            upkeep_player_id: Some(event.upkeep_player_id),
             x: event.x as f32,
             y: event.y as f32,
             creator_unit_tag_index: event.creator_unit_tag_index,
@@ -66,7 +66,7 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
-        }
+        })
     }
 
     /// Create a new UnitBornEventFlatRow from a UnitDoneEvent.
@@ -78,22 +78,23 @@ impl UnitBornEventFlatRow {
         ext_replay_loop: i64,
         details: &crate::details::Details,
         change_hint: UnitChangeHint,
-    ) -> Self {
+    ) -> Option<Self> {
+        // NOTE: It seems this can be "None" but our code (state) may not be able to handle this.
         let (unit, creator) = match change_hint {
             UnitChangeHint::Registered { unit, creator } => (unit, creator),
-            _ => unreachable!(),
+            _ => return None,
         };
         let creator_unit_type_name = match creator {
             Some(val) => Some(val.name.clone()),
             None => None,
         };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        Self {
+        Some(Self {
             unit_tag_index: event.unit_tag_index,
             unit_tag_recycle: event.unit_tag_recycle,
             unit_type_name: unit.name,
-            control_player_id: unit.user_id.unwrap_or(99),
-            upkeep_player_id: unit.user_id.unwrap_or(99),
+            control_player_id: unit.user_id,
+            upkeep_player_id: unit.user_id,
             x: unit.pos.x(),
             y: unit.pos.y(),
             creator_unit_tag_index: None,
@@ -103,7 +104,7 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
-        }
+        })
     }
 
     /// Create a new UpgradeEventFlatRow from a UnitTypeChange.
@@ -114,22 +115,22 @@ impl UnitBornEventFlatRow {
         ext_replay_loop: i64,
         details: &crate::details::Details,
         change_hint: UnitChangeHint,
-    ) -> Self {
+    ) -> Option<Self> {
         let (unit, creator) = match change_hint {
             UnitChangeHint::Registered { unit, creator } => (unit, creator),
-            _ => unreachable!(),
+            _ => return None,
         };
         let creator_unit_type_name = match creator {
             Some(val) => Some(val.name.clone()),
             None => None,
         };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        Self {
+        Some(Self {
             unit_tag_index: event.unit_tag_index,
             unit_tag_recycle: event.unit_tag_recycle,
             unit_type_name: unit.name,
-            control_player_id: unit.user_id.unwrap_or(99),
-            upkeep_player_id: unit.user_id.unwrap_or(99),
+            control_player_id: unit.user_id,
+            upkeep_player_id: unit.user_id,
             x: unit.pos.x(),
             y: unit.pos.y(),
             creator_unit_tag_index: None,
@@ -139,6 +140,6 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
-        }
+        })
     }
 }

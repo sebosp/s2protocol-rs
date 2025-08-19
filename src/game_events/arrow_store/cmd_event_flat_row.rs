@@ -3,15 +3,8 @@
 #[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
+use crate::game_events::GameSCmdData;
 use crate::game_events::GameSCmdEvent;
-use crate::game_events::{
-    GameSCmdData,
-    // GameSCmdDataTargetUnit,
-    GameSMapCoord3D,
-    GameTPlayerId,
-    GameTUnitLink,
-    GameTUnitTag,
-};
 use serde::{Deserialize, Serialize};
 
 /// Arrow compatible Cmd Event for Target Point
@@ -22,12 +15,15 @@ use serde::{Deserialize, Serialize};
 )]
 pub struct CmdTargetPointEventFlatRow {
     pub user_id: i64,
-    pub m_cmd_flags: i64,
-    pub m_abil: String,
-    pub target_point: GameSMapCoord3D,
-    pub m_sequence: i64,
-    pub m_other_unit: Option<u32>,
-    pub m_unit_group: Option<u32>,
+    pub cmd_flags: i64,
+    pub abil_link: Option<u16>,
+    pub abil_cmd_index: Option<i64>,
+    pub ability: String,
+    pub target_point_x: i64,
+    pub target_point_y: i64,
+    pub target_point_z: i32,
+    pub sequence: i64,
+    pub unit_group: Option<u32>,
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
     pub ext_fs_id: u64,
@@ -41,27 +37,31 @@ impl CmdTargetPointEventFlatRow {
         game_loop: i64,
         user_id: i64,
         _change_hint: crate::UnitChangeHint,
-    ) -> Self {
+    ) -> Option<Self> {
         let map_coord = match event.m_data {
             GameSCmdData::TargetPoint(map_coord) => map_coord.clone(),
-            _ => unreachable!(),
+            _ => return None,
         };
         let ext_replay_seconds = crate::convert_game_loop_to_seconds(game_loop);
-        Self {
+        Some(Self {
             user_id,
-            m_cmd_flags: event.m_cmd_flags,
-            m_abil: match event.m_abil {
-                Some(abil) => abil.ability.clone(),
-                None => String::new(),
-            },
-            target_point: map_coord.clone(),
-            m_sequence: event.m_sequence,
-            m_other_unit: event.m_other_unit,
-            m_unit_group: event.m_unit_group,
+            cmd_flags: event.m_cmd_flags,
+            abil_link: event.m_abil.as_ref().map(|abil| abil.m_abil_link),
+            ability: event
+                .m_abil
+                .as_ref()
+                .map(|abil| abil.ability.clone())
+                .unwrap_or_default(),
+            abil_cmd_index: event.m_abil.as_ref().map(|abil| abil.m_abil_cmd_index),
+            target_point_x: map_coord.x,
+            target_point_y: map_coord.y,
+            target_point_z: map_coord.z,
+            sequence: event.m_sequence,
+            unit_group: event.m_unit_group,
             ext_replay_loop: game_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
-        }
+        })
     }
 }
 
@@ -73,18 +73,19 @@ impl CmdTargetPointEventFlatRow {
 )]
 pub struct CmdTargetUnitEventFlatRow {
     pub user_id: i64,
-    pub m_cmd_flags: i64,
-    pub m_abil: String,
-    pub m_target_unit_flags: u16,
-    pub m_timer: u8,
-    pub m_tag: GameTUnitTag,
-    pub m_snapshot_unit_link: GameTUnitLink,
-    pub m_snapshot_control_player_id: Option<GameTPlayerId>,
-    pub m_snapshot_upkeep_player_id: Option<GameTPlayerId>,
-    pub m_snapshot_point: GameSMapCoord3D,
-    pub m_sequence: i64,
-    pub m_other_unit: Option<GameTUnitTag>,
-    pub m_unit_group: Option<u32>,
+    pub cmd_flags: i64,
+    pub abil_link: Option<u16>,
+    pub abil_cmd_index: Option<i64>,
+    pub ability: String,
+    pub target_unit_flags: u16,
+    pub tag: u32,
+    pub snapshot_unit_link: u16,
+    pub snapshot_control_player_id: Option<i64>,
+    pub snapshot_upkeep_player_id: Option<i64>,
+    pub snapshot_point_x: i64,
+    pub snapshot_point_y: i64,
+    pub snapshot_point_z: i32,
+    pub sequence: i64,
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
     pub ext_fs_id: u64,
@@ -98,32 +99,34 @@ impl CmdTargetUnitEventFlatRow {
         game_loop: i64,
         user_id: i64,
         _change_hint: crate::UnitChangeHint,
-    ) -> Self {
+    ) -> Option<Self> {
         let unit = match event.m_data {
             GameSCmdData::TargetUnit(unit) => unit.clone(),
-            _ => unreachable!(),
+            _ => return None,
         };
         let ext_replay_seconds = crate::convert_game_loop_to_seconds(game_loop);
-        Self {
+        Some(Self {
             user_id,
-            m_cmd_flags: event.m_cmd_flags,
-            m_abil: match event.m_abil {
-                Some(abil) => abil.ability.clone(),
-                None => String::new(),
-            },
-            m_target_unit_flags: unit.m_target_unit_flags,
-            m_timer: unit.m_timer,
-            m_tag: unit.m_tag,
-            m_snapshot_unit_link: unit.m_snapshot_unit_link,
-            m_snapshot_control_player_id: unit.m_snapshot_control_player_id,
-            m_snapshot_upkeep_player_id: unit.m_snapshot_upkeep_player_id,
-            m_snapshot_point: unit.m_snapshot_point,
-            m_sequence: event.m_sequence,
-            m_other_unit: event.m_other_unit,
-            m_unit_group: event.m_unit_group,
+            cmd_flags: event.m_cmd_flags,
+            abil_link: event.m_abil.as_ref().map(|abil| abil.m_abil_link),
+            abil_cmd_index: event.m_abil.as_ref().map(|abil| abil.m_abil_cmd_index),
+            ability: event
+                .m_abil
+                .as_ref()
+                .map(|abil| abil.ability.clone())
+                .unwrap_or_default(),
+            target_unit_flags: unit.m_target_unit_flags,
+            tag: unit.m_tag,
+            snapshot_unit_link: unit.m_snapshot_unit_link,
+            snapshot_control_player_id: unit.m_snapshot_control_player_id,
+            snapshot_upkeep_player_id: unit.m_snapshot_upkeep_player_id,
+            snapshot_point_x: unit.m_snapshot_point.x,
+            snapshot_point_y: unit.m_snapshot_point.y,
+            snapshot_point_z: unit.m_snapshot_point.z,
+            sequence: event.m_sequence,
             ext_replay_loop: game_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
-        }
+        })
     }
 }

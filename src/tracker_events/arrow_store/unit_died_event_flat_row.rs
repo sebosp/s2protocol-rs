@@ -38,7 +38,7 @@ impl UnitDiedEventFlatRow {
         event: UnitDiedEvent,
         ext_replay_loop: i64,
         change_hint: UnitChangeHint,
-    ) -> Self {
+    ) -> Option<Self> {
         let (unit_killer_name, unit_died_name) = match change_hint {
             UnitChangeHint::Unregistered { killer, killed } => {
                 let unit_killer_name = match killer {
@@ -47,10 +47,10 @@ impl UnitDiedEventFlatRow {
                 };
                 (unit_killer_name, killed.name)
             }
-            _ => unreachable!(),
+            _ => return None,
         };
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
-        Self {
+        Some(Self {
             unit_died_name,
             unit_tag_index: event.unit_tag_index,
             unit_tag_recycle: event.unit_tag_recycle,
@@ -63,6 +63,6 @@ impl UnitDiedEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
-        }
+        })
     }
 }

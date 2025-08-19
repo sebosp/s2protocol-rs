@@ -3,8 +3,9 @@
 
 use crate::dbg_peek_bits;
 use crate::peek_bits;
+use crate::S2ProtoResult;
+use crate::S2ProtocolError;
 use nom::bits::complete::take;
-use nom::*;
 
 /// Takes n bits from the input bytes.
 /// The bits are taken counting from right to left.
@@ -12,7 +13,7 @@ use nom::*;
 /// The caller must call the normal take process afterwards.
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
 #[allow(clippy::let_and_return)]
-pub fn rtake_n_bits(input: (&[u8], usize), count: usize) -> IResult<(&[u8], usize), u8> {
+pub fn rtake_n_bits(input: (&[u8], usize), count: usize) -> S2ProtoResult<(&[u8], usize), u8> {
     let res = if input.1 + count > 8usize {
         // We need to process the current left-over bits (from the left)
         let (_, res0) = take::<&[u8], u8, usize, _>(8usize - input.1)((input.0, 0usize))?;
@@ -40,8 +41,10 @@ pub fn rtake_n_bits(input: (&[u8], usize), count: usize) -> IResult<(&[u8], usiz
 pub fn take_n_bits_into_i64(
     input: (&[u8], usize),
     total_bits: usize,
-) -> IResult<(&[u8], usize), i64> {
-    assert!(total_bits <= 64);
+) -> S2ProtoResult<(&[u8], usize), i64> {
+    if total_bits > 64 {
+        return Err(S2ProtocolError::BitPackedMoreThan64Bits(total_bits));
+    }
     let mut res = 0i64;
     let mut remaining_bits = total_bits;
     let mut tail = input;
@@ -77,7 +80,7 @@ pub fn take_n_bits_into_i64(
 pub fn take_bit_array(
     input: (&[u8], usize),
     total_bits: usize,
-) -> IResult<(&[u8], usize), Vec<u8>> {
+) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
     let mut res = vec![];
     let mut remaining_bits = total_bits;
     let mut tail = input;
@@ -104,7 +107,7 @@ pub fn take_bit_array(
 
 /// Takes the remainder of bits in the current input to align the input to a byte boundary.
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
-pub fn byte_align(input: (&[u8], usize)) -> IResult<(&[u8], usize), ()> {
+pub fn byte_align(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), ()> {
     if input.1 != 0 {
         let (tail, _) =
             dbg_peek_bits(take::<&[u8], u8, usize, _>(8usize - input.1), "byte_align")(input)?;
@@ -118,7 +121,7 @@ pub fn byte_align(input: (&[u8], usize)) -> IResult<(&[u8], usize), ()> {
 
 /// Takes 1 unaligned bytes
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
-pub fn take_unaligned_byte(input: (&[u8], usize)) -> IResult<(&[u8], usize), u8> {
+pub fn take_unaligned_byte(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), u8> {
     let (tail, res) = take_bit_array(input, 8usize)?;
     tracing::debug!("take_unaligned_byte: {:?}", res[0]);
     Ok((tail, res[0]))
@@ -126,7 +129,7 @@ pub fn take_unaligned_byte(input: (&[u8], usize)) -> IResult<(&[u8], usize), u8>
 
 /// Takes 4 unaligned bytes
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
-pub fn take_fourcc(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
+pub fn take_fourcc(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Vec<u8>> {
     let (tail, res) = take_bit_array(input, 4usize * 8usize)?;
     tracing::debug!("take_fourcc: {:?}", res);
     Ok((tail, res))
@@ -134,7 +137,7 @@ pub fn take_fourcc(input: (&[u8], usize)) -> IResult<(&[u8], usize), Vec<u8>> {
 
 /// Just a function that would be called when a null is needed, this is for debugging purposes
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
-pub fn take_null(input: (&[u8], usize)) -> IResult<(&[u8], usize), ()> {
+pub fn take_null(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), ()> {
     tracing::debug!("take_null");
     Ok((input, ()))
 }
@@ -146,7 +149,7 @@ pub fn parse_packed_int(
     input: (&[u8], usize),
     offset: i64,
     num_bits: usize,
-) -> IResult<(&[u8], usize), i64> {
+) -> S2ProtoResult<(&[u8], usize), i64> {
     let (tail, num) = take_n_bits_into_i64(input, num_bits)?;
     let res = offset + num;
     tracing::debug!("parse_packed_int: {}", res);
@@ -155,7 +158,7 @@ pub fn parse_packed_int(
 
 /// Reads a single bit and transforms into a bool.
 #[tracing::instrument(level = "debug", skip(input), fields(input = peek_bits(input)))]
-pub fn parse_bool(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
+pub fn parse_bool(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), bool> {
     let (_, val) = rtake_n_bits(input, 1usize)?;
     let (tail, _) = dbg_peek_bits(take::<&[u8], u8, usize, _>(1usize), "take_bit_for_bool")(input)?;
     tracing::debug!("parse_bool: {}", val != 0);

@@ -47,6 +47,9 @@ pub enum S2ProtocolError {
     /// Conversion to UTF-8 failed, from the `Vec<u8>` "name" fields in the proto fields
     #[error("Utf8 conversion error")]
     Utf8Error(#[from] std::str::Utf8Error),
+    /// The data structure tag is not recognized
+    #[error("BitPackedTooLarge: {0}")]
+    BitPackedMoreThan64Bits(usize),
 }
 
 /// Conversion of errors from byte aligned parser

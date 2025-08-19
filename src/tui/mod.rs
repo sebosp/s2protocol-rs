@@ -4,7 +4,10 @@
 //! https://github.com/ratatui/ratatui/blob/main/examples/apps/canvas/src/main.rs
 //!
 
-use crate::state::{SC2EventIterator, SC2EventType, UnitChangeHint};
+use crate::{
+    state::{SC2EventIterator, SC2EventType, UnitChangeHint},
+    SC2EventIteratorItem,
+};
 use std::{
     io::stdout,
     time::{Duration, Instant},
@@ -64,7 +67,7 @@ struct S2ProtoRatatuiApp {
     is_drawing: bool,
     details: crate::details::Details,
     sc2_event_iter: SC2EventIterator,
-    current_event: Option<(SC2EventType, UnitChangeHint)>,
+    current_event: Option<SC2EventIteratorItem>,
 }
 
 impl S2ProtoRatatuiApp {
@@ -156,13 +159,13 @@ impl S2ProtoRatatuiApp {
 
     fn event_canvas(&self) -> impl Widget + '_ {
         let mut text: Vec<Line<'_>> = vec![];
-        if let Some((event_type, hint)) = &self.current_event {
-            match event_type {
+        if let Some(event_item) = &self.current_event {
+            match event_item.event_type {
                 SC2EventType::Tracker {
                     event: _,
                     tracker_loop,
                 } => {
-                    let game_secs = *tracker_loop as f64 / 22.0;
+                    let game_secs = tracker_loop as f64 / 22.0;
                     text.push(text::Line::from(Span::from(format!(
                         "TRCK[{game_secs:>10.3}s][{tracker_loop:0>8}]: "
                     ))));
@@ -172,13 +175,13 @@ impl S2ProtoRatatuiApp {
                     user_id: _,
                     game_loop,
                 } => {
-                    let game_secs = *game_loop as f64 / 22.0;
+                    let game_secs = game_loop as f64 / 22.0;
                     text.push(text::Line::from(Span::from(format!(
                         "GAME[{game_secs:>10.3}s][{game_loop:0>8}]: "
                     ))));
                 }
             }
-            match hint {
+            match &event_item.change_hint {
                 UnitChangeHint::Registered { unit, creator } => {
                     text.push(text::Line::from(Span::styled(
                         "Registered: ",

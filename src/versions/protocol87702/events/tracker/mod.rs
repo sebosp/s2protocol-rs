@@ -72,9 +72,13 @@ impl TryFrom<ReplayTrackerEEventId> for ReplayTrackerEvent {
 impl TryFrom<ReplayTrackerSUpgradeEvent> for ReplayTrackerEvent {
     type Error = S2ProtocolError;
     fn try_from(source: ReplayTrackerSUpgradeEvent) -> Result<Self, Self::Error> {
+        let upgrade_type_name = match str::from_utf8(&source.m_upgrade_type_name) {
+            Ok(val) => val.to_string(),
+            Err(_) => format!("{:?}", source.m_upgrade_type_name),
+        };
         Ok(ReplayTrackerEvent::Upgrade(UpgradeEvent {
             player_id: source.m_player_id,
-            upgrade_type_name: str::from_utf8(&source.m_upgrade_type_name)?.to_string(),
+            upgrade_type_name,
             count: source.m_count,
         }))
     }

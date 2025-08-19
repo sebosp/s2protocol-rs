@@ -64,7 +64,6 @@ impl TryFrom<GameSDetails> for Details {
             default_difficulty: source.m_default_difficulty,
             mod_paths,
             ext_fs_id: 0u64, // The ext_fs_id is filled later by `set_metadata`
-            ext_fs_replay_file_name: String::new(), // The ext_fs_replay_file_name is filled later by `set_metadata`
             ext_datetime: chrono::NaiveDateTime::default(), // The ext_datetime is filled later by `set_metadata`
         })
     }
