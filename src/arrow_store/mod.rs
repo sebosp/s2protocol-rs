@@ -14,20 +14,21 @@ use rayon::prelude::*;
 use crate::cli::get_matching_files;
 use crate::details::Details;
 use crate::details::PlayerDetailsFlatRow;
-use crate::game_events::GameEventIterator;
+use crate::game_events::VersionedBalanceUnit;
 use crate::tracker_events::{self, TrackerEventIterator};
 use crate::*;
 use clap::Subcommand;
 use std::path::PathBuf;
 pub mod ipc_writer;
 use ipc_writer::*;
-use std::collections::HashSet;
 
 /// The supported Arrow IPC types
 #[derive(Debug, Subcommand, Clone)]
 pub enum ArrowIpcTypes {
-    /// Writes the [`crate::init_data::InitData`] flat row to an Arrow IPC file
-    InitData,
+    /// Writes the [`crate::init_data::UserInitDataFlatRow`] flat row to an Arrow IPC file
+    UserInitData,
+    /// Writes the [`crate::init_data::LobbySlotInitDataFlatRow`] flat row to an Arrow IPC file
+    LobbySlotInitData,
     /// Writes the [`crate::details::PlayerDetailsFlatRow`] flat row to an Arrow IPC file
     Details,
     /// Writes the [`crate::tracker_events::PlayerStatsEvent`] to an Arrow IPC file
@@ -52,8 +53,15 @@ impl ArrowIpcTypes {
     /// Returns the schema for the chosen output type
     pub fn schema(&self) -> Schema {
         match self {
-            Self::InitData => {
+            Self::UserInitData => {
                 if let DataType::Struct(fields) = init_data::UserInitDataFlatRow::data_type() {
+                    Schema::new(fields.clone())
+                } else {
+                    panic!("Invalid schema, expected struct");
+                }
+            }
+            Self::LobbySlotInitData => {
+                if let DataType::Struct(fields) = init_data::LobbySlotInitDataFlatRow::data_type() {
                     Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
@@ -127,36 +135,47 @@ impl ArrowIpcTypes {
     /// Two things todo:
     /// First delete all the files in the snapshot directory.
     /// Add a snashopt generation timestamp and when reads are done, they are checked for
-    /// very basic timepstamp write consistency.
+    /// very basic timestamp write consistency.
     #[tracing::instrument(level = "debug")]
     pub fn handle_write_snapshot(
         sources: Vec<InitData>,
         output: PathBuf,
+        unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if !output.is_dir() {
             panic!("Output must be a directory for types 'all'");
         }
         // output must be a directory, for this directory we will create the following files:
-        // init_data.ipc
         // details.ipc
         // stats.ipc
         // upgrades.ipc
         // unit_born.ipc
-        Self::InitData.handle_init_data_ipc_cmd(sources.clone(), output.join("init_data.ipc"))?;
+        // unit_cmd_target_point.ipc
+        // unit_cmd_target_unit.ipc
+        Self::LobbySlotInitData.handle_lobby_slot_init_data_ipc_cmd(
+            sources.clone(),
+            output.join("lobby_init_data.ipc"),
+        )?;
         Self::Details.handle_details_ipc_cmd(sources.clone(), output.join("details.ipc"))?;
         Self::Stats.handle_tracker_events(sources.clone(), output.join("stats.ipc"))?;
         Self::Upgrades.handle_tracker_events(sources.clone(), output.join("upgrades.ipc"))?;
         Self::UnitBorn.handle_tracker_events(sources.clone(), output.join("unit_born.ipc"))?;
         Self::UnitDied.handle_tracker_events(sources.clone(), output.join("unit_died.ipc"))?;
-        Self::CmdTargetPoint
-            .handle_game_events(sources.clone(), output.join("cmd_target_point.ipc"))?;
-        Self::CmdTargetUnit
-            .handle_game_events(sources.clone(), output.join("cmd_target_unit.ipc"))?;
+        Self::CmdTargetPoint.handle_game_events(
+            sources.clone(),
+            output.join("cmd_target_point.ipc"),
+            unit_abilities,
+        )?;
+        Self::CmdTargetUnit.handle_game_events(
+            sources.clone(),
+            output.join("cmd_target_unit.ipc"),
+            unit_abilities,
+        )?;
         Ok(())
     }
 
     #[tracing::instrument(level = "debug")]
-    pub fn handle_init_data_ipc_cmd(
+    pub fn handle_user_init_data_ipc_cmd(
         &self,
         sources: Vec<InitData>,
         output: PathBuf,
@@ -177,7 +196,33 @@ impl ArrowIpcTypes {
             .unwrap()
             .into();
 
-        write_batches(output, Self::InitData.schema(), chunk)?;
+        write_batches(output, Self::UserInitData.schema(), chunk)?;
+        Ok(())
+    }
+
+    #[tracing::instrument(level = "debug")]
+    pub fn handle_lobby_slot_init_data_ipc_cmd(
+        &self,
+        sources: Vec<InitData>,
+        output: PathBuf,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        tracing::info!("Processing InitData IPC write request");
+
+        let init_data_flaw_rows: Vec<init_data::LobbySlotInitDataFlatRow> = sources
+            .iter()
+            .flat_map(|source| {
+                let res: Vec<init_data::LobbySlotInitDataFlatRow> = source.into();
+                res
+            })
+            .collect();
+        let res: ArrayRef = init_data_flaw_rows.try_into_arrow()?;
+        let chunk: RecordBatch = res
+            .as_any()
+            .downcast_ref::<arrow::array::StructArray>()
+            .unwrap()
+            .into();
+
+        write_batches(output, Self::LobbySlotInitData.schema(), chunk)?;
         Ok(())
     }
 
@@ -198,7 +243,7 @@ impl ArrowIpcTypes {
             .par_iter()
             .filter_map(|source| {
                 let details: Details = Details::try_from(source).ok()?;
-                let source_path = PathBuf::from(&source.file_name);
+                let source_path = PathBuf::from(&source.ext_fs_file_name);
                 let tracker_events = TrackerEventIterator::new(&source_path).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::Stats => {
@@ -233,6 +278,7 @@ impl ArrowIpcTypes {
         &self,
         sources: Vec<InitData>,
         output: PathBuf,
+        versioned_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing GameEvents IPC write request: {:?}", self);
         let writer = open_arrow_mutex_writer(output, self.schema())?;
@@ -242,8 +288,9 @@ impl ArrowIpcTypes {
             .par_iter()
             .filter_map(|source| {
                 let details = Details::try_from(source).ok()?;
-                let source_path = PathBuf::from(&source.file_name);
-                let game_events = GameEventIterator::new(&source_path).ok()?;
+                let source_path = PathBuf::from(&source.ext_fs_file_name);
+                let game_events =
+                    SC2EventIterator::new(&source_path, versioned_abilities.clone()).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::CmdTargetPoint => {
                         let batch =
@@ -264,6 +311,39 @@ impl ArrowIpcTypes {
         close_arrow_mutex_writer(writer)
     }
 
+    /// Creates a new Arrow IPC file with the details data
+    #[tracing::instrument(level = "debug")]
+    pub fn handle_read_once_write_all(
+        &self,
+        sources: Vec<InitData>,
+        output: PathBuf,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        tracing::info!("Processing Read Once Write All IPC request");
+        // process the sources in parallel consuming into the batch variable
+
+        let details_flaw_rows: Vec<PlayerDetailsFlatRow> = sources
+            .iter()
+            .flat_map(|source| {
+                let res: Vec<PlayerDetailsFlatRow> = match Details::try_from(source) {
+                    Ok(details) => details.into(),
+                    Err(err) => {
+                        tracing::error!("Error reading details: {:?}", err);
+                        return vec![];
+                    }
+                };
+                res
+            })
+            .collect();
+        let res: ArrayRef = details_flaw_rows.try_into_arrow()?;
+        let chunk: RecordBatch = res
+            .as_any()
+            .downcast_ref::<arrow::array::StructArray>()
+            .unwrap()
+            .into();
+
+        write_batches(output, Self::Details.schema(), chunk)?;
+        Ok(())
+    }
     /// Creates a new Arrow IPC file with the details data
     #[tracing::instrument(level = "debug")]
     pub fn handle_details_ipc_cmd(
@@ -304,8 +384,9 @@ impl ArrowIpcTypes {
         source: PathBuf,
         output: PathBuf,
         cmd: &WriteArrowIpcProps,
+        unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        tracing::info!(
+        println!(
             "Processing Arrow write request with scan_max_files: {}, traverse_max_depth: {}, process_max_files: {}, min_version: {:?}, max_version: {:?}",
             cmd.scan_max_files,
             cmd.process_max_files,
@@ -315,7 +396,7 @@ impl ArrowIpcTypes {
         );
         let sources = get_matching_files(source, cmd.scan_max_files, cmd.traverse_max_depth)?;
         println!("Located {} matching files by extension", sources.len());
-        let mut sources: Vec<InitData> = sources
+        let sources: Vec<InitData> = sources
             .par_iter()
             .enumerate()
             .filter_map(|(idx, source)| {
@@ -346,27 +427,6 @@ impl ArrowIpcTypes {
                 sources.len()
             );
         }
-        // Identify the shortest unique sha256 hash fragment.
-        let mut smallest_fragment = 1;
-        while smallest_fragment < 64 {
-            let mut hash_set = HashSet::new();
-            for source in sources.iter() {
-                let hash = source.sha256.clone();
-                hash_set.insert(hash[..smallest_fragment].to_string());
-            }
-            if hash_set.len() == sources.len() {
-                break;
-            }
-            smallest_fragment += 1;
-        }
-        for source in sources.iter_mut() {
-            source.trim_sha(smallest_fragment)
-        }
-        tracing::info!(
-            "Found {} readable files, sha256 fragment size: {}",
-            sources.len(),
-            smallest_fragment
-        );
-        Self::handle_write_snapshot(sources, output)
+        Self::handle_write_snapshot(sources, output, unit_abilities)
     }
 }

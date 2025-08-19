@@ -20,11 +20,11 @@ impl TryFrom<ReplaySInitData> for InitData {
     fn try_from(source: ReplaySInitData) -> Result<Self, Self::Error> {
         let sync_lobby_state = source.m_sync_lobby_state.try_into()?;
         Ok(InitData {
-            sync_lobby_state,
-            sha256: "".to_string(),
-            file_name: "".to_string(),
-            version: 0,
             ext_fs_id: 0,
+            ext_fs_sha256: "".to_string(),
+            ext_fs_file_name: "".to_string(),
+            sync_lobby_state,
+            version: 0,
         })
     }
 }

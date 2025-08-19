@@ -46,8 +46,9 @@ pub fn handle_cmd(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
-    cmd: &GameSCmdEvent,
-) -> UnitChangeHint {
+    mut cmd: GameSCmdEvent,
+    unit_abilities: &HashMap<String, VersionedBalanceUnit>,
+) -> (ReplayGameEvent, UnitChangeHint) {
     let mut user_selected_unit_ids: Vec<u32> = vec![];
     let mut user_selected_units: Vec<SC2Unit> = vec![];
     if let Some(state) = sc2_state.user_state.get(&user_id) {
@@ -56,12 +57,37 @@ pub fn handle_cmd(
     for selected_unit in &user_selected_unit_ids {
         let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
+            if let Some(ref mut cmd_event_ability) = cmd.m_abil {
+                if let Some(balance_unit) = unit_abilities.get(registered_unit.name.as_str()) {
+                    for ability in &balance_unit.abilities {
+                        for command in &ability.cmds {
+                            if cmd_event_ability.m_abil_link == ability.index
+                                && cmd_event_ability.m_abil_cmd_index == command.index
+                            {
+                                cmd_event_ability.ability =
+                                    format!("{}.{}", ability.id, command.id);
+                            }
+                        }
+                    }
+                } else {
+                    tracing::warn!(
+                        "No balance unit found for {} in cmd_event_ability: {:?}",
+                        registered_unit.name,
+                        cmd_event_ability
+                    );
+                }
+            }
             registered_unit.cmd = cmd.clone().into();
             registered_unit.last_game_loop = game_loop;
             user_selected_units.push(registered_unit.clone());
         }
     }
-    UnitChangeHint::Abilities(user_selected_units, cmd.clone())
+    // TODO: Maybe we can avoid returning the event `cmd` twice? Or is it because of an old
+    // consumer/test?
+    (
+        ReplayGameEvent::Cmd(cmd.clone()),
+        UnitChangeHint::Abilities(user_selected_units, cmd),
+    )
 }
 
 /// The selected units for a specific players are given a specific target point to move towards.
@@ -321,28 +347,45 @@ pub fn handle_game_event(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
-    evt: &ReplayGameEvent,
-) -> UnitChangeHint {
-    match &evt {
-        ReplayGameEvent::CameraSave(camera_save) => {
-            handle_camera_save(sc2_state, game_loop, user_id, camera_save)
+    evt: ReplayGameEvent,
+    unit_abilities: &HashMap<String, VersionedBalanceUnit>,
+) -> (ReplayGameEvent, UnitChangeHint) {
+    match evt.clone() {
+        ReplayGameEvent::CameraSave(camera_save) => (
+            evt,
+            handle_camera_save(sc2_state, game_loop, user_id, &camera_save),
+        ),
+        ReplayGameEvent::CameraUpdate(camera_update) => (
+            evt,
+            handle_camera_update(sc2_state, game_loop, user_id, &camera_update),
+        ),
+        ReplayGameEvent::Cmd(game_cmd) => {
+            // NOTE: This is a special case, the ability is translated into a String and so the
+            // event is enriched.
+            handle_cmd(
+                sc2_state,
+                game_loop,
+                user_id,
+                game_cmd.clone(),
+                unit_abilities,
+            )
         }
-        ReplayGameEvent::CameraUpdate(camera_update) => {
-            handle_camera_update(sc2_state, game_loop, user_id, camera_update)
-        }
-        ReplayGameEvent::Cmd(game_cmd) => handle_cmd(sc2_state, game_loop, user_id, game_cmd),
-        ReplayGameEvent::CmdUpdateTargetPoint(target_point) => {
-            handle_update_target_point(sc2_state, game_loop, user_id, &target_point.m_target)
-        }
-        ReplayGameEvent::CmdUpdateTargetUnit(target_unit) => {
-            handle_update_target_unit(sc2_state, game_loop, user_id, &target_unit.m_target)
-        }
-        ReplayGameEvent::SelectionDelta(selection_delta) => {
-            handle_selection_delta(sc2_state, game_loop, user_id, selection_delta)
-        }
-        ReplayGameEvent::ControlGroupUpdate(ctrl_group) => {
-            update_control_group(sc2_state, game_loop, user_id, ctrl_group)
-        }
-        _ => UnitChangeHint::None,
+        ReplayGameEvent::CmdUpdateTargetPoint(target_point) => (
+            evt,
+            handle_update_target_point(sc2_state, game_loop, user_id, &target_point.m_target),
+        ),
+        ReplayGameEvent::CmdUpdateTargetUnit(target_unit) => (
+            evt,
+            handle_update_target_unit(sc2_state, game_loop, user_id, &target_unit.m_target),
+        ),
+        ReplayGameEvent::SelectionDelta(selection_delta) => (
+            evt,
+            handle_selection_delta(sc2_state, game_loop, user_id, &selection_delta),
+        ),
+        ReplayGameEvent::ControlGroupUpdate(ctrl_group) => (
+            evt,
+            update_control_group(sc2_state, game_loop, user_id, &ctrl_group),
+        ),
+        _ => (evt, UnitChangeHint::None),
     }
 }

@@ -27,7 +27,6 @@ pub mod byte_aligned {
     pub use crate::versions::protocol87702::byte_aligned::SVarUint32;
     pub use crate::versions::protocol87702::byte_aligned::SVersion;
     pub use crate::versions::protocol87702::byte_aligned::Smd5;
-
 }
 pub mod bit_packed {
     //! Generated code from source: ../s2protocol/json/protocol75689.json
@@ -1305,7 +1304,7 @@ pub mod bit_packed {
     }
     impl GameSCmdEvent {
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_cmd_flags(input: (&[u8], usize)) -> IResult<(&[u8], usize), i64> {
+        pub fn parse_m_cmd_flags(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), i64> {
             let (tail, m_cmd_flags) = parse_packed_int(input, 0, 26usize)?;
             tracing::trace!("res: {:?}", m_cmd_flags);
             Ok((tail, m_cmd_flags))
@@ -1331,7 +1330,7 @@ pub mod bit_packed {
             Ok((tail, m_data))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_sequence(input: (&[u8], usize)) -> IResult<(&[u8], usize), i64> {
+        pub fn parse_m_sequence(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), i64> {
             let (tail, m_sequence) = parse_packed_int(input, 1, 32usize)?;
             tracing::trace!("res: {:?}", m_sequence);
             Ok((tail, m_sequence))
@@ -1664,7 +1663,9 @@ pub mod bit_packed {
             Ok((tail, m_commander_level))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_has_silence_penalty(input: (&[u8], usize)) -> IResult<(&[u8], usize), bool> {
+        pub fn parse_m_has_silence_penalty(
+            input: (&[u8], usize),
+        ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_has_silence_penalty) = parse_bool(input)?;
             tracing::trace!("res: {:?}", m_has_silence_penalty);
             Ok((tail, m_has_silence_penalty))
@@ -2102,5 +2103,4 @@ pub mod bit_packed {
             }
         }
     }
-
 }
