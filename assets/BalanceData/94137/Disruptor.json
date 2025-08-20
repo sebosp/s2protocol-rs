@@ -1,0 +1,183 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "AcquireMove",
+          "index": 3,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "BTN-Ability-Protoss-PurificationNova",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "PurificationNovaTargeted",
+      "index": 528
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 150,
+    "supply": 4,
+    "time": 50,
+    "vespene": 150
+  },
+  "id": "Disruptor",
+  "life": {
+    "max": 100,
+    "regen": 0.0,
+    "start": 100
+  },
+  "meta": {
+    "icon": "Btn-unit-protoss-disruptor",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 4,
+    "footprint": null,
+    "radius": 0.625,
+    "sight_radius": 9,
+    "supply": -4.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 2.25,
+    "turn_rate": 0.0
+  },
+  "producer": {
+    "id": "RoboticsFacility"
+  },
+  "requires": [
+    {
+      "id": "RoboticsBay"
+    }
+  ],
+  "score": {
+    "build": 300,
+    "kill": 300
+  },
+  "shield_armor": {
+    "max": 3,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 100,
+    "regen_rate": 2.0,
+    "start": 100
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Marauder"
+    },
+    {
+      "id": "Hydralisk"
+    },
+    {
+      "id": "Stalker"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Thor"
+    },
+    {
+      "id": "Ultralisk"
+    },
+    {
+      "id": "Tempest"
+    }
+  ]
+}

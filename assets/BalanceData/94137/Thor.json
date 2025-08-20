@@ -1,0 +1,188 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-terran-thorsiegemode",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "ThorAPMode",
+      "index": 536
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical",
+    "Massive"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 300,
+    "supply": 6,
+    "time": 60,
+    "vespene": 200
+  },
+  "id": "Thor",
+  "life": {
+    "max": 400,
+    "regen": 0.0,
+    "start": 400
+  },
+  "meta": {
+    "icon": "btn-unit-terran-thor",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 8,
+    "footprint": null,
+    "radius": 1.0,
+    "sight_radius": 11,
+    "supply": -6.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 1.875,
+    "turn_rate": 360.0
+  },
+  "producer": {
+    "id": "Factory"
+  },
+  "requires": [
+    {
+      "id": "FactoryTechLab"
+    },
+    {
+      "id": "Armory"
+    }
+  ],
+  "score": {
+    "build": 500,
+    "kill": 500
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "VikingFighter"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "Phoenix"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Marauder"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Immortal"
+    }
+  ]
+}

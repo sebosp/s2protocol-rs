@@ -4,6 +4,8 @@ use super::*;
 #[cfg(feature = "syntax")]
 use bat::{Input, PrettyPrinter};
 
+use crate::game_events::ability::json_handler::read_balance_data_from_json;
+use crate::game_events::ability::traverse_versioned_balance_abilities;
 use crate::game_events::iterator::GameEventIterator;
 use crate::game_events::VersionedBalanceUnit;
 use crate::generator::proto_morphist::ProtoMorphist;
@@ -40,6 +42,10 @@ enum Commands {
     /// Generates Rust code for a specific protocol.
     Generate,
 
+    /// Generates static json files for a specific Balance Data export.
+    ///
+    BalanceDataToJson,
+
     /// Gets a specific event type from the SC2Replay MPQ Archive
     #[command(subcommand)]
     Get(ReadTypes),
@@ -74,6 +80,9 @@ pub struct WriteArrowIpcProps {
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
     /// Sets the source of the data, can be a file or directory.
+    /// Can be a path to a single SC2Replay file or a directory containing multiple SC2Replay files.
+    /// If a directory is provided, it will recursively search for SC2Replay files.
+    /// The path can contain a BalanceData with XMLs for the verisoned exported data.
     #[arg(short, long)]
     source: String,
 
@@ -233,20 +242,37 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             .with_env_filter(level.to_string())
             .init();
     }
-    let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
-        if !cli.xml_balance_data_dir.is_empty() {
-            tracing::info!("Using balance data directory: {}", cli.xml_balance_data_dir);
-            crate::game_events::ability::traverse_versioned_balance_abilities(PathBuf::from(
-                &cli.xml_balance_data_dir,
-            ))?
-        } else {
-            HashMap::new()
-        };
     match &cli.command {
         Commands::Generate => {
             ProtoMorphist::gen(&cli.source, &cli.output.expect("Requires --output"))?;
         }
+        Commands::BalanceDataToJson => {
+            if cli.source.is_empty() {
+                return Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::InvalidInput,
+                    "Source XML Balance Data directory must be provided",
+                )));
+            }
+            if cli.json_balance_data_dir.is_empty() {
+                return Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::InvalidInput,
+                    "Destination JSON Balance Data directory must be provided",
+                )));
+            }
+            let versioned_abilities =
+                traverse_versioned_balance_abilities(PathBuf::from(&cli.source))?;
+            crate::game_events::ability::json_handler::write_balance_data_to_json(
+                &cli.json_balance_data_dir,
+                versioned_abilities,
+            )?;
+        }
         Commands::Get(read_type) => {
+            let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
+                if cli.json_balance_data_dir.is_empty() {
+                    read_balance_data_from_json(PathBuf::from(&cli.source))?
+                } else {
+                    read_balance_data_from_json(PathBuf::from(&cli.json_balance_data_dir))?
+                };
             let sources: Vec<PathBuf> = if PathBuf::from(&cli.source).is_dir() {
                 let mut sources = Vec::new();
                 for entry in std::fs::read_dir(&cli.source)? {
@@ -344,6 +370,12 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
         }
         #[cfg(feature = "dep_arrow")]
         Commands::WriteArrowIpc(cmd) => {
+            let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
+                if cli.json_balance_data_dir.is_empty() {
+                    read_balance_data_from_json(PathBuf::from(&cli.source))?
+                } else {
+                    read_balance_data_from_json(PathBuf::from(&cli.json_balance_data_dir))?
+                };
             ArrowIpcTypes::handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),
                 PathBuf::from(&cli.output.expect("Requires --output")),

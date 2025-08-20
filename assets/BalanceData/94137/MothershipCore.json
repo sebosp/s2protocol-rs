@@ -1,0 +1,242 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-protoss-massrecall",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "MothershipCoreMassRecall",
+      "index": 357
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-protoss-timewarp-red",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "TemporalField",
+      "index": 470
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-mothership",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "MorphToMothership",
+      "index": 323
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "BTN-Ability-Protoss-Purify",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "MothershipCorePurifyNexus",
+      "index": 429
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical",
+    "Psionic"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 0,
+    "supply": 0,
+    "time": 0,
+    "vespene": 0
+  },
+  "id": "MothershipCore",
+  "life": {
+    "max": 130,
+    "regen": 0.0,
+    "start": 130
+  },
+  "meta": {
+    "icon": "btn-unit-protoss-mothershipcore",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 1.0,
+    "sight_radius": 9,
+    "supply": -2.0
+  },
+  "movement": {
+    "acceleration": 1.0625,
+    "deceleration": 0.0,
+    "kind": "Fly",
+    "speed": 1.875,
+    "turn_rate": 0.0
+  },
+  "producer": null,
+  "requires": [],
+  "score": {
+    "build": 200,
+    "kill": 200
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 60,
+    "regen_rate": 2.0,
+    "start": 60
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "WidowMine"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Zealot"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "VikingFighter"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "Phoenix"
+    }
+  ]
+}

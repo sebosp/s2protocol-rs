@@ -1,0 +1,178 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "AcquireMove",
+          "index": 3,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "BTN-Unit-Zerg-changeling",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "SpawnChangeling",
+      "index": 97
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-contaminate-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "Contaminate",
+      "index": 276
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-overlord-oversight-off",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "OverseerSiegeModeMorphtoOverseer",
+      "index": 718
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Biological"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 0,
+    "supply": 0,
+    "time": 0,
+    "vespene": 0
+  },
+  "id": "OverseerSiegeMode",
+  "life": {
+    "max": 200,
+    "regen": 0.2734000086784363,
+    "start": 200
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-overseer",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 1.0,
+    "sight_radius": 0,
+    "supply": 8.0
+  },
+  "movement": null,
+  "producer": null,
+  "requires": [],
+  "score": {
+    "build": 0,
+    "kill": 0
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

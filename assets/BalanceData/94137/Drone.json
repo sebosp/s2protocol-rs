@@ -1,0 +1,202 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Gather",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-gather",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Return",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-returncargo",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "DroneHarvest",
+      "index": 186
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-burrow-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BurrowDroneDown",
+      "index": 199
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-spray",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "SprayZerg",
+      "index": 63
+    }
+  ],
+  "armor": {
+    "max": 3,
+    "start": 0
+  },
+  "attributes": [
+    "Light",
+    "Biological"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 50,
+    "supply": 1,
+    "time": 17,
+    "vespene": 0
+  },
+  "id": "Drone",
+  "life": {
+    "max": 40,
+    "regen": 0.2734000086784363,
+    "start": 40
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-drone",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 1,
+    "footprint": null,
+    "radius": 0.375,
+    "sight_radius": 8,
+    "supply": -1.0
+  },
+  "movement": {
+    "acceleration": 2.5,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 2.8125,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Larva"
+  },
+  "requires": [],
+  "score": {
+    "build": 50,
+    "kill": 50
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

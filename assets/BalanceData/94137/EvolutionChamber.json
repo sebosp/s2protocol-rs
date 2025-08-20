@@ -1,0 +1,107 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "CancelLast",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "que5",
+      "index": 125
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Biological",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 75,
+    "supply": 0,
+    "time": 35,
+    "vespene": 0
+  },
+  "id": "EvolutionChamber",
+  "life": {
+    "max": 750,
+    "regen": 0.2734000086784363,
+    "start": 750
+  },
+  "meta": {
+    "icon": "btn-building-zerg-evolutionchamber",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "Footprint3x3CreepContour",
+    "radius": 1.5,
+    "sight_radius": 9,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "Drone"
+  },
+  "requires": [
+    {
+      "id": "Hatchery"
+    }
+  ],
+  "score": {
+    "build": 75,
+    "kill": 75
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

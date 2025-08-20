@@ -1,0 +1,73 @@
+{
+  "abilities": [],
+  "armor": {
+    "max": 0,
+    "start": 0
+  },
+  "attributes": [],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 100,
+    "supply": 0,
+    "time": 60,
+    "vespene": 100
+  },
+  "id": "Nuke",
+  "life": {
+    "max": 100,
+    "regen": 0.0,
+    "start": 100
+  },
+  "meta": {
+    "icon": "btn-ability-terran-armnuke",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 0.5,
+    "sight_radius": 0,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "GhostAcademy"
+  },
+  "requires": [
+    {
+      "id": "Factory"
+    },
+    {
+      "id": "FactoryFlying"
+    }
+  ],
+  "score": {
+    "build": 200,
+    "kill": 200
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

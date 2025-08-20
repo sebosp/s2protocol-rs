@@ -1,0 +1,227 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "AcquireMove",
+          "index": 3,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-consume",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "ViperConsumeStructure",
+      "index": 388
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-blindingcloud",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BlindingCloud",
+      "index": 383
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-abduct",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "Yoink",
+      "index": 385
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-parasiticbomb",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "ParasiticBomb",
+      "index": 609
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Biological",
+    "Psionic"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 100,
+    "supply": 3,
+    "time": 40,
+    "vespene": 200
+  },
+  "id": "Viper",
+  "life": {
+    "max": 150,
+    "regen": 0.2734000086784363,
+    "start": 150
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-viper",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 1.0,
+    "sight_radius": 11,
+    "supply": -3.0
+  },
+  "movement": {
+    "acceleration": 3.0,
+    "deceleration": 0.0,
+    "kind": "Fly",
+    "speed": 2.9530999660491943,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Larva"
+  },
+  "requires": [
+    {
+      "id": "Hive"
+    }
+  ],
+  "score": {
+    "build": 300,
+    "kill": 300
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "SiegeTank"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "Colossus"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Ghost"
+    },
+    {
+      "id": "Corruptor"
+    },
+    {
+      "id": "HighTemplar"
+    }
+  ]
+}

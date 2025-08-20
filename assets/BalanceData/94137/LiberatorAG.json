@@ -1,0 +1,116 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-liberator-aamode",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "LiberatorAATarget",
+      "index": 618
+    }
+  ],
+  "armor": {
+    "max": 3,
+    "start": 0
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 0,
+    "supply": 0,
+    "time": 0,
+    "vespene": 0
+  },
+  "id": "LiberatorAG",
+  "life": {
+    "max": 180,
+    "regen": 0.0,
+    "start": 180
+  },
+  "meta": {
+    "icon": "btn-ability-terran-liberator-agmode",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 0.75,
+    "sight_radius": 10,
+    "supply": -3.0
+  },
+  "movement": null,
+  "producer": null,
+  "requires": [],
+  "score": {
+    "build": 275,
+    "kill": 275
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

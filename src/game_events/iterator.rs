@@ -188,6 +188,7 @@ impl GameEventIterator {
         source: &PathBuf,
         multi_version_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<Self, S2ProtocolError> {
+        let total_initial_abilities = multi_version_abilities.len();
         let mut abilities: HashMap<String, VersionedBalanceUnit> = HashMap::new();
         tracing::info!("Processing {:?}", source);
         let source_filename = format!("{source:?}");
@@ -202,9 +203,10 @@ impl GameEventIterator {
             }
         }
         tracing::info!(
-            "Collected {} unit abilities for protocol version {}",
+            "Filtered {} unit abilities for protocol version {} out of {} total abilities",
             abilities.len(),
-            proto_header.m_version.m_base_build
+            proto_header.m_version.m_base_build,
+            total_initial_abilities
         );
         Self::from_versioned_mpq(
             source_filename,

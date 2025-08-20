@@ -1,0 +1,153 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "CancelLast",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "que5",
+      "index": 125
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Rally1",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-setrallypoint",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "Rally",
+      "index": 104
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "BTN-Building-Protoss-WarpGate",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "UpgradeToWarpGate",
+      "index": 230
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 150,
+    "supply": 0,
+    "time": 65,
+    "vespene": 0
+  },
+  "id": "Gateway",
+  "life": {
+    "max": 500,
+    "regen": 0.0,
+    "start": 500
+  },
+  "meta": {
+    "icon": "btn-building-protoss-gateway",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "Footprint3x3Contour",
+    "radius": 1.75,
+    "sight_radius": 9,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "Probe"
+  },
+  "requires": [
+    {
+      "id": "Nexus"
+    }
+  ],
+  "score": {
+    "build": 150,
+    "kill": 150
+  },
+  "shield_armor": {
+    "max": 3,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 500,
+    "regen_rate": 2.0,
+    "start": 500
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

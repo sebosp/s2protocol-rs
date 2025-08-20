@@ -1,0 +1,194 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "On",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-cloak-color",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Off",
+          "index": 1,
+          "meta": {
+            "icon": "BTN-Ability-Terran-Decloak-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BansheeCloak",
+      "index": 139
+    }
+  ],
+  "armor": {
+    "max": 3,
+    "start": 0
+  },
+  "attributes": [
+    "Light",
+    "Mechanical"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 150,
+    "supply": 3,
+    "time": 60,
+    "vespene": 100
+  },
+  "id": "Banshee",
+  "life": {
+    "max": 140,
+    "regen": 0.0,
+    "start": 140
+  },
+  "meta": {
+    "icon": "btn-unit-terran-banshee",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 0.75,
+    "sight_radius": 10,
+    "supply": -3.0
+  },
+  "movement": {
+    "acceleration": 3.25,
+    "deceleration": 0.0,
+    "kind": "Fly",
+    "speed": 2.75,
+    "turn_rate": 1499.94140625
+  },
+  "producer": {
+    "id": "Starport"
+  },
+  "requires": [
+    {
+      "id": "TechLab"
+    }
+  ],
+  "score": {
+    "build": 250,
+    "kill": 250
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "SiegeTank"
+    },
+    {
+      "id": "Ravager"
+    },
+    {
+      "id": "Adept"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "VikingFighter"
+    },
+    {
+      "id": "Hydralisk"
+    },
+    {
+      "id": "Phoenix"
+    }
+  ]
+}

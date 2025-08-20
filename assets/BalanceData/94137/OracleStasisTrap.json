@@ -1,0 +1,111 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    }
+  ],
+  "armor": {
+    "max": 0,
+    "start": 0
+  },
+  "attributes": [
+    "Light",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 0,
+    "supply": 0,
+    "time": 5,
+    "vespene": 0
+  },
+  "id": "OracleStasisTrap",
+  "life": {
+    "max": 30,
+    "regen": 0.0,
+    "start": 30
+  },
+  "meta": {
+    "icon": "btn-ability-protoss-oracle-stasisward",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "OracleStasisTrap",
+    "radius": 0.375,
+    "sight_radius": 7,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "Oracle"
+  },
+  "requires": [],
+  "score": {
+    "build": 0,
+    "kill": 0
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 30,
+    "regen_rate": 2.0,
+    "start": 30
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Marine"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Zealot"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Raven"
+    },
+    {
+      "id": "Overseer"
+    },
+    {
+      "id": "Observer"
+    }
+  ]
+}

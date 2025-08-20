@@ -1,0 +1,194 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "AcquireMove",
+          "index": 3,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-burrow-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "MorphToSwarmHostBurrowedMP",
+      "index": 377
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-zerg-locust",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "SpawnLocustsTargeted",
+      "index": 703
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Biological"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 100,
+    "supply": 3,
+    "time": 40,
+    "vespene": 75
+  },
+  "id": "SwarmHostMP",
+  "life": {
+    "max": 160,
+    "regen": 0.2734000086784363,
+    "start": 160
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-swarmhost",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 4,
+    "footprint": null,
+    "radius": 0.8125,
+    "sight_radius": 10,
+    "supply": -3.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 2.25,
+    "turn_rate": 360.0
+  },
+  "producer": {
+    "id": "Larva"
+  },
+  "requires": [
+    {
+      "id": "InfestationPit"
+    }
+  ],
+  "score": {
+    "build": 175,
+    "kill": 175
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "SCV"
+    },
+    {
+      "id": "Drone"
+    },
+    {
+      "id": "Probe"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Banshee"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "Stalker"
+    }
+  ]
+}

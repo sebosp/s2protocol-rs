@@ -1,0 +1,216 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-burrow-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BurrowQueenDown",
+      "index": 217
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "BTN-Unit-Zerg-Larva",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "SpawnLarva",
+      "index": 113
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-transfusion-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "Transfusion",
+      "index": 247
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Biological",
+    "Psionic"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 175,
+    "supply": 2,
+    "time": 50,
+    "vespene": 0
+  },
+  "id": "Queen",
+  "life": {
+    "max": 175,
+    "regen": 0.2734000086784363,
+    "start": 175
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-queen",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 2,
+    "footprint": null,
+    "radius": 0.875,
+    "sight_radius": 9,
+    "supply": -2.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 0.9375,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Hatchery"
+  },
+  "requires": [
+    {
+      "id": "SpawningPool"
+    }
+  ],
+  "score": {
+    "build": 175,
+    "kill": 175
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Hellion"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "Oracle"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Marine"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Zealot"
+    }
+  ]
+}

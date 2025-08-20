@@ -1,0 +1,142 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    }
+  ],
+  "armor": {
+    "max": 0,
+    "start": 0
+  },
+  "attributes": [
+    "Light",
+    "Biological"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 0,
+    "supply": 0,
+    "time": 0,
+    "vespene": 0
+  },
+  "id": "ScourgeMP",
+  "life": {
+    "max": 25,
+    "regen": 0.2734000086784363,
+    "start": 25
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-splitterling",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 0.5,
+    "sight_radius": 5,
+    "supply": -0.5
+  },
+  "movement": {
+    "acceleration": 3.5,
+    "deceleration": 0.0,
+    "kind": "Fly",
+    "speed": 3.5,
+    "turn_rate": 1499.94140625
+  },
+  "producer": null,
+  "requires": [],
+  "score": {
+    "build": 50,
+    "kill": 50
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

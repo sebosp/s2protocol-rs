@@ -1,0 +1,125 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    }
+  ],
+  "armor": {
+    "max": 0,
+    "start": 0
+  },
+  "attributes": [
+    "Robotic"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 0,
+    "supply": 0,
+    "time": 0,
+    "vespene": 0
+  },
+  "id": "AutoTestAttackTargetAir",
+  "life": {
+    "max": 100,
+    "regen": 0.0,
+    "start": 100
+  },
+  "meta": {
+    "icon": "btn-missing-kaeo",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 0.75,
+    "sight_radius": 8,
+    "supply": -2.0
+  },
+  "movement": {
+    "acceleration": 2.625,
+    "deceleration": 0.0,
+    "kind": "Fly",
+    "speed": 3.75,
+    "turn_rate": 720.0
+  },
+  "producer": null,
+  "requires": [],
+  "score": {
+    "build": 300,
+    "kill": 300
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

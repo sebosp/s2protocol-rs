@@ -1,0 +1,153 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    }
+  ],
+  "armor": {
+    "max": 3,
+    "start": 0
+  },
+  "attributes": [
+    "Light",
+    "Mechanical"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 15,
+    "supply": 0,
+    "time": 12,
+    "vespene": 0
+  },
+  "id": "Interceptor",
+  "life": {
+    "max": 40,
+    "regen": 0.0,
+    "start": 40
+  },
+  "meta": {
+    "icon": "btn-unit-protoss-interceptor",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 0.25,
+    "sight_radius": 7,
+    "supply": 0.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Fly",
+    "speed": 7.5,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Carrier"
+  },
+  "requires": [
+    {
+      "id": "Interceptor"
+    }
+  ],
+  "score": {
+    "build": 15,
+    "kill": 15
+  },
+  "shield_armor": {
+    "max": 3,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 40,
+    "regen_rate": 2.0,
+    "start": 40
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

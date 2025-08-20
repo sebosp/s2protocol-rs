@@ -1,0 +1,147 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 150,
+    "supply": 0,
+    "time": 40,
+    "vespene": 0
+  },
+  "id": "PhotonCannon",
+  "life": {
+    "max": 150,
+    "regen": 0.0,
+    "start": 150
+  },
+  "meta": {
+    "icon": "btn-building-protoss-photoncannon",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "Footprint2x2Contour",
+    "radius": 1.0,
+    "sight_radius": 11,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "Probe"
+  },
+  "requires": [
+    {
+      "id": "Forge"
+    }
+  ],
+  "score": {
+    "build": 150,
+    "kill": 150
+  },
+  "shield_armor": {
+    "max": 3,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 150,
+    "regen_rate": 2.0,
+    "start": 150
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Banshee"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "DarkTemplar"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "SiegeTank"
+    },
+    {
+      "id": "BroodLord"
+    },
+    {
+      "id": "Immortal"
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "LockOnCancel",
+      "index": 532
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-lockon",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "LockOn",
+      "index": 530
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 150,
+    "supply": 3,
+    "time": 45,
+    "vespene": 100
+  },
+  "id": "Cyclone",
+  "life": {
+    "max": 120,
+    "regen": 0.0,
+    "start": 120
+  },
+  "meta": {
+    "icon": "btn-unit-terran-cyclone",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 4,
+    "footprint": null,
+    "radius": 0.75,
+    "sight_radius": 11,
+    "supply": -3.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 3.375,
+    "turn_rate": 360.0
+  },
+  "producer": {
+    "id": "Factory"
+  },
+  "requires": [
+    {
+      "id": "TechLab"
+    }
+  ],
+  "score": {
+    "build": 250,
+    "kill": 250
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Marauder"
+    },
+    {
+      "id": "Roach"
+    },
+    {
+      "id": "Adept"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "SiegeTank"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Immortal"
+    }
+  ]
+}

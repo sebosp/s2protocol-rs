@@ -1,0 +1,83 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-missing-kaeo",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "XelNaga_Caverns_Floating_BridgeV8Out",
+      "index": 460
+    }
+  ],
+  "armor": {
+    "max": 10,
+    "start": 10
+  },
+  "attributes": [
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 0,
+    "supply": 0,
+    "time": 0,
+    "vespene": 0
+  },
+  "id": "XelNaga_Caverns_Floating_BridgeV8",
+  "life": {
+    "max": 10000,
+    "regen": 0.0,
+    "start": 10000
+  },
+  "meta": {
+    "icon": "btn-missing-kaeo",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "XelNaga_Caverns_Floating_BridgeV",
+    "radius": 3.0,
+    "sight_radius": 0,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": null,
+  "requires": [],
+  "score": {
+    "build": 0,
+    "kill": 0
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

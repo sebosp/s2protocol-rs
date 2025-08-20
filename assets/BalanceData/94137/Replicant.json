@@ -1,0 +1,167 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Light",
+    "Biological"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 0,
+    "supply": 0,
+    "time": 0,
+    "vespene": 0
+  },
+  "id": "Replicant",
+  "life": {
+    "max": 100,
+    "regen": 0.0,
+    "start": 100
+  },
+  "meta": {
+    "icon": "btn-unit-protoss-replicant",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 4,
+    "footprint": null,
+    "radius": 0.5,
+    "sight_radius": 9,
+    "supply": -4.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 2.25,
+    "turn_rate": 0.0
+  },
+  "producer": null,
+  "requires": [],
+  "score": {
+    "build": 100,
+    "kill": 100
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 150,
+    "regen_rate": 2.0,
+    "start": 150
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Marauder"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Immortal"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Hellion"
+    },
+    {
+      "id": "Roach"
+    },
+    {
+      "id": "Colossus"
+    }
+  ]
+}

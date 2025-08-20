@@ -1,0 +1,190 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "CancelLast",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HangarQueue5",
+      "index": 179
+    }
+  ],
+  "armor": {
+    "max": 5,
+    "start": 2
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical",
+    "Massive"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 350,
+    "supply": 6,
+    "time": 90,
+    "vespene": 250
+  },
+  "id": "Carrier",
+  "life": {
+    "max": 300,
+    "regen": 0.0,
+    "start": 300
+  },
+  "meta": {
+    "icon": "btn-unit-protoss-carrier",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 1.25,
+    "sight_radius": 12,
+    "supply": -6.0
+  },
+  "movement": {
+    "acceleration": 1.0625,
+    "deceleration": 0.0,
+    "kind": "Fly",
+    "speed": 1.875,
+    "turn_rate": 720.0
+  },
+  "producer": {
+    "id": "Stargate"
+  },
+  "requires": [
+    {
+      "id": "FleetBeacon"
+    }
+  ],
+  "score": {
+    "build": 540,
+    "kill": 540
+  },
+  "shield_armor": {
+    "max": 3,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 150,
+    "regen_rate": 2.0,
+    "start": 150
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "SiegeTank"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "Phoenix"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "VikingFighter"
+    },
+    {
+      "id": "Corruptor"
+    },
+    {
+      "id": "Tempest"
+    }
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-burrow-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BurrowRavagerDown",
+      "index": 309
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-corrosivebile",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "RavagerCorrosiveBile",
+      "index": 283
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Biological"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 25,
+    "supply": 1,
+    "time": 17,
+    "vespene": 75
+  },
+  "id": "Ravager",
+  "life": {
+    "max": 120,
+    "regen": 0.2734000086784363,
+    "start": 120
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-ravager",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 4,
+    "footprint": null,
+    "radius": 0.75,
+    "sight_radius": 9,
+    "supply": -3.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 2.75,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Roach"
+  },
+  "requires": [
+    {
+      "id": "RoachWarren"
+    }
+  ],
+  "score": {
+    "build": 100,
+    "kill": 100
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Liberator"
+    },
+    {
+      "id": "LurkerMP"
+    },
+    {
+      "id": "Sentry"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Marauder"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "Immortal"
+    }
+  ]
+}

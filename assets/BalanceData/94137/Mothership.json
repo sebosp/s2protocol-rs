@@ -1,0 +1,217 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-protoss-timewarp-red",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "TemporalField",
+      "index": 470
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-protoss-wormholetransit-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "MassRecall",
+      "index": 78
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-protoss-cloakfield-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "MothershipCloak",
+      "index": 731
+    }
+  ],
+  "armor": {
+    "max": 5,
+    "start": 2
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical",
+    "Psionic",
+    "Massive",
+    "Heroic"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 400,
+    "supply": 8,
+    "time": 125,
+    "vespene": 400
+  },
+  "id": "Mothership",
+  "life": {
+    "max": 350,
+    "regen": 0.0,
+    "start": 350
+  },
+  "meta": {
+    "icon": "btn-unit-protoss-mothership",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 1.375,
+    "sight_radius": 14,
+    "supply": -8.0
+  },
+  "movement": {
+    "acceleration": 1.375,
+    "deceleration": 1.0,
+    "kind": "Fly",
+    "speed": 2.0155999660491943,
+    "turn_rate": 0.0
+  },
+  "producer": {
+    "id": "Nexus"
+  },
+  "requires": [
+    {
+      "id": "FleetBeacon"
+    },
+    {
+      "id": "Mothership"
+    }
+  ],
+  "score": {
+    "build": 600,
+    "kill": 600
+  },
+  "shield_armor": {
+    "max": 3,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 350,
+    "regen_rate": 2.0,
+    "start": 350
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "VikingFighter"
+    },
+    {
+      "id": "Corruptor"
+    },
+    {
+      "id": "Tempest"
+    }
+  ]
+}

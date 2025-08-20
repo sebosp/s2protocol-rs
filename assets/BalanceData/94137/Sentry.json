@@ -1,0 +1,429 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "BTN-Ability-protoss-forcefield-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "ForceField",
+      "index": 234
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-protoss-shieldbattery-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "GuardianShield",
+      "index": 73
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Rally1",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-setrallypoint",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "ProgressRally",
+      "index": 105
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-archon",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationArchon",
+      "index": 80
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-colossus",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationColossus",
+      "index": 81
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-hightemplar",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationHighTemplar",
+      "index": 82
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "BTN-Unit-Protoss-Immortal",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationImmortal",
+      "index": 83
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-phoenix",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationPhoenix",
+      "index": 84
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-probe",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationProbe",
+      "index": 85
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-stalker",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationStalker",
+      "index": 86
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-warpray",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationVoidRay",
+      "index": 87
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-warpprism",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationWarpPrism",
+      "index": 88
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-zealot",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationZealot",
+      "index": 89
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-oracle",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationOracle",
+      "index": 405
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-disruptor",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationDisruptor",
+      "index": 547
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-protoss-adept",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "HallucinationAdept",
+      "index": 548
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Mechanical",
+    "Psionic"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 50,
+    "supply": 2,
+    "time": 32,
+    "vespene": 100
+  },
+  "id": "Sentry",
+  "life": {
+    "max": 40,
+    "regen": 0.0,
+    "start": 40
+  },
+  "meta": {
+    "icon": "btn-unit-protoss-sentry",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 2,
+    "footprint": null,
+    "radius": 0.5,
+    "sight_radius": 10,
+    "supply": -2.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 2.5,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Gateway"
+  },
+  "requires": [
+    {
+      "id": "CyberneticsCore"
+    }
+  ],
+  "score": {
+    "build": 150,
+    "kill": 150
+  },
+  "shield_armor": {
+    "max": 3,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 40,
+    "regen_rate": 2.0,
+    "start": 40
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Marine"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Zealot"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Thor"
+    },
+    {
+      "id": "Ravager"
+    },
+    {
+      "id": "Archon"
+    }
+  ]
+}

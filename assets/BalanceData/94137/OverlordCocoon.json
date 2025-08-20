@@ -1,0 +1,135 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "MorphToOverseer",
+      "index": 223
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    }
+  ],
+  "armor": {
+    "max": 2,
+    "start": 2
+  },
+  "attributes": [
+    "Biological"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 50,
+    "supply": 0,
+    "time": 0,
+    "vespene": 50
+  },
+  "id": "OverlordCocoon",
+  "life": {
+    "max": 200,
+    "regen": 0.2734000086784363,
+    "start": 200
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-overseer",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 0.625,
+    "sight_radius": 5,
+    "supply": 8.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "Overlord"
+  },
+  "requires": [
+    {
+      "id": "Lair"
+    }
+  ],
+  "score": {
+    "build": 0,
+    "kill": 0
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

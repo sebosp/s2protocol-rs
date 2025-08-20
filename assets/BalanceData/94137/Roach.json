@@ -1,0 +1,200 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-burrow-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BurrowRoachDown",
+      "index": 203
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-zerg-ravager",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "MorphToRavager",
+      "index": 311
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Biological"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 75,
+    "supply": 2,
+    "time": 27,
+    "vespene": 25
+  },
+  "id": "Roach",
+  "life": {
+    "max": 145,
+    "regen": 0.2734000086784363,
+    "start": 145
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-roach",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 2,
+    "footprint": null,
+    "radius": 0.5,
+    "sight_radius": 9,
+    "supply": -2.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 2.25,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Larva"
+  },
+  "requires": [
+    {
+      "id": "RoachWarren"
+    }
+  ],
+  "score": {
+    "build": 100,
+    "kill": 100
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Hellion"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Adept"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Marauder"
+    },
+    {
+      "id": "LurkerMP"
+    },
+    {
+      "id": "Immortal"
+    }
+  ]
+}

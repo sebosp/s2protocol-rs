@@ -1,0 +1,233 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Halt",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "CancelLast",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "que5CancelToSelection",
+      "index": 126
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Rally1",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-setrallypoint",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "RallyCommand",
+      "index": 106
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Load",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-load",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "UnloadAll",
+          "index": 1,
+          "meta": {
+            "icon": "btn-ability-terran-unloadall",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "LoadAll",
+          "index": 4,
+          "meta": {
+            "icon": "btn-ability-terran-load",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "CommandCenterTransport",
+      "index": 146
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-liftoff",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "CommandCenterLiftOff",
+      "index": 147
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-building-terran-planetaryfortress",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "UpgradeToPlanetaryFortress",
+      "index": 224
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "BTN-Building-Terran-SurveillanceStation",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "UpgradeToOrbital",
+      "index": 229
+    }
+  ],
+  "armor": {
+    "max": 3,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 400,
+    "supply": 0,
+    "time": 100,
+    "vespene": 0
+  },
+  "id": "CommandCenter",
+  "life": {
+    "max": 1500,
+    "regen": 0.0,
+    "start": 1500
+  },
+  "meta": {
+    "icon": "btn-building-terran-commandcenter",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "Footprint5x5Contour",
+    "radius": 2.5,
+    "sight_radius": 11,
+    "supply": 15.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "SCV"
+  },
+  "requires": [],
+  "score": {
+    "build": 400,
+    "kill": 400
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

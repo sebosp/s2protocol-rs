@@ -1,0 +1,184 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-unit-terran-siegetanksiegemode",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "SiegeMode",
+      "index": 137
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 150,
+    "supply": 3,
+    "time": 45,
+    "vespene": 125
+  },
+  "id": "SiegeTank",
+  "life": {
+    "max": 175,
+    "regen": 0.0,
+    "start": 175
+  },
+  "meta": {
+    "icon": "btn-unit-terran-siegetank",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 4,
+    "footprint": null,
+    "radius": 0.875,
+    "sight_radius": 11,
+    "supply": -3.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 2.25,
+    "turn_rate": 360.0
+  },
+  "producer": {
+    "id": "Factory"
+  },
+  "requires": [
+    {
+      "id": "TechLab"
+    }
+  ],
+  "score": {
+    "build": 275,
+    "kill": 275
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Marine"
+    },
+    {
+      "id": "Hydralisk"
+    },
+    {
+      "id": "Stalker"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Banshee"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "Immortal"
+    }
+  ]
+}

@@ -1,0 +1,221 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Rally1",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-setrallypoint",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "ProgressRally",
+      "index": 105
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-protoss-psionictransfer",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "AdeptPhaseShift",
+      "index": 610
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "AdeptPhaseShiftCancel",
+      "index": 635
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Light",
+    "Biological"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 100,
+    "supply": 2,
+    "time": 42,
+    "vespene": 25
+  },
+  "id": "Adept",
+  "life": {
+    "max": 70,
+    "regen": 0.0,
+    "start": 70
+  },
+  "meta": {
+    "icon": "btn-unit-protoss-adept",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 2,
+    "footprint": null,
+    "radius": 0.5,
+    "sight_radius": 9,
+    "supply": -2.0
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 2.5,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Gateway"
+  },
+  "requires": [
+    {
+      "id": "CyberneticsCore"
+    }
+  ],
+  "score": {
+    "build": 125,
+    "kill": 125
+  },
+  "shield_armor": {
+    "max": 3,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 70,
+    "regen_rate": 2.0,
+    "start": 70
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Marine"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Zealot"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Marauder"
+    },
+    {
+      "id": "Roach"
+    },
+    {
+      "id": "Stalker"
+    }
+  ]
+}

@@ -1,0 +1,225 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-burrow-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BurrowBanelingDown",
+      "index": 197
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-explode-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "Explode",
+      "index": 70
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "On",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-attackstructure-color",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Off",
+          "index": 1,
+          "meta": {
+            "icon": "btn-ability-zerg-explode-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "VolatileBurstBuilding",
+      "index": 392
+    }
+  ],
+  "armor": {
+    "max": 3,
+    "start": 0
+  },
+  "attributes": [
+    "Biological"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 25,
+    "supply": 0,
+    "time": 20,
+    "vespene": 25
+  },
+  "id": "Baneling",
+  "life": {
+    "max": 30,
+    "regen": 0.2734000086784363,
+    "start": 30
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-baneling",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 2,
+    "footprint": null,
+    "radius": 0.375,
+    "sight_radius": 8,
+    "supply": -0.5
+  },
+  "movement": {
+    "acceleration": 1000.0,
+    "deceleration": 0.0,
+    "kind": "Ground",
+    "speed": 2.5,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Zergling"
+  },
+  "requires": [
+    {
+      "id": "BanelingNest"
+    }
+  ],
+  "score": {
+    "build": 50,
+    "kill": 50
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Marine"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Zealot"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Marauder"
+    },
+    {
+      "id": "Infestor"
+    },
+    {
+      "id": "Stalker"
+    }
+  ]
+}

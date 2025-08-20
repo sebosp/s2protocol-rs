@@ -1,0 +1,127 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "CancelLast",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "que5",
+      "index": 125
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Rally1",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-setrallypoint",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "Rally",
+      "index": 104
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 150,
+    "supply": 0,
+    "time": 60,
+    "vespene": 150
+  },
+  "id": "Stargate",
+  "life": {
+    "max": 600,
+    "regen": 0.0,
+    "start": 600
+  },
+  "meta": {
+    "icon": "btn-building-protoss-stargate",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "Footprint3x3Contour",
+    "radius": 1.75,
+    "sight_radius": 9,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "Probe"
+  },
+  "requires": [
+    {
+      "id": "CyberneticsCore"
+    }
+  ],
+  "score": {
+    "build": 300,
+    "kill": 300
+  },
+  "shield_armor": {
+    "max": 3,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 600,
+    "regen_rate": 2.0,
+    "start": 600
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

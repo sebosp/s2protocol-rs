@@ -1,0 +1,115 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Rally1",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-setrallypoint",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "Rally",
+      "index": 104
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "MorphToRavager",
+      "index": 311
+    }
+  ],
+  "armor": {
+    "max": 5,
+    "start": 5
+  },
+  "attributes": [
+    "Biological"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 25,
+    "supply": 1,
+    "time": 17,
+    "vespene": 75
+  },
+  "id": "RavagerCocoon",
+  "life": {
+    "max": 100,
+    "regen": 0.2734000086784363,
+    "start": 100
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-ravager",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 0.75,
+    "sight_radius": 5,
+    "supply": -2.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "Roach"
+  },
+  "requires": [
+    {
+      "id": "RoachWarren"
+    }
+  ],
+  "score": {
+    "build": 0,
+    "kill": 0
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

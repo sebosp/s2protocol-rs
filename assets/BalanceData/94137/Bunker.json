@@ -1,0 +1,243 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Halt",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Load",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-load",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "UnloadAll",
+          "index": 1,
+          "meta": {
+            "icon": "btn-ability-terran-unloadall",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BunkerTransport",
+      "index": 145
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-salvage",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "SalvageEffect",
+      "index": 733
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Rally1",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-setrallypoint",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "Rally",
+      "index": 104
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-stimpack-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "StimpackRedirect",
+      "index": 257
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-stimpack-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "StimpackMarauderRedirect",
+      "index": 258
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "StopRedirect",
+      "index": 260
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "AttackRedirect",
+      "index": 256
+    }
+  ],
+  "armor": {
+    "max": 3,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 100,
+    "supply": 0,
+    "time": 40,
+    "vespene": 0
+  },
+  "id": "Bunker",
+  "life": {
+    "max": 400,
+    "regen": 0.0,
+    "start": 400
+  },
+  "meta": {
+    "icon": "btn-building-terran-bunker",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "Footprint3x3Contour",
+    "radius": 1.25,
+    "sight_radius": 10,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "SCV"
+  },
+  "requires": [
+    {
+      "id": "Barracks"
+    }
+  ],
+  "score": {
+    "build": 100,
+    "kill": 100
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Marine"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Zealot"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "SiegeTank"
+    },
+    {
+      "id": "Baneling"
+    },
+    {
+      "id": "Immortal"
+    }
+  ]
+}

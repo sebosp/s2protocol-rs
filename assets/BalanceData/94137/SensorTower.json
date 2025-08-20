@@ -1,0 +1,117 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Halt",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-salvage",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "SalvageEffect",
+      "index": 733
+    }
+  ],
+  "armor": {
+    "max": 2,
+    "start": 0
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 100,
+    "supply": 0,
+    "time": 25,
+    "vespene": 50
+  },
+  "id": "SensorTower",
+  "life": {
+    "max": 200,
+    "regen": 0.0,
+    "start": 200
+  },
+  "meta": {
+    "icon": "btn-building-terran-sensordome",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "Footprint1x1",
+    "radius": 0.75,
+    "sight_radius": 12,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "SCV"
+  },
+  "requires": [
+    {
+      "id": "EngineeringBay"
+    }
+  ],
+  "score": {
+    "build": 225,
+    "kill": 225
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

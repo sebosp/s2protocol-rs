@@ -1,0 +1,211 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Rally1",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-setrallypoint",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "RallyCommand",
+      "index": 106
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "CancelLast",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "que5PassiveCancelToSelection",
+      "index": 280
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Load",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-load",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "UnloadAll",
+          "index": 1,
+          "meta": {
+            "icon": "btn-ability-terran-unloadall",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "LoadAll",
+          "index": 4,
+          "meta": {
+            "icon": "btn-ability-terran-load",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "CommandCenterTransport",
+      "index": 146
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 2
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 150,
+    "supply": 0,
+    "time": 50,
+    "vespene": 150
+  },
+  "id": "PlanetaryFortress",
+  "life": {
+    "max": 1500,
+    "regen": 0.0,
+    "start": 1500
+  },
+  "meta": {
+    "icon": "btn-building-terran-planetaryfortress",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "Footprint5x5Contour",
+    "radius": 2.5,
+    "sight_radius": 11,
+    "supply": 15.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "CommandCenter"
+  },
+  "requires": [
+    {
+      "id": "EngineeringBay"
+    }
+  ],
+  "score": {
+    "build": 700,
+    "kill": 700
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Marine"
+    },
+    {
+      "id": "Zergling"
+    },
+    {
+      "id": "Zealot"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "SiegeTank"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "VoidRay"
+    }
+  ]
+}

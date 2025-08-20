@@ -1,0 +1,107 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "CancelLast",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "que5",
+      "index": 125
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Biological",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 100,
+    "supply": 0,
+    "time": 50,
+    "vespene": 100
+  },
+  "id": "InfestationPit",
+  "life": {
+    "max": 850,
+    "regen": 0.2734000086784363,
+    "start": 850
+  },
+  "meta": {
+    "icon": "btn-building-zerg-infestationpit",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "Footprint3x3CreepContour",
+    "radius": 1.5,
+    "sight_radius": 9,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "Drone"
+  },
+  "requires": [
+    {
+      "id": "Lair"
+    }
+  ],
+  "score": {
+    "build": 200,
+    "kill": 200
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

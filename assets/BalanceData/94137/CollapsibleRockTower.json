@@ -1,0 +1,67 @@
+{
+  "abilities": [],
+  "armor": {
+    "max": 3,
+    "start": 3
+  },
+  "attributes": [
+    "Armored",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 0,
+    "supply": 0,
+    "time": 0,
+    "vespene": 0
+  },
+  "id": "CollapsibleRockTower",
+  "life": {
+    "max": 500,
+    "regen": 0.0,
+    "start": 500
+  },
+  "meta": {
+    "icon": "Wireframe-General-CollapsibleRockTower",
+    "race": "Neut"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "CollapsibleTower",
+    "radius": 0.0,
+    "sight_radius": 0,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": null,
+  "requires": [],
+  "score": {
+    "build": 0,
+    "kill": 0
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

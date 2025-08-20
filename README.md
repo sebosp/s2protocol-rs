@@ -102,6 +102,7 @@ If the XMLs for a specific version doesn't exist, all ability Strings will appea
 - When balance data is parsed from the XMLs, it should be exported as JSON and use the `--json-balance-data-dir` to load the serialized version of the XMLs, this could be stored in github for posterity.
 - Not all the data in the XMLs is currently loaded (see `./src/game_events/ability/mod.rs`)
 - `src/state/mod.rs` has an `SC2Unit` that could use all the data available in the XMLs/exported JSON.
+- The json exports from BalanceData could be loaded from a remote repo (github maybe?), otherwise people need to have this repo cloned.
 
 ## Displaying the replay on the terminal
 

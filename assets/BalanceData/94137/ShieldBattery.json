@@ -1,0 +1,121 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-protoss-shieldbattery-color",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "ShieldBatteryRechargeEx5",
+      "index": 702
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 100,
+    "supply": 0,
+    "time": 40,
+    "vespene": 0
+  },
+  "id": "ShieldBattery",
+  "life": {
+    "max": 200,
+    "regen": 0.0,
+    "start": 200
+  },
+  "meta": {
+    "icon": "btn-building-protoss-shieldbattery",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "Footprint2x2Contour",
+    "radius": 1.0,
+    "sight_radius": 9,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "Probe"
+  },
+  "requires": [
+    {
+      "id": "CyberneticsCore"
+    }
+  ],
+  "score": {
+    "build": 100,
+    "kill": 100
+  },
+  "shield_armor": {
+    "max": 1,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 200,
+    "regen_rate": 2.0,
+    "start": 200
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

@@ -1,0 +1,201 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "BTN-Ability-Protoss-VoidRayPrismaticAlignment",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "VoidRaySwarmDamageBoost",
+      "index": 549
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "VoidRaySwarmDamageBoostCancel",
+      "index": 706
+    }
+  ],
+  "armor": {
+    "max": 3,
+    "start": 0
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 250,
+    "supply": 4,
+    "time": 0,
+    "vespene": 150
+  },
+  "id": "VoidRay",
+  "life": {
+    "max": 150,
+    "regen": 0.0,
+    "start": 150
+  },
+  "meta": {
+    "icon": "btn-unit-protoss-warpray",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 1.0,
+    "sight_radius": 10,
+    "supply": -4.0
+  },
+  "movement": {
+    "acceleration": 2.0,
+    "deceleration": 0.0,
+    "kind": "Fly",
+    "speed": 2.75,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Stargate"
+  },
+  "requires": [],
+  "score": {
+    "build": 400,
+    "kill": 400
+  },
+  "shield_armor": {
+    "max": 3,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 100,
+    "regen_rate": 2.0,
+    "start": 100
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Battlecruiser"
+    },
+    {
+      "id": "Corruptor"
+    },
+    {
+      "id": "Immortal"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "Marine"
+    },
+    {
+      "id": "Hydralisk"
+    },
+    {
+      "id": "Phoenix"
+    }
+  ]
+}

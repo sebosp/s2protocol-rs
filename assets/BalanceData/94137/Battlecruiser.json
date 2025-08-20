@@ -1,0 +1,204 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BattlecruiserStop",
+      "index": 697
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BattlecruiserAttack",
+      "index": 693
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BattlecruiserMove",
+      "index": 695
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-yamatogun-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "Yamato",
+      "index": 142
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-warpjump",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "Hyperjump",
+      "index": 534
+    }
+  ],
+  "armor": {
+    "max": 6,
+    "start": 3
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical",
+    "Massive"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 400,
+    "supply": 6,
+    "time": 90,
+    "vespene": 300
+  },
+  "id": "Battlecruiser",
+  "life": {
+    "max": 550,
+    "regen": 0.0,
+    "start": 550
+  },
+  "meta": {
+    "icon": "btn-unit-terran-battlecruiser",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 1.25,
+    "sight_radius": 12,
+    "supply": -6.0
+  },
+  "movement": {
+    "acceleration": 1.0,
+    "deceleration": 0.0,
+    "kind": "Fly",
+    "speed": 1.875,
+    "turn_rate": 720.0
+  },
+  "producer": {
+    "id": "Starport"
+  },
+  "requires": [
+    {
+      "id": "TechLab"
+    },
+    {
+      "id": "FusionCore"
+    }
+  ],
+  "score": {
+    "build": 700,
+    "kill": 700
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Liberator"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "Carrier"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "VikingFighter"
+    },
+    {
+      "id": "Corruptor"
+    },
+    {
+      "id": "VoidRay"
+    }
+  ]
+}

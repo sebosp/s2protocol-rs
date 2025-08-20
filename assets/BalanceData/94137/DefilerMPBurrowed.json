@@ -1,0 +1,84 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-zerg-upburrow-color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "DefilerMPUnburrow",
+      "index": 598
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Biological",
+    "Psionic"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 0,
+    "supply": 0,
+    "time": 0,
+    "vespene": 0
+  },
+  "id": "DefilerMPBurrowed",
+  "life": {
+    "max": 80,
+    "regen": 0.2734000086784363,
+    "start": 80
+  },
+  "meta": {
+    "icon": "btn-unit-zerg-defilerex3",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 2,
+    "footprint": null,
+    "radius": 0.75,
+    "sight_radius": 5,
+    "supply": -2.0
+  },
+  "movement": null,
+  "producer": null,
+  "requires": [],
+  "score": {
+    "build": 200,
+    "kill": 200
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

@@ -1,0 +1,155 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "CancelLast",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "que5CancelToSelection",
+      "index": 126
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-building-zerg-lair",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "UpgradeToLair",
+      "index": 188
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Rally1",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-terran-setrallypoint",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Rally2",
+          "index": 1,
+          "meta": {
+            "icon": "btn-ability-zerg-setworkerrallypoint",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "RallyHatchery",
+      "index": 108
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Biological",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 275,
+    "supply": 0,
+    "time": 100,
+    "vespene": 0
+  },
+  "id": "Hatchery",
+  "life": {
+    "max": 1500,
+    "regen": 0.2734000086784363,
+    "start": 1500
+  },
+  "meta": {
+    "icon": "btn-building-zerg-hatchery",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "Footprint6x5DropOffCreepSourceContour",
+    "radius": 2.0,
+    "sight_radius": 12,
+    "supply": 6.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "Drone"
+  },
+  "requires": [],
+  "score": {
+    "build": 275,
+    "kill": 275
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

@@ -7,6 +7,9 @@ use tracing;
 pub mod xml_reader;
 pub use xml_reader::*;
 
+pub mod json_handler;
+pub use json_handler::*;
+
 //<meta name="27" icon="btn-unit-zerg-zergling" race="Zerg" hotkey="1103" tooltip="203" source="Liberty.SC2Mod" index="128"/>
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct UnitMeta {

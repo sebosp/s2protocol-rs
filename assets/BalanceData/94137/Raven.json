@@ -1,0 +1,210 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "AcquireMove",
+          "index": 3,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-upgrade-terran-interferencematrix",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "RavenScramblerMissile",
+      "index": 719
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "BTN-Ability-Terran-ShredderMissile-Color",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "RavenShredderMissile",
+      "index": 722
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-building-terran-autoturret",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildAutoTurret",
+      "index": 268
+    }
+  ],
+  "armor": {
+    "max": 4,
+    "start": 1
+  },
+  "attributes": [
+    "Light",
+    "Mechanical"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 100,
+    "supply": 2,
+    "time": 48,
+    "vespene": 150
+  },
+  "id": "Raven",
+  "life": {
+    "max": 140,
+    "regen": 0.0,
+    "start": 140
+  },
+  "meta": {
+    "icon": "btn-unit-terran-raven",
+    "race": "Terr"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 0.625,
+    "sight_radius": 11,
+    "supply": -2.0
+  },
+  "movement": {
+    "acceleration": 2.0,
+    "deceleration": 0.0,
+    "kind": "Fly",
+    "speed": 2.949199914932251,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Starport"
+  },
+  "requires": [
+    {
+      "id": "TechLab"
+    }
+  ],
+  "score": {
+    "build": 250,
+    "kill": 250
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "Banshee"
+    },
+    {
+      "id": "LurkerMP"
+    },
+    {
+      "id": "DarkTemplar"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "VikingFighter"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "HighTemplar"
+    }
+  ]
+}

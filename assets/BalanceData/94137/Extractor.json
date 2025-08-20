@@ -1,0 +1,87 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Cancel",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-cancel",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "BuildInProgress",
+      "index": 129
+    }
+  ],
+  "armor": {
+    "max": 1,
+    "start": 1
+  },
+  "attributes": [
+    "Armored",
+    "Biological",
+    "Structure"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 25,
+    "supply": 0,
+    "time": 30,
+    "vespene": 0
+  },
+  "id": "Extractor",
+  "life": {
+    "max": 500,
+    "regen": 0.2734000086784363,
+    "start": 500
+  },
+  "meta": {
+    "icon": "btn-building-zerg-extractor",
+    "race": "Zerg"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": "FootprintGeyserRoundedBuilt",
+    "radius": 1.5,
+    "sight_radius": 9,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": {
+    "id": "Drone"
+  },
+  "requires": [],
+  "score": {
+    "build": 25,
+    "kill": 25
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}

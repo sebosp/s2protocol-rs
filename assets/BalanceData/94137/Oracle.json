@@ -1,0 +1,222 @@
+{
+  "abilities": [
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Stop",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-stop",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "stop",
+      "index": 41
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Move",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-move",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Patrol",
+          "index": 1,
+          "meta": {
+            "icon": "btn-command-patrol",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "HoldPos",
+          "index": 2,
+          "meta": {
+            "icon": "btn-command-holdposition",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "AcquireMove",
+          "index": 3,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "move",
+      "index": 43
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-ability-protoss-preordain",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "OracleRevelation",
+      "index": 421
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "Execute",
+          "index": 0,
+          "meta": {
+            "icon": "btn-command-attack",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "attack",
+      "index": 46
+    },
+    {
+      "cmds": [
+        {
+          "cost": null,
+          "id": "On",
+          "index": 0,
+          "meta": {
+            "icon": "BTN-Ability-Protoss-OraclePulsarCannonOn",
+            "kind": "command"
+          },
+          "requires": null
+        },
+        {
+          "cost": null,
+          "id": "Off",
+          "index": 1,
+          "meta": {
+            "icon": "BTN-Ability-Protoss-OraclePulsarCannonOff",
+            "kind": "command"
+          },
+          "requires": null
+        }
+      ],
+      "id": "OracleWeapon",
+      "index": 540
+    }
+  ],
+  "armor": {
+    "max": 0,
+    "start": 0
+  },
+  "attributes": [
+    "Armored",
+    "Mechanical",
+    "Psionic"
+  ],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 150,
+    "supply": 3,
+    "time": 52,
+    "vespene": 150
+  },
+  "id": "Oracle",
+  "life": {
+    "max": 100,
+    "regen": 0.0,
+    "start": 100
+  },
+  "meta": {
+    "icon": "btn-unit-protoss-oracle",
+    "race": "Prot"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 0.75,
+    "sight_radius": 10,
+    "supply": -3.0
+  },
+  "movement": {
+    "acceleration": 3.0,
+    "deceleration": 0.0,
+    "kind": "Fly",
+    "speed": 4.0,
+    "turn_rate": 999.8436889648438
+  },
+  "producer": {
+    "id": "Stargate"
+  },
+  "requires": [],
+  "score": {
+    "build": 300,
+    "kill": 300
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": {
+    "delay": 10.0,
+    "max": 60,
+    "regen_rate": 2.0,
+    "start": 60
+  },
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [
+    {
+      "id": "SCV"
+    },
+    {
+      "id": "Drone"
+    },
+    {
+      "id": "Probe"
+    }
+  ],
+  "upgrades": [],
+  "weaknesses": [
+    {
+      "id": "VikingFighter"
+    },
+    {
+      "id": "Mutalisk"
+    },
+    {
+      "id": "Phoenix"
+    }
+  ]
+}

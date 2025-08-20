@@ -1,0 +1,64 @@
+{
+  "abilities": [],
+  "armor": {
+    "max": 0,
+    "start": 0
+  },
+  "attributes": [],
+  "cost": {
+    "cooldown": 0,
+    "minerals": 0,
+    "supply": 0,
+    "time": 0,
+    "vespene": 0
+  },
+  "id": "OverseerZagaraACGluescreenDummy",
+  "life": {
+    "max": 1,
+    "regen": 0.0,
+    "start": 1
+  },
+  "meta": {
+    "icon": "btn-unit-collection-webby-overseer",
+    "race": "Neut"
+  },
+  "misc": {
+    "cargo_size": 0,
+    "footprint": null,
+    "radius": 0.5,
+    "sight_radius": 0,
+    "supply": 0.0
+  },
+  "movement": null,
+  "producer": null,
+  "requires": [],
+  "score": {
+    "build": 0,
+    "kill": 0
+  },
+  "shield_armor": {
+    "max": 0,
+    "start": 0
+  },
+  "shields": null,
+  "state": {
+    "ability": {
+      "cmds": [],
+      "current_cmd": {
+        "cost": null,
+        "id": null,
+        "index": null,
+        "meta": {
+          "icon": "",
+          "kind": ""
+        },
+        "requires": null
+      },
+      "id": null,
+      "index": null
+    }
+  },
+  "strengths": [],
+  "upgrades": [],
+  "weaknesses": []
+}
