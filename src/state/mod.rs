@@ -228,8 +228,9 @@ impl SC2EventIterator {
     #[tracing::instrument(level = "debug")]
     pub fn new(
         source: &PathBuf,
-        versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit>,
+        multi_version_abilities: HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<Self, S2ProtocolError> {
+        let total_initial_abilities = multi_version_abilities.len();
         // The sc2 replay state is not shared between the two iterators...
         tracing::debug!("Processing {:?}", source);
         let file_contents = crate::read_file(source)?;
@@ -244,7 +245,7 @@ impl SC2EventIterator {
             filename: source_filename,
             ..Default::default()
         };
-        let abilities: HashMap<String, VersionedBalanceUnit> = versioned_abilities
+        let abilities: HashMap<String, VersionedBalanceUnit> = multi_version_abilities
             .into_iter()
             .filter_map(|((version, name), unit)| {
                 if version == proto_header.m_version.m_base_build {
@@ -255,9 +256,10 @@ impl SC2EventIterator {
             })
             .collect();
         tracing::info!(
-            "Collected {} unit abilities for protocol version {}",
+            "Collected {} unit abilities for protocol version {} out of {} total abilities",
             abilities.len(),
-            proto_header.m_version.m_base_build
+            proto_header.m_version.m_base_build,
+            total_initial_abilities
         );
         Ok(Self {
             protocol_version: proto_header.m_version.m_base_build,
@@ -298,29 +300,24 @@ impl SC2EventIterator {
         details: &crate::details::Details,
     ) -> Vec<game_events::CmdTargetPointEventFlatRow> {
         self.into_iter()
-            .filter_map(|event_item| match event_item.event_type {
-                SC2EventType::Game {
-                    event,
+            .flat_map(|event_item| {
+                if let SC2EventType::Game {
+                    event: game_events::ReplayGameEvent::Cmd(event),
                     game_loop,
                     user_id,
-                } => {
-                    if let game_events::ReplayGameEvent::Cmd(event) = event {
-                        if let game_events::GameSCmdData::TargetPoint(_) = event.m_data {
-                            game_events::CmdTargetPointEventFlatRow::new(
-                                details,
-                                event,
-                                game_loop,
-                                user_id,
-                                event_item.change_hint,
-                            )
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
+                } = event_item.event_type
+                {
+                    if let game_events::GameSCmdData::TargetPoint(_) = event.m_data {
+                        return game_events::CmdTargetPointEventFlatRow::new(
+                            details,
+                            event,
+                            game_loop,
+                            user_id,
+                            event_item.change_hint,
+                        );
                     }
                 }
-                _ => None,
+                vec![]
             })
             .collect()
     }
@@ -332,29 +329,24 @@ impl SC2EventIterator {
         details: &crate::details::Details,
     ) -> Vec<game_events::CmdTargetUnitEventFlatRow> {
         self.into_iter()
-            .filter_map(|event_item| match event_item.event_type {
-                SC2EventType::Game {
-                    event,
+            .flat_map(|event_item| {
+                if let SC2EventType::Game {
+                    event: game_events::ReplayGameEvent::Cmd(event),
                     game_loop,
                     user_id,
-                } => {
-                    if let game_events::ReplayGameEvent::Cmd(event) = event {
-                        if let game_events::GameSCmdData::TargetUnit(_) = event.m_data {
-                            game_events::CmdTargetUnitEventFlatRow::new(
-                                details,
-                                event,
-                                game_loop,
-                                user_id,
-                                event_item.change_hint,
-                            )
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
+                } = event_item.event_type
+                {
+                    if let game_events::GameSCmdData::TargetUnit(_) = event.m_data {
+                        return game_events::CmdTargetUnitEventFlatRow::new(
+                            details,
+                            event,
+                            game_loop,
+                            user_id,
+                            event_item.change_hint,
+                        );
                     }
                 }
-                _ => None,
+                vec![]
             })
             .collect()
     }
