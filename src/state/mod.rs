@@ -671,6 +671,7 @@ impl Iterator for SC2EventIterator {
                     return None;
                 }
             }
+            return Some(iterator_item);
         }
     }
 }

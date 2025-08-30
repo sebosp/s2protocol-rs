@@ -135,24 +135,24 @@ Files are processed using parallel operations.
 For 17K replays (2.3 GBs) it takes 120 seconds to parse/transform/split them. YMMV, in this case only 10K files had valid init data (as in are supported protocol versions).
 
 ```bash
-$ mkdir ipcs/
-$ cargo watch -i ipcs -x "run -r -- -v error --timing --source $HOME/SCReplaysOnNVMe --xml-balance-data-dir $HOME/SC2Replays/BalanceData/ --output $HOME/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 1000000"
+$ mkdir -p ipcs/
+$ cargo run -r --no-default-features --features=dep_arrow,tracing_off -- -v error --timing --source $HOME/SCReplaysOnNVMe --json-balance-data-dir $PWD/assets/BalanceData/ --output $HOME/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 1000000
 36752 files have valid init data, processing...
-Total time: 280.125785662s
+Total time: 396.363965713s
 $ du -sh ipcs
-20G     ipcs
+22G     ipcs
 $ ls -ltra ipc
-total 20575896
-drwxr-xr-x 11 seb seb       4096 Aug 16 18:14 ..
+total 22239120
 drwxr-xr-x  2 seb seb       4096 Aug 17 18:27 .
--rw-r--r--  1 seb seb  117183106 Aug 17 19:35 lobby_init_data.ipc
--rw-r--r--  1 seb seb   10095306 Aug 17 19:35 details.ipc
--rw-r--r--  1 seb seb 2173322874 Aug 17 19:35 stats.ipc
--rw-r--r--  1 seb seb  179426002 Aug 17 19:35 upgrades.ipc
--rw-r--r--  1 seb seb 9958263882 Aug 17 19:36 unit_born.ipc
--rw-r--r--  1 seb seb 5859714578 Aug 17 19:37 unit_died.ipc
--rw-r--r--  1 seb seb 1950258354 Aug 17 19:38 cmd_target_point.ipc
--rw-r--r--  1 seb seb  821400850 Aug 17 19:39 cmd_target_unit.ipc
+drwxr-xr-x 12 seb seb       4096 Aug 30 18:14 ..
+-rw-r--r--  1 seb seb  117183106 Aug 30 20:45 lobby_init_data.ipc
+-rw-r--r--  1 seb seb   10095306 Aug 30 20:45 details.ipc
+-rw-r--r--  1 seb seb 2173322874 Aug 30 20:46 stats.ipc
+-rw-r--r--  1 seb seb  179426002 Aug 30 20:47 upgrades.ipc
+-rw-r--r--  1 seb seb 9958263882 Aug 30 20:48 unit_born.ipc
+-rw-r--r--  1 seb seb 5859714578 Aug 30 20:49 unit_died.ipc
+-rw-r--r--  1 seb seb 3479428050 Aug 30 20:50 cmd_target_point.ipc
+-rw-r--r--  1 seb seb  995379658 Aug 30 20:51 cmd_target_unit.ipc
 ```
 
 ### Jupyter Notebooks
@@ -163,22 +163,24 @@ The jupyter notebook with examples on how to interact with the data are availabl
 
 ```bash
 $ cargo install polars-cli
-$ # List the max number of minerals that were lost in per map when the army was killed.
-❯ echo "SELECT ext_fs_replay_file_name, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s2protocol-rs/ipcs/stats.ipc') GROUP BY ext_fs_replay_file_name ORDER BY minerals_lost_army DESC;"|polars
-┌───────────────────────────────────┬────────────────────┐
-│ ext_fs_replay_file_name           ┆ minerals_lost_army │
-│ ---                               ┆ ---                │
-│ str                               ┆ i32                │
-╞═══════════════════════════════════╪════════════════════╡
-│ Heavy Artillery LE (349).SC2Repl… ┆ 71362              │
-│ Arctic Dream LE (398).SC2Replay   ┆ 59375              │
-│ Nightscape LE (52).SC2Replay      ┆ 54846              │
-│ …                                 ┆ …                  │
-│ Emerald City LE (223).SC2Replay   ┆ 43450              │
-│ Rhoskallian LE (101).SC2Replay    ┆ 41614              │
-│ Fields of Death (345).SC2Replay   ┆ 41529              │
-│ Rhoskallian LE (346).SC2Replay    ┆ 41425              │
-└───────────────────────────────────┴────────────────────┘
+❯ echo "SELECT ext_fs_id, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s2protocol-rs/ipcs/stats.ipc') GROUP BY ext_fs_id ORDER BY minerals_lost_army DESC;"|polars
+┌───────────┬────────────────────┐
+│ ext_fs_id ┆ minerals_lost_army │
+│ ---       ┆ ---                │
+│ u64       ┆ i32                │
+╞═══════════╪════════════════════╡
+│ 46076     ┆ 40078725           │
+│ 50221     ┆ 26858850           │
+│ 44624     ┆ 23460100           │
+│ 25898     ┆ 14187775           │
+│ 46088     ┆ 9492100            │
+│ …         ┆ …                  │
+│ 28169     ┆ 217075             │
+│ 32336     ┆ 190500             │
+│ 47505     ┆ 178256             │
+│ 38654     ┆ 177675             │
+│ 24162     ┆ 168120             │
+└───────────┴────────────────────┘
 ```
 
 
