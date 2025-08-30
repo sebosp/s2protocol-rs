@@ -1,185 +1,587 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Stop",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
+  "@id": "Archon",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "stop",
-      "index": 41
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "attack",
-      "index": 46
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "move",
-      "index": 43
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Rally1",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-terran-setrallypoint",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "ProgressRally",
-      "index": 105
-    }
-  ],
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ProgressRally",
+        "@index": 105,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "122",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "121",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "123",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 3,
-    "start": 0
+    "@max": 3,
+    "@start": 0
   },
-  "attributes": [
-    "Psionic",
-    "Massive"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Psionic"
+      },
+      {
+        "@type": "Massive"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 0,
-    "supply": 0,
-    "time": 12,
-    "vespene": 0
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": null,
+    "@supply": null,
+    "@time": 12.0,
+    "@vespene": null
   },
-  "id": "Archon",
   "life": {
-    "max": 10,
-    "regen": 0.0,
-    "start": 10
+    "@max": 10,
+    "@regenRate": null,
+    "@start": 10
   },
   "meta": {
-    "icon": "btn-unit-protoss-archon",
-    "race": "Prot"
+    "@hotkey": "810",
+    "@icon": "btn-unit-protoss-archon",
+    "@index": 164,
+    "@name": "823",
+    "@race": "Prot",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1277",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 4,
-    "footprint": null,
-    "radius": 1.0,
-    "sight_radius": 9,
-    "supply": -4.0
+    "@cargoCapacity": null,
+    "@cargoSize": 4,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": -4.0,
+    "@targets": null
   },
   "movement": {
-    "acceleration": 1000.0,
-    "deceleration": 0.0,
-    "kind": "Ground",
-    "speed": 2.8125,
-    "turn_rate": 999.8436889648438
+    "@acceleration": 1000.0,
+    "@deceleration": 0.0,
+    "@speed": 2.8125,
+    "@turnRate": 999.8436889648438,
+    "@type": "Ground"
   },
   "producer": {
-    "id": "HighTemplar"
+    "@id": "HighTemplar",
+    "@name": "556"
   },
-  "requires": [],
+  "requires": {
+    "unit": []
+  },
   "score": {
-    "build": 0,
-    "kill": 0
+    "@build": 0,
+    "@kill": 0
   },
-  "shield_armor": {
-    "max": 3,
-    "start": 0
+  "shieldArmor": {
+    "@max": 3,
+    "@start": 0
   },
   "shields": {
-    "delay": 10.0,
-    "max": 350,
-    "regen_rate": 2.0,
-    "start": 350
+    "@delay": 10.0,
+    "@max": 350,
+    "@regenRate": 2.0,
+    "@start": 350
   },
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Marine",
+        "@name": "26"
       },
-      "id": null,
-      "index": null
-    }
+      {
+        "@id": "Mutalisk",
+        "@name": "81"
+      },
+      {
+        "@id": "Adept",
+        "@name": "85"
+      }
+    ]
   },
-  "strengths": [
-    {
-      "id": "Marine"
-    },
-    {
-      "id": "Mutalisk"
-    },
-    {
-      "id": "Adept"
-    }
-  ],
-  "upgrades": [],
-  "weaknesses": [
-    {
-      "id": "Thor"
-    },
-    {
-      "id": "Hydralisk"
-    },
-    {
-      "id": "Immortal"
-    }
-  ]
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ProtossGroundWeapons",
+        "level": [
+          {
+            "@id": "ProtossGroundWeaponsLevel1",
+            "@index": 42,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 170.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "39",
+              "@icon": "BTN-Upgrade-Protoss-GroundWeaponsLevel1",
+              "@index": null,
+              "@name": "38",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "40",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ProtossGroundWeaponsLevel2",
+            "@index": 43,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 202.5,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "42",
+              "@icon": "BTN-Upgrade-Protoss-GroundWeaponsLevel2",
+              "@index": null,
+              "@name": "41",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "43",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossGroundWeaponsLevel1",
+                    "@name": "38"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ProtossGroundWeaponsLevel3",
+            "@index": 44,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 235.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "46",
+              "@icon": "BTN-Upgrade-Protoss-GroundWeaponsLevel3",
+              "@index": null,
+              "@name": "45",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "47",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossGroundWeaponsLevel2",
+                    "@name": "41"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "ProtossGroundArmors",
+        "level": [
+          {
+            "@id": "ProtossGroundArmorsLevel1",
+            "@index": 45,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 170.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "49",
+              "@icon": "BTN-Upgrade-Protoss-GroundArmorLevel1",
+              "@index": null,
+              "@name": "48",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "50",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ProtossGroundArmorsLevel2",
+            "@index": 46,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 202.5,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "52",
+              "@icon": "BTN-Upgrade-Protoss-GroundArmorLevel2",
+              "@index": null,
+              "@name": "51",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "53",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossGroundArmorsLevel1",
+                    "@name": "48"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ProtossGroundArmorsLevel3",
+            "@index": 47,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 235.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "55",
+              "@icon": "BTN-Upgrade-Protoss-GroundArmorLevel3",
+              "@index": null,
+              "@name": "54",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "56",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossGroundArmorsLevel2",
+                    "@name": "51"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "ProtossShields",
+        "level": [
+          {
+            "@id": "ProtossShieldsLevel1",
+            "@index": 48,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 170.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "58",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel1",
+              "@index": null,
+              "@name": "57",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "59",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ProtossShieldsLevel2",
+            "@index": 49,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 202.5,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "61",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel2",
+              "@index": null,
+              "@name": "60",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "62",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossShieldsLevel1",
+                    "@name": "57"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ProtossShieldsLevel3",
+            "@index": 50,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 235.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "64",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel3",
+              "@index": null,
+              "@name": "63",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "65",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossShieldsLevel2",
+                    "@name": "60"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Thor",
+        "@name": "557"
+      },
+      {
+        "@id": "Hydralisk",
+        "@name": "439"
+      },
+      {
+        "@id": "Immortal",
+        "@name": "306"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "PsionicShockwave",
+        "@index": 22,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-protoss-groundweaponslevel0",
+          "@index": null,
+          "@name": "1278",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 3.0,
+          "@sightRadius": null,
+          "@speed": 1.753999948501587,
+          "@supply": null,
+          "@targets": "any"
+        },
+        "score": null
+      }
+    ]
+  }
 }

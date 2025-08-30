@@ -1,117 +1,204 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Cancel",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
+  "@id": "SensorTower",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Halt",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "BuildInProgress",
-      "index": 129
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-terran-salvage",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "SalvageEffect",
-      "index": 733
-    }
-  ],
+          {
+            "@id": "Halt",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "210",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "209",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "211",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "SalvageEffect",
+        "@index": 733,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "314",
+              "@icon": "btn-ability-terran-salvage",
+              "@index": null,
+              "@name": "313",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "315",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "RadarField",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-status-radar",
+              "@index": null,
+              "@name": "330",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "331",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 2,
-    "start": 0
+    "@max": 2,
+    "@start": 0
   },
-  "attributes": [
-    "Armored",
-    "Mechanical",
-    "Structure"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 100,
-    "supply": 0,
-    "time": 25,
-    "vespene": 50
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": null,
+    "@time": 25.0,
+    "@vespene": 50
   },
-  "id": "SensorTower",
   "life": {
-    "max": 200,
-    "regen": 0.0,
-    "start": 200
+    "@max": 200,
+    "@regenRate": null,
+    "@start": 200
   },
   "meta": {
-    "icon": "btn-building-terran-sensordome",
-    "race": "Terr"
+    "@hotkey": "328",
+    "@icon": "btn-building-terran-sensordome",
+    "@index": 47,
+    "@name": "327",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "329",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": "Footprint1x1",
-    "radius": 0.75,
-    "sight_radius": 12,
-    "supply": 0.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint1x1",
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 12.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
   },
   "movement": null,
   "producer": {
-    "id": "SCV"
+    "@id": "SCV",
+    "@name": "208"
   },
-  "requires": [
-    {
-      "id": "EngineeringBay"
-    }
-  ],
+  "requires": {
+    "unit": [
+      {
+        "@id": "EngineeringBay",
+        "@name": "226"
+      }
+    ]
+  },
   "score": {
-    "build": 225,
-    "kill": 225
+    "@build": 225,
+    "@kill": 225
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranBuildingArmor",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "75",
+              "@icon": "BTN-upgrade-terran-buildingarmor",
+              "@index": null,
+              "@name": "74",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "76",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

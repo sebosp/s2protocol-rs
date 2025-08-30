@@ -72,11 +72,13 @@ pub fn read_balance_data_from_json<P: AsRef<Path>>(
             let entry = entry?;
             if entry.file_type()?.is_file() {
                 let file_path = entry.path();
-                // Read the JSON data from the file
                 let versioned_balance_unit: VersionedBalanceUnit =
                     serde_json::from_reader(File::open(file_path)?)?;
-                let unit_name = entry.file_name().to_string_lossy().to_string();
-                // Insert into the HashMap
+                let unit_name = entry
+                    .file_name()
+                    .to_string_lossy()
+                    .trim_end_matches(".json")
+                    .to_string();
                 balance_data.insert((version, unit_name), versioned_balance_unit);
             }
         }

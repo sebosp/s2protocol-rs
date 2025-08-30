@@ -1,99 +1,405 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-zerg-explode-color",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "Explode",
-      "index": 70
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-zerg-upburrow-color",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "BurrowBanelingUp",
-      "index": 198
-    }
-  ],
+  "@id": "BanelingBurrowed",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "Explode",
+        "@index": 70,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "130",
+              "@icon": "btn-ability-zerg-explode-color",
+              "@index": null,
+              "@name": "129",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "131",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BurrowBanelingUp",
+        "@index": 198,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1192",
+              "@icon": "btn-ability-zerg-upburrow-color",
+              "@index": null,
+              "@name": "1191",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1193",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 3,
-    "start": 0
+    "@max": 3,
+    "@start": 0
   },
-  "attributes": [
-    "Biological"
-  ],
-  "cost": {
-    "cooldown": 0,
-    "minerals": 0,
-    "supply": 0,
-    "time": 0,
-    "vespene": 0
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Biological"
+      }
+    ]
   },
-  "id": "BanelingBurrowed",
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
   "life": {
-    "max": 30,
-    "regen": 0.2734000086784363,
-    "start": 30
+    "@max": 30,
+    "@regenRate": 0.2734000086784363,
+    "@start": 30
   },
   "meta": {
-    "icon": "btn-unit-zerg-baneling",
-    "race": "Zerg"
+    "@hotkey": "0",
+    "@icon": "btn-unit-zerg-baneling",
+    "@index": 138,
+    "@name": "124",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "125",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 0.375,
-    "sight_radius": 8,
-    "supply": -0.5
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.375,
+    "@range": null,
+    "@sightRadius": 8.0,
+    "@speed": null,
+    "@supply": -0.5,
+    "@targets": null
   },
   "movement": null,
   "producer": null,
-  "requires": [],
-  "score": {
-    "build": 0,
-    "kill": 0
+  "requires": {
+    "unit": []
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ZergMeleeWeapons",
+        "level": [
+          {
+            "@id": "ZergMeleeWeaponsLevel1",
+            "@index": 56,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "139",
+              "@icon": "btn-upgrade-zerg-meleeattacks-level1",
+              "@index": null,
+              "@name": "138",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "140",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ZergMeleeWeaponsLevel2",
+            "@index": 57,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "142",
+              "@icon": "btn-upgrade-zerg-meleeattacks-level2",
+              "@index": null,
+              "@name": "141",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "143",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergMeleeWeaponsLevel1",
+                    "@name": "138"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ZergMeleeWeaponsLevel3",
+            "@index": 58,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "145",
+              "@icon": "btn-upgrade-zerg-meleeattacks-level3",
+              "@index": null,
+              "@name": "144",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "146",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergMeleeWeaponsLevel2",
+                    "@name": "141"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "ZergGroundArmors",
+        "level": [
+          {
+            "@id": "ZergGroundArmorsLevel1",
+            "@index": 59,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "93",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level1",
+              "@index": null,
+              "@name": "92",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "94",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ZergGroundArmorsLevel2",
+            "@index": 60,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "96",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level2",
+              "@index": null,
+              "@name": "95",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "97",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel1",
+                    "@name": "92"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ZergGroundArmorsLevel3",
+            "@index": 61,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "100",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level3",
+              "@index": null,
+              "@name": "99",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "101",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel2",
+                    "@name": "95"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "Burrow",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 100.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "112",
+              "@icon": "btn-ability-zerg-burrow-color",
+              "@index": null,
+              "@name": "91",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "113",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      },
+      {
+        "@id": "CentrificalHooks",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 100.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "148",
+              "@icon": "btn-upgrade-zerg-centrifugalhooks",
+              "@index": null,
+              "@name": "147",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "149",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  },
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

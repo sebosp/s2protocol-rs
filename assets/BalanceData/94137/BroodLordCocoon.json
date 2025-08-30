@@ -1,136 +1,179 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
+  "@id": "BroodLordCocoon",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "MorphToBroodLord",
+        "@index": 196,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Cancel",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "MorphToBroodLord",
-      "index": 196
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "move",
-      "index": 43
-    }
-  ],
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 2,
-    "start": 2
+    "@max": 2,
+    "@start": 2
   },
-  "attributes": [
-    "Biological",
-    "Massive"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Massive"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 150,
-    "supply": 2,
-    "time": 0,
-    "vespene": 150
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": 2.0,
+    "@time": 33.83420181274414,
+    "@vespene": 150
   },
-  "id": "BroodLordCocoon",
   "life": {
-    "max": 200,
-    "regen": 0.2734000086784363,
-    "start": 200
+    "@max": 200,
+    "@regenRate": 0.2734000086784363,
+    "@start": 200
   },
   "meta": {
-    "icon": "btn-unit-zerg-broodlord",
-    "race": "Zerg"
+    "@hotkey": "1184",
+    "@icon": "btn-unit-zerg-broodlord",
+    "@index": 136,
+    "@name": "1186",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1187",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 0.625,
-    "sight_radius": 5,
-    "supply": -2.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.625,
+    "@range": null,
+    "@sightRadius": 5.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
   },
   "movement": null,
   "producer": {
-    "id": "Corruptor"
+    "@id": "Corruptor",
+    "@name": "30"
   },
-  "requires": [
-    {
-      "id": "GreaterSpire"
-    }
-  ],
+  "requires": {
+    "unit": [
+      {
+        "@id": "GreaterSpire",
+        "@name": "1075"
+      }
+    ]
+  },
   "score": {
-    "build": 0,
-    "kill": 0
+    "@build": 0,
+    "@kill": 0
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

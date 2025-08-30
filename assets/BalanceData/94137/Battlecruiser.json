@@ -1,204 +1,488 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Stop",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
+  "@id": "Battlecruiser",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BattlecruiserStop",
+        "@index": 697,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BattlecruiserAttack",
+        "@index": 693,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BattlecruiserMove",
+        "@index": 695,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "BattlecruiserStop",
-      "index": 697
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "BattlecruiserAttack",
-      "index": 693
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "BattlecruiserMove",
-      "index": 695
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-terran-yamatogun-color",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "Yamato",
-      "index": 142
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-terran-warpjump",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "Hyperjump",
-      "index": 534
-    }
-  ],
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Yamato",
+        "@index": 142,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "637",
+              "@icon": "btn-ability-terran-yamatogun-color",
+              "@index": null,
+              "@name": "636",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "638",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Hyperjump",
+        "@index": 534,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "641",
+              "@icon": "btn-ability-terran-warpjump",
+              "@index": null,
+              "@name": "640",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "642",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 6,
-    "start": 3
+    "@max": 6,
+    "@start": 3
   },
-  "attributes": [
-    "Armored",
-    "Mechanical",
-    "Massive"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Massive"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 400,
-    "supply": 6,
-    "time": 90,
-    "vespene": 300
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 400,
+    "@supply": 6.0,
+    "@time": 90.0,
+    "@vespene": 300
   },
-  "id": "Battlecruiser",
   "life": {
-    "max": 550,
-    "regen": 0.0,
-    "start": 550
+    "@max": 550,
+    "@regenRate": null,
+    "@start": 550
   },
   "meta": {
-    "icon": "btn-unit-terran-battlecruiser",
-    "race": "Terr"
+    "@hotkey": "380",
+    "@icon": "btn-unit-terran-battlecruiser",
+    "@index": 80,
+    "@name": "463",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "381",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 1.25,
-    "sight_radius": 12,
-    "supply": -6.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 1.25,
+    "@range": null,
+    "@sightRadius": 12.0,
+    "@speed": null,
+    "@supply": -6.0,
+    "@targets": null
   },
   "movement": {
-    "acceleration": 1.0,
-    "deceleration": 0.0,
-    "kind": "Fly",
-    "speed": 1.875,
-    "turn_rate": 720.0
+    "@acceleration": 1.0,
+    "@deceleration": 0.0,
+    "@speed": 1.875,
+    "@turnRate": 720.0,
+    "@type": "Fly"
   },
   "producer": {
-    "id": "Starport"
+    "@id": "Starport",
+    "@name": "364"
   },
-  "requires": [
-    {
-      "id": "TechLab"
-    },
-    {
-      "id": "FusionCore"
-    }
-  ],
+  "requires": {
+    "unit": [
+      {
+        "@id": "TechLab",
+        "@name": "69"
+      },
+      {
+        "@id": "FusionCore",
+        "@name": "382"
+      }
+    ]
+  },
   "score": {
-    "build": 700,
-    "kill": 700
+    "@build": 700,
+    "@kill": 700
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Liberator",
+        "@name": "634"
       },
-      "id": null,
-      "index": null
-    }
+      {
+        "@id": "Mutalisk",
+        "@name": "81"
+      },
+      {
+        "@id": "Carrier",
+        "@name": "635"
+      }
+    ]
   },
-  "strengths": [
-    {
-      "id": "Liberator"
-    },
-    {
-      "id": "Mutalisk"
-    },
-    {
-      "id": "Carrier"
-    }
-  ],
-  "upgrades": [],
-  "weaknesses": [
-    {
-      "id": "VikingFighter"
-    },
-    {
-      "id": "Corruptor"
-    },
-    {
-      "id": "VoidRay"
-    }
-  ]
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranShipWeapons",
+        "level": [
+          {
+            "@id": "TerranShipWeaponsLevel1",
+            "@index": 39,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "403",
+              "@icon": "btn-upgrade-terran-shipweaponslevel1",
+              "@index": null,
+              "@name": "408",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "404",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranShipWeaponsLevel2",
+            "@index": 40,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "406",
+              "@icon": "btn-upgrade-terran-shipweaponslevel2",
+              "@index": null,
+              "@name": "412",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "407",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranShipWeaponsLevel1",
+                    "@name": "408"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranShipWeaponsLevel3",
+            "@index": 41,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "410",
+              "@icon": "btn-upgrade-terran-shipweaponslevel3",
+              "@index": null,
+              "@name": "461",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "411",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranShipWeaponsLevel2",
+                    "@name": "412"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "TerranVehicleAndShipArmors",
+        "level": [
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel1",
+            "@index": 163,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel1",
+              "@index": null,
+              "@name": "418",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "415",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel2",
+            "@index": 164,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel2",
+              "@index": null,
+              "@name": "421",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "417",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel1",
+                    "@name": "418"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel3",
+            "@index": 165,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel3",
+              "@index": null,
+              "@name": "448",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "420",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel2",
+                    "@name": "421"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "BattlecruiserEnableSpecializations",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "425",
+              "@icon": "btn-ability-terran-yamatogun-color",
+              "@index": null,
+              "@name": "639",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "426",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "VikingFighter",
+        "@name": "29"
+      },
+      {
+        "@id": "Corruptor",
+        "@name": "30"
+      },
+      {
+        "@id": "VoidRay",
+        "@name": "82"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

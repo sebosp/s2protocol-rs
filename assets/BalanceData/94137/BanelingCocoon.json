@@ -1,115 +1,148 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
+  "@id": "BanelingCocoon",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "MorphToBaneling",
+        "@index": 730,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Cancel",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "MorphToBaneling",
-      "index": 730
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Rally1",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-terran-setrallypoint",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "Rally",
-      "index": 104
-    }
-  ],
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Rally",
+        "@index": 104,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "122",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "121",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "123",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 2,
-    "start": 2
+    "@max": 2,
+    "@start": 2
   },
-  "attributes": [
-    "Biological"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Biological"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 25,
-    "supply": 0,
-    "time": 20,
-    "vespene": 25
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 25,
+    "@supply": null,
+    "@time": 20.0,
+    "@vespene": 25
   },
-  "id": "BanelingCocoon",
   "life": {
-    "max": 50,
-    "regen": 0.2734000086784363,
-    "start": 50
+    "@max": 50,
+    "@regenRate": 0.2734000086784363,
+    "@start": 50
   },
   "meta": {
-    "icon": "btn-unit-zerg-baneling",
-    "race": "Zerg"
+    "@hotkey": "115",
+    "@icon": "btn-unit-zerg-baneling",
+    "@index": 28,
+    "@name": "114",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "116",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 0.375,
-    "sight_radius": 5,
-    "supply": -0.5
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.375,
+    "@range": null,
+    "@sightRadius": 5.0,
+    "@speed": null,
+    "@supply": -0.5,
+    "@targets": null
   },
   "movement": null,
   "producer": {
-    "id": "Zergling"
+    "@id": "Zergling",
+    "@name": "27"
   },
-  "requires": [
-    {
-      "id": "BanelingNest"
-    }
-  ],
+  "requires": {
+    "unit": [
+      {
+        "@id": "BanelingNest",
+        "@name": "117"
+      }
+    ]
+  },
   "score": {
-    "build": 0,
-    "kill": 0
+    "@build": 0,
+    "@kill": 0
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

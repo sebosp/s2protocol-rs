@@ -1,121 +1,186 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Cancel",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
+  "@id": "ShieldBattery",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ShieldBatteryRechargeEx5",
+        "@index": 702,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1901",
+              "@icon": "btn-ability-protoss-shieldbattery-color",
+              "@index": null,
+              "@name": "1900",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1902",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "BuildInProgress",
-      "index": 129
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-protoss-shieldbattery-color",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Cancel",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "ShieldBatteryRechargeEx5",
-      "index": 702
-    }
-  ],
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 1,
-    "start": 1
+    "@max": 1,
+    "@start": 1
   },
-  "attributes": [
-    "Armored",
-    "Structure"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 100,
-    "supply": 0,
-    "time": 40,
-    "vespene": 0
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": null,
+    "@time": 40.0,
+    "@vespene": null
   },
-  "id": "ShieldBattery",
   "life": {
-    "max": 200,
-    "regen": 0.0,
-    "start": 200
+    "@max": 200,
+    "@regenRate": null,
+    "@start": 200
   },
   "meta": {
-    "icon": "btn-building-protoss-shieldbattery",
-    "race": "Prot"
+    "@hotkey": "922",
+    "@icon": "btn-building-protoss-shieldbattery",
+    "@index": 482,
+    "@name": "1899",
+    "@race": "Prot",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "923",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": "Footprint2x2Contour",
-    "radius": 1.0,
-    "sight_radius": 9,
-    "supply": 0.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint2x2Contour",
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
   },
   "movement": null,
   "producer": {
-    "id": "Probe"
+    "@id": "Probe",
+    "@name": "438"
   },
-  "requires": [
-    {
-      "id": "CyberneticsCore"
-    }
-  ],
+  "requires": {
+    "unit": [
+      {
+        "@id": "CyberneticsCore",
+        "@name": "679"
+      }
+    ]
+  },
   "score": {
-    "build": 100,
-    "kill": 100
+    "@build": 100,
+    "@kill": 100
   },
-  "shield_armor": {
-    "max": 1,
-    "start": 0
+  "shieldArmor": {
+    "@max": 1,
+    "@start": 0
   },
   "shields": {
-    "delay": 10.0,
-    "max": 200,
-    "regen_rate": 2.0,
-    "start": 200
+    "@delay": 10.0,
+    "@max": 200,
+    "@regenRate": 2.0,
+    "@start": 200
   },
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ProtossShieldsLevel1",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 170.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "58",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel1",
+              "@index": null,
+              "@name": "57",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "59",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

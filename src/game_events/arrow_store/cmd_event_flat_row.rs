@@ -45,7 +45,7 @@ impl CmdTargetPointEventFlatRow {
             _ => return res,
         };
         let ext_replay_seconds = crate::convert_game_loop_to_seconds(game_loop);
-        if let crate::UnitChangeHint::TargetPoints(ref units) = change_hint {
+        if let crate::UnitChangeHint::Abilities { units, .. } = change_hint {
             for unit in units {
                 let unit_name = unit.name.clone();
                 res.push(Self {
@@ -117,10 +117,18 @@ impl CmdTargetUnitEventFlatRow {
             _ => return res,
         };
         let ext_replay_seconds = crate::convert_game_loop_to_seconds(game_loop);
-        if let crate::UnitChangeHint::TargetUnits { units, target } = change_hint {
+        if let crate::UnitChangeHint::Abilities {
+            units,
+            event: _,
+            target: _,
+        } = change_hint
+        {
             for unit_hint in units {
                 let unit_name = unit_hint.name.clone();
-                let target_unit_name = target.name.clone();
+                let target_unit_name = match unit_hint.cmd.other_unit_name {
+                    Some(name) => name.clone(),
+                    None => "".to_string(),
+                };
                 res.push(Self {
                     user_id,
                     cmd_flags: event.m_cmd_flags,

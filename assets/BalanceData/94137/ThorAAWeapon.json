@@ -1,64 +1,73 @@
 {
-  "abilities": [],
+  "@id": "ThorAAWeapon",
+  "abilities": {
+    "ability": []
+  },
   "armor": {
-    "max": 0,
-    "start": 0
+    "@max": 0,
+    "@start": 0
   },
-  "attributes": [],
-  "cost": {
-    "cooldown": 0,
-    "minerals": 0,
-    "supply": 0,
-    "time": 0,
-    "vespene": 0
+  "attributes": {
+    "attribute": []
   },
-  "id": "ThorAAWeapon",
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
   "life": {
-    "max": 10,
-    "regen": 0.0,
-    "start": 10
+    "@max": 10,
+    "@regenRate": null,
+    "@start": 10
   },
   "meta": {
-    "icon": "",
-    "race": "Terr"
+    "@hotkey": "0",
+    "@icon": null,
+    "@index": 410,
+    "@name": "1786",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "0",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 0.0,
-    "sight_radius": 0,
-    "supply": 0.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.0,
+    "@range": null,
+    "@sightRadius": 0.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
   },
   "movement": null,
   "producer": null,
-  "requires": [],
-  "score": {
-    "build": 0,
-    "kill": 0
+  "requires": {
+    "unit": []
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

@@ -1,143 +1,206 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
+  "@id": "GuardianMP",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "attack",
-      "index": 46
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "move",
-      "index": 43
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Stop",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "stop",
-      "index": 41
-    }
-  ],
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 2,
-    "start": 2
+    "@max": 2,
+    "@start": 2
   },
-  "attributes": [
-    "Armored",
-    "Biological",
-    "Massive"
-  ],
-  "cost": {
-    "cooldown": 0,
-    "minerals": 0,
-    "supply": 0,
-    "time": 0,
-    "vespene": 0
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Massive"
+      }
+    ]
   },
-  "id": "GuardianMP",
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
   "life": {
-    "max": 150,
-    "regen": 0.2734000086784363,
-    "start": 150
+    "@max": 150,
+    "@regenRate": 0.2734000086784363,
+    "@start": 150
   },
   "meta": {
-    "icon": "btn-unit-zerg-primalguardian",
-    "race": "Zerg"
+    "@hotkey": "0",
+    "@icon": "btn-unit-zerg-primalguardian",
+    "@index": 985,
+    "@name": "2426",
+    "@race": "Zerg",
+    "@source": "Void.SC2Mod",
+    "@tooltip": "0",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 1.0,
-    "sight_radius": 10,
-    "supply": -2.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
   },
   "movement": {
-    "acceleration": 1.0,
-    "deceleration": 1.0,
-    "kind": "Fly",
-    "speed": 1.5,
-    "turn_rate": 720.0
+    "@acceleration": 1.0,
+    "@deceleration": 1.0,
+    "@speed": 1.5,
+    "@turnRate": 720.0,
+    "@type": "Fly"
   },
   "producer": null,
-  "requires": [],
-  "score": {
-    "build": 0,
-    "kill": 0
+  "requires": {
+    "unit": []
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "GuardianMPWeapon",
+        "@index": 104,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-zerg-airattacks-level0",
+          "@index": null,
+          "@name": "2427",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 9.0,
+          "@sightRadius": null,
+          "@speed": 1.2999999523162842,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
 }

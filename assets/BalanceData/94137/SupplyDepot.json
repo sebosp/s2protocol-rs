@@ -1,113 +1,179 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Cancel",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
+  "@id": "SupplyDepot",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Halt",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "BuildInProgress",
-      "index": 129
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-building-terran-supplydepotlowered",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "SupplyDepotLower",
-      "index": 159
-    }
-  ],
+          {
+            "@id": "Halt",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "210",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "209",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "211",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "SupplyDepotLower",
+        "@index": 159,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "240",
+              "@icon": "btn-building-terran-supplydepotlowered",
+              "@index": null,
+              "@name": "239",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "241",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 3,
-    "start": 1
+    "@max": 3,
+    "@start": 1
   },
-  "attributes": [
-    "Armored",
-    "Mechanical",
-    "Structure"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 100,
-    "supply": 0,
-    "time": 30,
-    "vespene": 0
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": null,
+    "@time": 30.0,
+    "@vespene": null
   },
-  "id": "SupplyDepot",
   "life": {
-    "max": 400,
-    "regen": 0.0,
-    "start": 400
+    "@max": 400,
+    "@regenRate": null,
+    "@start": 400
   },
   "meta": {
-    "icon": "btn-building-terran-supplydepot",
-    "race": "Terr"
+    "@hotkey": "237",
+    "@icon": "btn-building-terran-supplydepot",
+    "@index": 40,
+    "@name": "236",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "238",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": "Footprint2x2Contour",
-    "radius": 1.25,
-    "sight_radius": 9,
-    "supply": 8.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint2x2Contour",
+    "@radius": 1.25,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 8.0,
+    "@targets": null
   },
   "movement": null,
   "producer": {
-    "id": "SCV"
+    "@id": "SCV",
+    "@name": "208"
   },
-  "requires": [],
+  "requires": {
+    "unit": []
+  },
   "score": {
-    "build": 100,
-    "kill": 100
+    "@build": 100,
+    "@kill": 100
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranBuildingArmor",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "75",
+              "@icon": "BTN-upgrade-terran-buildingarmor",
+              "@index": null,
+              "@name": "74",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "76",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

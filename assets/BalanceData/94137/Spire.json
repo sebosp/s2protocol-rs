@@ -1,133 +1,174 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Cancel",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
+  "@id": "Spire",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "que5CancelToSelection",
+        "@index": 126,
+        "command": [
+          {
+            "@id": "CancelLast",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "UpgradeToGreaterSpire",
+        "@index": 190,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "991",
+              "@icon": "btn-building-zerg-greaterspire",
+              "@index": null,
+              "@name": "990",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "992",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "BuildInProgress",
-      "index": 129
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "CancelLast",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "que5CancelToSelection",
-      "index": 126
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-building-zerg-greaterspire",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Cancel",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "UpgradeToGreaterSpire",
-      "index": 190
-    }
-  ],
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "933",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "934",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 1,
-    "start": 1
+    "@max": 1,
+    "@start": 1
   },
-  "attributes": [
-    "Armored",
-    "Biological",
-    "Structure"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 200,
-    "supply": 0,
-    "time": 100,
-    "vespene": 200
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 200,
+    "@supply": null,
+    "@time": 100.0,
+    "@vespene": 200
   },
-  "id": "Spire",
   "life": {
-    "max": 850,
-    "regen": 0.2734000086784363,
-    "start": 850
+    "@max": 850,
+    "@regenRate": 0.2734000086784363,
+    "@start": 850
   },
   "meta": {
-    "icon": "btn-building-zerg-spire",
-    "race": "Zerg"
+    "@hotkey": "988",
+    "@icon": "btn-building-zerg-spire",
+    "@index": 115,
+    "@name": "987",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "989",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": "Footprint2x2CreepContour",
-    "radius": 1.0,
-    "sight_radius": 9,
-    "supply": 0.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint2x2CreepContour",
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
   },
   "movement": null,
   "producer": {
-    "id": "Drone"
+    "@id": "Drone",
+    "@name": "437"
   },
-  "requires": [
-    {
-      "id": "Lair"
-    }
-  ],
+  "requires": {
+    "unit": [
+      {
+        "@id": "Lair",
+        "@name": "98"
+      }
+    ]
+  },
   "score": {
-    "build": 400,
-    "kill": 400
+    "@build": 400,
+    "@kill": 400
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

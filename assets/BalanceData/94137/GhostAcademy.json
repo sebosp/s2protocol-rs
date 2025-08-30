@@ -1,117 +1,222 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Cancel",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
+  "@id": "GhostAcademy",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Halt",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "BuildInProgress",
-      "index": 129
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "CancelLast",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "que5",
-      "index": 125
-    }
-  ],
+          {
+            "@id": "Halt",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "210",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "209",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "211",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "que5",
+        "@index": 125,
+        "command": [
+          {
+            "@id": "CancelLast",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 3,
-    "start": 1
+    "@max": 3,
+    "@start": 1
   },
-  "attributes": [
-    "Armored",
-    "Mechanical",
-    "Structure"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 150,
-    "supply": 0,
-    "time": 40,
-    "vespene": 50
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": null,
+    "@time": 40.0,
+    "@vespene": 50
   },
-  "id": "GhostAcademy",
   "life": {
-    "max": 1250,
-    "regen": 0.0,
-    "start": 1250
+    "@max": 1250,
+    "@regenRate": null,
+    "@start": 1250
   },
   "meta": {
-    "icon": "btn-building-terran-ghostacademy",
-    "race": "Terr"
+    "@hotkey": "332",
+    "@icon": "btn-building-terran-ghostacademy",
+    "@index": 48,
+    "@name": "260",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "333",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": "Footprint3x3Contour",
-    "radius": 1.5,
-    "sight_radius": 9,
-    "supply": 0.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint3x3Contour",
+    "@radius": 1.5,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
   },
   "movement": null,
   "producer": {
-    "id": "SCV"
+    "@id": "SCV",
+    "@name": "208"
   },
-  "requires": [
-    {
-      "id": "Barracks"
-    }
-  ],
+  "requires": {
+    "unit": [
+      {
+        "@id": "Barracks",
+        "@name": "232"
+      }
+    ]
+  },
   "score": {
-    "build": 200,
-    "kill": 200
+    "@build": 200,
+    "@kill": 200
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": [
+      {
+        "@ability": 166,
+        "@id": "Nuke",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 60.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "338",
+          "@icon": "btn-ability-terran-armnuke",
+          "@index": null,
+          "@name": "337",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "339",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Factory",
+              "@name": "340"
+            },
+            {
+              "@id": "FactoryFlying",
+              "@name": "340"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranBuildingArmor",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "75",
+              "@icon": "BTN-upgrade-terran-buildingarmor",
+              "@index": null,
+              "@name": "74",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "76",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

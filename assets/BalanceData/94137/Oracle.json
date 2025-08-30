@@ -1,222 +1,345 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Stop",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
+  "@id": "Oracle",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "stop",
-      "index": 41
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
+          {
+            "@id": "AcquireMove",
+            "@index": 3,
+            "meta": {
+              "@hotkey": "195",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "194",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "196",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "OracleRevelation",
+        "@index": 421,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1338",
+              "@icon": "btn-ability-protoss-preordain",
+              "@index": null,
+              "@name": "1337",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1339",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "1340",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "OracleWeapon",
+        "@index": 540,
+        "command": [
+          {
+            "@id": "On",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1342",
+              "@icon": "BTN-Ability-Protoss-OraclePulsarCannonOn",
+              "@index": null,
+              "@name": "1341",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1343",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "AcquireMove",
-          "index": 3,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "move",
-      "index": 43
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-protoss-preordain",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "OracleRevelation",
-      "index": 421
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "attack",
-      "index": 46
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "On",
-          "index": 0,
-          "meta": {
-            "icon": "BTN-Ability-Protoss-OraclePulsarCannonOn",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Off",
-          "index": 1,
-          "meta": {
-            "icon": "BTN-Ability-Protoss-OraclePulsarCannonOff",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "OracleWeapon",
-      "index": 540
-    }
-  ],
+          {
+            "@id": "Off",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "1345",
+              "@icon": "BTN-Ability-Protoss-OraclePulsarCannonOff",
+              "@index": null,
+              "@name": "1344",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1346",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 0,
-    "start": 0
+    "@max": 0,
+    "@start": 0
   },
-  "attributes": [
-    "Armored",
-    "Mechanical",
-    "Psionic"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Psionic"
+      }
+    ]
+  },
+  "builds": {
+    "unit": [
+      {
+        "@ability": 605,
+        "@id": "OracleStasisTrap",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": 50,
+          "@life": null,
+          "@minerals": null,
+          "@supply": null,
+          "@time": 5.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "1348",
+          "@icon": "btn-ability-protoss-oracle-stasisward",
+          "@index": null,
+          "@name": "1347",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1349",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      }
+    ]
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 150,
-    "supply": 3,
-    "time": 52,
-    "vespene": 150
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": 3.0,
+    "@time": 52.0,
+    "@vespene": 150
   },
-  "id": "Oracle",
   "life": {
-    "max": 100,
-    "regen": 0.0,
-    "start": 100
+    "@max": 100,
+    "@regenRate": null,
+    "@start": 100
   },
   "meta": {
-    "icon": "btn-unit-protoss-oracle",
-    "race": "Prot"
+    "@hotkey": "746",
+    "@icon": "btn-unit-protoss-oracle",
+    "@index": 185,
+    "@name": "869",
+    "@race": "Prot",
+    "@source": "Swarm.SC2Mod",
+    "@tooltip": "747",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 0.75,
-    "sight_radius": 10,
-    "supply": -3.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": -3.0,
+    "@targets": null
   },
   "movement": {
-    "acceleration": 3.0,
-    "deceleration": 0.0,
-    "kind": "Fly",
-    "speed": 4.0,
-    "turn_rate": 999.8436889648438
+    "@acceleration": 3.0,
+    "@deceleration": 0.0,
+    "@speed": 4.0,
+    "@turnRate": 999.8436889648438,
+    "@type": "Fly"
   },
   "producer": {
-    "id": "Stargate"
+    "@id": "Stargate",
+    "@name": "710"
   },
-  "requires": [],
+  "requires": {
+    "unit": []
+  },
   "score": {
-    "build": 300,
-    "kill": 300
+    "@build": 300,
+    "@kill": 300
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": {
-    "delay": 10.0,
-    "max": 60,
-    "regen_rate": 2.0,
-    "start": 60
+    "@delay": 10.0,
+    "@max": 60,
+    "@regenRate": 2.0,
+    "@start": 60
   },
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
+  "strengths": {
+    "unit": [
+      {
+        "@id": "SCV",
+        "@name": "208"
       },
-      "id": null,
-      "index": null
-    }
+      {
+        "@id": "Drone",
+        "@name": "437"
+      },
+      {
+        "@id": "Probe",
+        "@name": "438"
+      }
+    ]
   },
-  "strengths": [
-    {
-      "id": "SCV"
-    },
-    {
-      "id": "Drone"
-    },
-    {
-      "id": "Probe"
-    }
-  ],
-  "upgrades": [],
-  "weaknesses": [
-    {
-      "id": "VikingFighter"
-    },
-    {
-      "id": "Mutalisk"
-    },
-    {
-      "id": "Phoenix"
-    }
-  ]
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "VikingFighter",
+        "@name": "29"
+      },
+      {
+        "@id": "Mutalisk",
+        "@name": "81"
+      },
+      {
+        "@id": "Phoenix",
+        "@name": "295"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "Oracle",
+        "@index": 94,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-ability-protoss-oraclepulsarcannonon",
+          "@index": null,
+          "@name": "1336",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 4.0,
+          "@sightRadius": null,
+          "@speed": 0.8600000143051147,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
 }

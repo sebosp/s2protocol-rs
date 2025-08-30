@@ -6,13 +6,12 @@ use bat::{Input, PrettyPrinter};
 
 use crate::game_events::ability::json_handler::read_balance_data_from_json;
 use crate::game_events::ability::traverse_versioned_balance_abilities;
-use crate::game_events::iterator::GameEventIterator;
 use crate::game_events::VersionedBalanceUnit;
 use crate::generator::proto_morphist::ProtoMorphist;
 use crate::read_details;
 use crate::read_init_data;
 use crate::read_message_events;
-use crate::tracker_events::iterator::TrackerEventIterator;
+use crate::state::SC2EventIterator;
 
 #[cfg(feature = "dep_arrow")]
 use clap::Args;
@@ -261,7 +260,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             }
             let versioned_abilities =
                 traverse_versioned_balance_abilities(PathBuf::from(&cli.source))?;
-            crate::game_events::ability::json_handler::write_balance_data_to_json(
+            crate::game_events::ability::balance_data::json_handler::write_balance_data_to_json(
                 &cli.json_balance_data_dir,
                 versioned_abilities,
             )?;
@@ -310,18 +309,18 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     .to_string();
                 match read_type {
                     ReadTypes::TrackerEvents => {
-                        let res = TrackerEventIterator::new(&source)?;
+                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
                         println!("[");
-                        for evt in res.into_iter() {
+                        for evt in res.into_iter().filter(|e| e.is_tracker_event()) {
                             json_print(serde_json::to_string(&evt).unwrap(), color);
                         }
                         println!("]");
                     }
 
                     ReadTypes::GameEvents => {
-                        let res = GameEventIterator::new(&source, &versioned_abilities)?;
+                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
                         println!("[");
-                        for evt in res.into_iter() {
+                        for evt in res.into_iter().filter(|e| e.is_game_event()) {
                             json_print(serde_json::to_string(&evt).unwrap(), color);
                         }
                         println!("]");
@@ -344,10 +343,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
-                        let res = crate::state::SC2EventIterator::new(
-                            &source,
-                            versioned_abilities.clone(),
-                        )?;
+                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
                         let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
                         let res = res.with_filters(filters);
                         #[cfg(feature = "dep_ratatui")]

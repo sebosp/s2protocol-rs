@@ -1,174 +1,330 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Stop",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
+  "@id": "Tempest",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "stop",
-      "index": 41
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "attack",
-      "index": 46
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "move",
-      "index": 43
-    }
-  ],
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "TempestGroundAttackUpgrade",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-ability-protoss-disruptionblast",
+              "@index": null,
+              "@name": "1352",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1353",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 2,
-    "start": 2
+    "@max": 2,
+    "@start": 2
   },
-  "attributes": [
-    "Armored",
-    "Mechanical",
-    "Massive"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Massive"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 250,
-    "supply": 4,
-    "time": 60,
-    "vespene": 175
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 250,
+    "@supply": 4.0,
+    "@time": 60.0,
+    "@vespene": 175
   },
-  "id": "Tempest",
   "life": {
-    "max": 200,
-    "regen": 0.0,
-    "start": 200
+    "@max": 200,
+    "@regenRate": null,
+    "@start": 200
   },
   "meta": {
-    "icon": "btn-unit-protoss-tempest",
-    "race": "Prot"
+    "@hotkey": "749",
+    "@icon": "btn-unit-protoss-tempest",
+    "@index": 186,
+    "@name": "31",
+    "@race": "Prot",
+    "@source": "Swarm.SC2Mod",
+    "@tooltip": "750",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 1.125,
-    "sight_radius": 12,
-    "supply": -4.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 1.125,
+    "@range": null,
+    "@sightRadius": 12.0,
+    "@speed": null,
+    "@supply": -4.0,
+    "@targets": null
   },
   "movement": {
-    "acceleration": 3.0,
-    "deceleration": 3.0,
-    "kind": "Fly",
-    "speed": 2.25,
-    "turn_rate": 720.0
+    "@acceleration": 3.0,
+    "@deceleration": 3.0,
+    "@speed": 2.25,
+    "@turnRate": 720.0,
+    "@type": "Fly"
   },
   "producer": {
-    "id": "Stargate"
+    "@id": "Stargate",
+    "@name": "710"
   },
-  "requires": [
-    {
-      "id": "FleetBeacon"
-    }
-  ],
+  "requires": {
+    "unit": [
+      {
+        "@id": "FleetBeacon",
+        "@name": "153"
+      }
+    ]
+  },
   "score": {
-    "build": 425,
-    "kill": 425
+    "@build": 425,
+    "@kill": 425
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": {
-    "delay": 10.0,
-    "max": 100,
-    "regen_rate": 2.0,
-    "start": 100
+    "@delay": 10.0,
+    "@max": 100,
+    "@regenRate": 2.0,
+    "@start": 100
   },
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Liberator",
+        "@name": "634"
       },
-      "id": null,
-      "index": null
-    }
+      {
+        "@id": "BroodLord",
+        "@name": "464"
+      },
+      {
+        "@id": "Colossus",
+        "@name": "21"
+      }
+    ]
   },
-  "strengths": [
-    {
-      "id": "Liberator"
-    },
-    {
-      "id": "BroodLord"
-    },
-    {
-      "id": "Colossus"
-    }
-  ],
-  "upgrades": [],
-  "weaknesses": [
-    {
-      "id": "VikingFighter"
-    },
-    {
-      "id": "Corruptor"
-    },
-    {
-      "id": "VoidRay"
-    }
-  ]
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TempestGroundAttackUpgrade",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "718",
+              "@icon": "btn-ability-protoss-disruptionblast",
+              "@index": null,
+              "@name": "1354",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "719",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "VikingFighter",
+        "@name": "29"
+      },
+      {
+        "@id": "Corruptor",
+        "@name": "30"
+      },
+      {
+        "@id": "VoidRay",
+        "@name": "82"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "Tempest",
+        "@index": 67,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-protoss-airweaponslevel0",
+          "@index": null,
+          "@name": "1350",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 13.0,
+          "@sightRadius": null,
+          "@speed": 3.299999952316284,
+          "@supply": null,
+          "@targets": "air"
+        },
+        "score": null
+      },
+      {
+        "@id": "TempestGround",
+        "@index": 112,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-protoss-airweaponslevel0",
+          "@index": null,
+          "@name": "1351",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 10.0,
+          "@sightRadius": null,
+          "@speed": 3.299999952316284,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
 }

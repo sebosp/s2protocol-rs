@@ -26,11 +26,7 @@ by using
 
 ### Transition Iterators
 
-These are different ways to consume the events:
-
-- `SC2EventIterator` collects both TrackerEvents and GameEvents. Events are provided as they appear, be them Tracker or Game
-- `TrackerEventIterator` allows consuming only Tracker Events
-- `GameEventIterator` allows consuming only the Game Events
+- `SC2EventIterator` collects both TrackerEvents and GameEvents. Events are provided as they appear, be them Tracker or Game, they are sorted by the adjusted game loop.
 
 Event changes transist a minimal state machine that updates:
 - names
@@ -82,26 +78,30 @@ To use the exported balance data, data must be exported and stored in per-versio
 `<somepath>/94137/BalanceData/Overlord.xml`
 where `94137` is the version of the exported XMLs.
 
-To use such exported data, the `--xml-balance-data-dir` must be used. This will be traversed at startup and the data loaded into memory for potentially multiple versions will be used to try to translate the event data into strings.
+To transform the --xml-data into an local-jsonified-version (stored in assets directory for now):
+```
+$ cargo run -r -- -v info --timing --source $HOME/SC2Replays/BalanceData/ --json-balance-data-dir $PWD/assets/BalanceData/ --output $PWD/assets/BalanceData/ balance-data-to-json
+2025-08-30T18:18:04.528202Z  INFO s2protocol::game_events::ability::balance_data: Processed 1058 total units
+2025-08-30T18:18:04.528218Z  INFO s2protocol::game_events::ability::balance_data::json_handler: Writing balance data to JSON files in /home/seb/git/s2protocol-rs/assets/BalanceData/
+```
+
 For example:
 
 ```
-$ cargo run -- --source assets/FieldsDeath202507.SC2Replay --max-events 450 --color --xml-balance-data-dir $HOME/SC2Replays/BalanceData/ --verbosity-level info get transist-events
+$ cargo run -- --source assets/FieldsDeath202507.SC2Replay --max-events 450 --color --json-balance-data-dir $PWD/assets/BalanceData/ --verbosity-level info get transist-events
      Running `target/debug/s2protocol --source assets/FieldsDeath202507.SC2Replay --max-events 450 --color --xml-balance-data-dir /home/seb/SC2Replays/BalanceData/ --verbosity-level warning get transist-events`
-2025-08-17T16:08:08.989828Z  INFO s2protocol::cli: Using balance data directory: /home/seb/SC2Replays/BalanceData/
-2025-08-17T16:08:09.476143Z  INFO s2protocol::game_events::ability::xml_reader: Processed 1058 total units
-2025-08-17T16:08:09.476165Z  INFO s2protocol::cli: Processing "assets/FieldsDeath202507.SC2Replay"
-2025-08-17T16:08:09.477162Z  INFO s2protocol::cli: Transducing through both Game and Tracker Events
-2025-08-17T16:08:09.571608Z  INFO s2protocol::state: Collected 1058 unit abilities for protocol version 94137
+2025-08-30T18:19:47.983171Z  INFO s2protocol::game_events::ability::balance_data::json_handler: Reading balance data from JSON files in /home/seb/git/s2protocol-rs/assets/BalanceData/
+2025-08-30T18:19:48.532272Z  INFO s2protocol::game_events::ability::balance_data::json_handler: Read 1058 versioned balance units from JSON files
+2025-08-30T18:19:48.532290Z  INFO s2protocol::cli: Processing "assets/FieldsDeath202507.SC2Replay"
+2025-08-30T18:19:48.532848Z  INFO s2protocol::cli: Transducing through both Game and Tracker Events
+2025-08-30T18:19:48.576246Z  INFO s2protocol::state: Collected 1058 unit definitions for protocol version 94137 out of 1058 total definitions
+...
 ```
 
-If the XMLs for a specific version doesn't exist, all ability Strings will appear as "".
+If the XMLs/JSON for a specific version doesn't exist, all ability Strings will appear as "".
 
 ### TODO:
 
-- When balance data is parsed from the XMLs, it should be exported as JSON and use the `--json-balance-data-dir` to load the serialized version of the XMLs, this could be stored in github for posterity.
-- Not all the data in the XMLs is currently loaded (see `./src/game_events/ability/mod.rs`)
-- `src/state/mod.rs` has an `SC2Unit` that could use all the data available in the XMLs/exported JSON.
 - The json exports from BalanceData could be loaded from a remote repo (github maybe?), otherwise people need to have this repo cloned.
 
 ## Displaying the replay on the terminal
@@ -228,4 +228,11 @@ RUST_LOG_SPAN_EVENTS=full RUST_LOG=debug cargo watch -i src/versions/protocol897
 ## JSON Spec Sources
 
 [Blizzard/s2protocol repo](https://github.com/Blizzard/s2protocol)
+
+
+# Cmds:
+```
+# Tho it was xml-basance-data-dir
+$ cargo watch -x 'run -r -- -v error --timing --source /home/seb/test_set_202508 --xml-balance-data-dir $HOME/SC2Replays/BalanceData/ --output /home/seb/git/s2protocol-rs/ipcs write-arrow-ipc'
+```
 

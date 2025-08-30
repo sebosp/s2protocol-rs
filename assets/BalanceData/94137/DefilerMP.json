@@ -1,200 +1,249 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Stop",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
+  "@id": "DefilerMP",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "stop",
-      "index": 41
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "AcquireMove",
-          "index": 3,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "move",
-      "index": 43
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-zerg-consume",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "DefilerMPConsume",
-      "index": 594
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-zerg-darkswarm",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "DefilerMPDarkSwarm",
-      "index": 595
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-zerg-defilerplague",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "DefilerMPPlague",
-      "index": 596
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-zerg-burrow-color",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "DefilerMPBurrow",
-      "index": 597
-    }
-  ],
+          {
+            "@id": "AcquireMove",
+            "@index": 3,
+            "meta": {
+              "@hotkey": "195",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "194",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "196",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "DefilerMPConsume",
+        "@index": 594,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "2434",
+              "@icon": "btn-ability-zerg-consume",
+              "@index": null,
+              "@name": "2433",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "0",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "DefilerMPDarkSwarm",
+        "@index": 595,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "2436",
+              "@icon": "btn-ability-zerg-darkswarm",
+              "@index": null,
+              "@name": "2435",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "0",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "DefilerMPPlague",
+        "@index": 596,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "2438",
+              "@icon": "btn-ability-zerg-defilerplague",
+              "@index": null,
+              "@name": "2437",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "2439",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "DefilerMPBurrow",
+        "@index": 597,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "89",
+              "@icon": "btn-ability-zerg-burrow-color",
+              "@index": null,
+              "@name": "88",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "90",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 1,
-    "start": 1
+    "@max": 1,
+    "@start": 1
   },
-  "attributes": [
-    "Biological",
-    "Psionic"
-  ],
-  "cost": {
-    "cooldown": 0,
-    "minerals": 0,
-    "supply": 0,
-    "time": 0,
-    "vespene": 0
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Psionic"
+      }
+    ]
   },
-  "id": "DefilerMP",
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
   "life": {
-    "max": 80,
-    "regen": 0.2734000086784363,
-    "start": 80
+    "@max": 80,
+    "@regenRate": 0.2734000086784363,
+    "@start": 80
   },
   "meta": {
-    "icon": "btn-unit-zerg-defilerex3",
-    "race": "Zerg"
+    "@hotkey": "0",
+    "@icon": "btn-unit-zerg-defilerex3",
+    "@index": 989,
+    "@name": "2432",
+    "@race": "Zerg",
+    "@source": "Void.SC2Mod",
+    "@tooltip": "0",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 2,
-    "footprint": null,
-    "radius": 0.75,
-    "sight_radius": 10,
-    "supply": -2.0
+    "@cargoCapacity": null,
+    "@cargoSize": 2,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
   },
   "movement": {
-    "acceleration": 1000.0,
-    "deceleration": 0.0,
-    "kind": "Ground",
-    "speed": 2.25,
-    "turn_rate": 999.8436889648438
+    "@acceleration": 1000.0,
+    "@deceleration": 0.0,
+    "@speed": 2.25,
+    "@turnRate": 999.8436889648438,
+    "@type": "Ground"
   },
   "producer": null,
-  "requires": [],
-  "score": {
-    "build": 200,
-    "kill": 200
+  "requires": {
+    "unit": []
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "score": {
+    "@build": 200,
+    "@kill": 200
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

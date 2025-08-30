@@ -1,187 +1,411 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Cancel",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "BuildInProgress",
-      "index": 129
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-protoss-protoncharge-color",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "ChronoBoostEnergyCost",
-      "index": 723
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "CancelLast",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "que5Passive",
-      "index": 279
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Rally1",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-terran-setrallypoint",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "RallyNexus",
-      "index": 107
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-protoss-massrecall",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "NexusMassRecall",
-      "index": 724
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-zeratul-warpprism-transferlink",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "EnergyRecharge",
-      "index": 732
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-zeratul-warpprism-transferlink",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "EnergyRecharge",
-      "index": 732
-    }
-  ],
+  "@id": "Nexus",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ChronoBoostEnergyCost",
+        "@index": 723,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "646",
+              "@icon": "btn-ability-protoss-protoncharge-color",
+              "@index": null,
+              "@name": "645",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "647",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "que5Passive",
+        "@index": 279,
+        "command": [
+          {
+            "@id": "CancelLast",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "RallyNexus",
+        "@index": 107,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "122",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "121",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "123",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "NexusMassRecall",
+        "@index": 724,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "649",
+              "@icon": "btn-ability-protoss-massrecall",
+              "@index": null,
+              "@name": "648",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "650",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "EnergyRecharge",
+        "@index": 732,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "652",
+              "@icon": "btn-ability-zeratul-warpprism-transferlink",
+              "@index": null,
+              "@name": "651",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "653",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "EnergyRecharge",
+        "@index": 732,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "652",
+              "@icon": "btn-ability-zeratul-warpprism-transferlink",
+              "@index": null,
+              "@name": "651",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "653",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 1,
-    "start": 1
+    "@max": 1,
+    "@start": 1
   },
-  "attributes": [
-    "Armored",
-    "Structure"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 400,
-    "supply": 0,
-    "time": 100,
-    "vespene": 0
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 400,
+    "@supply": null,
+    "@time": 100.0,
+    "@vespene": null
   },
-  "id": "Nexus",
   "life": {
-    "max": 1000,
-    "regen": 0.0,
-    "start": 1000
+    "@max": 1000,
+    "@regenRate": null,
+    "@start": 1000
   },
   "meta": {
-    "icon": "btn-building-protoss-nexus",
-    "race": "Prot"
+    "@hotkey": "643",
+    "@icon": "btn-building-protoss-nexus",
+    "@index": 82,
+    "@name": "154",
+    "@race": "Prot",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "644",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": "Footprint5x5Contour",
-    "radius": 2.0,
-    "sight_radius": 11,
-    "supply": 15.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint5x5Contour",
+    "@radius": 2.0,
+    "@range": null,
+    "@sightRadius": 11.0,
+    "@speed": null,
+    "@supply": 15.0,
+    "@targets": null
   },
   "movement": null,
   "producer": {
-    "id": "Probe"
+    "@id": "Probe",
+    "@name": "438"
   },
-  "requires": [],
+  "requires": {
+    "unit": []
+  },
   "score": {
-    "build": 400,
-    "kill": 400
+    "@build": 400,
+    "@kill": 400
   },
-  "shield_armor": {
-    "max": 3,
-    "start": 0
+  "shieldArmor": {
+    "@max": 3,
+    "@start": 0
   },
   "shields": {
-    "delay": 10.0,
-    "max": 1000,
-    "regen_rate": 2.0,
-    "start": 1000
+    "@delay": 10.0,
+    "@max": 1000,
+    "@regenRate": 2.0,
+    "@start": 1000
   },
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": [
+      {
+        "@ability": 177,
+        "@id": "Probe",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 50,
+          "@supply": 1.0,
+          "@time": 17.0,
+          "@vespene": null
         },
-        "requires": null
+        "meta": {
+          "@hotkey": "655",
+          "@icon": "btn-unit-protoss-probe",
+          "@index": null,
+          "@name": "654",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "656",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
       },
-      "id": null,
-      "index": null
-    }
+      {
+        "@ability": 76,
+        "@id": "Mothership",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 400,
+          "@supply": 8.0,
+          "@time": 125.0,
+          "@vespene": 400
+        },
+        "meta": {
+          "@hotkey": "151",
+          "@icon": "btn-unit-protoss-mothership",
+          "@index": null,
+          "@name": "657",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "152",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "FleetBeacon",
+              "@name": "153"
+            },
+            {
+              "@id": "Mothership",
+              "@name": "150"
+            }
+          ]
+        }
+      }
+    ]
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ProtossShields",
+        "level": [
+          {
+            "@id": "ProtossShieldsLevel1",
+            "@index": 48,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 170.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "58",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel1",
+              "@index": null,
+              "@name": "57",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "59",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ProtossShieldsLevel2",
+            "@index": 49,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 202.5,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "61",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel2",
+              "@index": null,
+              "@name": "60",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "62",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossShieldsLevel1",
+                    "@name": "57"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ProtossShieldsLevel3",
+            "@index": 50,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 235.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "64",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel3",
+              "@index": null,
+              "@name": "63",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "65",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossShieldsLevel2",
+                    "@name": "60"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

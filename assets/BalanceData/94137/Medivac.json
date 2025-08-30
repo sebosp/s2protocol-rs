@@ -1,206 +1,414 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-terran-heal-color",
-            "kind": "command"
+  "@id": "Medivac",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "MedivacHeal",
+        "@index": 136,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "605",
+              "@icon": "btn-ability-terran-heal-color",
+              "@index": null,
+              "@name": "604",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "606",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "MedivacHeal",
-      "index": 136
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Stop",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "stop",
-      "index": 41
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
+          {
+            "@id": "AcquireMove",
+            "@index": 3,
+            "meta": {
+              "@hotkey": "195",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "194",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "196",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "MedivacTransport",
+        "@index": 140,
+        "command": [
+          {
+            "@id": "Load",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "608",
+              "@icon": "btn-ability-terran-load",
+              "@index": null,
+              "@name": "607",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "609",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "AcquireMove",
-          "index": 3,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "move",
-      "index": 43
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Load",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-terran-load",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "UnloadAt",
-          "index": 2,
-          "meta": {
-            "icon": "btn-ability-terran-unloadall",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "MedivacTransport",
-      "index": 140
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "BTN-Upgrade-Terran-MedivacEmergencyThrusters",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "MedivacSpeedBoost",
-      "index": 406
-    }
-  ],
+          {
+            "@id": "UnloadAt",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "611",
+              "@icon": "btn-ability-terran-unloadall",
+              "@index": null,
+              "@name": "610",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "612",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "MedivacSpeedBoost",
+        "@index": 406,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "614",
+              "@icon": "BTN-Upgrade-Terran-MedivacEmergencyThrusters",
+              "@index": null,
+              "@name": "613",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "615",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "CaduceusReactor",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-upgrade-terran-caduceusreactor",
+              "@index": null,
+              "@name": "616",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "432",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 4,
-    "start": 1
+    "@max": 4,
+    "@start": 1
   },
-  "attributes": [
-    "Armored",
-    "Mechanical"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 100,
-    "supply": 2,
-    "time": 42,
-    "vespene": 100
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": 2.0,
+    "@time": 42.0,
+    "@vespene": 100
   },
-  "id": "Medivac",
   "life": {
-    "max": 150,
-    "regen": 0.0,
-    "start": 150
+    "@max": 150,
+    "@regenRate": null,
+    "@start": 150
   },
   "meta": {
-    "icon": "btn-unit-terran-medivac",
-    "race": "Terr"
+    "@hotkey": "371",
+    "@icon": "btn-unit-terran-medivac",
+    "@index": 77,
+    "@name": "601",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "372",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 0.75,
-    "sight_radius": 11,
-    "supply": -2.0
+    "@cargoCapacity": 8,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 11.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
   },
   "movement": {
-    "acceleration": 2.25,
-    "deceleration": 0.0,
-    "kind": "Fly",
-    "speed": 2.5,
-    "turn_rate": 999.8436889648438
+    "@acceleration": 2.25,
+    "@deceleration": 0.0,
+    "@speed": 2.5,
+    "@turnRate": 999.8436889648438,
+    "@type": "Fly"
   },
   "producer": {
-    "id": "Starport"
+    "@id": "Starport",
+    "@name": "364"
   },
-  "requires": [],
+  "requires": {
+    "unit": []
+  },
   "score": {
-    "build": 200,
-    "kill": 200
+    "@build": 200,
+    "@kill": 200
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": [
-    {
-      "id": "MissileTurret"
-    },
-    {
-      "id": "SporeCrawler"
-    },
-    {
-      "id": "PhotonCannon"
-    }
-  ]
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranVehicleAndShipArmors",
+        "level": [
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel1",
+            "@index": 163,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel1",
+              "@index": null,
+              "@name": "418",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "415",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel2",
+            "@index": 164,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel2",
+              "@index": null,
+              "@name": "421",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "417",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel1",
+                    "@name": "418"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel3",
+            "@index": 165,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel3",
+              "@index": null,
+              "@name": "448",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "420",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel2",
+                    "@name": "421"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "MedivacCaduceusReactor",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 70.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "431",
+              "@icon": "btn-upgrade-terran-caduceusreactor",
+              "@index": null,
+              "@name": "616",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "432",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "MissileTurret",
+        "@name": "291"
+      },
+      {
+        "@id": "SporeCrawler",
+        "@name": "602"
+      },
+      {
+        "@id": "PhotonCannon",
+        "@name": "603"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

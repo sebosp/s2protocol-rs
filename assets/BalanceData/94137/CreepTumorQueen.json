@@ -1,70 +1,94 @@
 {
-  "abilities": [],
+  "@id": "CreepTumorQueen",
+  "abilities": {
+    "ability": []
+  },
   "armor": {
-    "max": 0,
-    "start": 0
+    "@max": 0,
+    "@start": 0
   },
-  "attributes": [
-    "Light",
-    "Biological",
-    "Structure"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 0,
-    "supply": 0,
-    "time": 15,
-    "vespene": 0
+    "@cooldown": null,
+    "@energy": 25,
+    "@life": null,
+    "@minerals": null,
+    "@supply": null,
+    "@time": 15.0,
+    "@vespene": null
   },
-  "id": "CreepTumorQueen",
   "life": {
-    "max": 50,
-    "regen": 0.2734000086784363,
-    "start": 50
+    "@max": 50,
+    "@regenRate": 0.2734000086784363,
+    "@start": 50
   },
   "meta": {
-    "icon": "btn-building-zerg-creeptumor",
-    "race": "Zerg"
+    "@hotkey": "1218",
+    "@icon": "btn-building-zerg-creeptumor",
+    "@index": 161,
+    "@name": "948",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "950",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": "CreepTumorQueen",
-    "radius": 1.0,
-    "sight_radius": 10,
-    "supply": 0.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "CreepTumorQueen",
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
   },
   "movement": null,
   "producer": {
-    "id": "Queen"
+    "@id": "Queen",
+    "@name": "1206"
   },
-  "requires": [],
+  "requires": {
+    "unit": []
+  },
   "score": {
-    "build": 0,
-    "kill": 0
+    "@build": 0,
+    "@kill": 0
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

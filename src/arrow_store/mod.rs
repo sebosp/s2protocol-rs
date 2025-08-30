@@ -15,7 +15,7 @@ use crate::cli::get_matching_files;
 use crate::details::Details;
 use crate::details::PlayerDetailsFlatRow;
 use crate::game_events::VersionedBalanceUnit;
-use crate::tracker_events::{self, TrackerEventIterator};
+use crate::tracker_events;
 use crate::*;
 use clap::Subcommand;
 use std::path::PathBuf;
@@ -157,10 +157,26 @@ impl ArrowIpcTypes {
             output.join("lobby_init_data.ipc"),
         )?;
         Self::Details.handle_details_ipc_cmd(sources.clone(), output.join("details.ipc"))?;
-        Self::Stats.handle_tracker_events(sources.clone(), output.join("stats.ipc"))?;
-        Self::Upgrades.handle_tracker_events(sources.clone(), output.join("upgrades.ipc"))?;
-        Self::UnitBorn.handle_tracker_events(sources.clone(), output.join("unit_born.ipc"))?;
-        Self::UnitDied.handle_tracker_events(sources.clone(), output.join("unit_died.ipc"))?;
+        Self::Stats.handle_tracker_events(
+            sources.clone(),
+            output.join("stats.ipc"),
+            unit_abilities,
+        )?;
+        Self::Upgrades.handle_tracker_events(
+            sources.clone(),
+            output.join("upgrades.ipc"),
+            unit_abilities,
+        )?;
+        Self::UnitBorn.handle_tracker_events(
+            sources.clone(),
+            output.join("unit_born.ipc"),
+            unit_abilities,
+        )?;
+        Self::UnitDied.handle_tracker_events(
+            sources.clone(),
+            output.join("unit_died.ipc"),
+            unit_abilities,
+        )?;
         Self::CmdTargetPoint.handle_game_events(
             sources.clone(),
             output.join("cmd_target_point.ipc"),
@@ -234,6 +250,7 @@ impl ArrowIpcTypes {
         &self,
         sources: Vec<InitData>,
         output: PathBuf,
+        versioned_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing TrackerEvents IPC write request: {:?}", self);
         let writer = open_arrow_mutex_writer(output, self.schema())?;
@@ -244,22 +261,23 @@ impl ArrowIpcTypes {
             .filter_map(|source| {
                 let details: Details = Details::try_from(source).ok()?;
                 let source_path = PathBuf::from(&source.ext_fs_file_name);
-                let tracker_events = TrackerEventIterator::new(&source_path).ok()?;
+                let event_iterator =
+                    SC2EventIterator::new(&source_path, versioned_abilities.clone()).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::Stats => {
-                        let batch = tracker_events.collect_into_player_stats_flat_rows(&details);
+                        let batch = event_iterator.collect_into_player_stats_flat_rows(&details);
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::Upgrades => {
-                        let batch = tracker_events.collect_into_upgrades_flat_rows(&details);
+                        let batch = event_iterator.collect_into_upgrades_flat_rows(&details);
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::UnitBorn => {
-                        let batch = tracker_events.collect_into_unit_born_flat_rows(&details);
+                        let batch = event_iterator.collect_into_unit_born_flat_rows(&details);
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::UnitDied => {
-                        let batch = tracker_events.collect_into_unit_died_flat_rows(&details);
+                        let batch = event_iterator.collect_into_unit_died_flat_rows(&details);
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     _ => unimplemented!(),
@@ -289,17 +307,17 @@ impl ArrowIpcTypes {
             .filter_map(|source| {
                 let details = Details::try_from(source).ok()?;
                 let source_path = PathBuf::from(&source.ext_fs_file_name);
-                let game_events =
+                let event_iterator =
                     SC2EventIterator::new(&source_path, versioned_abilities.clone()).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::CmdTargetPoint => {
                         let batch =
-                            game_events.collect_into_game_cmd_target_points_flat_rows(&details);
+                            event_iterator.collect_into_game_cmd_target_points_flat_rows(&details);
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::CmdTargetUnit => {
                         let batch =
-                            game_events.collect_into_game_cmd_target_units_flat_rows(&details);
+                            event_iterator.collect_into_game_cmd_target_units_flat_rows(&details);
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     e => unimplemented!("{:?}", e),

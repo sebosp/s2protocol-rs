@@ -1,73 +1,86 @@
 {
-  "abilities": [],
+  "@id": "BroodlingEscort",
+  "abilities": {
+    "ability": []
+  },
   "armor": {
-    "max": 0,
-    "start": 0
+    "@max": 0,
+    "@start": 0
   },
-  "attributes": [
-    "Light",
-    "Biological"
-  ],
-  "cost": {
-    "cooldown": 0,
-    "minerals": 0,
-    "supply": 0,
-    "time": 0,
-    "vespene": 0
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Biological"
+      }
+    ]
   },
-  "id": "BroodlingEscort",
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
   "life": {
-    "max": 30,
-    "regen": 0.2734000086784363,
-    "start": 30
+    "@max": 30,
+    "@regenRate": 0.2734000086784363,
+    "@start": 30
   },
   "meta": {
-    "icon": "btn-unit-zerg-symbiote",
-    "race": "Zerg"
+    "@hotkey": "0",
+    "@icon": "btn-unit-zerg-symbiote",
+    "@index": 166,
+    "@name": "1284",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1285",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 0.375,
-    "sight_radius": 7,
-    "supply": 0.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.375,
+    "@range": null,
+    "@sightRadius": 7.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
   },
   "movement": {
-    "acceleration": 4.0,
-    "deceleration": 0.0,
-    "kind": "Fly",
-    "speed": 6.0,
-    "turn_rate": 720.0
+    "@acceleration": 4.0,
+    "@deceleration": 0.0,
+    "@speed": 6.0,
+    "@turnRate": 720.0,
+    "@type": "Fly"
   },
   "producer": null,
-  "requires": [],
-  "score": {
-    "build": 0,
-    "kill": 0
+  "requires": {
+    "unit": []
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

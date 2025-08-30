@@ -1,135 +1,284 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
+  "@id": "TransportOverlordCocoon",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "MorphToTransportOverlord",
+        "@index": 312,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Cancel",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-cancel",
-            "kind": "command"
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "MorphToTransportOverlord",
-      "index": 312
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "move",
-      "index": 43
-    }
-  ],
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 5,
-    "start": 2
+    "@max": 5,
+    "@start": 2
   },
-  "attributes": [
-    "Biological"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Biological"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 25,
-    "supply": 0,
-    "time": 0,
-    "vespene": 25
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 25,
+    "@supply": null,
+    "@time": 21.000999450683594,
+    "@vespene": 25
   },
-  "id": "TransportOverlordCocoon",
   "life": {
-    "max": 200,
-    "regen": 0.2734000086784363,
-    "start": 200
+    "@max": 200,
+    "@regenRate": 0.2734000086784363,
+    "@start": 200
   },
   "meta": {
-    "icon": "btn-unit-zerg-overlordtransport",
-    "race": "Zerg"
+    "@hotkey": "1120",
+    "@icon": "btn-unit-zerg-overlordtransport",
+    "@index": 182,
+    "@name": "1332",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1333",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 0.625,
-    "sight_radius": 5,
-    "supply": 8.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.625,
+    "@range": null,
+    "@sightRadius": 5.0,
+    "@speed": null,
+    "@supply": 8.0,
+    "@targets": null
   },
   "movement": null,
   "producer": {
-    "id": "Overlord"
+    "@id": "Overlord",
+    "@name": "1107"
   },
-  "requires": [
-    {
-      "id": "Lair"
-    }
-  ],
+  "requires": {
+    "unit": [
+      {
+        "@id": "Lair",
+        "@name": "98"
+      }
+    ]
+  },
   "score": {
-    "build": 0,
-    "kill": 0
+    "@build": 0,
+    "@kill": 0
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
-      },
-      "id": null,
-      "index": null
-    }
+  "strengths": {
+    "unit": []
   },
-  "strengths": [],
-  "upgrades": [],
-  "weaknesses": []
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ZergFlyerArmors",
+        "level": [
+          {
+            "@id": "ZergFlyerArmorsLevel1",
+            "@index": 74,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "1005",
+              "@icon": "btn-upgrade-zerg-flyercarapace-level1",
+              "@index": null,
+              "@name": "1010",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1006",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ZergFlyerArmorsLevel2",
+            "@index": 75,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "1008",
+              "@icon": "btn-upgrade-zerg-flyercarapace-level2",
+              "@index": null,
+              "@name": "1014",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1009",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergFlyerArmorsLevel1",
+                    "@name": "1010"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ZergFlyerArmorsLevel3",
+            "@index": 76,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "1012",
+              "@icon": "btn-upgrade-zerg-flyercarapace-level3",
+              "@index": null,
+              "@name": "1122",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1013",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergFlyerArmorsLevel2",
+                    "@name": "1014"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

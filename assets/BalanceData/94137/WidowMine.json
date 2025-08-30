@@ -1,190 +1,540 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "BTN-Ability-Terran-ActivateMine",
-            "kind": "command"
+  "@id": "WidowMine",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "WidowMineBurrow",
+        "@index": 399,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1852",
+              "@icon": "BTN-Ability-Terran-ActivateMine",
+              "@index": null,
+              "@name": "1851",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1853",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "WidowMineBurrow",
-      "index": 399
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Stop",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "stop",
-      "index": 41
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
           },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "AcquireMove",
-          "index": 3,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "move",
-      "index": 43
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "WidowMineAttack",
-      "index": 401
-    }
-  ],
+          {
+            "@id": "AcquireMove",
+            "@index": 3,
+            "meta": {
+              "@hotkey": "195",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "194",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "196",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "WidowMineAttack",
+        "@index": 401,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1855",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "1854",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1856",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "WidowMineBioSplash",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-ability-terran-unstablepayload",
+              "@index": null,
+              "@name": "1858",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1859",
+              "@type": "passive"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "DrillClaws",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "BTN-Upgrade-Terran-ResearchDrillingClaws",
+              "@index": null,
+              "@name": "1860",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1861",
+              "@type": "passive"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "WidowMineConcealment",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-ability-terran-widowminehidden",
+              "@index": null,
+              "@name": "1863",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1864",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 3,
-    "start": 0
+    "@max": 3,
+    "@start": 0
   },
-  "attributes": [
-    "Light",
-    "Mechanical"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 75,
-    "supply": 2,
-    "time": 30,
-    "vespene": 25
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 75,
+    "@supply": 2.0,
+    "@time": 30.0,
+    "@vespene": 25
   },
-  "id": "WidowMine",
   "life": {
-    "max": 90,
-    "regen": 0.0,
-    "start": 90
+    "@max": 90,
+    "@regenRate": null,
+    "@start": 90
   },
   "meta": {
-    "icon": "btn-unit-terran-widowmine",
-    "race": "Terr"
+    "@hotkey": "362",
+    "@icon": "btn-unit-terran-widowmine",
+    "@index": 475,
+    "@name": "1850",
+    "@race": "Terr",
+    "@source": "Swarm.SC2Mod",
+    "@tooltip": "363",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 2,
-    "footprint": null,
-    "radius": 0.5,
-    "sight_radius": 7,
-    "supply": -2.0
+    "@cargoCapacity": null,
+    "@cargoSize": 2,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.5,
+    "@range": null,
+    "@sightRadius": 7.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
   },
   "movement": {
-    "acceleration": 1000.0,
-    "deceleration": 0.0,
-    "kind": "Ground",
-    "speed": 2.8125,
-    "turn_rate": 720.0
+    "@acceleration": 1000.0,
+    "@deceleration": 0.0,
+    "@speed": 2.8125,
+    "@turnRate": 720.0,
+    "@type": "Ground"
   },
   "producer": {
-    "id": "Factory"
+    "@id": "Factory",
+    "@name": "340"
   },
-  "requires": [],
+  "requires": {
+    "unit": []
+  },
   "score": {
-    "build": 100,
-    "kill": 100
+    "@build": 100,
+    "@kill": 100
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Marine",
+        "@name": "26"
       },
-      "id": null,
-      "index": null
-    }
+      {
+        "@id": "Baneling",
+        "@name": "124"
+      },
+      {
+        "@id": "Oracle",
+        "@name": "869"
+      }
+    ]
   },
-  "strengths": [
-    {
-      "id": "Marine"
-    },
-    {
-      "id": "Baneling"
-    },
-    {
-      "id": "Oracle"
-    }
-  ],
-  "upgrades": [],
-  "weaknesses": [
-    {
-      "id": "Raven"
-    },
-    {
-      "id": "Overseer"
-    },
-    {
-      "id": "Observer"
-    }
-  ]
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranVehicleWeapons",
+        "level": [
+          {
+            "@id": "TerranVehicleWeaponsLevel1",
+            "@index": 33,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "392",
+              "@icon": "btn-upgrade-terran-vehicleweaponslevel1",
+              "@index": null,
+              "@name": "397",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "393",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleWeaponsLevel2",
+            "@index": 34,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "395",
+              "@icon": "btn-upgrade-terran-vehicleweaponslevel2",
+              "@index": null,
+              "@name": "401",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "396",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleWeaponsLevel1",
+                    "@name": "397"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleWeaponsLevel3",
+            "@index": 35,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "399",
+              "@icon": "btn-upgrade-terran-vehicleweaponslevel3",
+              "@index": null,
+              "@name": "447",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "400",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleWeaponsLevel2",
+                    "@name": "401"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "TerranVehicleAndShipArmors",
+        "level": [
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel1",
+            "@index": 163,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel1",
+              "@index": null,
+              "@name": "418",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "415",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel2",
+            "@index": 164,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel2",
+              "@index": null,
+              "@name": "421",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "417",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel1",
+                    "@name": "418"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel3",
+            "@index": 165,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel3",
+              "@index": null,
+              "@name": "448",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "420",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel2",
+                    "@name": "421"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "DrillClaws",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 75,
+              "@supply": null,
+              "@time": 110.0,
+              "@vespene": 75
+            },
+            "meta": {
+              "@hotkey": "486",
+              "@icon": "BTN-Upgrade-Terran-ResearchDrillingClaws",
+              "@index": null,
+              "@name": "1862",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "487",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Armory",
+                    "@name": "275"
+                  }
+                ],
+                "upgrade": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Raven",
+        "@name": "436"
+      },
+      {
+        "@id": "Overseer",
+        "@name": "193"
+      },
+      {
+        "@id": "Observer",
+        "@name": "815"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": []
+  }
 }

@@ -1,180 +1,563 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Stop",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
+  "@id": "Hellion",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "stop",
-      "index": 41
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "attack",
-      "index": 46
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "move",
-      "index": 43
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-unit-terran-hellionbattlemode",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "MorphToHellionTank",
-      "index": 369
-    }
-  ],
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "MorphToHellionTank",
+        "@index": 369,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "598",
+              "@icon": "btn-unit-terran-hellionbattlemode",
+              "@index": null,
+              "@name": "597",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "599",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ResearchHighCapacityBarrels",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-upgrade-terran-infernalpreigniter",
+              "@index": null,
+              "@name": "482",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "484",
+              "@type": "passive"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ResearchSmartServos",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-upgrade-terran-transformationservos",
+              "@index": null,
+              "@name": "458",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "459",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 3,
-    "start": 0
+    "@max": 3,
+    "@start": 0
   },
-  "attributes": [
-    "Light",
-    "Mechanical"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 100,
-    "supply": 2,
-    "time": 30,
-    "vespene": 0
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": 2.0,
+    "@time": 30.0,
+    "@vespene": null
   },
-  "id": "Hellion",
   "life": {
-    "max": 90,
-    "regen": 0.0,
-    "start": 90
+    "@max": 90,
+    "@regenRate": null,
+    "@start": 90
   },
   "meta": {
-    "icon": "btn-unit-terran-hellion",
-    "race": "Terr"
+    "@hotkey": "353",
+    "@icon": "btn-unit-terran-hellion",
+    "@index": 76,
+    "@name": "594",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "354",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 2,
-    "footprint": null,
-    "radius": 0.625,
-    "sight_radius": 10,
-    "supply": -2.0
+    "@cargoCapacity": null,
+    "@cargoSize": 2,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.625,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
   },
   "movement": {
-    "acceleration": 1000.0,
-    "deceleration": 0.0,
-    "kind": "Ground",
-    "speed": 4.25,
-    "turn_rate": 720.0
+    "@acceleration": 1000.0,
+    "@deceleration": 0.0,
+    "@speed": 4.25,
+    "@turnRate": 720.0,
+    "@type": "Ground"
   },
   "producer": {
-    "id": "Factory"
+    "@id": "Factory",
+    "@name": "340"
   },
-  "requires": [],
+  "requires": {
+    "unit": []
+  },
   "score": {
-    "build": 100,
-    "kill": 100
+    "@build": 100,
+    "@kill": 100
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
+  "strengths": {
+    "unit": [
+      {
+        "@id": "SCV",
+        "@name": "208"
       },
-      "id": null,
-      "index": null
-    }
+      {
+        "@id": "Zergling",
+        "@name": "27"
+      },
+      {
+        "@id": "Probe",
+        "@name": "438"
+      }
+    ]
   },
-  "strengths": [
-    {
-      "id": "SCV"
-    },
-    {
-      "id": "Zergling"
-    },
-    {
-      "id": "Probe"
-    }
-  ],
-  "upgrades": [],
-  "weaknesses": [
-    {
-      "id": "Cyclone"
-    },
-    {
-      "id": "Roach"
-    },
-    {
-      "id": "Stalker"
-    }
-  ]
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranVehicleWeapons",
+        "level": [
+          {
+            "@id": "TerranVehicleWeaponsLevel1",
+            "@index": 33,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "392",
+              "@icon": "btn-upgrade-terran-vehicleweaponslevel1",
+              "@index": null,
+              "@name": "397",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "393",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleWeaponsLevel2",
+            "@index": 34,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "395",
+              "@icon": "btn-upgrade-terran-vehicleweaponslevel2",
+              "@index": null,
+              "@name": "401",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "396",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleWeaponsLevel1",
+                    "@name": "397"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleWeaponsLevel3",
+            "@index": 35,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "399",
+              "@icon": "btn-upgrade-terran-vehicleweaponslevel3",
+              "@index": null,
+              "@name": "447",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "400",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleWeaponsLevel2",
+                    "@name": "401"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "TerranVehicleAndShipArmors",
+        "level": [
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel1",
+            "@index": 163,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel1",
+              "@index": null,
+              "@name": "418",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "415",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel2",
+            "@index": 164,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel2",
+              "@index": null,
+              "@name": "421",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "417",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel1",
+                    "@name": "418"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel3",
+            "@index": 165,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel3",
+              "@index": null,
+              "@name": "448",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "420",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel2",
+                    "@name": "421"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "HighCapacityBarrels",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 110.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "483",
+              "@icon": "btn-upgrade-terran-infernalpreigniter",
+              "@index": null,
+              "@name": "600",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "484",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      },
+      {
+        "@id": "SmartServos",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 110.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "462",
+              "@icon": "btn-upgrade-terran-transformationservos",
+              "@index": null,
+              "@name": "460",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "459",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Armory",
+                    "@name": "275"
+                  }
+                ],
+                "upgrade": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Cyclone",
+        "@name": "595"
+      },
+      {
+        "@id": "Roach",
+        "@name": "442"
+      },
+      {
+        "@id": "Stalker",
+        "@name": "128"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "InfernalFlameThrower",
+        "@index": 63,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-terran-vehicleweaponslevel0",
+          "@index": null,
+          "@name": "596",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 5.0,
+          "@sightRadius": null,
+          "@speed": 2.5,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
 }

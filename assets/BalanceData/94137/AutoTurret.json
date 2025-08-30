@@ -1,123 +1,219 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Stop",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "stop",
-      "index": 41
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "attack",
-      "index": 46
-    }
-  ],
+  "@id": "AutoTurret",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "298",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "297",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "299",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 0,
-    "start": 0
+    "@max": 0,
+    "@start": 0
   },
-  "attributes": [
-    "Armored",
-    "Mechanical",
-    "Structure"
-  ],
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
   "cost": {
-    "cooldown": 0,
-    "minerals": 0,
-    "supply": 0,
-    "time": 0,
-    "vespene": 0
+    "@cooldown": null,
+    "@energy": 50,
+    "@life": null,
+    "@minerals": null,
+    "@supply": null,
+    "@time": null,
+    "@vespene": null
   },
-  "id": "AutoTurret",
   "life": {
-    "max": 100,
-    "regen": 0.0,
-    "start": 100
+    "@max": 100,
+    "@regenRate": null,
+    "@start": 100
   },
   "meta": {
-    "icon": "btn-building-terran-autoturret",
-    "race": "Terr"
+    "@hotkey": "434",
+    "@icon": "btn-building-terran-autoturret",
+    "@index": 54,
+    "@name": "433",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "435",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": "FootprintAutoTurret",
-    "radius": 1.0,
-    "sight_radius": 7,
-    "supply": 0.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "FootprintAutoTurret",
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 7.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
   },
   "movement": null,
   "producer": {
-    "id": "Raven"
+    "@id": "Raven",
+    "@name": "436"
   },
-  "requires": [],
+  "requires": {
+    "unit": []
+  },
   "score": {
-    "build": 0,
-    "kill": 0
+    "@build": 0,
+    "@kill": 0
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": null,
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
+  "strengths": {
+    "unit": [
+      {
+        "@id": "SCV",
+        "@name": "208"
       },
-      "id": null,
-      "index": null
-    }
+      {
+        "@id": "Drone",
+        "@name": "437"
+      },
+      {
+        "@id": "Probe",
+        "@name": "438"
+      }
+    ]
   },
-  "strengths": [
-    {
-      "id": "SCV"
-    },
-    {
-      "id": "Drone"
-    },
-    {
-      "id": "Probe"
-    }
-  ],
-  "upgrades": [],
-  "weaknesses": [
-    {
-      "id": "Marauder"
-    },
-    {
-      "id": "Hydralisk"
-    },
-    {
-      "id": "Immortal"
-    }
-  ]
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "HiSecAutoTracking",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 80.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "188",
+              "@icon": "BTN-Upgrade-Terran-hisecautotracking",
+              "@index": null,
+              "@name": "187",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "189",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Marauder",
+        "@name": "126"
+      },
+      {
+        "@id": "Hydralisk",
+        "@name": "439"
+      },
+      {
+        "@id": "Immortal",
+        "@name": "306"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "AutoTurret",
+        "@index": 38,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-terran-hisecautotracking",
+          "@index": null,
+          "@name": "440",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 6.0,
+          "@sightRadius": null,
+          "@speed": 0.800000011920929,
+          "@supply": null,
+          "@targets": "any"
+        },
+        "score": null
+      }
+    ]
+  }
 }

@@ -1,199 +1,274 @@
 {
-  "abilities": [
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Stop",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-stop",
-            "kind": "command"
+  "@id": "ArbiterMP",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "stop",
-      "index": 41
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-attack",
-            "kind": "command"
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
           },
-          "requires": null
-        }
-      ],
-      "id": "attack",
-      "index": 46
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Move",
-          "index": 0,
-          "meta": {
-            "icon": "btn-command-move",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "Patrol",
-          "index": 1,
-          "meta": {
-            "icon": "btn-command-patrol",
-            "kind": "command"
-          },
-          "requires": null
-        },
-        {
-          "cost": null,
-          "id": "HoldPos",
-          "index": 2,
-          "meta": {
-            "icon": "btn-command-holdposition",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "move",
-      "index": 43
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-protoss-massrecall",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "ArbiterMPRecall",
-      "index": 590
-    },
-    {
-      "cmds": [
-        {
-          "cost": null,
-          "id": "Execute",
-          "index": 0,
-          "meta": {
-            "icon": "btn-ability-protoss-forcefield-color",
-            "kind": "command"
-          },
-          "requires": null
-        }
-      ],
-      "id": "ArbiterMPStasisField",
-      "index": 589
-    }
-  ],
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ArbiterMPRecall",
+        "@index": 590,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "2578",
+              "@icon": "btn-ability-protoss-massrecall",
+              "@index": null,
+              "@name": "2577",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "2579",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ArbiterMPStasisField",
+        "@index": 589,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "2581",
+              "@icon": "btn-ability-protoss-forcefield-color",
+              "@index": null,
+              "@name": "2580",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "2582",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "armor": {
-    "max": 0,
-    "start": 0
+    "@max": 0,
+    "@start": 0
   },
-  "attributes": [
-    "Armored",
-    "Mechanical"
-  ],
-  "cost": {
-    "cooldown": 0,
-    "minerals": 0,
-    "supply": 0,
-    "time": 0,
-    "vespene": 0
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
   },
-  "id": "ArbiterMP",
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
   "life": {
-    "max": 200,
-    "regen": 0.0,
-    "start": 200
+    "@max": 200,
+    "@regenRate": null,
+    "@start": 200
   },
   "meta": {
-    "icon": "btn-unit-protoss-arbiter",
-    "race": "Prot"
+    "@hotkey": "0",
+    "@icon": "btn-unit-protoss-arbiter",
+    "@index": 1139,
+    "@name": "2575",
+    "@race": "Prot",
+    "@source": "Void.SC2Mod",
+    "@tooltip": "0",
+    "@type": null
   },
   "misc": {
-    "cargo_size": 0,
-    "footprint": null,
-    "radius": 1.0,
-    "sight_radius": 9,
-    "supply": -4.0
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": -4.0,
+    "@targets": null
   },
   "movement": {
-    "acceleration": 1.875,
-    "deceleration": 0.0,
-    "kind": "Fly",
-    "speed": 2.25,
-    "turn_rate": 539.4725952148438
+    "@acceleration": 1.875,
+    "@deceleration": 0.0,
+    "@speed": 2.25,
+    "@turnRate": 539.4725952148438,
+    "@type": "Fly"
   },
   "producer": null,
-  "requires": [],
-  "score": {
-    "build": 0,
-    "kill": 0
+  "requires": {
+    "unit": []
   },
-  "shield_armor": {
-    "max": 0,
-    "start": 0
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
   },
   "shields": {
-    "delay": 10.0,
-    "max": 150,
-    "regen_rate": 2.0,
-    "start": 150
+    "@delay": 10.0,
+    "@max": 150,
+    "@regenRate": 2.0,
+    "@start": 150
   },
-  "state": {
-    "ability": {
-      "cmds": [],
-      "current_cmd": {
-        "cost": null,
-        "id": null,
-        "index": null,
-        "meta": {
-          "icon": "",
-          "kind": ""
-        },
-        "requires": null
+  "strengths": {
+    "unit": [
+      {
+        "@id": "SiegeTank",
+        "@name": "305"
       },
-      "id": null,
-      "index": null
-    }
+      {
+        "@id": "Carrier",
+        "@name": "635"
+      },
+      {
+        "@id": "BroodLord",
+        "@name": "464"
+      }
+    ]
   },
-  "strengths": [
-    {
-      "id": "SiegeTank"
-    },
-    {
-      "id": "Carrier"
-    },
-    {
-      "id": "BroodLord"
-    }
-  ],
-  "upgrades": [],
-  "weaknesses": [
-    {
-      "id": "Battlecruiser"
-    },
-    {
-      "id": "VikingFighter"
-    },
-    {
-      "id": "Corruptor"
-    }
-  ]
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Battlecruiser",
+        "@name": "463"
+      },
+      {
+        "@id": "VikingFighter",
+        "@name": "29"
+      },
+      {
+        "@id": "Corruptor",
+        "@name": "30"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "ArbiterMPWeapon",
+        "@index": 103,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-protoss-airweaponslevel0",
+          "@index": null,
+          "@name": "2576",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 5.0,
+          "@sightRadius": null,
+          "@speed": 1.5,
+          "@supply": null,
+          "@targets": "any"
+        },
+        "score": null
+      }
+    ]
+  }
 }
