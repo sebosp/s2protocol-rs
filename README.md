@@ -228,11 +228,3 @@ RUST_LOG_SPAN_EVENTS=full RUST_LOG=debug cargo watch -i src/versions/protocol897
 ## JSON Spec Sources
 
 [Blizzard/s2protocol repo](https://github.com/Blizzard/s2protocol)
-
-
-# Cmds:
-```
-# Tho it was xml-basance-data-dir
-$ cargo watch -x 'run -r -- -v error --timing --source /home/seb/test_set_202508 --xml-balance-data-dir $HOME/SC2Replays/BalanceData/ --output /home/seb/git/s2protocol-rs/ipcs write-arrow-ipc'
-```
-
