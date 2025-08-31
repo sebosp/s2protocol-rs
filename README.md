@@ -171,7 +171,7 @@ The jupyter notebook with examples on how to interact with the data are availabl
 
 ```bash
 $ cargo install polars-cli
-❯ echo "SELECT ext_fs_id, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s2protocol-rs/ipcs/stats.ipc') GROUP BY ext_fs_id ORDER BY minerals_lost_army DESC;"|polars
+$ echo "SELECT ext_fs_id, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s2protocol-rs/ipcs/stats.ipc') GROUP BY ext_fs_id ORDER BY minerals_lost_army DESC;"|polars
 ┌───────────┬────────────────────┐
 │ ext_fs_id ┆ minerals_lost_army │
 │ ---       ┆ ---                │
@@ -189,6 +189,23 @@ $ cargo install polars-cli
 │ 38654     ┆ 177675             │
 │ 24162     ┆ 168120             │
 └───────────┴────────────────────┘
+& echo "SELECT ability, count() FROM read_ipc('/home/seb/git/s2protocol-rs/ipcs/cmd_target_unit.ipc') GROUP BY ability ORDER BY len DESC LIMIT 10"|polars
+┌───────────────────────────────┬─────────┐
+│ ability                       ┆ len     │
+│ ---                           ┆ ---     │
+│ str                           ┆ u32     │
+╞═══════════════════════════════╪═════════╡
+│                               ┆ 7457415 │
+│ attack.Execute                ┆ 36377   │
+│ Transfusion.Execute           ┆ 16004   │
+│ SpawnLarva.Execute            ┆ 12291   │
+│ ChronoBoostEnergyCost.Execute ┆ 10111   │
+│ SCVHarvest.Gather             ┆ 9680    │
+│ Build.Extractor               ┆ 4896    │
+│ Build.Refinery                ┆ 3363    │
+│ DroneHarvest.Gather           ┆ 2212    │
+│ Build.Assimilator             ┆ 1754    │
+└───────────────────────────────┴─────────┘
 ```
 
 
