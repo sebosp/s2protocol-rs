@@ -2,8 +2,11 @@ use super::*;
 
 #[cfg(feature = "syntax")]
 use syntect::easy::HighlightLines;
+#[cfg(feature = "syntax")]
 use syntect::highlighting::{Style, ThemeSet};
+#[cfg(feature = "syntax")]
 use syntect::parsing::SyntaxSet;
+#[cfg(feature = "syntax")]
 use syntect::util::{LinesWithEndings, as_24_bit_terminal_escaped};
 
 use crate::game_events::VersionedBalanceUnit;
@@ -258,6 +261,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
     }
     #[cfg(feature = "syntax")]
     let syntect_syntax_set = SyntaxSet::load_defaults_newlines();
+    #[cfg(feature = "syntax")]
     let syntect_theme_set = ThemeSet::load_defaults();
 
     match &cli.command {
