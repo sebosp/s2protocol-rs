@@ -103,6 +103,9 @@ If the XMLs/JSON for a specific version doesn't exist, all ability Strings will 
 ### TODO:
 
 - The json exports from BalanceData could be loaded from a remote repo (github maybe?), otherwise people need to have this repo cloned.
+- The Balance Units contain strengths and weaknesses, we could return as part of ChangeHint a ratio of how good/bad the units are towards the existing enemy army.
+- The ability-index/command-index may be compatible between multiple protocol versions.
+- arrow-ipc tables can be created for BalanceUnits
 
 ## Displaying the replay on the terminal
 
@@ -116,10 +119,15 @@ $ cargo run --features syntax,dep_ratatui -- --max-loop 1000 --color --source /m
 
 ## BREAKING CHANGES
 
+v3
+
 - Feature `arrow`  has been renamed to `dep_arrow` as we now use the `arrow` crate.
 - Previously the generated arrow IPC files relied on a sha256 of the file as "key", this wasted a lot of space and has been changed into a sequential
   As a result, queries must use the new `ext_fs_id`, which also means all the files must be generated in bulk and are no longer independent.
   The IPCs then is valid as a snapshot generated as a whole.
+v3.4
+- There is only one iterator provided now, that goes through both the Tracker and Game events to build the game state.
+  Previously two iterators were provided that build partial state only for either track/game and the result was inconsistent, plus lots of duplicated code.
 
 ## Interacting with polars
 
