@@ -4,9 +4,9 @@ use super::*;
 #[cfg(feature = "syntax")]
 use bat::{Input, PrettyPrinter};
 
+use crate::game_events::VersionedBalanceUnit;
 use crate::game_events::ability::json_handler::read_balance_data_from_json;
 use crate::game_events::ability::traverse_versioned_balance_abilities;
-use crate::game_events::VersionedBalanceUnit;
 use crate::generator::proto_morphist::ProtoMorphist;
 use crate::read_details;
 use crate::read_init_data;
@@ -173,13 +173,14 @@ pub fn get_matching_files(
                     }
                     sources.append(&mut sub_dir);
                 }
-            } else if let Some(ext) = path.extension() {
-                if ext == "SC2Replay" && path.is_file() {
-                    if sources.len() >= max_files {
-                        break;
-                    }
-                    sources.push(path);
+            } else if let Some(ext) = path.extension()
+                && ext == "SC2Replay"
+                && path.is_file()
+            {
+                if sources.len() >= max_files {
+                    break;
                 }
+                sources.push(path);
             }
         }
         Ok(sources)

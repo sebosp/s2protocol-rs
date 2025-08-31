@@ -37,8 +37,8 @@ pub use common::*;
 pub use error::*;
 pub use filters::*;
 pub use init_data::*;
-use nom::number::complete::u8;
 use nom::IResult;
+use nom::number::complete::u8;
 pub use protocol_version_decoder::read_protocol_header;
 use std::collections::HashMap;
 use std::io::Read;
@@ -46,9 +46,9 @@ use std::path::PathBuf;
 use std::str;
 pub use versioned_decoder::*;
 
+pub use nom_mpq::MPQ;
 /// Re-export to avoid having to also add this crate to other consumers.
 pub use nom_mpq::parser::{self, peek_hex};
-pub use nom_mpq::MPQ;
 
 #[cfg(feature = "dep_ratatui")]
 pub mod tui;

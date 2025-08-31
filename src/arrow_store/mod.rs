@@ -423,15 +423,15 @@ impl ArrowIpcTypes {
             .collect::<Vec<InitData>>()
             .into_iter()
             .filter(|source| {
-                if let Some(min_version) = cmd.min_version {
-                    if source.version < min_version {
-                        return false;
-                    }
+                if let Some(min_version) = cmd.min_version
+                    && source.version < min_version
+                {
+                    return false;
                 }
-                if let Some(max_version) = cmd.max_version {
-                    if source.version > max_version {
-                        return false;
-                    }
+                if let Some(max_version) = cmd.max_version
+                    && source.version > max_version
+                {
+                    return false;
                 }
                 true
             })

@@ -54,20 +54,20 @@ pub fn traverse_versioned_balance_abilities(
             if !path.is_file() {
                 continue;
             }
-            if let Some(ext) = path.extension() {
-                if ext == "xml" && path.is_file() {
-                    tracing::debug!("Processing XML file: {:?}", path);
-                    let files_content = std::fs::read_to_string(&path)?;
-                    let unit = match serde_xml_rs::from_str::<VersionedBalanceUnit>(&files_content)
-                    {
-                        Ok(val) => val,
-                        Err(err) => {
-                            tracing::error!("Failed to parse XML file {:?}: {}", path, err);
-                            continue;
-                        }
-                    };
-                    res.insert((protocol_version, unit.id.clone()), unit);
-                }
+            if let Some(ext) = path.extension()
+                && ext == "xml"
+                && path.is_file()
+            {
+                tracing::debug!("Processing XML file: {:?}", path);
+                let files_content = std::fs::read_to_string(&path)?;
+                let unit = match serde_xml_rs::from_str::<VersionedBalanceUnit>(&files_content) {
+                    Ok(val) => val,
+                    Err(err) => {
+                        tracing::error!("Failed to parse XML file {:?}: {}", path, err);
+                        continue;
+                    }
+                };
+                res.insert((protocol_version, unit.id.clone()), unit);
             }
         }
     }
@@ -529,19 +529,19 @@ pub fn get_indexed_ability_command_name(
         for train in &balance_unit.trains.inner {
             if let (Some(train_ability_id), Some(train_command_index)) =
                 (train.ability_id, train.command_index)
+                && ability_id == train_ability_id
+                && command_index == train_command_index
             {
-                if ability_id == train_ability_id && command_index == train_command_index {
-                    return format!("Train.{}", train.id);
-                }
+                return format!("Train.{}", train.id);
             }
         }
         for build in &balance_unit.builds.inner {
             if let (Some(train_ability_id), Some(build_command_index)) =
                 (build.ability_id, build.command_index)
+                && ability_id == train_ability_id
+                && command_index == build_command_index
             {
-                if ability_id == train_ability_id && command_index == build_command_index {
-                    return format!("Build.{}", build.id);
-                }
+                return format!("Build.{}", build.id);
             }
         }
         tracing::warn!("Unable to correlate ability for {:?}", balance_unit);

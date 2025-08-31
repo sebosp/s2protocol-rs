@@ -27,11 +27,11 @@ pub fn get_unit_sized_color(
     balance_units: &VersionedBalanceUnits,
 ) -> (f32, [u8; 4]) {
     let mut unit_size: f32 = 0.45f32; // Some default value
-    if let Some(balance_unit) = balance_units.get(unit_name) {
-        if let Some(size) = balance_unit.misc.radius {
-            // Use a color based on the user id:
-            unit_size = size;
-        }
+    if let Some(balance_unit) = balance_units.get(unit_name)
+        && let Some(size) = balance_unit.misc.radius
+    {
+        // Use a color based on the user id:
+        unit_size = size;
     };
     let color = match unit_name {
         "VespeneGeyser" => FREYA_LIGHT_GREEN,

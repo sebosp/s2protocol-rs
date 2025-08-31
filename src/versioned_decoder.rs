@@ -3,7 +3,7 @@
 
 use super::*;
 use nom::bytes::complete::{tag, take};
-use nom::number::complete::{u32, u8};
+use nom::number::complete::{u8, u32};
 use nom_mpq::parser::peek_hex;
 
 /// Arrays have this tag prepend.

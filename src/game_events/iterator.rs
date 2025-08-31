@@ -2,10 +2,10 @@
 
 use crate::error::S2ProtocolError;
 
+use crate::SC2EventType;
 use crate::game_events::{GameEvent, VersionedBalanceUnit};
 use crate::versions::protocol75689::bit_packed::GameEEventId as Protocol75689GameEEventId;
 use crate::versions::protocol87702::bit_packed::GameEEventId as Protocol87702GameEEventId;
-use crate::SC2EventType;
 use nom::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

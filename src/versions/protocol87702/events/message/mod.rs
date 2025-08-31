@@ -1,6 +1,6 @@
 use super::bit_packed::*;
-use crate::message_events::{MessageEvent, MessageEventError, ReplayMessageEvent};
 use crate::S2ProtocolError;
+use crate::message_events::{MessageEvent, MessageEventError, ReplayMessageEvent};
 use crate::*;
 use nom::*;
 use nom_mpq::MPQ;

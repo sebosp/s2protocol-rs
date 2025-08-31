@@ -19,10 +19,10 @@ pub struct UpgradeEvent {
 
 impl UpgradeEvent {
     pub fn should_skip(&self, filters: &SC2ReplayFilters) -> bool {
-        if let Some(player_id) = filters.player_id {
-            if self.player_id != player_id {
-                return true;
-            }
+        if let Some(player_id) = filters.player_id
+            && self.player_id != player_id
+        {
+            return true;
         }
         false
     }

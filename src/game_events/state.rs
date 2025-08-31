@@ -31,11 +31,11 @@ pub fn handle_camera_update(
     user_id: i64,
     camera_update: &CameraUpdateEvent,
 ) -> UnitChangeHint {
-    if let Some(target) = &camera_update.m_target {
-        if let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id) {
-            user_state.camera_pos.x = target.x;
-            user_state.camera_pos.y = target.y;
-        }
+    if let Some(target) = &camera_update.m_target
+        && let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id)
+    {
+        user_state.camera_pos.x = target.x;
+        user_state.camera_pos.y = target.y;
     }
     UnitChangeHint::None
 }

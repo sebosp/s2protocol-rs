@@ -7,8 +7,8 @@ use crate::tracker_events::{
 };
 use crate::*;
 use nom::*;
-use nom_mpq::parser::peek_hex;
 use nom_mpq::MPQ;
+use nom_mpq::parser::peek_hex;
 
 impl ReplayTrackerEEventId {
     /// Reads a delta, TrackerEvent pair

@@ -11,9 +11,9 @@
 use super::*;
 use crate::filters::SC2ReplayFilters;
 use crate::game_events::{
-    handle_game_event, GameEventIteratorState, VersionedBalanceUnit, VersionedBalanceUnits,
+    GameEventIteratorState, VersionedBalanceUnit, VersionedBalanceUnits, handle_game_event,
 };
-use crate::tracker_events::{handle_tracker_event, TrackertEventIteratorState};
+use crate::tracker_events::{TrackertEventIteratorState, handle_tracker_event};
 use crate::{common::*, game_events::GameSPointMini};
 use game_events::GameSCmdEvent;
 use serde::{Deserialize, Serialize};
@@ -116,10 +116,10 @@ impl SC2EventType {
         match self {
             SC2EventType::Tracker { event, .. } => event.should_skip(filters),
             SC2EventType::Game { event, user_id, .. } => {
-                if let Some(user_id_filter) = filters.player_id {
-                    if *user_id as u8 != user_id_filter {
-                        return true;
-                    }
+                if let Some(user_id_filter) = filters.player_id
+                    && *user_id as u8 != user_id_filter
+                {
+                    return true;
                 }
                 event.should_skip(filters)
             }
@@ -388,16 +388,15 @@ impl SC2EventIterator {
                     game_loop,
                     user_id,
                 } = event_item.event_type
+                    && let game_events::GameSCmdData::TargetPoint(_) = event.m_data
                 {
-                    if let game_events::GameSCmdData::TargetPoint(_) = event.m_data {
-                        return game_events::CmdTargetPointEventFlatRow::new(
-                            details,
-                            event,
-                            game_loop,
-                            user_id,
-                            event_item.change_hint,
-                        );
-                    }
+                    return game_events::CmdTargetPointEventFlatRow::new(
+                        details,
+                        event,
+                        game_loop,
+                        user_id,
+                        event_item.change_hint,
+                    );
                 }
                 vec![]
             })
@@ -420,16 +419,15 @@ impl SC2EventIterator {
                     game_loop,
                     user_id,
                 } = event_item.event_type
+                    && let game_events::GameSCmdData::TargetUnit(_) = event.m_data
                 {
-                    if let game_events::GameSCmdData::TargetUnit(_) = event.m_data {
-                        return game_events::CmdTargetUnitEventFlatRow::new(
-                            details,
-                            event,
-                            game_loop,
-                            user_id,
-                            event_item.change_hint,
-                        );
-                    }
+                    return game_events::CmdTargetUnitEventFlatRow::new(
+                        details,
+                        event,
+                        game_loop,
+                        user_id,
+                        event_item.change_hint,
+                    );
                 }
                 vec![]
             })
@@ -588,19 +586,17 @@ impl SC2EventIteratorItem {
 
     /// Returns true if the event should be skipped based on the filters
     fn shoud_skip_event(&self, event: &SC2EventType, filters: &SC2ReplayFilters) -> bool {
-        if let Some(min_loop) = filters.min_loop {
-            if let SC2EventType::Tracker { tracker_loop, .. } = event {
-                if *tracker_loop < min_loop {
-                    return true;
-                }
-            }
+        if let Some(min_loop) = filters.min_loop
+            && let SC2EventType::Tracker { tracker_loop, .. } = event
+            && *tracker_loop < min_loop
+        {
+            return true;
         }
-        if let Some(max_loop) = filters.max_loop {
-            if let SC2EventType::Tracker { tracker_loop, .. } = event {
-                if *tracker_loop > max_loop {
-                    return true;
-                }
-            }
+        if let Some(max_loop) = filters.max_loop
+            && let SC2EventType::Tracker { tracker_loop, .. } = event
+            && *tracker_loop > max_loop
+        {
+            return true;
         }
         event.should_skip(filters)
     }

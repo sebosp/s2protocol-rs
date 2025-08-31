@@ -5,8 +5,8 @@
 //!
 
 use crate::{
-    state::{SC2EventIterator, SC2EventType, UnitChangeHint},
     SC2EventIteratorItem,
+    state::{SC2EventIterator, SC2EventType, UnitChangeHint},
 };
 use std::{
     io::stdout,
@@ -15,20 +15,20 @@ use std::{
 
 use color_eyre::Result;
 use crossterm::{
-    event::{DisableMouseCapture, EnableMouseCapture, KeyEventKind},
     ExecutableCommand,
+    event::{DisableMouseCapture, EnableMouseCapture, KeyEventKind},
 };
 use ratatui::{
+    DefaultTerminal, Frame,
     crossterm::event::{self, Event, KeyCode, MouseEventKind},
     layout::{Constraint, Layout, Position},
     style::{Color, Modifier, Style},
     symbols::Marker,
     text::{self, Line, Span},
     widgets::{
-        canvas::{Canvas, Circle, Rectangle},
         Block, Paragraph, Widget, Wrap,
+        canvas::{Canvas, Circle, Rectangle},
     },
-    DefaultTerminal, Frame,
 };
 
 pub fn ratatui_main(
@@ -258,7 +258,11 @@ impl S2ProtoRatatuiApp {
                         "Unit: {killed:0>8} ({killer:0>8})"
                     ))));
                 }
-                UnitChangeHint::Abilities(units, cmd) => {
+                UnitChangeHint::Abilities {
+                    units,
+                    event,
+                    target: _,
+                } => {
                     text.push(text::Line::from(Span::styled(
                         "Abilities",
                         Style::default().fg(Color::Red),
@@ -267,7 +271,7 @@ impl S2ProtoRatatuiApp {
                         // Format the unit abilities for display
                         let unit = format!("{:>8}:{:>8}", unit.tag_index, unit.name);
                         text.push(text::Line::from(Span::from(format!(
-                            "Unit: {unit} (command: {cmd:?})"
+                            "Unit: {unit} (command: {event:?})"
                         ))));
                     }
                 }
