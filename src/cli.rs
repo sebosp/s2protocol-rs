@@ -243,7 +243,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
     }
     match &cli.command {
         Commands::Generate => {
-            ProtoMorphist::gen(&cli.source, &cli.output.expect("Requires --output"))?;
+            ProtoMorphist::r#gen(&cli.source, &cli.output.expect("Requires --output"))?;
         }
         Commands::BalanceDataToJson => {
             if cli.source.is_empty() {
