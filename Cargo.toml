@@ -11,7 +11,7 @@ keywords = ["sc2replay", "polars", "arrow", "starcraft2", "mpq"]
 categories = ["games", "parsing"]
 
 [dependencies]
-nom-mpq = "2.0.4"
+nom-mpq = "2.0.5"
 nom = "8.0.0"
 thiserror = "2"
 tracing = "0.1"
@@ -38,18 +38,25 @@ serde-xml-rs = "0.8.1"
 default = ["dep_arrow", "syntax"]
 # A feature that allows extra tracing, disabled by default because of performance
 dep_arrow = ["arrow", "arrow_convert", "rayon"]
-tracing_off = ["tracing/max_level_off", "tracing/release_max_level_off"]
+tracing_off = [
+  "tracing/max_level_off",
+  "tracing/release_max_level_off",
+  "nom-mpq/tracing_off",
+]
 tracing_trace_level = [
   "tracing/max_level_trace",
   "tracing/release_max_level_trace",
+  "nom-mpq/tracing_trace_level",
 ]
 tracing_debug_level = [
   "tracing/max_level_debug",
   "tracing/release_max_level_debug",
+  "nom-mpq/tracing_debug_level",
 ]
 tracing_info_level = [
   "tracing/max_level_info",
   "tracing/release_max_level_info",
+  "nom-mpq/tracing_info_level",
 ]
 syntax = ["bat", "color-eyre"]
 dep_ratatui = ["ratatui", "crossterm", "color-eyre", "itertools"]
