@@ -112,7 +112,7 @@ If the XMLs/JSON for a specific version doesn't exist, all ability Strings will 
 Suppose you wanted to debug/inspect a replay, you can draw the events to the terminal, for example:
 
 ```bash
-$ cargo run --features syntax,dep_ratatui -- --max-loop 1000 --color --source /mnt/replays/"Pylon LE.SC2Replay" get transist-events
+$ cargo run --features syntax,dep_ratatui,tracing_off -- --max-loop 1000 --color --json-balance-data-dir $PWD/assets/BalanceData/ --source $PWD/assets/FieldsDeath202507.SC2Replay get transist-events
 ```
 
 [![Ratatui asciicast](https://asciinema.org/a/726584.svg)](https://asciinema.org/a/726584)

@@ -1,8 +1,10 @@
-#[cfg(feature = "dep_arrow")]
 use super::*;
 
 #[cfg(feature = "syntax")]
-use bat::{Input, PrettyPrinter};
+use syntect::easy::HighlightLines;
+use syntect::highlighting::{Style, ThemeSet};
+use syntect::parsing::SyntaxSet;
+use syntect::util::{LinesWithEndings, as_24_bit_terminal_escaped};
 
 use crate::game_events::VersionedBalanceUnit;
 use crate::game_events::ability::json_handler::read_balance_data_from_json;
@@ -189,27 +191,39 @@ pub fn get_matching_files(
     }
 }
 
-/// Prints the json strings either with Bat PrettyPrint or just plain json
-pub fn json_print(json_str: String, color: bool) {
-    if color {
-        #[cfg(feature = "syntax")]
-        {
-            PrettyPrinter::new()
-                .language("json")
-                .header(false)
-                .grid(false)
-                .line_numbers(false)
-                .input(Input::from_bytes(json_str.as_bytes()))
-                .print()
-                .unwrap();
-        }
-        #[cfg(not(feature = "syntax"))]
-        {
-            println!("{json_str}");
-        }
-    } else {
-        println!("{json_str}");
+/// Prints the json strings with syntect::easy
+#[cfg(feature = "syntax")]
+pub fn syntect_json_highlight<'a>(
+    json_str: &'a str,
+    syntect_syntax_set: &SyntaxSet,
+    syntect_theme_set: &ThemeSet,
+) -> Vec<(Style, &'a str)> {
+    let mut res: Vec<(Style, &str)> = vec![];
+    let syntax = syntect_syntax_set.find_syntax_by_extension("json").unwrap();
+    let mut highlighter =
+        HighlightLines::new(syntax, &syntect_theme_set.themes["base16-ocean.dark"]);
+    for line in LinesWithEndings::from(json_str) {
+        // LinesWithEndings enables use of newlines mode
+        let ranges: Vec<(Style, &str)> = highlighter
+            .highlight_line(line, syntect_syntax_set)
+            .unwrap();
+        res.extend(ranges);
     }
+    res
+}
+
+/// Prints the json strings with syntect::easy
+#[cfg(feature = "syntax")]
+pub fn syntect_json_print(
+    json_str: String,
+    syntect_syntax_set: &SyntaxSet,
+    syntect_theme_set: &ThemeSet,
+) {
+    syntect_json_highlight(&json_str, syntect_syntax_set, syntect_theme_set)
+        .iter()
+        .for_each(|segment| {
+            print!("{}", as_24_bit_terminal_escaped(&[*segment], false));
+        });
 }
 
 /// Handles the request from the CLI when used as a binary
@@ -242,6 +256,10 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             .with_env_filter(level.to_string())
             .init();
     }
+    #[cfg(feature = "syntax")]
+    let syntect_syntax_set = SyntaxSet::load_defaults_newlines();
+    let syntect_theme_set = ThemeSet::load_defaults();
+
     match &cli.command {
         Commands::Generate => {
             ProtoMorphist::r#gen(&cli.source, &cli.output.expect("Requires --output"))?;
@@ -313,7 +331,14 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
                         println!("[");
                         for evt in res.into_iter().filter(|e| e.is_tracker_event()) {
-                            json_print(serde_json::to_string(&evt).unwrap(), color);
+                            #[cfg(feature = "syntax")]
+                            syntect_json_print(
+                                serde_json::to_string(&evt).unwrap(),
+                                &syntect_syntax_set,
+                                &syntect_theme_set,
+                            );
+                            #[cfg(not(feature = "syntax"))]
+                            println!("{}", serde_json::to_string(&evt).unwrap());
                         }
                         println!("]");
                     }
@@ -322,7 +347,14 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
                         println!("[");
                         for evt in res.into_iter().filter(|e| e.is_game_event()) {
-                            json_print(serde_json::to_string(&evt).unwrap(), color);
+                            #[cfg(feature = "syntax")]
+                            syntect_json_print(
+                                serde_json::to_string(&evt).unwrap(),
+                                &syntect_syntax_set,
+                                &syntect_theme_set,
+                            );
+                            #[cfg(not(feature = "syntax"))]
+                            println!("{}", serde_json::to_string(&evt).unwrap());
                         }
                         println!("]");
                     }
@@ -330,17 +362,38 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let res = read_message_events(&source_path, &mpq, &file_contents)?;
                         println!("[");
                         for evt in res {
-                            json_print(serde_json::to_string(&evt).unwrap(), color);
+                            #[cfg(feature = "syntax")]
+                            syntect_json_print(
+                                serde_json::to_string(&evt).unwrap(),
+                                &syntect_syntax_set,
+                                &syntect_theme_set,
+                            );
+                            #[cfg(not(feature = "syntax"))]
+                            println!("{}", serde_json::to_string(&evt).unwrap());
                         }
                         println!("]");
                     }
                     ReadTypes::Details => {
                         let evt = read_details(&source_path, &mpq, &file_contents)?;
-                        json_print(serde_json::to_string(&evt).unwrap(), color);
+                        #[cfg(feature = "syntax")]
+                        syntect_json_print(
+                            serde_json::to_string(&evt).unwrap(),
+                            &syntect_syntax_set,
+                            &syntect_theme_set,
+                        );
+                        #[cfg(not(feature = "syntax"))]
+                        println!("{}", serde_json::to_string(&evt).unwrap());
                     }
                     ReadTypes::InitData => {
                         let evt = read_init_data(&source_path, &mpq, &file_contents)?;
-                        json_print(serde_json::to_string(&evt).unwrap(), color);
+                        #[cfg(feature = "syntax")]
+                        syntect_json_print(
+                            serde_json::to_string(&evt).unwrap(),
+                            &syntect_syntax_set,
+                            &syntect_theme_set,
+                        );
+                        #[cfg(not(feature = "syntax"))]
+                        println!("{}", serde_json::to_string(&evt).unwrap());
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
@@ -350,13 +403,26 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         #[cfg(feature = "dep_ratatui")]
                         {
                             let details = read_details(&source_path, &mpq, &file_contents)?;
-                            return Ok(crate::tui::ratatui_main(res, details)?);
+                            return Ok(crate::tui::ratatui_main(
+                                res,
+                                details,
+                                syntect_syntax_set,
+                                syntect_theme_set,
+                            )?);
                         }
                         #[cfg(not(feature = "dep_ratatui"))]
                         {
                             println!("[");
                             for evt in res.into_iter() {
-                                json_print(serde_json::to_string(&evt).unwrap(), color);
+                                #[cfg(feature = "syntax")]
+                                syntect_json_print(
+                                    serde_json::to_string(&evt).unwrap(),
+                                    &syntect_syntax_set,
+                                    &syntect_theme_set,
+                                );
+                                #[cfg(not(feature = "syntax"))]
+                                println!("{}", serde_json::to_string(&evt).unwrap());
+
                                 println!(",");
                             }
                             println!("]");

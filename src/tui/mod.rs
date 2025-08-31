@@ -13,8 +13,9 @@ use std::{
     time::{Duration, Instant},
 };
 
+use crate::syntect_json_highlight;
 use color_eyre::Result;
-use crossterm::{
+use ratatui::crossterm::{
     ExecutableCommand,
     event::{DisableMouseCapture, EnableMouseCapture, KeyEventKind},
 };
@@ -30,15 +31,26 @@ use ratatui::{
         canvas::{Canvas, Circle, Rectangle},
     },
 };
+use syntect::highlighting::ThemeSet;
+use syntect::parsing::SyntaxSet;
+use syntect_tui::translate_style;
 
 pub fn ratatui_main(
     sc2_event_iter: SC2EventIterator,
     details: crate::details::Details,
+    syntect_syntax_set: SyntaxSet,
+    syntect_theme_set: ThemeSet,
 ) -> Result<()> {
     color_eyre::install()?;
     stdout().execute(EnableMouseCapture)?;
     let terminal = ratatui::init();
-    let app_result = S2ProtoRatatuiApp::new(sc2_event_iter, details).run(terminal);
+    let app_result = S2ProtoRatatuiApp::new(
+        sc2_event_iter,
+        details,
+        syntect_syntax_set,
+        syntect_theme_set,
+    )
+    .run(terminal);
     ratatui::restore();
     stdout().execute(DisableMouseCapture)?;
     app_result
@@ -68,10 +80,17 @@ struct S2ProtoRatatuiApp {
     details: crate::details::Details,
     sc2_event_iter: SC2EventIterator,
     current_event: Option<SC2EventIteratorItem>,
+    syntect_syntax_set: SyntaxSet,
+    syntect_theme_set: ThemeSet,
 }
 
 impl S2ProtoRatatuiApp {
-    const fn new(sc2_event_iter: SC2EventIterator, details: crate::details::Details) -> Self {
+    const fn new(
+        sc2_event_iter: SC2EventIterator,
+        details: crate::details::Details,
+        syntect_syntax_set: SyntaxSet,
+        syntect_theme_set: ThemeSet,
+    ) -> Self {
         Self {
             exit: false,
             x: 0.0,
@@ -83,6 +102,8 @@ impl S2ProtoRatatuiApp {
             details,
             sc2_event_iter,
             current_event: None,
+            syntect_syntax_set,
+            syntect_theme_set,
         }
     }
 
@@ -113,7 +134,7 @@ impl S2ProtoRatatuiApp {
             return;
         }
         match key.code {
-            KeyCode::Char('q') => self.exit = true,
+            KeyCode::Char('q') | KeyCode::Esc => self.exit = true,
             KeyCode::Down | KeyCode::Char('j') => self.y += 1.0,
             KeyCode::Char('n') | KeyCode::Right | KeyCode::Char(' ') => {
                 self.current_event = self.sc2_event_iter.next()
@@ -291,11 +312,18 @@ impl S2ProtoRatatuiApp {
                 }
             }
         }
-        text.push(text::Line::from(""));
-        text.push(text::Line::from(
-            serde_json::to_string(&self.current_event).unwrap(),
-        ));
-
+        let mut spans = vec![];
+        for (style, data) in syntect_json_highlight(
+            serde_json::to_string(&self.current_event).unwrap().as_str(),
+            &self.syntect_syntax_set,
+            &self.syntect_theme_set,
+        ) {
+            spans.push(Span::styled(
+                String::from(data),
+                translate_style(style).unwrap(),
+            ))
+        }
+        text.push(Line::from(spans));
         let block = Block::bordered().title(Span::styled(
             "Event",
             Style::default()
