@@ -2,8 +2,8 @@
 
 use std::collections::HashMap;
 
-use super::proto_morphist::{proto_nnet_name_to_rust_name, str_nnet_name_to_rust_name};
 use super::ProtoTypeConversion;
+use super::proto_morphist::{proto_nnet_name_to_rust_name, str_nnet_name_to_rust_name};
 use convert_case::{Case, Casing};
 use serde_json::Value;
 
@@ -25,12 +25,12 @@ impl DecoderType {
     /// Further combinators will use `tail` instead of `input`.
     fn open_byte_aligned_struct_main_parse_fn(proto_num: u64, name: &str) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::byte_aligned::{name}::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::byte_aligned::{name}::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
              let (tail, _) = validate_struct_tag(input)?;\n\
              let (mut tail, struct_field_count) = parse_vlq_int(tail)?;\n\
          ",
-    )
+        )
     }
 
     /// Closes the struct main parse function.
@@ -318,12 +318,12 @@ impl DecoderType {
         _num_fields: usize,
     ) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::ChoiceType::parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, _) = validate_choice_tag(input)?;\n\
          let (tail, variant_tag) = parse_vlq_int(tail)?;\n\
          ",
-    )
+        )
     }
 
     #[tracing::instrument(level = "debug")]
@@ -1190,13 +1190,13 @@ impl DecoderType {
         name: &str,
     ) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::IntType::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, _) = validate_int_tag(input)?;\n\
          let (tail, value) = parse_vlq_int(tail)?;\n\
          Ok((tail, Self {{ value }}))\n\
          ",
-    )
+        )
     }
 
     #[allow(clippy::useless_format)]
@@ -1295,12 +1295,12 @@ impl DecoderType {
             .as_str()
             .expect("type_info.fullname should be string");
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::UserType::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, value) = {type_info}::parse(input)?;\n\
          Ok((tail, Self {{ value }}))\n\
          ",
-    )
+        )
     }
 
     #[allow(clippy::useless_format)]
@@ -1540,7 +1540,7 @@ impl DecoderType {
         internal_type: &str,
     ) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::ArrayType::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
                  let (tail, _) = validate_array_tag(input)?;\n\
                  let (tail, array_length) = parse_vlq_int(tail)?;\n\
@@ -1572,13 +1572,13 @@ impl DecoderType {
 
     pub fn open_byte_aligned_enum_main_parse_fn(proto_num: u64, name: &str) -> String {
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"trace\", skip(input), fields(peek = peek_hex(input)))]\n\
          pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {{\n\
          let (tail, _) = validate_int_tag(input)?;\n\
          let (tail, variant_tag) = parse_vlq_int(tail)?;\n\
          match variant_tag {{\n\
          ",
-    )
+        )
     }
 
     #[allow(clippy::useless_format)]
@@ -1598,14 +1598,14 @@ impl DecoderType {
     ) -> String {
         let num_bits = (num_fields as f32).log2().ceil() as usize;
         format!(
-        "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
+            "#[tracing::instrument(name=\"{proto_num}::{name}::Parse\", level = \"trace\", skip(input), fields(peek = peek_bits(input)))]\n\
          pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {{\n\
          // Total fields: {num_fields}\n\
          let num_bits: usize = {num_bits};\n\
          let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;\n\
          match variant_tag {{\n\
          ",
-    )
+        )
     }
 
     #[allow(clippy::useless_format)]

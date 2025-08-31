@@ -19,10 +19,10 @@ pub struct UnitTypeChangeEvent {
 
 impl UnitTypeChangeEvent {
     pub fn should_skip(&self, filters: &SC2ReplayFilters) -> bool {
-        if let Some(unit_type_name) = &filters.unit_name {
-            if self.unit_type_name != *unit_type_name {
-                return true;
-            }
+        if let Some(unit_type_name) = &filters.unit_name
+            && self.unit_type_name != *unit_type_name
+        {
+            return true;
         }
         false
     }

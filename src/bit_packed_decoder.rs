@@ -1,10 +1,10 @@
 //! The Bit Packed Decoder.
 //! As a difference to the Versioned Decoder, the fields are not tagged.
 
-use crate::dbg_peek_bits;
-use crate::peek_bits;
 use crate::S2ProtoResult;
 use crate::S2ProtocolError;
+use crate::dbg_peek_bits;
+use crate::peek_bits;
 use nom::bits::complete::take;
 
 /// Takes n bits from the input bytes.
@@ -51,11 +51,7 @@ pub fn take_n_bits_into_i64(
     loop {
         let count = if remaining_bits > 8 {
             // Try to byte-align
-            if tail.1 != 0 {
-                8usize - tail.1
-            } else {
-                8usize
-            }
+            if tail.1 != 0 { 8usize - tail.1 } else { 8usize }
         } else {
             remaining_bits
         };

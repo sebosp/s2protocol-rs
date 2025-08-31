@@ -20,6 +20,8 @@ pub struct SC2UnitCmd {
     pub sequence: i64,
     /// Potentially another unit is targeted.
     pub other_unit: Option<u32>,
+    /// The other unit name if any.
+    pub other_unit_name: Option<String>,
     /// Unknown
     pub unit_group: Option<u32>,
 }
@@ -44,6 +46,7 @@ impl From<GameSCmdEvent> for SC2UnitCmd {
             data: event.m_data.into(),
             sequence: event.m_sequence,
             other_unit: event.m_other_unit,
+            other_unit_name: None,
             unit_group: event.m_unit_group,
         }
     }

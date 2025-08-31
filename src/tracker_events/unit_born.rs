@@ -29,15 +29,15 @@ pub struct UnitBornEvent {
 impl UnitBornEvent {
     /// Returns true if the event should be skipped
     pub fn should_skip(&self, filters: &SC2ReplayFilters) -> bool {
-        if let Some(player_id) = filters.player_id {
-            if self.control_player_id != player_id {
-                return true;
-            }
+        if let Some(player_id) = filters.player_id
+            && self.control_player_id != player_id
+        {
+            return true;
         }
-        if let Some(unit_type_name) = &filters.unit_name {
-            if self.unit_type_name != *unit_type_name {
-                return true;
-            }
+        if let Some(unit_type_name) = &filters.unit_name
+            && self.unit_type_name != *unit_type_name
+        {
+            return true;
         }
         false
     }

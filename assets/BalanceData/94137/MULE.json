@@ -1,0 +1,223 @@
+{
+  "@id": "MULE",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "AcquireMove",
+            "@index": 3,
+            "meta": {
+              "@hotkey": "195",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "194",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "196",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "MULEGather",
+        "@index": 90,
+        "command": [
+          {
+            "@id": "Gather",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1784",
+              "@icon": "btn-ability-terran-gather",
+              "@index": null,
+              "@name": "1783",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1785",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Return",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "516",
+              "@icon": "btn-command-returncargo",
+              "@index": null,
+              "@name": "515",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "517",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "MULERepair",
+        "@index": 74,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "510",
+              "@icon": "btn-ability-terran-repair",
+              "@index": null,
+              "@name": "509",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "511",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 60,
+    "@regenRate": null,
+    "@start": 60
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-unit-terran-mule",
+    "@index": 408,
+    "@name": "1781",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1782",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.375,
+    "@range": null,
+    "@sightRadius": 8.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 2.5,
+    "@deceleration": 0.0,
+    "@speed": 2.8125,
+    "@turnRate": 999.8436889648438,
+    "@type": "Ground"
+  },
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

@@ -31,24 +31,37 @@ pub fn handle_camera_update(
     user_id: i64,
     camera_update: &CameraUpdateEvent,
 ) -> UnitChangeHint {
-    if let Some(target) = &camera_update.m_target {
-        if let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id) {
-            user_state.camera_pos.x = target.x;
-            user_state.camera_pos.y = target.y;
-        }
+    if let Some(target) = &camera_update.m_target
+        && let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id)
+    {
+        user_state.camera_pos.x = target.x;
+        user_state.camera_pos.y = target.y;
     }
     UnitChangeHint::None
 }
 
-/// The selected units for a specific players are given a specific target point to move towards.
+/// The selected units for a specific players are given a specific command.
+/// That is, a selected group, the ACTIVE_UNITS_GROUP_IDX, and a HotKey is pressed.
+/// The hotkey belongs to a command, and the command may have an index of specific action.
+/// At this point, the target unit or the target point is not known.
+/// A future event may set the target point or target unit.
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_cmd(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
+    // The cmd is mut as we will enrich the ability field with the String value.
     mut cmd: GameSCmdEvent,
-    unit_abilities: &HashMap<String, VersionedBalanceUnit>,
+    balance_data_units: &HashMap<String, VersionedBalanceUnit>,
 ) -> (ReplayGameEvent, UnitChangeHint) {
+    // TODO:: Many commands, such as "Stop", should clear the unit.cmd.other_unit.
+    // For now this is not implemented and a unit maybe have a target unit, even tho the active
+    // command is Stop.
+    let target = if let GameSCmdData::TargetUnit(tu) = &cmd.m_data {
+        sc2_state.units.get(&tu.m_tag).cloned()
+    } else {
+        None
+    };
     let mut user_selected_unit_ids: Vec<u32> = vec![];
     let mut user_selected_units: Vec<SC2Unit> = vec![];
     if let Some(state) = sc2_state.user_state.get(&user_id) {
@@ -57,27 +70,25 @@ pub fn handle_cmd(
     for selected_unit in &user_selected_unit_ids {
         let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
-            if let Some(ref mut cmd_event_ability) = cmd.m_abil {
-                if let Some(balance_unit) = unit_abilities.get(registered_unit.name.as_str()) {
-                    for ability in &balance_unit.abilities {
-                        for command in &ability.cmds {
-                            if cmd_event_ability.m_abil_link == ability.index
-                                && cmd_event_ability.m_abil_cmd_index == command.index
-                            {
-                                cmd_event_ability.ability =
-                                    format!("{}.{}", ability.id, command.id);
-                            }
-                        }
-                    }
-                } else {
-                    tracing::warn!(
-                        "No balance unit found for {} in cmd_event_ability: {:?}",
-                        registered_unit.name,
-                        cmd_event_ability
+            match cmd.m_abil {
+                None => continue,
+                Some(ref mut val) => {
+                    val.ability = get_indexed_ability_command_name(
+                        balance_data_units,
+                        registered_unit.name.as_str(),
+                        val.m_abil_link,
+                        val.m_abil_cmd_index,
                     );
                 }
-            }
+            };
+            tracing::debug!(
+                "Unit {} executing command: {:?} on target: {:?}",
+                registered_unit.name,
+                cmd.m_abil,
+                target,
+            );
             registered_unit.cmd = cmd.clone().into();
+            registered_unit.cmd.other_unit_name = target.as_ref().map(|u| u.name.clone());
             registered_unit.last_game_loop = game_loop;
             user_selected_units.push(registered_unit.clone());
         }
@@ -86,7 +97,11 @@ pub fn handle_cmd(
     // consumer/test?
     (
         ReplayGameEvent::Cmd(cmd.clone()),
-        UnitChangeHint::Abilities(user_selected_units, cmd),
+        UnitChangeHint::Abilities {
+            units: user_selected_units,
+            event: cmd,
+            target,
+        },
     )
 }
 
@@ -96,8 +111,9 @@ pub fn handle_update_target_point(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
-    target_point: &GameSMapCoord3D,
-) -> UnitChangeHint {
+    target_point: GameSCmdUpdateTargetPointEvent,
+) -> (ReplayGameEvent, UnitChangeHint) {
+    // The TargetPoint does not contain the ability id or command index.
     let mut user_selected_unit_ids: Vec<u32> = vec![];
     let mut user_selected_units: Vec<SC2Unit> = vec![];
     if let Some(state) = sc2_state.user_state.get(&user_id) {
@@ -108,12 +124,17 @@ pub fn handle_update_target_point(
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
             registered_unit
                 .cmd
-                .set_data_target_point(target_point.clone());
+                .set_data_target_point(target_point.m_target.clone());
+            // Unset any previous ability vs a target unit.
+            registered_unit.cmd.other_unit = None;
             registered_unit.last_game_loop = game_loop;
             user_selected_units.push(registered_unit.clone());
         }
     }
-    UnitChangeHint::TargetPoints(user_selected_units)
+    (
+        ReplayGameEvent::CmdUpdateTargetPoint(target_point),
+        UnitChangeHint::TargetPoints(user_selected_units),
+    )
 }
 
 /// Handles the change of target for the currently selected units.
@@ -124,13 +145,28 @@ pub fn handle_update_target_unit(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
-    target_unit: &GameSCmdDataTargetUnit,
-) -> UnitChangeHint {
-    let registered_target_unit = match sc2_state.units.get(&target_unit.m_tag) {
+    target_unit: GameSCmdUpdateTargetUnitEvent,
+) -> (ReplayGameEvent, UnitChangeHint) {
+    // The TargetPoint does not contain the ability id or command index.
+    let registered_target_unit = match sc2_state.units.get(&target_unit.m_target.m_tag) {
         Some(x) => x.clone(),
         None => {
-            tracing::warn!("Unit not found for target unit: {}", target_unit.m_tag);
-            return UnitChangeHint::None;
+            match sc2_state
+                .units
+                .get(&unit_tag_index(target_unit.m_target.m_tag.into()))
+            {
+                Some(x) => x.clone(),
+                None => {
+                    tracing::warn!(
+                        "Unit not found for target unit: {}",
+                        target_unit.m_target.m_tag
+                    );
+                    return (
+                        ReplayGameEvent::CmdUpdateTargetUnit(target_unit),
+                        UnitChangeHint::None,
+                    );
+                }
+            }
         }
     };
     let mut user_selected_unit_ids: Vec<u32> = vec![];
@@ -143,15 +179,18 @@ pub fn handle_update_target_unit(
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
             registered_unit
                 .cmd
-                .set_data_target_unit(target_unit.clone().into());
+                .set_data_target_unit(target_unit.m_target.clone().into());
             registered_unit.last_game_loop = game_loop;
             user_selected_units.push(registered_unit.clone());
         }
     }
-    UnitChangeHint::TargetUnits {
-        units: user_selected_units,
-        target: Box::new(registered_target_unit),
-    }
+    (
+        ReplayGameEvent::CmdUpdateTargetUnit(target_unit),
+        UnitChangeHint::TargetUnits {
+            units: user_selected_units,
+            target: Box::new(registered_target_unit),
+        },
+    )
 }
 
 /// Removes the changes to the units that signify they are selected.
@@ -348,8 +387,12 @@ pub fn handle_game_event(
     game_loop: i64,
     user_id: i64,
     evt: ReplayGameEvent,
-    unit_abilities: &HashMap<String, VersionedBalanceUnit>,
+    balance_data_units: &HashMap<String, VersionedBalanceUnit>,
 ) -> (ReplayGameEvent, UnitChangeHint) {
+    // NOTE: There are special cases that enrich the event, when there are abilities:
+    // - Cmd
+    // - CmdUpdateTargetPoint
+    // - CmdUpdateTargetUnit
     match evt.clone() {
         ReplayGameEvent::CameraSave(camera_save) => (
             evt,
@@ -359,25 +402,19 @@ pub fn handle_game_event(
             evt,
             handle_camera_update(sc2_state, game_loop, user_id, &camera_update),
         ),
-        ReplayGameEvent::Cmd(game_cmd) => {
-            // NOTE: This is a special case, the ability is translated into a String and so the
-            // event is enriched.
-            handle_cmd(
-                sc2_state,
-                game_loop,
-                user_id,
-                game_cmd.clone(),
-                unit_abilities,
-            )
+        ReplayGameEvent::Cmd(game_cmd) => handle_cmd(
+            sc2_state,
+            game_loop,
+            user_id,
+            game_cmd.clone(),
+            balance_data_units,
+        ),
+        ReplayGameEvent::CmdUpdateTargetPoint(target_point) => {
+            handle_update_target_point(sc2_state, game_loop, user_id, target_point)
         }
-        ReplayGameEvent::CmdUpdateTargetPoint(target_point) => (
-            evt,
-            handle_update_target_point(sc2_state, game_loop, user_id, &target_point.m_target),
-        ),
-        ReplayGameEvent::CmdUpdateTargetUnit(target_unit) => (
-            evt,
-            handle_update_target_unit(sc2_state, game_loop, user_id, &target_unit.m_target),
-        ),
+        ReplayGameEvent::CmdUpdateTargetUnit(target_unit) => {
+            handle_update_target_unit(sc2_state, game_loop, user_id, target_unit)
+        }
         ReplayGameEvent::SelectionDelta(selection_delta) => (
             evt,
             handle_selection_delta(sc2_state, game_loop, user_id, &selection_delta),

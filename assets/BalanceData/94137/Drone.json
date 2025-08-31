@@ -1,0 +1,878 @@
+{
+  "@id": "Drone",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "DroneHarvest",
+        "@index": 186,
+        "command": [
+          {
+            "@id": "Gather",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1085",
+              "@icon": "btn-ability-zerg-gather",
+              "@index": null,
+              "@name": "1084",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1086",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Return",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "516",
+              "@icon": "btn-command-returncargo",
+              "@index": null,
+              "@name": "515",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "517",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BurrowDroneDown",
+        "@index": 199,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "89",
+              "@icon": "btn-ability-zerg-burrow-color",
+              "@index": null,
+              "@name": "88",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "90",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "SprayZerg",
+        "@index": 63,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "519",
+              "@icon": "btn-command-spray",
+              "@index": null,
+              "@name": "518",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "520",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Biological"
+      }
+    ]
+  },
+  "builds": {
+    "unit": [
+      {
+        "@ability": 185,
+        "@id": "Hatchery",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 275,
+          "@supply": null,
+          "@time": 100.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "927",
+          "@icon": "btn-building-zerg-hatchery",
+          "@index": null,
+          "@name": "1087",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "928",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "Extractor",
+        "@index": 2,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 25,
+          "@supply": null,
+          "@time": 30.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "953",
+          "@icon": "btn-building-zerg-extractor",
+          "@index": null,
+          "@name": "1088",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "954",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "SpawningPool",
+        "@index": 3,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 65.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "955",
+          "@icon": "btn-building-zerg-spawningpool",
+          "@index": null,
+          "@name": "1089",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "956",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Hatchery",
+              "@name": "926"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "EvolutionChamber",
+        "@index": 4,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 75,
+          "@supply": null,
+          "@time": 35.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "964",
+          "@icon": "btn-building-zerg-evolutionchamber",
+          "@index": null,
+          "@name": "1090",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "965",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Hatchery",
+              "@name": "926"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "HydraliskDen",
+        "@index": 5,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 40.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "976",
+          "@icon": "btn-building-zerg-hydraliskden",
+          "@index": null,
+          "@name": "1091",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "977",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Lair",
+              "@name": "98"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "Spire",
+        "@index": 6,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 100.0,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "988",
+          "@icon": "btn-building-zerg-spire",
+          "@index": null,
+          "@name": "1092",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "989",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Lair",
+              "@name": "98"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "UltraliskCavern",
+        "@index": 7,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 65.0,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "1016",
+          "@icon": "btn-building-zerg-ultraliskcavern",
+          "@index": null,
+          "@name": "1093",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1017",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Hive",
+              "@name": "102"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "InfestationPit",
+        "@index": 8,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 50.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "1025",
+          "@icon": "btn-building-zerg-infestationpit",
+          "@index": null,
+          "@name": "1094",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1026",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Lair",
+              "@name": "98"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "NydusNetwork",
+        "@index": 9,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 50.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "1031",
+          "@icon": "btn-building-zerg-nydusnetwork",
+          "@index": null,
+          "@name": "1095",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1032",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Lair",
+              "@name": "98"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "BanelingNest",
+        "@index": 10,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 60.0,
+          "@vespene": 50
+        },
+        "meta": {
+          "@hotkey": "1047",
+          "@icon": "btn-building-zerg-banelingnest",
+          "@index": null,
+          "@name": "1096",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1048",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "SpawningPool",
+              "@name": "932"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "LurkerDenMP",
+        "@index": 11,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 80.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "1098",
+          "@icon": "btn-building-zerg-lurkerden",
+          "@index": null,
+          "@name": "1097",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1099",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "HydraliskDen",
+              "@name": "975"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "RoachWarren",
+        "@index": 13,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 55.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "1051",
+          "@icon": "btn-building-zerg-roachwarren",
+          "@index": null,
+          "@name": "1100",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1052",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "SpawningPool",
+              "@name": "932"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "SpineCrawler",
+        "@index": 14,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 50.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "1060",
+          "@icon": "btn-building-zerg-spinecrawler",
+          "@index": null,
+          "@name": "1101",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1061",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "SpawningPool",
+              "@name": "932"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 185,
+        "@id": "SporeCrawler",
+        "@index": 15,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 75,
+          "@supply": null,
+          "@time": 30.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "1066",
+          "@icon": "btn-building-zerg-sporecrawler",
+          "@index": null,
+          "@name": "1102",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1067",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "SpawningPool",
+              "@name": "932"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 50,
+    "@supply": 1.0,
+    "@time": 17.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 40,
+    "@regenRate": 0.2734000086784363,
+    "@start": 40
+  },
+  "meta": {
+    "@hotkey": "1080",
+    "@icon": "btn-unit-zerg-drone",
+    "@index": 127,
+    "@name": "437",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1081",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 1,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.375,
+    "@range": null,
+    "@sightRadius": 8.0,
+    "@speed": null,
+    "@supply": -1.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 2.5,
+    "@deceleration": 0.0,
+    "@speed": 2.8125,
+    "@turnRate": 999.8436889648438,
+    "@type": "Ground"
+  },
+  "producer": {
+    "@id": "Larva",
+    "@name": "1082"
+  },
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 50,
+    "@kill": 50
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ZergGroundArmors",
+        "level": [
+          {
+            "@id": "ZergGroundArmorsLevel1",
+            "@index": 59,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "93",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level1",
+              "@index": null,
+              "@name": "92",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "94",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ZergGroundArmorsLevel2",
+            "@index": 60,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "96",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level2",
+              "@index": null,
+              "@name": "95",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "97",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel1",
+                    "@name": "92"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ZergGroundArmorsLevel3",
+            "@index": 61,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "100",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level3",
+              "@index": null,
+              "@name": "99",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "101",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel2",
+                    "@name": "95"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "Burrow",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 100.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "112",
+              "@icon": "btn-ability-zerg-burrow-color",
+              "@index": null,
+              "@name": "91",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "113",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "Spines",
+        "@index": 41,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-zerg-meleeattacks-level0",
+          "@index": null,
+          "@name": "1083",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 0.20000000298023224,
+          "@sightRadius": null,
+          "@speed": 1.5,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
+}

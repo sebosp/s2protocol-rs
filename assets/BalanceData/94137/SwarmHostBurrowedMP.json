@@ -1,0 +1,340 @@
+{
+  "@id": "SwarmHostBurrowedMP",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "MorphToSwarmHostMP",
+        "@index": 378,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "2171",
+              "@icon": "btn-ability-zerg-upburrow-color",
+              "@index": null,
+              "@name": "1191",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1193",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "AcquireMove",
+            "@index": 3,
+            "meta": {
+              "@hotkey": "195",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "194",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "196",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "SpawnLocustsTargeted",
+        "@index": 703,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1883",
+              "@icon": "btn-unit-zerg-locust",
+              "@index": null,
+              "@name": "1882",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1884",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "FlyingLocusts",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-unit-zerg-locustflyerex3",
+              "@index": null,
+              "@name": "1885",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1886",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 4,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 160,
+    "@regenRate": 0.2734000086784363,
+    "@start": 160
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-unit-zerg-swarmhost",
+    "@index": 720,
+    "@name": "1880",
+    "@race": "Zerg",
+    "@source": "Swarm.SC2Mod",
+    "@tooltip": "1372",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.8125,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": -3.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ZergGroundArmors",
+        "level": [
+          {
+            "@id": "ZergGroundArmorsLevel1",
+            "@index": 59,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "93",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level1",
+              "@index": null,
+              "@name": "92",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "94",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ZergGroundArmorsLevel2",
+            "@index": 60,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "96",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level2",
+              "@index": null,
+              "@name": "95",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "97",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel1",
+                    "@name": "92"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ZergGroundArmorsLevel3",
+            "@index": 61,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "100",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level3",
+              "@index": null,
+              "@name": "99",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "101",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel2",
+                    "@name": "95"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "Burrow",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 100.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "112",
+              "@icon": "btn-ability-zerg-burrow-color",
+              "@index": null,
+              "@name": "91",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "113",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

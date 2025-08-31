@@ -1,0 +1,814 @@
+{
+  "@id": "SCV",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Repair",
+        "@index": 130,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "510",
+              "@icon": "btn-ability-terran-repair",
+              "@index": null,
+              "@name": "509",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "511",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "SCVHarvest",
+        "@index": 121,
+        "command": [
+          {
+            "@id": "Gather",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "513",
+              "@icon": "btn-ability-terran-gather",
+              "@index": null,
+              "@name": "512",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "514",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Return",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "516",
+              "@icon": "btn-command-returncargo",
+              "@index": null,
+              "@name": "515",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "517",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "SprayTerran",
+        "@index": 62,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "519",
+              "@icon": "btn-command-spray",
+              "@index": null,
+              "@name": "518",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "520",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": [
+      {
+        "@ability": 131,
+        "@id": "CommandCenter",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 400,
+          "@supply": null,
+          "@time": 100.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "206",
+          "@icon": "btn-building-terran-commandcenter",
+          "@index": null,
+          "@name": "521",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "207",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "SupplyDepot",
+        "@index": 1,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 30.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "237",
+          "@icon": "btn-building-terran-supplydepot",
+          "@index": null,
+          "@name": "522",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "238",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "Refinery",
+        "@index": 2,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 75,
+          "@supply": null,
+          "@time": 30.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "243",
+          "@icon": "btn-building-terran-refinery",
+          "@index": null,
+          "@name": "523",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "244",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "Barracks",
+        "@index": 3,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 65.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "245",
+          "@icon": "btn-building-terran-barracks",
+          "@index": null,
+          "@name": "524",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "246",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "SupplyDepot",
+              "@name": "236"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "EngineeringBay",
+        "@index": 4,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 125,
+          "@supply": null,
+          "@time": 35.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "264",
+          "@icon": "btn-building-terran-engineeringbay",
+          "@index": null,
+          "@name": "525",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "265",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "CommandCenter",
+              "@name": "205"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "MissileTurret",
+        "@index": 5,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 25.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "292",
+          "@icon": "btn-building-terran-missileturret",
+          "@index": null,
+          "@name": "526",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "293",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "EngineeringBay",
+              "@name": "226"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "Bunker",
+        "@index": 6,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 40.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "303",
+          "@icon": "btn-building-terran-bunker",
+          "@index": null,
+          "@name": "527",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "304",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Barracks",
+              "@name": "232"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "SensorTower",
+        "@index": 8,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 25.0,
+          "@vespene": 50
+        },
+        "meta": {
+          "@hotkey": "328",
+          "@icon": "btn-building-terran-sensordome",
+          "@index": null,
+          "@name": "528",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "329",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "EngineeringBay",
+              "@name": "226"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "GhostAcademy",
+        "@index": 9,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 40.0,
+          "@vespene": 50
+        },
+        "meta": {
+          "@hotkey": "332",
+          "@icon": "btn-building-terran-ghostacademy",
+          "@index": null,
+          "@name": "529",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "333",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Barracks",
+              "@name": "232"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "Factory",
+        "@index": 10,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 60.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "341",
+          "@icon": "btn-building-terran-factory",
+          "@index": null,
+          "@name": "530",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "342",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Barracks",
+              "@name": "232"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "Starport",
+        "@index": 11,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 50.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "365",
+          "@icon": "btn-building-terran-starport",
+          "@index": null,
+          "@name": "531",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "366",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Factory",
+              "@name": "340"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "Armory",
+        "@index": 13,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 65.0,
+          "@vespene": 50
+        },
+        "meta": {
+          "@hotkey": "389",
+          "@icon": "btn-building-terran-armory",
+          "@index": null,
+          "@name": "532",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "390",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Factory",
+              "@name": "340"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 131,
+        "@id": "FusionCore",
+        "@index": 15,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 65.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "422",
+          "@icon": "btn-building-terran-fusioncore",
+          "@index": null,
+          "@name": "533",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "423",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "Starport",
+              "@name": "364"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 50,
+    "@supply": 1.0,
+    "@time": 17.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 45,
+    "@regenRate": null,
+    "@start": 45
+  },
+  "meta": {
+    "@hotkey": "234",
+    "@icon": "btn-unit-terran-scv",
+    "@index": 68,
+    "@name": "208",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "235",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 1,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.375,
+    "@range": null,
+    "@sightRadius": 8.0,
+    "@speed": null,
+    "@supply": -1.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 2.5,
+    "@deceleration": 0.0,
+    "@speed": 2.8125,
+    "@turnRate": 999.8436889648438,
+    "@type": "Ground"
+  },
+  "producer": {
+    "@id": "CommandCenter",
+    "@name": "205"
+  },
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 50,
+    "@kill": 50
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranInfantryArmors",
+        "level": [
+          {
+            "@id": "TerranInfantryArmorsLevel1",
+            "@index": 14,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "281",
+              "@icon": "btn-upgrade-terran-infantryarmorlevel1",
+              "@index": null,
+              "@name": "286",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "282",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranInfantryArmorsLevel2",
+            "@index": 15,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "284",
+              "@icon": "btn-upgrade-terran-infantryarmorlevel2",
+              "@index": null,
+              "@name": "290",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "285",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Armory",
+                    "@name": "275"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "TerranInfantryArmorsLevel1",
+                    "@name": "286"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranInfantryArmorsLevel3",
+            "@index": 16,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "288",
+              "@icon": "btn-upgrade-terran-infantryarmorlevel3",
+              "@index": null,
+              "@name": "534",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "289",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Armory",
+                    "@name": "275"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "TerranInfantryArmorsLevel2",
+                    "@name": "290"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "FusionCutter",
+        "@index": 12,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-terran-infantryweaponslevel0",
+          "@index": null,
+          "@name": "508",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 0.20000000298023224,
+          "@sightRadius": null,
+          "@speed": 1.5,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
+}

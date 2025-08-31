@@ -1,0 +1,144 @@
+{
+  "@id": "NydusCanalCreeper",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "298",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "297",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "299",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "DigesterCreepSpray",
+        "@index": 319,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "2170",
+              "@icon": "btn-ability-zerg-generatecreep-color",
+              "@index": null,
+              "@name": "2169",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "0",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 200,
+    "@regenRate": 0.2734000086784363,
+    "@start": 200
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-unit-zerg-nyduscreeptower",
+    "@index": 719,
+    "@name": "2167",
+    "@race": "Zerg",
+    "@source": "Swarm.SC2Mod",
+    "@tooltip": "2168",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint2x2IgnoreCreepContour",
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 225,
+    "@kill": 225
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

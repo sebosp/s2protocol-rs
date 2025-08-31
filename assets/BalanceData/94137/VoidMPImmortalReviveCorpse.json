@@ -1,0 +1,127 @@
+{
+  "@id": "VoidMPImmortalReviveCorpse",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "VoidMPImmortalReviveRebuild",
+        "@index": 587,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "0",
+              "@icon": "btn-techupgrade-terran-immortalityprotocol",
+              "@index": null,
+              "@name": "2424",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "0",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Rally",
+        "@index": 104,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "122",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "121",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "123",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 200,
+    "@regenRate": null,
+    "@start": 200
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-unit-protoss-immortal",
+    "@index": 983,
+    "@name": "2423",
+    "@race": "Prot",
+    "@source": "Void.SC2Mod",
+    "@tooltip": "0",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 4,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 0.0,
+    "@speed": null,
+    "@supply": -4.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 1000.0,
+    "@deceleration": 0.0,
+    "@speed": 2.25,
+    "@turnRate": 720.0,
+    "@type": "Ground"
+  },
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 350,
+    "@kill": 350
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

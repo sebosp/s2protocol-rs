@@ -1,0 +1,77 @@
+{
+  "@id": "BattleStationMineralField750",
+  "abilities": {
+    "ability": []
+  },
+  "armor": {
+    "@max": 10,
+    "@start": 10
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 500,
+    "@regenRate": null,
+    "@start": 500
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "Wireframe-General-MineralField",
+    "@index": 1183,
+    "@name": "1978",
+    "@race": "Neut",
+    "@source": "Void.SC2Mod",
+    "@tooltip": "1979",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "FootprintMineralsRounded",
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 0.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

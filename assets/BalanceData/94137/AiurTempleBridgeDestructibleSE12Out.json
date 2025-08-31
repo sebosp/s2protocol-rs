@@ -1,0 +1,77 @@
+{
+  "@id": "AiurTempleBridgeDestructibleSE12Out",
+  "abilities": {
+    "ability": []
+  },
+  "armor": {
+    "@max": 10,
+    "@start": 10
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 10000,
+    "@regenRate": null,
+    "@start": 10000
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-missing-kaeo",
+    "@index": 1133,
+    "@name": "2565",
+    "@race": "Terr",
+    "@source": "Void.SC2Mod",
+    "@tooltip": "0",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "TempleBridgeNWOut",
+    "@radius": 3.0,
+    "@range": null,
+    "@sightRadius": 0.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

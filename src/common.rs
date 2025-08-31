@@ -1,7 +1,7 @@
 //! A collection of transformed enum variants to u8s.
 //! This is done for space efficiency in the Arrow IPC file.
 
-use super::game_events::{GameSMapCoord3D, GAME_EVENT_POS_RATIO};
+use super::game_events::{GAME_EVENT_POS_RATIO, GameSMapCoord3D};
 use serde::{Deserialize, Serialize};
 
 /// The user role as they observe

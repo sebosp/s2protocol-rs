@@ -1,0 +1,234 @@
+{
+  "@id": "SpineCrawler",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "298",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "297",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "299",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "SpineCrawlerUproot",
+        "@index": 263,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1064",
+              "@icon": "btn-ability-zerg-uproot-color",
+              "@index": null,
+              "@name": "1063",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1065",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 2,
+    "@start": 2
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": null,
+    "@time": 50.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 300,
+    "@regenRate": 0.2734000086784363,
+    "@start": 300
+  },
+  "meta": {
+    "@hotkey": "1060",
+    "@icon": "btn-building-zerg-spinecrawler",
+    "@index": 121,
+    "@name": "1059",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1061",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint2x2ZergSpineCrawler",
+    "@radius": 0.875,
+    "@range": null,
+    "@sightRadius": 11.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Drone",
+    "@name": "437"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "SpawningPool",
+        "@name": "932"
+      }
+    ]
+  },
+  "score": {
+    "@build": 100,
+    "@kill": 100
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Marine",
+        "@name": "26"
+      },
+      {
+        "@id": "Roach",
+        "@name": "442"
+      },
+      {
+        "@id": "Zealot",
+        "@name": "28"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "SiegeTank",
+        "@name": "305"
+      },
+      {
+        "@id": "Baneling",
+        "@name": "124"
+      },
+      {
+        "@id": "Immortal",
+        "@name": "306"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "ImpalerTentacle",
+        "@index": 10,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-zerg-seismicspines",
+          "@index": null,
+          "@name": "1062",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 7.0,
+          "@sightRadius": null,
+          "@speed": 1.850000023841858,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
+}

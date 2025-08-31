@@ -1,3 +1,5 @@
+use crate::game_events::VersionedBalanceUnits;
+
 // Some colors I really liked from a Freya Holmer presentation:
 // https://www.youtube.com/watch?v=kfM-yu0iQBk
 pub const FREYA_ORANGE: [u8; 4] = [0xeb, 0x79, 0x07, 0xff];
@@ -19,74 +21,44 @@ pub const FREYA_LIGHT_YELLOW: [u8; 4] = [0xea, 0xd8, 0xad, 0xff];
 pub const FREYA_LIGHT_GREEN: [u8; 4] = [0x6e, 0xc2, 0x9c, 0xff];
 
 // Returns the expected size of units depending on their type
-pub fn get_unit_sized_color(unit_name: &str, user_id: i64) -> (f32, [u8; 4]) {
-    let mut unit_size = 0.45;
+pub fn get_unit_sized_color(
+    unit_name: &str,
+    user_id: i64,
+    balance_units: &VersionedBalanceUnits,
+) -> (f32, [u8; 4]) {
+    let mut unit_size: f32 = 0.45f32; // Some default value
+    if let Some(balance_unit) = balance_units.get(unit_name)
+        && let Some(size) = balance_unit.misc.radius
+    {
+        // Use a color based on the user id:
+        unit_size = size;
+    };
     let color = match unit_name {
         "VespeneGeyser" => FREYA_LIGHT_GREEN,
         "SpacePlatformGeyser" => FREYA_LIGHT_GREEN,
-        "LabMineralField" => {
-            unit_size = 0.24;
-            FREYA_LIGHT_BLUE
-        }
-        "LabMineralField750" => {
-            unit_size = 0.36;
-            FREYA_LIGHT_BLUE
-        }
-        "MineralField" => {
-            unit_size = 0.48;
-            FREYA_LIGHT_BLUE
-        }
-        "MineralField450" => {
-            unit_size = 0.6;
-            FREYA_LIGHT_BLUE
-        }
-        "MineralField750" => {
-            unit_size = 0.72;
-            FREYA_LIGHT_BLUE
-        }
+        "LabMineralField" => FREYA_LIGHT_BLUE,
+        "LabMineralField750" => FREYA_LIGHT_BLUE,
+        "MineralField" => FREYA_LIGHT_BLUE,
+        "MineralField450" => FREYA_LIGHT_BLUE,
+        "MineralField750" => FREYA_LIGHT_BLUE,
         "XelNagaTower" => {
             // This should be super transparent
-            unit_size = 0.72;
             FREYA_WHITE
         }
         "RichMineralField" => FREYA_GOLD,
         "RichMineralField750" => FREYA_ORANGE,
-        "DestructibleRockEx1DiagonalHugeBLUR" => {
-            unit_size = 2.0;
-            FREYA_GRAY
-        }
-        "DestructibleDebris6x6" => {
-            unit_size = 1.8;
-            FREYA_GRAY
-        }
-        "UnbuildablePlatesDestructible" => {
-            unit_size = 0.6;
-            FREYA_LIGHT_GRAY
-        }
-        "Overlord" => {
-            unit_size = 0.6;
-            FREYA_YELLOW
-        }
-        "SCV" | "Drone" | "Probe" | "Larva" => {
-            unit_size = 0.3;
-            FREYA_LIGHT_GRAY
-        }
-        "Hatchery" | "CommandCenter" | "Nexus" => {
-            unit_size = 1.2;
-            FREYA_PINK
-        }
-        "Broodling" => {
-            unit_size = 0.06;
-            FREYA_LIGHT_GRAY
-        }
-        "Infestor" => {
-            unit_size = 0.5;
-            FREYA_VIOLET
-        }
+        "DestructibleRockEx1DiagonalHugeBLUR" => FREYA_GRAY,
+        "DestructibleDebris6x6" => FREYA_GRAY,
+        "UnbuildablePlatesDestructible" => FREYA_LIGHT_GRAY,
+        "Overlord" | "Pylon" | "SupplyDepot" => FREYA_YELLOW,
+        "SCV" | "Drone" | "Probe" | "Larva" | "Egg" => FREYA_LIGHT_GRAY,
+        "Hatchery" | "CommandCenter" | "Nexus" => FREYA_PINK,
+        "Broodling" => FREYA_LIGHT_GRAY,
+        "Infestor" => FREYA_VIOLET,
         _ => {
             // Ignore the Beacons for now.
             if !unit_name.starts_with("Beacon") {
-                tracing::warn!("Unknown unit name: '{}'", unit_name);
+                // tracing::warn!("Unknown unit name: '{}'", unit_name);
             }
             // Fallback to user color
             user_color(user_id)

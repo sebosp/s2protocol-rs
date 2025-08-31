@@ -366,7 +366,7 @@ impl ProtoMorphist {
 
     /// Reads a protocol.json at `source_path` and generates a Rust module for it.
     #[tracing::instrument(level = "debug", skip(source_path, output_name))]
-    pub fn gen(source_path: &str, output_name: &str) -> std::io::Result<()> {
+    pub fn r#gen(source_path: &str, output_name: &str) -> std::io::Result<()> {
         let mut generator = Self::new(source_path, output_name)?;
         generator.collect_enum_tags()?;
         generator

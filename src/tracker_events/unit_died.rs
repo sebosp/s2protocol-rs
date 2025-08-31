@@ -26,10 +26,10 @@ pub struct UnitDiedEvent {
 impl UnitDiedEvent {
     pub fn should_skip(&self, filters: &SC2ReplayFilters) -> bool {
         // TODO: Should we add the unit_died_player_id/name?
-        if let Some(player_id) = filters.player_id {
-            if self.killer_player_id != Some(player_id) {
-                return true;
-            }
+        if let Some(player_id) = filters.player_id
+            && self.killer_player_id != Some(player_id)
+        {
+            return true;
         }
         false
     }

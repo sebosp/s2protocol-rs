@@ -1,0 +1,417 @@
+{
+  "@id": "Liberator",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "LiberatorAGTarget",
+        "@index": 617,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1867",
+              "@icon": "btn-ability-terran-liberator-agmode",
+              "@index": null,
+              "@name": "1866",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1868",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "LiberatorAGRangeUpgrade",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-upgrade-terran-advanceballistics",
+              "@index": null,
+              "@name": "1832",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1833",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": 3.0,
+    "@time": 60.0,
+    "@vespene": 125
+  },
+  "life": {
+    "@max": 180,
+    "@regenRate": null,
+    "@start": 180
+  },
+  "meta": {
+    "@hotkey": "387",
+    "@icon": "btn-unit-terran-liberator",
+    "@index": 476,
+    "@name": "634",
+    "@race": "Terr",
+    "@source": "Void.SC2Mod",
+    "@tooltip": "388",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": -3.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 3.5,
+    "@deceleration": 0.0,
+    "@speed": 3.375,
+    "@turnRate": 1499.94140625,
+    "@type": "Fly"
+  },
+  "producer": {
+    "@id": "Starport",
+    "@name": "364"
+  },
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 275,
+    "@kill": 275
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "SiegeTank",
+        "@name": "305"
+      },
+      {
+        "@id": "Ultralisk",
+        "@name": "84"
+      },
+      {
+        "@id": "Phoenix",
+        "@name": "295"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranVehicleAndShipArmors",
+        "level": [
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel1",
+            "@index": 163,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel1",
+              "@index": null,
+              "@name": "418",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "415",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel2",
+            "@index": 164,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel2",
+              "@index": null,
+              "@name": "421",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "417",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel1",
+                    "@name": "418"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel3",
+            "@index": 165,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel3",
+              "@index": null,
+              "@name": "448",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "420",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel2",
+                    "@name": "421"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "LiberatorAGRangeUpgrade",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 110.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "428",
+              "@icon": "btn-upgrade-terran-advanceballistics",
+              "@index": null,
+              "@name": "1834",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "429",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "FusionCore",
+                    "@name": "382"
+                  }
+                ],
+                "upgrade": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Battlecruiser",
+        "@name": "463"
+      },
+      {
+        "@id": "Corruptor",
+        "@name": "30"
+      },
+      {
+        "@id": "Tempest",
+        "@name": "31"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "LiberatorMissileLaunchers",
+        "@index": 108,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-terran-shipweaponslevel0",
+          "@index": null,
+          "@name": "1865",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": 2,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 5.0,
+          "@sightRadius": null,
+          "@speed": 1.7999999523162842,
+          "@supply": null,
+          "@targets": "air"
+        },
+        "score": null
+      }
+    ]
+  }
+}
