@@ -1,0 +1,527 @@
+{
+  "@id": "Gateway",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "que5",
+        "@index": 125,
+        "command": [
+          {
+            "@id": "CancelLast",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Rally",
+        "@index": 104,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "122",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "121",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "123",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "UpgradeToWarpGate",
+        "@index": 230,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "671",
+              "@icon": "BTN-Building-Protoss-WarpGate",
+              "@index": null,
+              "@name": "670",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "672",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": null,
+    "@time": 65.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 500,
+    "@regenRate": null,
+    "@start": 500
+  },
+  "meta": {
+    "@hotkey": "668",
+    "@icon": "btn-building-protoss-gateway",
+    "@index": 85,
+    "@name": "667",
+    "@race": "Prot",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "669",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint3x3Contour",
+    "@radius": 1.75,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Probe",
+    "@name": "438"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "Nexus",
+        "@name": "154"
+      }
+    ]
+  },
+  "score": {
+    "@build": 150,
+    "@kill": 150
+  },
+  "shieldArmor": {
+    "@max": 3,
+    "@start": 0
+  },
+  "shields": {
+    "@delay": 10.0,
+    "@max": 500,
+    "@regenRate": 2.0,
+    "@start": 500
+  },
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": [
+      {
+        "@ability": 174,
+        "@id": "Zealot",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": 2.0,
+          "@time": 38.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "675",
+          "@icon": "btn-unit-protoss-zealot",
+          "@index": null,
+          "@name": "674",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "199",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      },
+      {
+        "@ability": 174,
+        "@id": "Stalker",
+        "@index": 1,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 125,
+          "@supply": 2.0,
+          "@time": 38.0,
+          "@vespene": 50
+        },
+        "meta": {
+          "@hotkey": "677",
+          "@icon": "btn-unit-protoss-stalker",
+          "@index": null,
+          "@name": "676",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "678",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "CyberneticsCore",
+              "@name": "679"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 174,
+        "@id": "HighTemplar",
+        "@index": 3,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 50,
+          "@supply": 2.0,
+          "@time": 55.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "681",
+          "@icon": "btn-unit-protoss-hightemplar",
+          "@index": null,
+          "@name": "680",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "682",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "TemplarArchive",
+              "@name": "683"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 174,
+        "@id": "DarkTemplar",
+        "@index": 4,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 125,
+          "@supply": 2.0,
+          "@time": 55.0,
+          "@vespene": 125
+        },
+        "meta": {
+          "@hotkey": "685",
+          "@icon": "btn-unit-protoss-darktemplar",
+          "@index": null,
+          "@name": "684",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "686",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "DarkShrine",
+              "@name": "687"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 174,
+        "@id": "Sentry",
+        "@index": 5,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 50,
+          "@supply": 2.0,
+          "@time": 32.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "689",
+          "@icon": "btn-unit-protoss-sentry",
+          "@index": null,
+          "@name": "688",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "690",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "CyberneticsCore",
+              "@name": "679"
+            }
+          ]
+        }
+      },
+      {
+        "@ability": 174,
+        "@id": "Adept",
+        "@index": 6,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": 2.0,
+          "@time": 42.0,
+          "@vespene": 25
+        },
+        "meta": {
+          "@hotkey": "692",
+          "@icon": "btn-unit-protoss-adept",
+          "@index": null,
+          "@name": "691",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "693",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "CyberneticsCore",
+              "@name": "679"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ProtossShields",
+        "level": [
+          {
+            "@id": "ProtossShieldsLevel1",
+            "@index": 48,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 170.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "58",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel1",
+              "@index": null,
+              "@name": "57",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "59",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ProtossShieldsLevel2",
+            "@index": 49,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 202.5,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "61",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel2",
+              "@index": null,
+              "@name": "60",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "62",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossShieldsLevel1",
+                    "@name": "57"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ProtossShieldsLevel3",
+            "@index": 50,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 235.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "64",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel3",
+              "@index": null,
+              "@name": "63",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "65",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossShieldsLevel2",
+                    "@name": "60"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "WarpGateResearch",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 50,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 50
+            },
+            "meta": {
+              "@hotkey": "694",
+              "@icon": "BTN-Building-Protoss-WarpGate",
+              "@index": null,
+              "@name": "673",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "695",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

@@ -1,0 +1,364 @@
+{
+  "@id": "CommandCenter",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Halt",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "210",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "209",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "211",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "que5CancelToSelection",
+        "@index": 126,
+        "command": [
+          {
+            "@id": "CancelLast",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "RallyCommand",
+        "@index": 106,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "122",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "121",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "123",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "CommandCenterTransport",
+        "@index": 146,
+        "command": [
+          {
+            "@id": "Load",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "215",
+              "@icon": "btn-ability-terran-load",
+              "@index": null,
+              "@name": "214",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "216",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "UnloadAll",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "218",
+              "@icon": "btn-ability-terran-unloadall",
+              "@index": null,
+              "@name": "217",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "219",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "LoadAll",
+            "@index": 4,
+            "meta": {
+              "@hotkey": "215",
+              "@icon": "btn-ability-terran-load",
+              "@index": null,
+              "@name": "214",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "216",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "CommandCenterLiftOff",
+        "@index": 147,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "221",
+              "@icon": "btn-ability-terran-liftoff",
+              "@index": null,
+              "@name": "220",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "222",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "UpgradeToPlanetaryFortress",
+        "@index": 224,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "224",
+              "@icon": "btn-building-terran-planetaryfortress",
+              "@index": null,
+              "@name": "223",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "225",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "227",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "228",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "UpgradeToOrbital",
+        "@index": 229,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "230",
+              "@icon": "BTN-Building-Terran-SurveillanceStation",
+              "@index": null,
+              "@name": "229",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "231",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "227",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "228",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 400,
+    "@supply": null,
+    "@time": 100.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 1500,
+    "@regenRate": null,
+    "@start": 1500
+  },
+  "meta": {
+    "@hotkey": "206",
+    "@icon": "btn-building-terran-commandcenter",
+    "@index": 39,
+    "@name": "205",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "207",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": 5,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint5x5Contour",
+    "@radius": 2.5,
+    "@range": null,
+    "@sightRadius": 11.0,
+    "@speed": null,
+    "@supply": 15.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "SCV",
+    "@name": "208"
+  },
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 400,
+    "@kill": 400
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": [
+      {
+        "@ability": 157,
+        "@id": "SCV",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 50,
+          "@supply": 1.0,
+          "@time": 17.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "234",
+          "@icon": "btn-unit-terran-scv",
+          "@index": null,
+          "@name": "233",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "235",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      }
+    ]
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranBuildingArmor",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "75",
+              "@icon": "BTN-upgrade-terran-buildingarmor",
+              "@index": null,
+              "@name": "74",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "76",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

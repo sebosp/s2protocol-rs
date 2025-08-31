@@ -1,0 +1,248 @@
+{
+  "@id": "NydusNetwork",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Rally",
+        "@index": 104,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1034",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "1033",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1035",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "NydusCanalTransport",
+        "@index": 219,
+        "command": [
+          {
+            "@id": "Load",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1037",
+              "@icon": "btn-ability-terran-load",
+              "@index": null,
+              "@name": "1036",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1038",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "UnloadAll",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "1040",
+              "@icon": "btn-ability-terran-unloadall",
+              "@index": null,
+              "@name": "1039",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1041",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "NydusWormIncreasedArmorPassive",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-ability-zerg-armoraura",
+              "@index": null,
+              "@name": "1042",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1043",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": [
+      {
+        "@ability": 270,
+        "@id": "NydusCanal",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": 20.0,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 75,
+          "@supply": null,
+          "@time": 20.0,
+          "@vespene": 75
+        },
+        "meta": {
+          "@hotkey": "1045",
+          "@icon": "btn-building-zerg-nydusworm",
+          "@index": null,
+          "@name": "1044",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1046",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "NydusNetwork",
+              "@name": "1030"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": null,
+    "@time": 50.0,
+    "@vespene": 150
+  },
+  "life": {
+    "@max": 850,
+    "@regenRate": 0.2734000086784363,
+    "@start": 850
+  },
+  "meta": {
+    "@hotkey": "1031",
+    "@icon": "btn-building-zerg-nydusnetwork",
+    "@index": 118,
+    "@name": "1030",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1032",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": 255,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint3x3CreepContour",
+    "@radius": 1.5,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Drone",
+    "@name": "437"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "Lair",
+        "@name": "98"
+      }
+    ]
+  },
+  "score": {
+    "@build": 300,
+    "@kill": 300
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

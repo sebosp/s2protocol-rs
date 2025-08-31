@@ -1,0 +1,94 @@
+{
+  "@id": "CreepTumorQueen",
+  "abilities": {
+    "ability": []
+  },
+  "armor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": 25,
+    "@life": null,
+    "@minerals": null,
+    "@supply": null,
+    "@time": 15.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 50,
+    "@regenRate": 0.2734000086784363,
+    "@start": 50
+  },
+  "meta": {
+    "@hotkey": "1218",
+    "@icon": "btn-building-zerg-creeptumor",
+    "@index": 161,
+    "@name": "948",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "950",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "CreepTumorQueen",
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Queen",
+    "@name": "1206"
+  },
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

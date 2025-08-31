@@ -35,7 +35,7 @@ impl GameEEventId {
         Ok((tail, (delta, user_id.m_user_id, event)))
     }
 
-    /// Read the Tracker Events
+    /// Read the Game Events
     pub fn read_events(mpq: &MPQ, file_contents: &[u8]) -> Result<Vec<GameEvent>, S2ProtocolError> {
         let (_event_tail, game_events) =
             mpq.read_mpq_file_sector("replay.game.events", false, file_contents)?;
@@ -88,6 +88,7 @@ impl From<GameSuiCoord> for crate::game_events::GameSuiCoord {
 impl TryFrom<GameEEventId> for ReplayGameEvent {
     type Error = S2ProtocolError;
     fn try_from(value: GameEEventId) -> Result<Self, Self::Error> {
+        tracing::debug!("Converting event: {:?}", value);
         match value {
             GameEEventId::EDropUser(e) => Ok(e.into()),
             GameEEventId::ECameraSave(e) => Ok(e.into()),

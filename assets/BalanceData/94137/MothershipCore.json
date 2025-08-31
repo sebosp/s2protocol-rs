@@ -1,0 +1,331 @@
+{
+  "@id": "MothershipCore",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "MothershipCoreMassRecall",
+        "@index": 357,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1908",
+              "@icon": "btn-ability-protoss-massrecall",
+              "@index": null,
+              "@name": "1907",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1909",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "TemporalField",
+        "@index": 470,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "157",
+              "@icon": "btn-ability-protoss-timewarp-red",
+              "@index": null,
+              "@name": "156",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "158",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "MorphToMothership",
+        "@index": 323,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1911",
+              "@icon": "btn-unit-protoss-mothership",
+              "@index": null,
+              "@name": "1910",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1912",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "227",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "228",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "MothershipCorePurifyNexus",
+        "@index": 429,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1914",
+              "@icon": "BTN-Ability-Protoss-Purify",
+              "@index": null,
+              "@name": "1913",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1915",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Psionic"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 130,
+    "@regenRate": null,
+    "@start": 130
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-unit-protoss-mothershipcore",
+    "@index": 484,
+    "@name": "1904",
+    "@race": "Prot",
+    "@source": "Swarm.SC2Mod",
+    "@tooltip": "1905",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 1.0625,
+    "@deceleration": 0.0,
+    "@speed": 1.875,
+    "@turnRate": null,
+    "@type": "Fly"
+  },
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 200,
+    "@kill": 200
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": {
+    "@delay": 10.0,
+    "@max": 60,
+    "@regenRate": 2.0,
+    "@start": 60
+  },
+  "strengths": {
+    "unit": [
+      {
+        "@id": "WidowMine",
+        "@name": "1850"
+      },
+      {
+        "@id": "Zergling",
+        "@name": "27"
+      },
+      {
+        "@id": "Zealot",
+        "@name": "28"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "VikingFighter",
+        "@name": "29"
+      },
+      {
+        "@id": "Mutalisk",
+        "@name": "81"
+      },
+      {
+        "@id": "Phoenix",
+        "@name": "295"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "RepulsorCannon",
+        "@index": 77,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-protoss-airweaponslevel0",
+          "@index": null,
+          "@name": "1906",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 5.0,
+          "@sightRadius": null,
+          "@speed": 0.8500000238418579,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
+}

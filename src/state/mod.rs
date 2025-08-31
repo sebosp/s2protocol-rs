@@ -10,8 +10,10 @@
 
 use super::*;
 use crate::filters::SC2ReplayFilters;
-use crate::game_events::{GameEventIteratorState, VersionedBalanceUnit};
-use crate::tracker_events::TrackertEventIteratorState;
+use crate::game_events::{
+    GameEventIteratorState, VersionedBalanceUnit, VersionedBalanceUnits, handle_game_event,
+};
+use crate::tracker_events::{TrackertEventIteratorState, handle_tracker_event};
 use crate::{common::*, game_events::GameSPointMini};
 use game_events::GameSCmdEvent;
 use serde::{Deserialize, Serialize};
@@ -87,8 +89,9 @@ impl Eq for SC2Unit {}
 
 impl SC2Unit {
     /// Sets the unit properties based on the unit name.
-    pub fn set_unit_props(&mut self) {
-        let (radius, color) = get_unit_sized_color(&self.name, self.user_id.unwrap_or(0) as i64);
+    pub fn set_unit_props(&mut self, balance_units: &VersionedBalanceUnits) {
+        let (radius, color) =
+            get_unit_sized_color(&self.name, self.user_id.unwrap_or(0) as i64, balance_units);
         self.radius = radius;
         self.color = color;
     }
@@ -113,10 +116,10 @@ impl SC2EventType {
         match self {
             SC2EventType::Tracker { event, .. } => event.should_skip(filters),
             SC2EventType::Game { event, user_id, .. } => {
-                if let Some(user_id_filter) = filters.player_id {
-                    if *user_id as u8 != user_id_filter {
-                        return true;
-                    }
+                if let Some(user_id_filter) = filters.player_id
+                    && *user_id as u8 != user_id_filter
+                {
+                    return true;
                 }
                 event.should_skip(filters)
             }
@@ -150,12 +153,33 @@ pub enum UnitChangeHint {
         killer: Option<SC2Unit>,
         killed: Box<SC2Unit>,
     },
-    /// An ability has been used, the unit cmd abilities should be inspected.
-    Abilities(Vec<SC2Unit>, GameSCmdEvent),
+    /// An ability has been used, the unit cmd abilities should be inspected, it may potentially
+    /// target another unit (last param.)
+    Abilities {
+        units: Vec<SC2Unit>,
+        event: GameSCmdEvent,
+        target: Option<SC2Unit>,
+    },
     /// A set of units has been selected and are in the active control group.
     Selection(Vec<SC2Unit>),
     /// No units have changed, for example, PlayerStats are generated, so nothing to inspect
     None,
+}
+
+impl UnitChangeHint {
+    /// Retuns the name of the variant, for short debugging.
+    pub fn variant_name(&self) -> &'static str {
+        match self {
+            UnitChangeHint::Registered { .. } => "Registered",
+            UnitChangeHint::Positions(_) => "Positions",
+            UnitChangeHint::TargetPoints(_) => "TargetPoints",
+            UnitChangeHint::TargetUnits { .. } => "TargetUnits",
+            UnitChangeHint::Unregistered { .. } => "Unregistered",
+            UnitChangeHint::Abilities { .. } => "Abilities",
+            UnitChangeHint::Selection(_) => "Selection",
+            UnitChangeHint::None => "None",
+        }
+    }
 }
 
 /// The user state as it's collected through time.
@@ -202,6 +226,61 @@ pub struct SC2ReplayState {
     pub sha256: String,
 }
 
+impl SC2ReplayState {
+    /// When an event is meant to be consumed (i.e. it's the next in order), then the state of the
+    /// game needs to transition through the event, returning a Hint of what has changed.
+    pub fn handle_transition_to_next_event(
+        &mut self,
+        balance_units: &VersionedBalanceUnits,
+        event: SC2EventType,
+    ) -> SC2EventIteratorItem {
+        match event {
+            SC2EventType::Tracker {
+                tracker_loop,
+                event,
+            } => {
+                let change_hint = handle_tracker_event(self, tracker_loop, &event, balance_units);
+                tracing::info!(
+                    "Trac [{:>08}]: Evt:{:?} Hint:{:?}",
+                    tracker_loop,
+                    event,
+                    change_hint
+                );
+                SC2EventIteratorItem {
+                    event_type: SC2EventType::Tracker {
+                        tracker_loop,
+                        event,
+                    },
+                    change_hint,
+                }
+            }
+            SC2EventType::Game {
+                game_loop,
+                user_id,
+                event,
+            } => {
+                let (enriched_event, change_hint) =
+                    handle_game_event(self, game_loop, user_id, event, balance_units);
+                tracing::info!(
+                    "Game [{:>08}]: uid: {} Evt:{:?} Hint:{:?}",
+                    game_loop,
+                    user_id,
+                    enriched_event,
+                    change_hint
+                );
+                SC2EventIteratorItem {
+                    event_type: SC2EventType::Game {
+                        game_loop,
+                        user_id,
+                        event: enriched_event,
+                    },
+                    change_hint,
+                }
+            }
+        }
+    }
+}
+
 /// The iterator that returns the events as they happen.
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct SC2EventIterator {
@@ -214,13 +293,13 @@ pub struct SC2EventIterator {
     /// The game event iterator.
     game_iterator_state: GameEventIteratorState,
     /// The next event coming from the tracker iterator.
-    next_tracker_event: Option<SC2EventIteratorItem>,
+    next_tracker_event: Option<SC2EventType>,
     /// The next event coming from the game iterator.
-    next_game_event: Option<SC2EventIteratorItem>,
+    next_game_event: Option<SC2EventType>,
     /// The iterator filter helpers
     filters: Option<SC2ReplayFilters>,
     /// The current protocol version abilities, containing a possible string translation.
-    abilities: HashMap<String, VersionedBalanceUnit>,
+    balance_units: VersionedBalanceUnits,
 }
 
 impl SC2EventIterator {
@@ -228,8 +307,9 @@ impl SC2EventIterator {
     #[tracing::instrument(level = "debug")]
     pub fn new(
         source: &PathBuf,
-        versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit>,
+        multi_version_abilities: HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<Self, S2ProtocolError> {
+        let total_initial_abilities = multi_version_abilities.len();
         // The sc2 replay state is not shared between the two iterators...
         tracing::debug!("Processing {:?}", source);
         let file_contents = crate::read_file(source)?;
@@ -244,7 +324,7 @@ impl SC2EventIterator {
             filename: source_filename,
             ..Default::default()
         };
-        let abilities: HashMap<String, VersionedBalanceUnit> = versioned_abilities
+        let balance_units: HashMap<String, VersionedBalanceUnit> = multi_version_abilities
             .into_iter()
             .filter_map(|((version, name), unit)| {
                 if version == proto_header.m_version.m_base_build {
@@ -255,16 +335,17 @@ impl SC2EventIterator {
             })
             .collect();
         tracing::info!(
-            "Collected {} unit abilities for protocol version {}",
-            abilities.len(),
-            proto_header.m_version.m_base_build
+            "Collected {} unit definitions for protocol version {} out of {} total definitions",
+            balance_units.len(),
+            proto_header.m_version.m_base_build,
+            total_initial_abilities
         );
         Ok(Self {
             protocol_version: proto_header.m_version.m_base_build,
             sc2_state,
             tracker_iterator_state: tracker_events.into(),
             game_iterator_state: game_events.into(),
-            abilities,
+            balance_units,
             ..Default::default()
         })
     }
@@ -277,16 +358,16 @@ impl SC2EventIterator {
 
     /// Returns the tracker loop inside the next_tracker_event collected.
     fn get_tracker_loop(&self) -> Option<i64> {
-        match self.next_tracker_event.as_ref()?.event_type {
-            SC2EventType::Tracker { tracker_loop, .. } => Some(tracker_loop),
+        match self.next_tracker_event.as_ref()? {
+            SC2EventType::Tracker { tracker_loop, .. } => Some(*tracker_loop),
             _ => None,
         }
     }
 
     /// Returns the game loop inside the next_game_event collected.
     fn get_game_loop(&self) -> Option<i64> {
-        match self.next_game_event.as_ref()?.event_type {
-            SC2EventType::Game { game_loop, .. } => Some(game_loop),
+        match self.next_game_event.as_ref()? {
+            SC2EventType::Game { game_loop, .. } => Some(*game_loop),
             _ => None,
         }
     }
@@ -297,25 +378,82 @@ impl SC2EventIterator {
         self,
         details: &crate::details::Details,
     ) -> Vec<game_events::CmdTargetPointEventFlatRow> {
-        self.into_iter()
-            .filter_map(|event_item| match event_item.event_type {
-                SC2EventType::Game {
-                    event,
+        // We could return some Iterator and write in batches.
+        // Right now everything is expanded into memory for a given replay.
+        let res: Vec<game_events::CmdTargetPointEventFlatRow> = self
+            .into_iter()
+            .flat_map(|event_item| {
+                if let SC2EventType::Game {
+                    event: game_events::ReplayGameEvent::Cmd(event),
                     game_loop,
                     user_id,
+                } = event_item.event_type
+                    && let game_events::GameSCmdData::TargetPoint(_) = event.m_data
+                {
+                    return game_events::CmdTargetPointEventFlatRow::new(
+                        details,
+                        event,
+                        game_loop,
+                        user_id,
+                        event_item.change_hint,
+                    );
+                }
+                vec![]
+            })
+            .collect();
+        tracing::error!("Collected {} CmdTargetPointEventFlatRow rows", res.len());
+        res
+    }
+
+    /// Consumes the Iterator collecting only the CmdTargetUnit events into a vector of CmdEventFlatRow
+    #[cfg(feature = "dep_arrow")]
+    pub fn collect_into_game_cmd_target_units_flat_rows(
+        self,
+        details: &crate::details::Details,
+    ) -> Vec<game_events::CmdTargetUnitEventFlatRow> {
+        let res: Vec<game_events::CmdTargetUnitEventFlatRow> = self
+            .into_iter()
+            .flat_map(|event_item| {
+                if let SC2EventType::Game {
+                    event: game_events::ReplayGameEvent::Cmd(event),
+                    game_loop,
+                    user_id,
+                } = event_item.event_type
+                    && let game_events::GameSCmdData::TargetUnit(_) = event.m_data
+                {
+                    return game_events::CmdTargetUnitEventFlatRow::new(
+                        details,
+                        event,
+                        game_loop,
+                        user_id,
+                        event_item.change_hint,
+                    );
+                }
+                vec![]
+            })
+            .collect();
+        tracing::error!("Collected {} CmdTargetUnitEventFlatRow rows", res.len());
+        res
+    }
+
+    /// Consumes the Iterator collecting only the PlayerStats events into a vector of PlayerStatsFlatRow
+    #[cfg(feature = "dep_arrow")]
+    pub fn collect_into_player_stats_flat_rows(
+        self,
+        details: &crate::details::Details,
+    ) -> Vec<tracker_events::PlayerStatsFlatRow> {
+        self.into_iter()
+            .filter_map(|event_item| match event_item.event_type {
+                SC2EventType::Tracker {
+                    tracker_loop,
+                    event,
                 } => {
-                    if let game_events::ReplayGameEvent::Cmd(event) = event {
-                        if let game_events::GameSCmdData::TargetPoint(_) = event.m_data {
-                            game_events::CmdTargetPointEventFlatRow::new(
-                                details,
-                                event,
-                                game_loop,
-                                user_id,
-                                event_item.change_hint,
-                            )
-                        } else {
-                            None
-                        }
+                    if let tracker_events::ReplayTrackerEvent::PlayerStats(event) = event {
+                        Some(tracker_events::PlayerStatsFlatRow::new(
+                            event,
+                            tracker_loop,
+                            details.clone(),
+                        ))
                     } else {
                         None
                     }
@@ -325,31 +463,100 @@ impl SC2EventIterator {
             .collect()
     }
 
-    /// Consumes the Iterator collecting only the CmdTargetUnit events into a vector of CmdEventFlatRow
+    /// Consumes the Iterator collecting only the Upgrade events into a vector of UpgradeEventFlatRow
     #[cfg(feature = "dep_arrow")]
-    pub fn collect_into_game_cmd_target_units_flat_rows(
+    pub fn collect_into_upgrades_flat_rows(
         self,
         details: &crate::details::Details,
-    ) -> Vec<game_events::CmdTargetUnitEventFlatRow> {
+    ) -> Vec<tracker_events::UpgradeEventFlatRow> {
         self.into_iter()
             .filter_map(|event_item| match event_item.event_type {
-                SC2EventType::Game {
+                SC2EventType::Tracker {
+                    tracker_loop,
                     event,
-                    game_loop,
-                    user_id,
                 } => {
-                    if let game_events::ReplayGameEvent::Cmd(event) = event {
-                        if let game_events::GameSCmdData::TargetUnit(_) = event.m_data {
-                            game_events::CmdTargetUnitEventFlatRow::new(
-                                details,
-                                event,
-                                game_loop,
-                                user_id,
-                                event_item.change_hint,
-                            )
-                        } else {
-                            None
+                    if let tracker_events::ReplayTrackerEvent::Upgrade(event) = event {
+                        Some(tracker_events::UpgradeEventFlatRow::new(
+                            event,
+                            tracker_loop,
+                            details.clone(),
+                        ))
+                    } else {
+                        None
+                    }
+                }
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// Consumes the Iterator collecting only the UnitBorn events into a vector of UnitBornEventFlatRow
+    #[cfg(feature = "dep_arrow")]
+    pub fn collect_into_unit_born_flat_rows(
+        self,
+        details: &crate::details::Details,
+    ) -> Vec<tracker_events::UnitBornEventFlatRow> {
+        self.into_iter()
+            .filter_map(|event_item| match event_item.event_type {
+                SC2EventType::Tracker {
+                    tracker_loop,
+                    event,
+                } => match event {
+                    tracker_events::ReplayTrackerEvent::UnitBorn(event) => {
+                        tracker_events::UnitBornEventFlatRow::from_unit_born(
+                            event,
+                            tracker_loop,
+                            details,
+                            event_item.change_hint,
+                        )
+                    }
+                    tracker_events::ReplayTrackerEvent::UnitDone(event) => {
+                        tracker_events::UnitBornEventFlatRow::from_unit_done(
+                            event,
+                            tracker_loop,
+                            details,
+                            event_item.change_hint,
+                        )
+                    }
+                    tracker_events::ReplayTrackerEvent::UnitTypeChange(event) => {
+                        match event_item.change_hint {
+                            UnitChangeHint::None => None,
+                            change_hint => {
+                                tracker_events::UnitBornEventFlatRow::from_unit_type_change(
+                                    event,
+                                    tracker_loop,
+                                    details,
+                                    change_hint,
+                                )
+                            }
                         }
+                    }
+                    _ => None,
+                },
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// Consumes the Iterator collecting only the UnitDied events into a vector of UnitBornEventFlatRow
+    #[cfg(feature = "dep_arrow")]
+    pub fn collect_into_unit_died_flat_rows(
+        self,
+        details: &crate::details::Details,
+    ) -> Vec<tracker_events::UnitDiedEventFlatRow> {
+        self.into_iter()
+            .filter_map(|event_item| match event_item.event_type {
+                SC2EventType::Tracker {
+                    tracker_loop,
+                    event,
+                } => {
+                    if let tracker_events::ReplayTrackerEvent::UnitDied(event) = event {
+                        tracker_events::UnitDiedEventFlatRow::new(
+                            details,
+                            event,
+                            tracker_loop,
+                            event_item.change_hint,
+                        )
                     } else {
                         None
                     }
@@ -376,6 +583,33 @@ impl SC2EventIteratorItem {
             change_hint,
         }
     }
+
+    /// Returns true if the event should be skipped based on the filters
+    fn shoud_skip_event(&self, event: &SC2EventType, filters: &SC2ReplayFilters) -> bool {
+        if let Some(min_loop) = filters.min_loop
+            && let SC2EventType::Tracker { tracker_loop, .. } = event
+            && *tracker_loop < min_loop
+        {
+            return true;
+        }
+        if let Some(max_loop) = filters.max_loop
+            && let SC2EventType::Tracker { tracker_loop, .. } = event
+            && *tracker_loop > max_loop
+        {
+            return true;
+        }
+        event.should_skip(filters)
+    }
+
+    /// Retuns true if the variant of event type is Game
+    pub fn is_game_event(&self) -> bool {
+        matches!(self.event_type, SC2EventType::Game { .. })
+    }
+
+    /// Retuns true if the variant of event type is Tracker
+    pub fn is_tracker_event(&self) -> bool {
+        matches!(self.event_type, SC2EventType::Tracker { .. })
+    }
 }
 
 impl Iterator for SC2EventIterator {
@@ -386,45 +620,54 @@ impl Iterator for SC2EventIterator {
     type Item = SC2EventIteratorItem;
 
     fn next(&mut self) -> Option<Self::Item> {
-        // Fill the next_tracker_event if they are empty.
-        if self.next_tracker_event.is_none() {
-            self.next_tracker_event = self
-                .tracker_iterator_state
-                .transist_to_next_supported_event(
-                    self.protocol_version,
-                    &mut self.sc2_state,
-                    &mut self.filters,
-                );
-        }
-        // Likewise, fill the next game event if it's empty.
-        if self.next_game_event.is_none() {
-            self.next_game_event = self.game_iterator_state.transist_to_next_supported_event(
-                self.protocol_version,
-                &mut self.sc2_state,
-                &mut self.filters,
-                &self.abilities,
-            );
-        }
-        // Now compare the adjusted game loops and return the event with the lowest one, be it game or tracker.
-        let next_tracker_event_loop = self.get_tracker_loop();
-        let next_game_event_loop = self.get_game_loop();
-        if let Some(next_tracker_event_loop) = next_tracker_event_loop {
-            if let Some(next_game_event_loop) = next_game_event_loop {
-                // Both events are populated, compare the loop and return the lowest one
-                if next_tracker_event_loop <= next_game_event_loop {
-                    self.next_tracker_event.take()
-                } else {
-                    self.next_game_event.take()
-                }
-            } else {
-                // The game event is not populated, return the tracker event.
-                self.next_tracker_event.take()
+        loop {
+            // Fill the next_tracker_event if they are empty.
+            if self.next_tracker_event.is_none() {
+                self.next_tracker_event = self
+                    .tracker_iterator_state
+                    .get_next_event(self.protocol_version);
             }
-        } else if next_game_event_loop.is_some() {
-            // The tracker event is not populated, return the game event.
-            self.next_game_event.take()
-        } else {
-            None
+            // Likewise, fill the next game event if it's empty.
+            if self.next_game_event.is_none() {
+                self.next_game_event = self
+                    .game_iterator_state
+                    .get_next_event(self.protocol_version, &self.balance_units);
+            }
+            // Now compare the adjusted game loops and return the event with the lowest one, be it game or tracker.
+            let next_tracker_event_loop = self.get_tracker_loop();
+            let next_game_event_loop = self.get_game_loop();
+            let event: SC2EventType = if let Some(next_tracker_event_loop) = next_tracker_event_loop
+            {
+                if let Some(next_game_event_loop) = next_game_event_loop {
+                    // Both events are populated, compare the loop and return the lowest one
+                    if next_tracker_event_loop <= next_game_event_loop {
+                        self.next_tracker_event.take().unwrap()
+                    } else {
+                        self.next_game_event.take().unwrap()
+                    }
+                } else {
+                    // The game event is not populated, return the tracker event.
+                    self.next_tracker_event.take().unwrap()
+                }
+            } else if next_game_event_loop.is_some() {
+                // The tracker event is not populated, return the game event.
+                self.next_game_event.take().unwrap()
+            } else {
+                return None;
+            };
+            let iterator_item = self
+                .sc2_state
+                .handle_transition_to_next_event(&self.balance_units, event);
+            if let Some(ref mut filters) = self.filters {
+                if iterator_item.shoud_skip_event(&iterator_item.event_type, filters) {
+                    continue;
+                }
+                filters.decrease_allowed_event_counter();
+                if filters.is_max_event_reached() {
+                    return None;
+                }
+            }
+            return Some(iterator_item);
         }
     }
 }

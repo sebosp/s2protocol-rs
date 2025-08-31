@@ -1,0 +1,265 @@
+{
+  "@id": "StarportFlying",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "StarportLand",
+        "@index": 156,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "471",
+              "@icon": "btn-ability-terran-land",
+              "@index": null,
+              "@name": "470",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "472",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": [
+      {
+        "@ability": 153,
+        "@id": "StarportTechLab",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 50,
+          "@supply": null,
+          "@time": 25.0,
+          "@vespene": 25
+        },
+        "meta": {
+          "@hotkey": "506",
+          "@icon": "btn-building-terran-techlab",
+          "@index": null,
+          "@name": "505",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "507",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      },
+      {
+        "@ability": 153,
+        "@id": "StarportReactor",
+        "@index": 1,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 50,
+          "@supply": null,
+          "@time": 50.0,
+          "@vespene": 50
+        },
+        "meta": {
+          "@hotkey": "251",
+          "@icon": "btn-building-terran-reactor",
+          "@index": null,
+          "@name": "250",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "78",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      }
+    ]
+  },
+  "cost": null,
+  "life": {
+    "@max": 1300,
+    "@regenRate": null,
+    "@start": 1300
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-building-terran-Starport",
+    "@index": 67,
+    "@name": "364",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "504",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 1.625,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 1.3125,
+    "@deceleration": 0.0,
+    "@speed": 0.9375,
+    "@turnRate": 720.0,
+    "@type": "Fly"
+  },
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranBuildingArmor",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "75",
+              "@icon": "BTN-upgrade-terran-buildingarmor",
+              "@index": null,
+              "@name": "74",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "76",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

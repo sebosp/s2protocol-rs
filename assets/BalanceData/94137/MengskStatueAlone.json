@@ -1,0 +1,80 @@
+{
+  "@id": "MengskStatueAlone",
+  "abilities": {
+    "ability": []
+  },
+  "armor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 150,
+    "@regenRate": null,
+    "@start": 150
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "Wireframe-Destructible-MengskStatueAlone",
+    "@index": 591,
+    "@name": "2043",
+    "@race": "Neut",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "2044",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint3x3Contour",
+    "@radius": 1.600000023841858,
+    "@range": null,
+    "@sightRadius": 0.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

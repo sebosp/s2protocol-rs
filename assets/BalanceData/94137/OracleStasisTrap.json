@@ -1,0 +1,183 @@
+{
+  "@id": "OracleStasisTrap",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ActivateStasisWard",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-ability-protoss-stasistrap",
+              "@index": null,
+              "@name": "2442",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "2443",
+              "@type": "passive"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "PermanentlyCloakedStasis",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-upgrade-vorazun-stasiswardpermanentlycloaked",
+              "@index": null,
+              "@name": "2444",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "2445",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": 50,
+    "@life": null,
+    "@minerals": null,
+    "@supply": null,
+    "@time": 5.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 30,
+    "@regenRate": null,
+    "@start": 30
+  },
+  "meta": {
+    "@hotkey": "1348",
+    "@icon": "btn-ability-protoss-oracle-stasisward",
+    "@index": 990,
+    "@name": "2440",
+    "@race": "Prot",
+    "@source": "Void.SC2Mod",
+    "@tooltip": "2441",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "OracleStasisTrap",
+    "@radius": 0.375,
+    "@range": null,
+    "@sightRadius": 7.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Oracle",
+    "@name": "869"
+  },
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": {
+    "@delay": 10.0,
+    "@max": 30,
+    "@regenRate": 2.0,
+    "@start": 30
+  },
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Marine",
+        "@name": "26"
+      },
+      {
+        "@id": "Zergling",
+        "@name": "27"
+      },
+      {
+        "@id": "Zealot",
+        "@name": "28"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Raven",
+        "@name": "436"
+      },
+      {
+        "@id": "Overseer",
+        "@name": "193"
+      },
+      {
+        "@id": "Observer",
+        "@name": "815"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

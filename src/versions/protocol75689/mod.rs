@@ -31,6 +31,7 @@ pub mod byte_aligned {
 pub mod bit_packed {
     //! Generated code from source: ../s2protocol/json/protocol75689.json
     use crate::game_events::ReplayGameEvent;
+    use crate::versions::GameEvent;
     pub use crate::versions::protocol87702::bit_packed::CAllowedObserveTypes;
     pub use crate::versions::protocol87702::bit_packed::CAllowedRaces;
     pub use crate::versions::protocol87702::bit_packed::CArtifactHandle;
@@ -289,10 +290,10 @@ pub mod bit_packed {
     pub use crate::versions::protocol87702::bit_packed::GameTaiBuild;
     pub use crate::versions::protocol87702::bit_packed::GameTuiCoordX;
     pub use crate::versions::protocol87702::bit_packed::GameTuiCoordY;
+    pub use crate::versions::protocol87702::bit_packed::Int8;
     pub use crate::versions::protocol87702::bit_packed::Int16;
     pub use crate::versions::protocol87702::bit_packed::Int32;
     pub use crate::versions::protocol87702::bit_packed::Int64;
-    pub use crate::versions::protocol87702::bit_packed::Int8;
     pub use crate::versions::protocol87702::bit_packed::MEventData;
     pub use crate::versions::protocol87702::bit_packed::ReplaySGameUserId;
     pub use crate::versions::protocol87702::bit_packed::ReplaySInitData;
@@ -306,14 +307,13 @@ pub mod bit_packed {
     pub use crate::versions::protocol87702::bit_packed::TTeamPreference;
     pub use crate::versions::protocol87702::bit_packed::TUserCount;
     pub use crate::versions::protocol87702::bit_packed::TUserId;
+    pub use crate::versions::protocol87702::bit_packed::Uint6;
+    pub use crate::versions::protocol87702::bit_packed::Uint8;
     pub use crate::versions::protocol87702::bit_packed::Uint14;
     pub use crate::versions::protocol87702::bit_packed::Uint16;
     pub use crate::versions::protocol87702::bit_packed::Uint22;
     pub use crate::versions::protocol87702::bit_packed::Uint32;
-    pub use crate::versions::protocol87702::bit_packed::Uint6;
     pub use crate::versions::protocol87702::bit_packed::Uint64;
-    pub use crate::versions::protocol87702::bit_packed::Uint8;
-    use crate::versions::GameEvent;
     use crate::*;
     use nom::*;
 
@@ -1032,7 +1032,9 @@ pub mod bit_packed {
                     ))
                 }
                 94 => {
-                    tracing::debug!("Variant ETriggerPurchasePanelSelectedPurchaseCategoryChanged for value '94'");
+                    tracing::debug!(
+                        "Variant ETriggerPurchasePanelSelectedPurchaseCategoryChanged for value '94'"
+                    );
 
                     let (tail, res) =
                         GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent::parse(tail)?;

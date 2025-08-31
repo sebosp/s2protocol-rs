@@ -1,0 +1,469 @@
+{
+  "@id": "ObserverSiegeMode",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "AcquireMove",
+            "@index": 3,
+            "meta": {
+              "@hotkey": "195",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "194",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "196",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ObserverSiegeMorphtoObserver",
+        "@index": 715,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "2660",
+              "@icon": "btn-unit-protoss-observer",
+              "@index": null,
+              "@name": "2659",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "2661",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "PermanentlyCloakedObserver",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "BTN-ability-Protoss-permanentlycloaked-Observer-color",
+              "@index": null,
+              "@name": "897",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "898",
+              "@type": "passive"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Detector",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "BTN-Status-Detector",
+              "@index": null,
+              "@name": "300",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "301",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 40,
+    "@regenRate": null,
+    "@start": 40
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-unit-protoss-observer",
+    "@index": 1192,
+    "@name": "815",
+    "@race": "Prot",
+    "@source": "BalanceData",
+    "@tooltip": "777",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.5,
+    "@range": null,
+    "@sightRadius": 13.75,
+    "@speed": null,
+    "@supply": -1.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 3,
+    "@start": 0
+  },
+  "shields": {
+    "@delay": 10.0,
+    "@max": 30,
+    "@regenRate": 2.0,
+    "@start": 30
+  },
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Banshee",
+        "@name": "294"
+      },
+      {
+        "@id": "LurkerMP",
+        "@name": "624"
+      },
+      {
+        "@id": "DarkTemplar",
+        "@name": "625"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ProtossShields",
+        "level": [
+          {
+            "@id": "ProtossShieldsLevel1",
+            "@index": 48,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 170.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "58",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel1",
+              "@index": null,
+              "@name": "57",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "59",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ProtossShieldsLevel2",
+            "@index": 49,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 202.5,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "61",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel2",
+              "@index": null,
+              "@name": "60",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "62",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossShieldsLevel1",
+                    "@name": "57"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ProtossShieldsLevel3",
+            "@index": 50,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 235.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "64",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel3",
+              "@index": null,
+              "@name": "63",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "65",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossShieldsLevel2",
+                    "@name": "60"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "ProtossAirArmors",
+        "level": [
+          {
+            "@id": "ProtossAirArmorsLevel1",
+            "@index": 84,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 180.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "175",
+              "@icon": "BTN-Upgrade-Protoss-AirArmorLevel1",
+              "@index": null,
+              "@name": "174",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "176",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ProtossAirArmorsLevel2",
+            "@index": 85,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 215.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "178",
+              "@icon": "BTN-Upgrade-Protoss-AirArmorLevel2",
+              "@index": null,
+              "@name": "177",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "179",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "FleetBeacon",
+                    "@name": "153"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossAirArmorsLevel1",
+                    "@name": "174"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ProtossAirArmorsLevel3",
+            "@index": 86,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 250.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "181",
+              "@icon": "BTN-Upgrade-Protoss-AirArmorLevel3",
+              "@index": null,
+              "@name": "180",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "182",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "FleetBeacon",
+                    "@name": "153"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossAirArmorsLevel2",
+                    "@name": "177"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "MissileTurret",
+        "@name": "291"
+      },
+      {
+        "@id": "SporeCrawler",
+        "@name": "602"
+      },
+      {
+        "@id": "PhotonCannon",
+        "@name": "603"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

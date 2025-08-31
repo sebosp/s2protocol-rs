@@ -1,0 +1,148 @@
+{
+  "@id": "LurkerMPEgg",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "MorphToLurker",
+        "@index": 524,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Rally",
+        "@index": 104,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "122",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "121",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "123",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Biological"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 50,
+    "@supply": 1.0,
+    "@time": 25.25,
+    "@vespene": 100
+  },
+  "life": {
+    "@max": 100,
+    "@regenRate": 0.2734000086784363,
+    "@start": 100
+  },
+  "meta": {
+    "@hotkey": "1128",
+    "@icon": "btn-unit-zerg-lurker",
+    "@index": 176,
+    "@name": "1310",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1311",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.5,
+    "@range": null,
+    "@sightRadius": 5.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Hydralisk",
+    "@name": "439"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "LurkerDenMP",
+        "@name": "1130"
+      }
+    ]
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

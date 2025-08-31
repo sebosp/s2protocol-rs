@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 use nom_mpq::MPQ;
 
-use crate::{error::S2ProtocolError, InitData};
+use crate::{InitData, error::S2ProtocolError};
 use serde::{Deserialize, Serialize};
 
 /* Removed fields:

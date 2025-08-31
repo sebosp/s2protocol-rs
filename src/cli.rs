@@ -1,16 +1,22 @@
-#[cfg(feature = "dep_arrow")]
 use super::*;
 
 #[cfg(feature = "syntax")]
-use bat::{Input, PrettyPrinter};
+use syntect::easy::HighlightLines;
+#[cfg(feature = "syntax")]
+use syntect::highlighting::{Style, ThemeSet};
+#[cfg(feature = "syntax")]
+use syntect::parsing::SyntaxSet;
+#[cfg(feature = "syntax")]
+use syntect::util::{LinesWithEndings, as_24_bit_terminal_escaped};
 
-use crate::game_events::iterator::GameEventIterator;
 use crate::game_events::VersionedBalanceUnit;
+use crate::game_events::ability::json_handler::read_balance_data_from_json;
+use crate::game_events::ability::traverse_versioned_balance_abilities;
 use crate::generator::proto_morphist::ProtoMorphist;
 use crate::read_details;
 use crate::read_init_data;
 use crate::read_message_events;
-use crate::tracker_events::iterator::TrackerEventIterator;
+use crate::state::SC2EventIterator;
 
 #[cfg(feature = "dep_arrow")]
 use clap::Args;
@@ -39,6 +45,10 @@ enum ReadTypes {
 enum Commands {
     /// Generates Rust code for a specific protocol.
     Generate,
+
+    /// Generates static json files for a specific Balance Data export.
+    ///
+    BalanceDataToJson,
 
     /// Gets a specific event type from the SC2Replay MPQ Archive
     #[command(subcommand)]
@@ -74,6 +84,9 @@ pub struct WriteArrowIpcProps {
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
     /// Sets the source of the data, can be a file or directory.
+    /// Can be a path to a single SC2Replay file or a directory containing multiple SC2Replay files.
+    /// If a directory is provided, it will recursively search for SC2Replay files.
+    /// The path can contain a BalanceData with XMLs for the verisoned exported data.
     #[arg(short, long)]
     source: String,
 
@@ -165,13 +178,14 @@ pub fn get_matching_files(
                     }
                     sources.append(&mut sub_dir);
                 }
-            } else if let Some(ext) = path.extension() {
-                if ext == "SC2Replay" && path.is_file() {
-                    if sources.len() >= max_files {
-                        break;
-                    }
-                    sources.push(path);
+            } else if let Some(ext) = path.extension()
+                && ext == "SC2Replay"
+                && path.is_file()
+            {
+                if sources.len() >= max_files {
+                    break;
                 }
+                sources.push(path);
             }
         }
         Ok(sources)
@@ -180,27 +194,39 @@ pub fn get_matching_files(
     }
 }
 
-/// Prints the json strings either with Bat PrettyPrint or just plain json
-pub fn json_print(json_str: String, color: bool) {
-    if color {
-        #[cfg(feature = "syntax")]
-        {
-            PrettyPrinter::new()
-                .language("json")
-                .header(false)
-                .grid(false)
-                .line_numbers(false)
-                .input(Input::from_bytes(json_str.as_bytes()))
-                .print()
-                .unwrap();
-        }
-        #[cfg(not(feature = "syntax"))]
-        {
-            println!("{json_str}");
-        }
-    } else {
-        println!("{json_str}");
+/// Prints the json strings with syntect::easy
+#[cfg(feature = "syntax")]
+pub fn syntect_json_highlight<'a>(
+    json_str: &'a str,
+    syntect_syntax_set: &SyntaxSet,
+    syntect_theme_set: &ThemeSet,
+) -> Vec<(Style, &'a str)> {
+    let mut res: Vec<(Style, &str)> = vec![];
+    let syntax = syntect_syntax_set.find_syntax_by_extension("json").unwrap();
+    let mut highlighter =
+        HighlightLines::new(syntax, &syntect_theme_set.themes["base16-ocean.dark"]);
+    for line in LinesWithEndings::from(json_str) {
+        // LinesWithEndings enables use of newlines mode
+        let ranges: Vec<(Style, &str)> = highlighter
+            .highlight_line(line, syntect_syntax_set)
+            .unwrap();
+        res.extend(ranges);
     }
+    res
+}
+
+/// Prints the json strings with syntect::easy
+#[cfg(feature = "syntax")]
+pub fn syntect_json_print(
+    json_str: String,
+    syntect_syntax_set: &SyntaxSet,
+    syntect_theme_set: &ThemeSet,
+) {
+    syntect_json_highlight(&json_str, syntect_syntax_set, syntect_theme_set)
+        .iter()
+        .for_each(|segment| {
+            print!("{}", as_24_bit_terminal_escaped(&[*segment], false));
+        });
 }
 
 /// Handles the request from the CLI when used as a binary
@@ -233,20 +259,42 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             .with_env_filter(level.to_string())
             .init();
     }
-    let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
-        if !cli.xml_balance_data_dir.is_empty() {
-            tracing::info!("Using balance data directory: {}", cli.xml_balance_data_dir);
-            crate::game_events::ability::traverse_versioned_balance_abilities(PathBuf::from(
-                &cli.xml_balance_data_dir,
-            ))?
-        } else {
-            HashMap::new()
-        };
+    #[cfg(feature = "syntax")]
+    let syntect_syntax_set = SyntaxSet::load_defaults_newlines();
+    #[cfg(feature = "syntax")]
+    let syntect_theme_set = ThemeSet::load_defaults();
+
     match &cli.command {
         Commands::Generate => {
-            ProtoMorphist::gen(&cli.source, &cli.output.expect("Requires --output"))?;
+            ProtoMorphist::r#gen(&cli.source, &cli.output.expect("Requires --output"))?;
+        }
+        Commands::BalanceDataToJson => {
+            if cli.source.is_empty() {
+                return Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::InvalidInput,
+                    "Source XML Balance Data directory must be provided",
+                )));
+            }
+            if cli.json_balance_data_dir.is_empty() {
+                return Err(Box::new(std::io::Error::new(
+                    std::io::ErrorKind::InvalidInput,
+                    "Destination JSON Balance Data directory must be provided",
+                )));
+            }
+            let versioned_abilities =
+                traverse_versioned_balance_abilities(PathBuf::from(&cli.source))?;
+            crate::game_events::ability::balance_data::json_handler::write_balance_data_to_json(
+                &cli.json_balance_data_dir,
+                versioned_abilities,
+            )?;
         }
         Commands::Get(read_type) => {
+            let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
+                if cli.json_balance_data_dir.is_empty() {
+                    read_balance_data_from_json(PathBuf::from(&cli.source))?
+                } else {
+                    read_balance_data_from_json(PathBuf::from(&cli.json_balance_data_dir))?
+                };
             let sources: Vec<PathBuf> = if PathBuf::from(&cli.source).is_dir() {
                 let mut sources = Vec::new();
                 for entry in std::fs::read_dir(&cli.source)? {
@@ -284,19 +332,33 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     .to_string();
                 match read_type {
                     ReadTypes::TrackerEvents => {
-                        let res = TrackerEventIterator::new(&source)?;
+                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
                         println!("[");
-                        for evt in res.into_iter() {
-                            json_print(serde_json::to_string(&evt).unwrap(), color);
+                        for evt in res.into_iter().filter(|e| e.is_tracker_event()) {
+                            #[cfg(feature = "syntax")]
+                            syntect_json_print(
+                                serde_json::to_string(&evt).unwrap(),
+                                &syntect_syntax_set,
+                                &syntect_theme_set,
+                            );
+                            #[cfg(not(feature = "syntax"))]
+                            println!("{}", serde_json::to_string(&evt).unwrap());
                         }
                         println!("]");
                     }
 
                     ReadTypes::GameEvents => {
-                        let res = GameEventIterator::new(&source, &versioned_abilities)?;
+                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
                         println!("[");
-                        for evt in res.into_iter() {
-                            json_print(serde_json::to_string(&evt).unwrap(), color);
+                        for evt in res.into_iter().filter(|e| e.is_game_event()) {
+                            #[cfg(feature = "syntax")]
+                            syntect_json_print(
+                                serde_json::to_string(&evt).unwrap(),
+                                &syntect_syntax_set,
+                                &syntect_theme_set,
+                            );
+                            #[cfg(not(feature = "syntax"))]
+                            println!("{}", serde_json::to_string(&evt).unwrap());
                         }
                         println!("]");
                     }
@@ -304,36 +366,67 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let res = read_message_events(&source_path, &mpq, &file_contents)?;
                         println!("[");
                         for evt in res {
-                            json_print(serde_json::to_string(&evt).unwrap(), color);
+                            #[cfg(feature = "syntax")]
+                            syntect_json_print(
+                                serde_json::to_string(&evt).unwrap(),
+                                &syntect_syntax_set,
+                                &syntect_theme_set,
+                            );
+                            #[cfg(not(feature = "syntax"))]
+                            println!("{}", serde_json::to_string(&evt).unwrap());
                         }
                         println!("]");
                     }
                     ReadTypes::Details => {
                         let evt = read_details(&source_path, &mpq, &file_contents)?;
-                        json_print(serde_json::to_string(&evt).unwrap(), color);
+                        #[cfg(feature = "syntax")]
+                        syntect_json_print(
+                            serde_json::to_string(&evt).unwrap(),
+                            &syntect_syntax_set,
+                            &syntect_theme_set,
+                        );
+                        #[cfg(not(feature = "syntax"))]
+                        println!("{}", serde_json::to_string(&evt).unwrap());
                     }
                     ReadTypes::InitData => {
                         let evt = read_init_data(&source_path, &mpq, &file_contents)?;
-                        json_print(serde_json::to_string(&evt).unwrap(), color);
+                        #[cfg(feature = "syntax")]
+                        syntect_json_print(
+                            serde_json::to_string(&evt).unwrap(),
+                            &syntect_syntax_set,
+                            &syntect_theme_set,
+                        );
+                        #[cfg(not(feature = "syntax"))]
+                        println!("{}", serde_json::to_string(&evt).unwrap());
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
-                        let res = crate::state::SC2EventIterator::new(
-                            &source,
-                            versioned_abilities.clone(),
-                        )?;
+                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
                         let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
                         let res = res.with_filters(filters);
                         #[cfg(feature = "dep_ratatui")]
                         {
                             let details = read_details(&source_path, &mpq, &file_contents)?;
-                            return Ok(crate::tui::ratatui_main(res, details)?);
+                            return Ok(crate::tui::ratatui_main(
+                                res,
+                                details,
+                                syntect_syntax_set,
+                                syntect_theme_set,
+                            )?);
                         }
                         #[cfg(not(feature = "dep_ratatui"))]
                         {
                             println!("[");
                             for evt in res.into_iter() {
-                                json_print(serde_json::to_string(&evt).unwrap(), color);
+                                #[cfg(feature = "syntax")]
+                                syntect_json_print(
+                                    serde_json::to_string(&evt).unwrap(),
+                                    &syntect_syntax_set,
+                                    &syntect_theme_set,
+                                );
+                                #[cfg(not(feature = "syntax"))]
+                                println!("{}", serde_json::to_string(&evt).unwrap());
+
                                 println!(",");
                             }
                             println!("]");
@@ -344,6 +437,12 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
         }
         #[cfg(feature = "dep_arrow")]
         Commands::WriteArrowIpc(cmd) => {
+            let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
+                if cli.json_balance_data_dir.is_empty() {
+                    read_balance_data_from_json(PathBuf::from(&cli.source))?
+                } else {
+                    read_balance_data_from_json(PathBuf::from(&cli.json_balance_data_dir))?
+                };
             ArrowIpcTypes::handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),
                 PathBuf::from(&cli.output.expect("Requires --output")),

@@ -48,18 +48,18 @@ impl SC2ReplayFilters {
 
     /// Decreases the amount of processed event counters.
     pub fn decrease_allowed_event_counter(&mut self) {
-        if let Some(max_events) = self.max_events {
-            if max_events > 0 {
-                self.max_events = Some(max_events - 1);
-            }
+        if let Some(max_events) = self.max_events
+            && max_events > 0
+        {
+            self.max_events = Some(max_events - 1);
         }
     }
 
     pub fn is_max_event_reached(&self) -> bool {
-        if let Some(max_events) = self.max_events {
-            if max_events == 0 {
-                return true;
-            }
+        if let Some(max_events) = self.max_events
+            && max_events == 0
+        {
+            return true;
         }
         false
     }

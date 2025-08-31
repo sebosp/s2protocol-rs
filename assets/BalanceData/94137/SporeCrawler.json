@@ -1,0 +1,254 @@
+{
+  "@id": "SporeCrawler",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "298",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "297",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "299",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "SporeCrawlerUproot",
+        "@index": 264,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1070",
+              "@icon": "btn-ability-zerg-uproot-color",
+              "@index": null,
+              "@name": "1069",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1071",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Detector",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "BTN-Status-Detector",
+              "@index": null,
+              "@name": "300",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "301",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 75,
+    "@supply": null,
+    "@time": 30.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 300,
+    "@regenRate": 0.2734000086784363,
+    "@start": 300
+  },
+  "meta": {
+    "@hotkey": "1066",
+    "@icon": "btn-building-zerg-sporecrawler",
+    "@index": 122,
+    "@name": "602",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1067",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint2x2Contour2",
+    "@radius": 0.875,
+    "@range": null,
+    "@sightRadius": 11.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Drone",
+    "@name": "437"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "SpawningPool",
+        "@name": "932"
+      }
+    ]
+  },
+  "score": {
+    "@build": 75,
+    "@kill": 75
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Banshee",
+        "@name": "294"
+      },
+      {
+        "@id": "Mutalisk",
+        "@name": "81"
+      },
+      {
+        "@id": "Oracle",
+        "@name": "869"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Marine",
+        "@name": "26"
+      },
+      {
+        "@id": "Zergling",
+        "@name": "27"
+      },
+      {
+        "@id": "Zealot",
+        "@name": "28"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "AcidSpew",
+        "@index": 9,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-zerg-missileattacks-level0",
+          "@index": null,
+          "@name": "1068",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 7.0,
+          "@sightRadius": null,
+          "@speed": 0.86080002784729,
+          "@supply": null,
+          "@targets": "air"
+        },
+        "score": null
+      }
+    ]
+  }
+}

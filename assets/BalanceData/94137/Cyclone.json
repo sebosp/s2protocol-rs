@@ -1,0 +1,335 @@
+{
+  "@id": "Cyclone",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "LockOnCancel",
+        "@index": 532,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1842",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "1841",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1843",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "LockOn",
+        "@index": 530,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1845",
+              "@icon": "btn-ability-terran-lockon",
+              "@index": null,
+              "@name": "1844",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1846",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "CycloneLockOnDamageUpgrade",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-upgrade-terran-magfieldaccelerator",
+              "@index": null,
+              "@name": "1847",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1848",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": 3.0,
+    "@time": 45.0,
+    "@vespene": 100
+  },
+  "life": {
+    "@max": 120,
+    "@regenRate": null,
+    "@start": 120
+  },
+  "meta": {
+    "@hotkey": "359",
+    "@icon": "btn-unit-terran-cyclone",
+    "@index": 474,
+    "@name": "595",
+    "@race": "Terr",
+    "@source": "Void.SC2Mod",
+    "@tooltip": "360",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 4,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 11.0,
+    "@speed": null,
+    "@supply": -3.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 1000.0,
+    "@deceleration": 0.0,
+    "@speed": 3.375,
+    "@turnRate": 360.0,
+    "@type": "Ground"
+  },
+  "producer": {
+    "@id": "Factory",
+    "@name": "340"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "TechLab",
+        "@name": "69"
+      }
+    ]
+  },
+  "score": {
+    "@build": 250,
+    "@kill": 250
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Marauder",
+        "@name": "126"
+      },
+      {
+        "@id": "Roach",
+        "@name": "442"
+      },
+      {
+        "@id": "Adept",
+        "@name": "85"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "CycloneLockOnDamageUpgrade",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "489",
+              "@icon": "btn-upgrade-terran-magfieldaccelerator",
+              "@index": null,
+              "@name": "1849",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "490",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "SiegeTank",
+        "@name": "305"
+      },
+      {
+        "@id": "Zergling",
+        "@name": "27"
+      },
+      {
+        "@id": "Immortal",
+        "@name": "306"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "TyphoonMissilePod",
+        "@index": 97,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-terran-vehicleweaponslevel0",
+          "@index": null,
+          "@name": "1840",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 5.0,
+          "@sightRadius": null,
+          "@speed": 1.0,
+          "@supply": null,
+          "@targets": "any"
+        },
+        "score": null
+      }
+    ]
+  }
+}

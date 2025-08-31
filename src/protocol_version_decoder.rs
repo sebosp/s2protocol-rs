@@ -11,8 +11,8 @@ use super::*;
 use crate::versions::protocol87702::byte_aligned::{ReplaySHeader, SVersion};
 use nom::bytes::complete::*;
 use nom::error::dbg_dmp;
-use nom_mpq::parser::peek_hex;
 use nom_mpq::MPQ;
+use nom_mpq::parser::peek_hex;
 
 /// The S2 Protocol Header
 #[derive(Debug, PartialEq, Clone)]

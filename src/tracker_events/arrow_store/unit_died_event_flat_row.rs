@@ -3,9 +3,9 @@
 #[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
+use crate::UnitChangeHint;
 use crate::details::Details;
 use crate::tracker_events::UnitDiedEvent;
-use crate::UnitChangeHint;
 use serde::{Deserialize, Serialize};
 
 /// A protocol agnostic Unit Died

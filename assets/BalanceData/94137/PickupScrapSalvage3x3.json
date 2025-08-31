@@ -1,0 +1,73 @@
+{
+  "@id": "PickupScrapSalvage3x3",
+  "abilities": {
+    "ability": []
+  },
+  "armor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": []
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 10,
+    "@regenRate": null,
+    "@start": 10
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-missing-kaeo",
+    "@index": 838,
+    "@name": "2290",
+    "@race": "Neut",
+    "@source": "Swarm.SC2Mod",
+    "@tooltip": "0",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 1.5,
+    "@range": null,
+    "@sightRadius": 2.5,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

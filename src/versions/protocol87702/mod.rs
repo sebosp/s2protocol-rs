@@ -1404,7 +1404,9 @@ pub mod byte_aligned {
                             m_restart_as_transition_map = Some(parsed_m_restart_as_transition_map);
                             continue;
                         } else {
-                            tracing::debug!("Field m_restart_as_transition_map with tag 16 was already provided");
+                            tracing::debug!(
+                                "Field m_restart_as_transition_map with tag 16 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_restart_as_transition_map"),
                                 16,
@@ -2595,7 +2597,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_current);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_current with tag 0 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_current with tag 0 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_current"),
                                 0,
@@ -2614,7 +2618,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_current);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_current with tag 1 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_current with tag 1 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_current"),
                                 1,
@@ -2622,7 +2628,9 @@ pub mod byte_aligned {
                         }
                     }
                     2 => {
-                        tracing::debug!("Field [{i}]: tagged '2' for field m_score_value_minerals_collection_rate");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '2' for field m_score_value_minerals_collection_rate"
+                        );
                         if m_score_value_minerals_collection_rate.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_collection_rate) =
                                 Self::parse_m_score_value_minerals_collection_rate(tail)?;
@@ -2631,7 +2639,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_collection_rate);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_collection_rate with tag 2 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_collection_rate with tag 2 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_collection_rate"),
                                 2,
@@ -2639,7 +2649,9 @@ pub mod byte_aligned {
                         }
                     }
                     3 => {
-                        tracing::debug!("Field [{i}]: tagged '3' for field m_score_value_vespene_collection_rate");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '3' for field m_score_value_vespene_collection_rate"
+                        );
                         if m_score_value_vespene_collection_rate.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_collection_rate) =
                                 Self::parse_m_score_value_vespene_collection_rate(tail)?;
@@ -2648,7 +2660,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_collection_rate);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_collection_rate with tag 3 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_collection_rate with tag 3 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_collection_rate"),
                                 3,
@@ -2667,7 +2681,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_workers_active_count);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_workers_active_count with tag 4 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_workers_active_count with tag 4 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_workers_active_count"),
                                 4,
@@ -2675,7 +2691,9 @@ pub mod byte_aligned {
                         }
                     }
                     5 => {
-                        tracing::debug!("Field [{i}]: tagged '5' for field m_score_value_minerals_used_in_progress_army");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '5' for field m_score_value_minerals_used_in_progress_army"
+                        );
                         if m_score_value_minerals_used_in_progress_army.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_in_progress_army) =
                                 Self::parse_m_score_value_minerals_used_in_progress_army(tail)?;
@@ -2684,7 +2702,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_used_in_progress_army);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_used_in_progress_army with tag 5 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_used_in_progress_army with tag 5 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_used_in_progress_army"),
                                 5,
@@ -2692,7 +2712,9 @@ pub mod byte_aligned {
                         }
                     }
                     6 => {
-                        tracing::debug!("Field [{i}]: tagged '6' for field m_score_value_minerals_used_in_progress_economy");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '6' for field m_score_value_minerals_used_in_progress_economy"
+                        );
                         if m_score_value_minerals_used_in_progress_economy.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_in_progress_economy) =
                                 Self::parse_m_score_value_minerals_used_in_progress_economy(tail)?;
@@ -2701,7 +2723,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_used_in_progress_economy);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_used_in_progress_economy with tag 6 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_used_in_progress_economy with tag 6 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_used_in_progress_economy"),
                                 6,
@@ -2709,7 +2733,9 @@ pub mod byte_aligned {
                         }
                     }
                     7 => {
-                        tracing::debug!("Field [{i}]: tagged '7' for field m_score_value_minerals_used_in_progress_technology");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '7' for field m_score_value_minerals_used_in_progress_technology"
+                        );
                         if m_score_value_minerals_used_in_progress_technology.is_none() {
                             let (
                                 new_tail,
@@ -2722,7 +2748,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_used_in_progress_technology);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_used_in_progress_technology with tag 7 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_used_in_progress_technology with tag 7 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_used_in_progress_technology"),
                                 7,
@@ -2730,7 +2758,9 @@ pub mod byte_aligned {
                         }
                     }
                     8 => {
-                        tracing::debug!("Field [{i}]: tagged '8' for field m_score_value_vespene_used_in_progress_army");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '8' for field m_score_value_vespene_used_in_progress_army"
+                        );
                         if m_score_value_vespene_used_in_progress_army.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_in_progress_army) =
                                 Self::parse_m_score_value_vespene_used_in_progress_army(tail)?;
@@ -2739,7 +2769,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_used_in_progress_army);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_used_in_progress_army with tag 8 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_used_in_progress_army with tag 8 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_used_in_progress_army"),
                                 8,
@@ -2747,7 +2779,9 @@ pub mod byte_aligned {
                         }
                     }
                     9 => {
-                        tracing::debug!("Field [{i}]: tagged '9' for field m_score_value_vespene_used_in_progress_economy");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '9' for field m_score_value_vespene_used_in_progress_economy"
+                        );
                         if m_score_value_vespene_used_in_progress_economy.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_in_progress_economy) =
                                 Self::parse_m_score_value_vespene_used_in_progress_economy(tail)?;
@@ -2756,7 +2790,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_used_in_progress_economy);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_used_in_progress_economy with tag 9 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_used_in_progress_economy with tag 9 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_used_in_progress_economy"),
                                 9,
@@ -2764,7 +2800,9 @@ pub mod byte_aligned {
                         }
                     }
                     10 => {
-                        tracing::debug!("Field [{i}]: tagged '10' for field m_score_value_vespene_used_in_progress_technology");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '10' for field m_score_value_vespene_used_in_progress_technology"
+                        );
                         if m_score_value_vespene_used_in_progress_technology.is_none() {
                             let (
                                 new_tail,
@@ -2777,7 +2815,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_used_in_progress_technology);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_used_in_progress_technology with tag 10 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_used_in_progress_technology with tag 10 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_used_in_progress_technology"),
                                 10,
@@ -2785,7 +2825,9 @@ pub mod byte_aligned {
                         }
                     }
                     11 => {
-                        tracing::debug!("Field [{i}]: tagged '11' for field m_score_value_minerals_used_current_army");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '11' for field m_score_value_minerals_used_current_army"
+                        );
                         if m_score_value_minerals_used_current_army.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_current_army) =
                                 Self::parse_m_score_value_minerals_used_current_army(tail)?;
@@ -2794,7 +2836,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_used_current_army);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_used_current_army with tag 11 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_used_current_army with tag 11 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_used_current_army"),
                                 11,
@@ -2802,7 +2846,9 @@ pub mod byte_aligned {
                         }
                     }
                     12 => {
-                        tracing::debug!("Field [{i}]: tagged '12' for field m_score_value_minerals_used_current_economy");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '12' for field m_score_value_minerals_used_current_economy"
+                        );
                         if m_score_value_minerals_used_current_economy.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_current_economy) =
                                 Self::parse_m_score_value_minerals_used_current_economy(tail)?;
@@ -2811,7 +2857,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_used_current_economy);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_used_current_economy with tag 12 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_used_current_economy with tag 12 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_used_current_economy"),
                                 12,
@@ -2819,7 +2867,9 @@ pub mod byte_aligned {
                         }
                     }
                     13 => {
-                        tracing::debug!("Field [{i}]: tagged '13' for field m_score_value_minerals_used_current_technology");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '13' for field m_score_value_minerals_used_current_technology"
+                        );
                         if m_score_value_minerals_used_current_technology.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_current_technology) =
                                 Self::parse_m_score_value_minerals_used_current_technology(tail)?;
@@ -2828,7 +2878,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_used_current_technology);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_used_current_technology with tag 13 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_used_current_technology with tag 13 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_used_current_technology"),
                                 13,
@@ -2836,7 +2888,9 @@ pub mod byte_aligned {
                         }
                     }
                     14 => {
-                        tracing::debug!("Field [{i}]: tagged '14' for field m_score_value_vespene_used_current_army");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '14' for field m_score_value_vespene_used_current_army"
+                        );
                         if m_score_value_vespene_used_current_army.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_current_army) =
                                 Self::parse_m_score_value_vespene_used_current_army(tail)?;
@@ -2845,7 +2899,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_used_current_army);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_used_current_army with tag 14 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_used_current_army with tag 14 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_used_current_army"),
                                 14,
@@ -2853,7 +2909,9 @@ pub mod byte_aligned {
                         }
                     }
                     15 => {
-                        tracing::debug!("Field [{i}]: tagged '15' for field m_score_value_vespene_used_current_economy");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '15' for field m_score_value_vespene_used_current_economy"
+                        );
                         if m_score_value_vespene_used_current_economy.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_current_economy) =
                                 Self::parse_m_score_value_vespene_used_current_economy(tail)?;
@@ -2862,7 +2920,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_used_current_economy);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_used_current_economy with tag 15 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_used_current_economy with tag 15 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_used_current_economy"),
                                 15,
@@ -2870,7 +2930,9 @@ pub mod byte_aligned {
                         }
                     }
                     16 => {
-                        tracing::debug!("Field [{i}]: tagged '16' for field m_score_value_vespene_used_current_technology");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '16' for field m_score_value_vespene_used_current_technology"
+                        );
                         if m_score_value_vespene_used_current_technology.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_current_technology) =
                                 Self::parse_m_score_value_vespene_used_current_technology(tail)?;
@@ -2879,7 +2941,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_used_current_technology);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_used_current_technology with tag 16 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_used_current_technology with tag 16 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_used_current_technology"),
                                 16,
@@ -2898,7 +2962,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_lost_army);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_lost_army with tag 17 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_lost_army with tag 17 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_lost_army"),
                                 17,
@@ -2906,7 +2972,9 @@ pub mod byte_aligned {
                         }
                     }
                     18 => {
-                        tracing::debug!("Field [{i}]: tagged '18' for field m_score_value_minerals_lost_economy");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '18' for field m_score_value_minerals_lost_economy"
+                        );
                         if m_score_value_minerals_lost_economy.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_lost_economy) =
                                 Self::parse_m_score_value_minerals_lost_economy(tail)?;
@@ -2915,7 +2983,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_lost_economy);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_lost_economy with tag 18 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_lost_economy with tag 18 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_lost_economy"),
                                 18,
@@ -2923,7 +2993,9 @@ pub mod byte_aligned {
                         }
                     }
                     19 => {
-                        tracing::debug!("Field [{i}]: tagged '19' for field m_score_value_minerals_lost_technology");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '19' for field m_score_value_minerals_lost_technology"
+                        );
                         if m_score_value_minerals_lost_technology.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_lost_technology) =
                                 Self::parse_m_score_value_minerals_lost_technology(tail)?;
@@ -2932,7 +3004,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_lost_technology);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_lost_technology with tag 19 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_lost_technology with tag 19 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_lost_technology"),
                                 19,
@@ -2951,7 +3025,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_lost_army);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_lost_army with tag 20 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_lost_army with tag 20 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_lost_army"),
                                 20,
@@ -2970,7 +3046,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_lost_economy);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_lost_economy with tag 21 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_lost_economy with tag 21 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_lost_economy"),
                                 21,
@@ -2978,7 +3056,9 @@ pub mod byte_aligned {
                         }
                     }
                     22 => {
-                        tracing::debug!("Field [{i}]: tagged '22' for field m_score_value_vespene_lost_technology");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '22' for field m_score_value_vespene_lost_technology"
+                        );
                         if m_score_value_vespene_lost_technology.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_lost_technology) =
                                 Self::parse_m_score_value_vespene_lost_technology(tail)?;
@@ -2987,7 +3067,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_lost_technology);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_lost_technology with tag 22 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_lost_technology with tag 22 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_lost_technology"),
                                 22,
@@ -3006,7 +3088,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_killed_army);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_killed_army with tag 23 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_killed_army with tag 23 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_killed_army"),
                                 23,
@@ -3014,7 +3098,9 @@ pub mod byte_aligned {
                         }
                     }
                     24 => {
-                        tracing::debug!("Field [{i}]: tagged '24' for field m_score_value_minerals_killed_economy");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '24' for field m_score_value_minerals_killed_economy"
+                        );
                         if m_score_value_minerals_killed_economy.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_killed_economy) =
                                 Self::parse_m_score_value_minerals_killed_economy(tail)?;
@@ -3023,7 +3109,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_killed_economy);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_killed_economy with tag 24 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_killed_economy with tag 24 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_killed_economy"),
                                 24,
@@ -3031,7 +3119,9 @@ pub mod byte_aligned {
                         }
                     }
                     25 => {
-                        tracing::debug!("Field [{i}]: tagged '25' for field m_score_value_minerals_killed_technology");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '25' for field m_score_value_minerals_killed_technology"
+                        );
                         if m_score_value_minerals_killed_technology.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_killed_technology) =
                                 Self::parse_m_score_value_minerals_killed_technology(tail)?;
@@ -3040,7 +3130,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_killed_technology);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_killed_technology with tag 25 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_killed_technology with tag 25 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_killed_technology"),
                                 25,
@@ -3059,7 +3151,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_killed_army);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_killed_army with tag 26 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_killed_army with tag 26 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_killed_army"),
                                 26,
@@ -3067,7 +3161,9 @@ pub mod byte_aligned {
                         }
                     }
                     27 => {
-                        tracing::debug!("Field [{i}]: tagged '27' for field m_score_value_vespene_killed_economy");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '27' for field m_score_value_vespene_killed_economy"
+                        );
                         if m_score_value_vespene_killed_economy.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_killed_economy) =
                                 Self::parse_m_score_value_vespene_killed_economy(tail)?;
@@ -3076,7 +3172,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_killed_economy);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_killed_economy with tag 27 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_killed_economy with tag 27 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_killed_economy"),
                                 27,
@@ -3084,7 +3182,9 @@ pub mod byte_aligned {
                         }
                     }
                     28 => {
-                        tracing::debug!("Field [{i}]: tagged '28' for field m_score_value_vespene_killed_technology");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '28' for field m_score_value_vespene_killed_technology"
+                        );
                         if m_score_value_vespene_killed_technology.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_killed_technology) =
                                 Self::parse_m_score_value_vespene_killed_technology(tail)?;
@@ -3093,7 +3193,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_killed_technology);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_killed_technology with tag 28 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_killed_technology with tag 28 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_killed_technology"),
                                 28,
@@ -3141,7 +3243,9 @@ pub mod byte_aligned {
                         }
                     }
                     31 => {
-                        tracing::debug!("Field [{i}]: tagged '31' for field m_score_value_minerals_used_active_forces");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '31' for field m_score_value_minerals_used_active_forces"
+                        );
                         if m_score_value_minerals_used_active_forces.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_used_active_forces) =
                                 Self::parse_m_score_value_minerals_used_active_forces(tail)?;
@@ -3150,7 +3254,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_used_active_forces);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_used_active_forces with tag 31 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_used_active_forces with tag 31 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_used_active_forces"),
                                 31,
@@ -3158,7 +3264,9 @@ pub mod byte_aligned {
                         }
                     }
                     32 => {
-                        tracing::debug!("Field [{i}]: tagged '32' for field m_score_value_vespene_used_active_forces");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '32' for field m_score_value_vespene_used_active_forces"
+                        );
                         if m_score_value_vespene_used_active_forces.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_used_active_forces) =
                                 Self::parse_m_score_value_vespene_used_active_forces(tail)?;
@@ -3167,7 +3275,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_used_active_forces);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_used_active_forces with tag 32 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_used_active_forces with tag 32 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_used_active_forces"),
                                 32,
@@ -3175,7 +3285,9 @@ pub mod byte_aligned {
                         }
                     }
                     33 => {
-                        tracing::debug!("Field [{i}]: tagged '33' for field m_score_value_minerals_friendly_fire_army");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '33' for field m_score_value_minerals_friendly_fire_army"
+                        );
                         if m_score_value_minerals_friendly_fire_army.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_friendly_fire_army) =
                                 Self::parse_m_score_value_minerals_friendly_fire_army(tail)?;
@@ -3184,7 +3296,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_friendly_fire_army);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_friendly_fire_army with tag 33 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_friendly_fire_army with tag 33 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_friendly_fire_army"),
                                 33,
@@ -3192,7 +3306,9 @@ pub mod byte_aligned {
                         }
                     }
                     34 => {
-                        tracing::debug!("Field [{i}]: tagged '34' for field m_score_value_minerals_friendly_fire_economy");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '34' for field m_score_value_minerals_friendly_fire_economy"
+                        );
                         if m_score_value_minerals_friendly_fire_economy.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_friendly_fire_economy) =
                                 Self::parse_m_score_value_minerals_friendly_fire_economy(tail)?;
@@ -3201,7 +3317,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_friendly_fire_economy);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_friendly_fire_economy with tag 34 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_friendly_fire_economy with tag 34 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_friendly_fire_economy"),
                                 34,
@@ -3209,7 +3327,9 @@ pub mod byte_aligned {
                         }
                     }
                     35 => {
-                        tracing::debug!("Field [{i}]: tagged '35' for field m_score_value_minerals_friendly_fire_technology");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '35' for field m_score_value_minerals_friendly_fire_technology"
+                        );
                         if m_score_value_minerals_friendly_fire_technology.is_none() {
                             let (new_tail, parsed_m_score_value_minerals_friendly_fire_technology) =
                                 Self::parse_m_score_value_minerals_friendly_fire_technology(tail)?;
@@ -3218,7 +3338,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_minerals_friendly_fire_technology);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_minerals_friendly_fire_technology with tag 35 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_minerals_friendly_fire_technology with tag 35 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_minerals_friendly_fire_technology"),
                                 35,
@@ -3226,7 +3348,9 @@ pub mod byte_aligned {
                         }
                     }
                     36 => {
-                        tracing::debug!("Field [{i}]: tagged '36' for field m_score_value_vespene_friendly_fire_army");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '36' for field m_score_value_vespene_friendly_fire_army"
+                        );
                         if m_score_value_vespene_friendly_fire_army.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_friendly_fire_army) =
                                 Self::parse_m_score_value_vespene_friendly_fire_army(tail)?;
@@ -3235,7 +3359,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_friendly_fire_army);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_friendly_fire_army with tag 36 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_friendly_fire_army with tag 36 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_friendly_fire_army"),
                                 36,
@@ -3243,7 +3369,9 @@ pub mod byte_aligned {
                         }
                     }
                     37 => {
-                        tracing::debug!("Field [{i}]: tagged '37' for field m_score_value_vespene_friendly_fire_economy");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '37' for field m_score_value_vespene_friendly_fire_economy"
+                        );
                         if m_score_value_vespene_friendly_fire_economy.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_friendly_fire_economy) =
                                 Self::parse_m_score_value_vespene_friendly_fire_economy(tail)?;
@@ -3252,7 +3380,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_friendly_fire_economy);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_friendly_fire_economy with tag 37 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_friendly_fire_economy with tag 37 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_friendly_fire_economy"),
                                 37,
@@ -3260,7 +3390,9 @@ pub mod byte_aligned {
                         }
                     }
                     38 => {
-                        tracing::debug!("Field [{i}]: tagged '38' for field m_score_value_vespene_friendly_fire_technology");
+                        tracing::debug!(
+                            "Field [{i}]: tagged '38' for field m_score_value_vespene_friendly_fire_technology"
+                        );
                         if m_score_value_vespene_friendly_fire_technology.is_none() {
                             let (new_tail, parsed_m_score_value_vespene_friendly_fire_technology) =
                                 Self::parse_m_score_value_vespene_friendly_fire_technology(tail)?;
@@ -3269,7 +3401,9 @@ pub mod byte_aligned {
                                 Some(parsed_m_score_value_vespene_friendly_fire_technology);
                             continue;
                         } else {
-                            tracing::debug!("Field m_score_value_vespene_friendly_fire_technology with tag 38 was already provided");
+                            tracing::debug!(
+                                "Field m_score_value_vespene_friendly_fire_technology with tag 38 was already provided"
+                            );
                             return Err(S2ProtocolError::DuplicateTag(
                                 String::from("m_score_value_vespene_friendly_fire_technology"),
                                 38,
@@ -7069,7 +7203,9 @@ pub mod bit_packed {
                     ))
                 }
                 94 => {
-                    tracing::debug!("Variant ETriggerPurchasePanelSelectedPurchaseCategoryChanged for value '94'");
+                    tracing::debug!(
+                        "Variant ETriggerPurchasePanelSelectedPurchaseCategoryChanged for value '94'"
+                    );
 
                     let (tail, res) =
                         GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent::parse(tail)?;

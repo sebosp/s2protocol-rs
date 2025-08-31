@@ -1,0 +1,148 @@
+{
+  "@id": "BanelingCocoon",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "MorphToBaneling",
+        "@index": 730,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Rally",
+        "@index": 104,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "122",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "121",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "123",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 2,
+    "@start": 2
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Biological"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 25,
+    "@supply": null,
+    "@time": 20.0,
+    "@vespene": 25
+  },
+  "life": {
+    "@max": 50,
+    "@regenRate": 0.2734000086784363,
+    "@start": 50
+  },
+  "meta": {
+    "@hotkey": "115",
+    "@icon": "btn-unit-zerg-baneling",
+    "@index": 28,
+    "@name": "114",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "116",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.375,
+    "@range": null,
+    "@sightRadius": 5.0,
+    "@speed": null,
+    "@supply": -0.5,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Zergling",
+    "@name": "27"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "BanelingNest",
+        "@name": "117"
+      }
+    ]
+  },
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

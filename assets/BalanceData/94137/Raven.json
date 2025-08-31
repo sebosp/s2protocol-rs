@@ -1,0 +1,438 @@
+{
+  "@id": "Raven",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "AcquireMove",
+            "@index": 3,
+            "meta": {
+              "@hotkey": "195",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "194",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "196",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "RavenScramblerMissile",
+        "@index": 719,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "627",
+              "@icon": "btn-upgrade-terran-interferencematrix",
+              "@index": null,
+              "@name": "626",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "628",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "RavenShredderMissile",
+        "@index": 722,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "631",
+              "@icon": "BTN-Ability-Terran-ShredderMissile-Color",
+              "@index": null,
+              "@name": "630",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "632",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BuildAutoTurret",
+        "@index": 268,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "434",
+              "@icon": "btn-building-terran-autoturret",
+              "@index": null,
+              "@name": "633",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "435",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Detector",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "BTN-Status-Detector",
+              "@index": null,
+              "@name": "300",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "301",
+              "@type": "passive"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Detector",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "BTN-Status-Detector",
+              "@index": null,
+              "@name": "300",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "301",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 4,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": 2.0,
+    "@time": 48.0,
+    "@vespene": 150
+  },
+  "life": {
+    "@max": 140,
+    "@regenRate": null,
+    "@start": 140
+  },
+  "meta": {
+    "@hotkey": "377",
+    "@icon": "btn-unit-terran-raven",
+    "@index": 79,
+    "@name": "436",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "378",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.625,
+    "@range": null,
+    "@sightRadius": 11.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 2.0,
+    "@deceleration": 0.0,
+    "@speed": 2.949199914932251,
+    "@turnRate": 999.8436889648438,
+    "@type": "Fly"
+  },
+  "producer": {
+    "@id": "Starport",
+    "@name": "364"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "TechLab",
+        "@name": "69"
+      }
+    ]
+  },
+  "score": {
+    "@build": 250,
+    "@kill": 250
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Banshee",
+        "@name": "294"
+      },
+      {
+        "@id": "LurkerMP",
+        "@name": "624"
+      },
+      {
+        "@id": "DarkTemplar",
+        "@name": "625"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranVehicleAndShipArmors",
+        "level": [
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel1",
+            "@index": 163,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel1",
+              "@index": null,
+              "@name": "418",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "415",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel2",
+            "@index": 164,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel2",
+              "@index": null,
+              "@name": "421",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "417",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel1",
+                    "@name": "418"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel3",
+            "@index": 165,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel3",
+              "@index": null,
+              "@name": "448",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "420",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel2",
+                    "@name": "421"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "InterferenceMatrix",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 50,
+              "@supply": null,
+              "@time": 80.0,
+              "@vespene": 50
+            },
+            "meta": {
+              "@hotkey": "498",
+              "@icon": "btn-upgrade-terran-interferencematrix",
+              "@index": null,
+              "@name": "629",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "499",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "VikingFighter",
+        "@name": "29"
+      },
+      {
+        "@id": "Mutalisk",
+        "@name": "81"
+      },
+      {
+        "@id": "HighTemplar",
+        "@name": "556"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": []
+  }
+}
