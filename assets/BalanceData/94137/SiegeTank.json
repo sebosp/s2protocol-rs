@@ -184,6 +184,7 @@
       }
     ]
   },
+  "researches": null,
   "score": {
     "@build": 275,
     "@kill": 275

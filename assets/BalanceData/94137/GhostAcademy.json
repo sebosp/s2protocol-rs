@@ -127,6 +127,34 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 170,
+        "@id": "PersonalCloaking",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 120.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "335",
+          "@icon": "btn-ability-terran-cloak-color",
+          "@index": null,
+          "@name": "334",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "336",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 200,
     "@kill": 200

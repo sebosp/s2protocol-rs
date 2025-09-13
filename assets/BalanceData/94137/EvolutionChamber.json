@@ -113,6 +113,226 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 187,
+        "@id": "ZergMeleeWeaponsLevel1",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "139",
+          "@icon": "btn-upgrade-zerg-meleeattacks-level1",
+          "@index": null,
+          "@name": "966",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "140",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 187,
+        "@id": "ZergMeleeWeaponsLevel2",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "142",
+          "@icon": "btn-upgrade-zerg-meleeattacks-level2",
+          "@index": null,
+          "@name": "967",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "143",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 187,
+        "@id": "ZergMeleeWeaponsLevel3",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "145",
+          "@icon": "btn-upgrade-zerg-meleeattacks-level3",
+          "@index": null,
+          "@name": "968",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "146",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 187,
+        "@id": "ZergGroundArmorsLevel1",
+        "@index": 3,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "93",
+          "@icon": "btn-upgrade-zerg-groundcarapace-level1",
+          "@index": null,
+          "@name": "969",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "94",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 187,
+        "@id": "ZergGroundArmorsLevel2",
+        "@index": 4,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "96",
+          "@icon": "btn-upgrade-zerg-groundcarapace-level2",
+          "@index": null,
+          "@name": "970",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "97",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 187,
+        "@id": "ZergGroundArmorsLevel3",
+        "@index": 5,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "100",
+          "@icon": "btn-upgrade-zerg-groundcarapace-level3",
+          "@index": null,
+          "@name": "971",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "101",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 187,
+        "@id": "ZergMissileWeaponsLevel1",
+        "@index": 6,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "104",
+          "@icon": "btn-upgrade-zerg-missileattacks-level1",
+          "@index": null,
+          "@name": "972",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "105",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 187,
+        "@id": "ZergMissileWeaponsLevel2",
+        "@index": 7,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "107",
+          "@icon": "btn-upgrade-zerg-missileattacks-level2",
+          "@index": null,
+          "@name": "973",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "108",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 187,
+        "@id": "ZergMissileWeaponsLevel3",
+        "@index": 8,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "110",
+          "@icon": "btn-upgrade-zerg-missileattacks-level3",
+          "@index": null,
+          "@name": "974",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "111",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 75,
     "@kill": 75

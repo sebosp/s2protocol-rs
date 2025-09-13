@@ -127,6 +127,226 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 171,
+        "@id": "TerranVehicleWeaponsLevel1",
+        "@index": 5,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "392",
+          "@icon": "btn-upgrade-terran-vehicleweaponslevel1",
+          "@index": null,
+          "@name": "391",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "393",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 171,
+        "@id": "TerranVehicleWeaponsLevel2",
+        "@index": 6,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 175
+        },
+        "meta": {
+          "@hotkey": "395",
+          "@icon": "btn-upgrade-terran-vehicleweaponslevel2",
+          "@index": null,
+          "@name": "394",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "396",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 171,
+        "@id": "TerranVehicleWeaponsLevel3",
+        "@index": 7,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "399",
+          "@icon": "btn-upgrade-terran-vehicleweaponslevel3",
+          "@index": null,
+          "@name": "398",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "400",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 171,
+        "@id": "TerranShipWeaponsLevel1",
+        "@index": 11,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "403",
+          "@icon": "btn-upgrade-terran-shipweaponslevel1",
+          "@index": null,
+          "@name": "402",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "404",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 171,
+        "@id": "TerranShipWeaponsLevel2",
+        "@index": 12,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 175
+        },
+        "meta": {
+          "@hotkey": "406",
+          "@icon": "btn-upgrade-terran-shipweaponslevel2",
+          "@index": null,
+          "@name": "405",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "407",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 171,
+        "@id": "TerranShipWeaponsLevel3",
+        "@index": 13,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "410",
+          "@icon": "btn-upgrade-terran-shipweaponslevel3",
+          "@index": null,
+          "@name": "409",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "411",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 171,
+        "@id": "TerranVehicleAndShipArmorsLevel1",
+        "@index": 14,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "414",
+          "@icon": "btn-upgrade-terran-vehicleplatinglevel1",
+          "@index": null,
+          "@name": "413",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "415",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 171,
+        "@id": "TerranVehicleAndShipArmorsLevel2",
+        "@index": 15,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 175
+        },
+        "meta": {
+          "@hotkey": "414",
+          "@icon": "btn-upgrade-terran-vehicleplatinglevel2",
+          "@index": null,
+          "@name": "416",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "417",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 171,
+        "@id": "TerranVehicleAndShipArmorsLevel3",
+        "@index": 16,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "414",
+          "@icon": "btn-upgrade-terran-vehicleplatinglevel3",
+          "@index": null,
+          "@name": "419",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "420",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 200,
     "@kill": 200

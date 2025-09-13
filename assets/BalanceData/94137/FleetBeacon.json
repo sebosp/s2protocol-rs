@@ -110,6 +110,82 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 71,
+        "@id": "PhoenixRangeUpgrade",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 90.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "712",
+          "@icon": "btn-upgrade-protoss-phoenixrange",
+          "@index": null,
+          "@name": "711",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "713",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 71,
+        "@id": "VoidRaySpeedUpgrade",
+        "@index": 4,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 80.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "715",
+          "@icon": "BTN-Upgrade-Protoss-FluxVanes",
+          "@index": null,
+          "@name": "714",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "716",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 71,
+        "@id": "TempestGroundAttackUpgrade",
+        "@index": 5,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "718",
+          "@icon": "btn-ability-protoss-disruptionblast",
+          "@index": null,
+          "@name": "717",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "719",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 500,
     "@kill": 500

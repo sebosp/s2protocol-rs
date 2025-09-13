@@ -108,6 +108,82 @@
   "requires": {
     "unit": []
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 167,
+        "@id": "Stimpack",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "474",
+          "@icon": "btn-ability-terran-stimpack-color",
+          "@index": null,
+          "@name": "473",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "475",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 167,
+        "@id": "ShieldWall",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "477",
+          "@icon": "BTN-techupgrade-terran-combatshield-color",
+          "@index": null,
+          "@name": "476",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "478",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 167,
+        "@id": "PunisherGrenades",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 50,
+          "@supply": null,
+          "@time": 60.0,
+          "@vespene": 50
+        },
+        "meta": {
+          "@hotkey": "480",
+          "@icon": "btn-ability-terran-punishergrenade-color",
+          "@index": null,
+          "@name": "479",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "481",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 75,
     "@kill": 75

@@ -176,6 +176,58 @@
   "requires": {
     "unit": []
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 191,
+        "@id": "overlordspeed",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 60.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "942",
+          "@icon": "btn-upgrade-zerg-pneumatizedcarapace",
+          "@index": null,
+          "@name": "941",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "943",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 191,
+        "@id": "Burrow",
+        "@index": 3,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 100.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "112",
+          "@icon": "btn-ability-zerg-burrow-color",
+          "@index": null,
+          "@name": "944",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "113",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 275,
     "@kill": 275

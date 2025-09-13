@@ -110,6 +110,34 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 713,
+        "@id": "DarkTemplarBlinkUpgrade",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "759",
+          "@icon": "btn-ability-protoss-stealth-blink",
+          "@index": null,
+          "@name": "758",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "760",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 300,
     "@kill": 300

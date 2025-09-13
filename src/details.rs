@@ -43,7 +43,7 @@ pub struct PlayerDetailsFlatRow {
     pub player_control: u8,
     pub player_team_id: u8,
     pub player_observe: u8,
-    pub player_result: u8,
+    pub player_result: String,
     pub player_working_set_slot_id: Option<u8>,
     pub player_hero: String,
     pub title: String,
@@ -110,7 +110,7 @@ pub struct Details {
     pub map_file_name: String,
     pub cache_handles: Vec<String>,
     pub mini_save: bool,
-    pub game_speed: u8,
+    pub game_speed: String,
     pub default_difficulty: u32,
     pub mod_paths: Vec<String>,
 }
@@ -202,7 +202,7 @@ pub struct PlayerDetails {
     pub team_id: u8,
     pub handicap: u32,
     pub observe: u8,
-    pub result: u8,
+    pub result: String,
     pub working_set_slot_id: Option<u8>,
     pub hero: String,
 }

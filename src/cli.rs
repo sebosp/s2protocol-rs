@@ -3,7 +3,7 @@ use super::*;
 #[cfg(feature = "syntax")]
 use syntect::easy::HighlightLines;
 #[cfg(feature = "syntax")]
-use syntect::highlighting::{Style, ThemeSet};
+use syntect::highlighting::{Color, Style, ThemeSet};
 #[cfg(feature = "syntax")]
 use syntect::parsing::SyntaxSet;
 #[cfg(feature = "syntax")]
@@ -149,6 +149,10 @@ pub struct Cli {
     /// Whether or not the PlayerStats event should be shown. To be replaced by a proper filter
     #[arg(long)]
     pub include_stats: bool,
+
+    /// Quiet allows debugging without emitting events in json/etc.
+    #[arg(long, default_value = "false")]
+    pub quiet: bool,
 }
 
 /// Matches a list of files in case the cli.source param is a directory
@@ -262,7 +266,21 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(feature = "syntax")]
     let syntect_syntax_set = SyntaxSet::load_defaults_newlines();
     #[cfg(feature = "syntax")]
-    let syntect_theme_set = ThemeSet::load_defaults();
+    let mut syntect_theme_set = ThemeSet::load_defaults();
+    #[cfg(feature = "syntax")]
+    {
+        syntect_theme_set
+            .themes
+            .get_mut("base16-ocean.dark")
+            .unwrap()
+            .settings
+            .background = Some(Color {
+            r: 0x00,
+            g: 0x00,
+            b: 0x00,
+            a: 0x00,
+        });
+    }
 
     match &cli.command {
         Commands::Generate => {
@@ -407,29 +425,37 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         #[cfg(feature = "dep_ratatui")]
                         {
                             let details = read_details(&source_path, &mpq, &file_contents)?;
+                            let init_data = read_init_data(&source_path, &mpq, &file_contents)?;
                             return Ok(crate::tui::ratatui_main(
                                 res,
                                 details,
+                                init_data,
                                 syntect_syntax_set,
                                 syntect_theme_set,
                             )?);
                         }
                         #[cfg(not(feature = "dep_ratatui"))]
                         {
-                            println!("[");
-                            for evt in res.into_iter() {
-                                #[cfg(feature = "syntax")]
-                                syntect_json_print(
-                                    serde_json::to_string(&evt).unwrap(),
-                                    &syntect_syntax_set,
-                                    &syntect_theme_set,
-                                );
-                                #[cfg(not(feature = "syntax"))]
-                                println!("{}", serde_json::to_string(&evt).unwrap());
-
-                                println!(",");
+                            if !cli.quiet {
+                                println!("[");
                             }
-                            println!("]");
+                            for evt in res.into_iter() {
+                                if !cli.quiet {
+                                    #[cfg(feature = "syntax")]
+                                    syntect_json_print(
+                                        serde_json::to_string(&evt).unwrap(),
+                                        &syntect_syntax_set,
+                                        &syntect_theme_set,
+                                    );
+                                    #[cfg(not(feature = "syntax"))]
+                                    print!("{}", serde_json::to_string(&evt).unwrap());
+
+                                    println!(",");
+                                }
+                            }
+                            if !cli.quiet {
+                                println!("]");
+                            }
                         }
                     }
                 }

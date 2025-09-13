@@ -112,6 +112,7 @@ pub enum SC2EventType {
 }
 
 impl SC2EventType {
+    #[tracing::instrument(level = "debug")]
     pub fn should_skip(&self, filters: &SC2ReplayFilters) -> bool {
         match self {
             SC2EventType::Tracker { event, .. } => event.should_skip(filters),
@@ -119,6 +120,7 @@ impl SC2EventType {
                 if let Some(user_id_filter) = filters.player_id
                     && *user_id as u8 != user_id_filter
                 {
+                    tracing::debug!("Skipping event for user_id filter {user_id_filter}");
                     return true;
                 }
                 event.should_skip(filters)
@@ -240,12 +242,6 @@ impl SC2ReplayState {
                 event,
             } => {
                 let change_hint = handle_tracker_event(self, tracker_loop, &event, balance_units);
-                tracing::info!(
-                    "Trac [{:>08}]: Evt:{:?} Hint:{:?}",
-                    tracker_loop,
-                    event,
-                    change_hint
-                );
                 SC2EventIteratorItem {
                     event_type: SC2EventType::Tracker {
                         tracker_loop,
@@ -261,13 +257,6 @@ impl SC2ReplayState {
             } => {
                 let (enriched_event, change_hint) =
                     handle_game_event(self, game_loop, user_id, event, balance_units);
-                tracing::info!(
-                    "Game [{:>08}]: uid: {} Evt:{:?} Hint:{:?}",
-                    game_loop,
-                    user_id,
-                    enriched_event,
-                    change_hint
-                );
                 SC2EventIteratorItem {
                     event_type: SC2EventType::Game {
                         game_loop,
@@ -585,17 +574,20 @@ impl SC2EventIteratorItem {
     }
 
     /// Returns true if the event should be skipped based on the filters
+    #[tracing::instrument(level = "debug")]
     fn shoud_skip_event(&self, event: &SC2EventType, filters: &SC2ReplayFilters) -> bool {
         if let Some(min_loop) = filters.min_loop
             && let SC2EventType::Tracker { tracker_loop, .. } = event
             && *tracker_loop < min_loop
         {
+            tracing::debug!("Skipping event below min_loop {min_loop}");
             return true;
         }
         if let Some(max_loop) = filters.max_loop
             && let SC2EventType::Tracker { tracker_loop, .. } = event
             && *tracker_loop > max_loop
         {
+            tracing::debug!("Skipping event above max_loop {max_loop}");
             return true;
         }
         event.should_skip(filters)
@@ -609,6 +601,36 @@ impl SC2EventIteratorItem {
     /// Retuns true if the variant of event type is Tracker
     pub fn is_tracker_event(&self) -> bool {
         matches!(self.event_type, SC2EventType::Tracker { .. })
+    }
+
+    /// Emits an info log for the event.
+    pub fn emit_info_log(&self) {
+        match &self.event_type {
+            SC2EventType::Tracker {
+                tracker_loop,
+                event,
+            } => {
+                tracing::info!(
+                    "Trac [{:>08}]: Evt:{:?} Hint:{:?}",
+                    tracker_loop,
+                    event,
+                    self.change_hint
+                );
+            }
+            SC2EventType::Game {
+                game_loop,
+                user_id,
+                event,
+            } => {
+                tracing::info!(
+                    "Game [{:>08}]: uid: {} Evt:{:?} Hint:{:?}",
+                    game_loop,
+                    user_id,
+                    event,
+                    self.change_hint
+                );
+            }
+        }
     }
 }
 
@@ -667,6 +689,7 @@ impl Iterator for SC2EventIterator {
                     return None;
                 }
             }
+            iterator_item.emit_info_log();
             return Some(iterator_item);
         }
     }

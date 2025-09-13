@@ -110,6 +110,82 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 239,
+        "@id": "Charge",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "723",
+          "@icon": "btn-ability-protoss-charge-color",
+          "@index": null,
+          "@name": "722",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "724",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 239,
+        "@id": "BlinkTech",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 170.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "726",
+          "@icon": "btn-ability-protoss-blink-color",
+          "@index": null,
+          "@name": "725",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "727",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 239,
+        "@id": "AdeptPiercingAttack",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "729",
+          "@icon": "btn-upgrade-protoss-resonatingglaives-orange",
+          "@index": null,
+          "@name": "728",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "730",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 250,
     "@kill": 250

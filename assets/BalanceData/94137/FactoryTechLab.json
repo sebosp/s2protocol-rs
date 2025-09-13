@@ -108,6 +108,106 @@
   "requires": {
     "unit": []
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 168,
+        "@id": "HighCapacityBarrels",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "483",
+          "@icon": "btn-upgrade-terran-infernalpreigniter",
+          "@index": null,
+          "@name": "482",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "484",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 168,
+        "@id": "DrillClaws",
+        "@index": 4,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 75,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 75
+        },
+        "meta": {
+          "@hotkey": "486",
+          "@icon": "BTN-Upgrade-Terran-ResearchDrillingClaws",
+          "@index": null,
+          "@name": "485",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "487",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 168,
+        "@id": "SmartServos",
+        "@index": 6,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "462",
+          "@icon": "btn-upgrade-terran-transformationservos",
+          "@index": null,
+          "@name": "458",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "459",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 168,
+        "@id": "CycloneLockOnDamageUpgrade",
+        "@index": 9,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "489",
+          "@icon": "btn-upgrade-terran-magfieldaccelerator",
+          "@index": null,
+          "@name": "488",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "490",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 75,
     "@kill": 75

@@ -113,6 +113,58 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 119,
+        "@id": "AnabolicSynthesis",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 60.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "1019",
+          "@icon": "btn-upgrade-zerg-anabolicsynthesis",
+          "@index": null,
+          "@name": "1018",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1020",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 119,
+        "@id": "ChitinousPlating",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "1022",
+          "@icon": "btn-upgrade-zerg-chitinousplating",
+          "@index": null,
+          "@name": "1021",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1023",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 350,
     "@kill": 350

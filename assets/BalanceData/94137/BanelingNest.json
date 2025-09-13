@@ -113,6 +113,34 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 226,
+        "@id": "CentrificalHooks",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 100.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "148",
+          "@icon": "btn-upgrade-zerg-centrifugalhooks",
+          "@index": null,
+          "@name": "1049",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "149",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 150,
     "@kill": 150

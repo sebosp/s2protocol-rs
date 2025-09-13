@@ -99,13 +99,13 @@ impl From<GameSColor> for Color {
     }
 }
 
-impl From<GameEResultDetails> for u8 {
+impl From<GameEResultDetails> for String {
     fn from(value: GameEResultDetails) -> Self {
         match value {
-            GameEResultDetails::EUndecided => crate::common::GAME_RESULT_UNDECIDED,
-            GameEResultDetails::EWin => crate::common::GAME_RESULT_WIN,
-            GameEResultDetails::ELoss => crate::common::GAME_RESULT_DEFEAT,
-            GameEResultDetails::ETie => crate::common::GAME_RESULT_TIE,
+            GameEResultDetails::EUndecided => String::from("Undecided"),
+            GameEResultDetails::EWin => String::from("Win"),
+            GameEResultDetails::ELoss => String::from("Loss"),
+            GameEResultDetails::ETie => String::from("Tie"),
         }
     }
 }
@@ -119,14 +119,14 @@ impl TryFrom<GameSThumbnail> for Thumbnail {
     }
 }
 
-impl From<GameEGameSpeed> for u8 {
+impl From<GameEGameSpeed> for String {
     fn from(value: GameEGameSpeed) -> Self {
         match value {
-            GameEGameSpeed::ESlower => crate::common::GAME_SPEED_SLOWER,
-            GameEGameSpeed::ESlow => crate::common::GAME_SPEED_SLOW,
-            GameEGameSpeed::ENormal => crate::common::GAME_SPEED_NORMAL,
-            GameEGameSpeed::EFast => crate::common::GAME_SPEED_FAST,
-            GameEGameSpeed::EFaster => crate::common::GAME_SPEED_FASTER,
+            GameEGameSpeed::ESlower => String::from("Slower"),
+            GameEGameSpeed::ESlow => String::from("Slow"),
+            GameEGameSpeed::ENormal => String::from("Normal"),
+            GameEGameSpeed::EFast => String::from("Fast"),
+            GameEGameSpeed::EFaster => String::from("Faster"),
         }
     }
 }

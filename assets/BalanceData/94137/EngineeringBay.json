@@ -127,6 +127,202 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 164,
+        "@id": "HiSecAutoTracking",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 80.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "188",
+          "@icon": "BTN-Upgrade-Terran-hisecautotracking",
+          "@index": null,
+          "@name": "266",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "189",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 164,
+        "@id": "TerranBuildingArmor",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "75",
+          "@icon": "BTN-upgrade-terran-buildingarmor",
+          "@index": null,
+          "@name": "267",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "76",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 164,
+        "@id": "TerranInfantryWeaponsLevel1",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "269",
+          "@icon": "btn-upgrade-terran-infantryweaponslevel1",
+          "@index": null,
+          "@name": "268",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "270",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 164,
+        "@id": "TerranInfantryWeaponsLevel2",
+        "@index": 3,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "272",
+          "@icon": "btn-upgrade-terran-infantryweaponslevel2",
+          "@index": null,
+          "@name": "271",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "273",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 164,
+        "@id": "TerranInfantryWeaponsLevel3",
+        "@index": 4,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "277",
+          "@icon": "btn-upgrade-terran-infantryweaponslevel3",
+          "@index": null,
+          "@name": "276",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "278",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 164,
+        "@id": "TerranInfantryArmorsLevel1",
+        "@index": 6,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "281",
+          "@icon": "btn-upgrade-terran-infantryarmorlevel1",
+          "@index": null,
+          "@name": "280",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "282",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 164,
+        "@id": "TerranInfantryArmorsLevel2",
+        "@index": 7,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "284",
+          "@icon": "btn-upgrade-terran-infantryarmorlevel2",
+          "@index": null,
+          "@name": "283",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "285",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 164,
+        "@id": "TerranInfantryArmorsLevel3",
+        "@index": 8,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "288",
+          "@icon": "btn-upgrade-terran-infantryarmorlevel3",
+          "@index": null,
+          "@name": "287",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "289",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 125,
     "@kill": 125

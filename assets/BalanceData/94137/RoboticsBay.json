@@ -110,6 +110,82 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 183,
+        "@id": "ObserverGraviticBooster",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 80.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "764",
+          "@icon": "btn-upgrade-protoss-graviticbooster",
+          "@index": null,
+          "@name": "763",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "765",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 183,
+        "@id": "GraviticDrive",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 80.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "767",
+          "@icon": "btn-upgrade-protoss-graviticdrive",
+          "@index": null,
+          "@name": "766",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "768",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 183,
+        "@id": "ExtendedThermalLance",
+        "@index": 5,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "67",
+          "@icon": "BTN-Upgrade-Protoss-ExtendedThermalLance",
+          "@index": null,
+          "@name": "769",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "68",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 300,
     "@kill": 300

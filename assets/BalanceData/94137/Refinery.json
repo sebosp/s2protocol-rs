@@ -102,6 +102,7 @@
   "requires": {
     "unit": []
   },
+  "researches": null,
   "score": {
     "@build": 75,
     "@kill": 75

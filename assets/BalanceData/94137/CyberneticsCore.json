@@ -110,6 +110,178 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 238,
+        "@id": "ProtossAirWeaponsLevel1",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 180.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "166",
+          "@icon": "BTN-Upgrade-Protoss-AirWeaponsLevel1",
+          "@index": null,
+          "@name": "787",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "167",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "ProtossAirWeaponsLevel2",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": null,
+          "@time": 215.0,
+          "@vespene": 175
+        },
+        "meta": {
+          "@hotkey": "169",
+          "@icon": "BTN-Upgrade-Protoss-AirWeaponsLevel2",
+          "@index": null,
+          "@name": "788",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "170",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "ProtossAirWeaponsLevel3",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 250.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "172",
+          "@icon": "BTN-Upgrade-Protoss-AirWeaponsLevel3",
+          "@index": null,
+          "@name": "789",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "173",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "ProtossAirArmorsLevel1",
+        "@index": 3,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 180.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "175",
+          "@icon": "BTN-Upgrade-Protoss-AirArmorLevel1",
+          "@index": null,
+          "@name": "790",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "176",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "ProtossAirArmorsLevel2",
+        "@index": 4,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": null,
+          "@time": 215.0,
+          "@vespene": 175
+        },
+        "meta": {
+          "@hotkey": "178",
+          "@icon": "BTN-Upgrade-Protoss-AirArmorLevel2",
+          "@index": null,
+          "@name": "791",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "179",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "ProtossAirArmorsLevel3",
+        "@index": 5,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 250.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "181",
+          "@icon": "BTN-Upgrade-Protoss-AirArmorLevel3",
+          "@index": null,
+          "@name": "792",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "182",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "WarpGateResearch",
+        "@index": 6,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 50,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 50
+        },
+        "meta": {
+          "@hotkey": "694",
+          "@icon": "BTN-Building-Protoss-WarpGate",
+          "@index": null,
+          "@name": "793",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "695",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 150,
     "@kill": 150

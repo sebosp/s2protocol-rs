@@ -110,6 +110,34 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 184,
+        "@id": "PsiStormTech",
+        "@index": 4,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "754",
+          "@icon": "btn-ability-protoss-psistorm-color",
+          "@index": null,
+          "@name": "753",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "755",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 350,
     "@kill": 350

@@ -59,8 +59,8 @@ tracing_info_level = [
   "tracing/release_max_level_info",
   "nom-mpq/tracing_info_level",
 ]
-syntax = ["syntect", "color-eyre"]
-dep_ratatui = ["ratatui", "crossterm", "color-eyre", "itertools", "syntect-tui"]
+dep_ratatui = ["ratatui", "crossterm", "color-eyre", "itertools", "syntax"]
+syntax = ["syntect", "syntect-tui", "color-eyre"]
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }

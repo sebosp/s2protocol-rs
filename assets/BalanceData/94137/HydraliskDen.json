@@ -113,6 +113,82 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 193,
+        "@id": "EvolveGroovedSpines",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 75,
+          "@supply": null,
+          "@time": 70.0,
+          "@vespene": 75
+        },
+        "meta": {
+          "@hotkey": "979",
+          "@icon": "btn-upgrade-zerg-hotsgroovedspines",
+          "@index": null,
+          "@name": "978",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "980",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 193,
+        "@id": "EvolveMuscularAugments",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 90.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "982",
+          "@icon": "btn-upgrade-zerg-evolvemuscularaugments",
+          "@index": null,
+          "@name": "981",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "983",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 193,
+        "@id": "Frenzy",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 90.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "985",
+          "@icon": "btn-upgrade-zerg-frenzy",
+          "@index": null,
+          "@name": "984",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "986",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 200,
     "@kill": 200

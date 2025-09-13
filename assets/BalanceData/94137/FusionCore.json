@@ -127,6 +127,82 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 237,
+        "@id": "BattlecruiserEnableSpecializations",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "425",
+          "@icon": "btn-ability-terran-yamatogun-color",
+          "@index": null,
+          "@name": "424",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "426",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 237,
+        "@id": "LiberatorAGRangeUpgrade",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "428",
+          "@icon": "btn-upgrade-terran-advanceballistics",
+          "@index": null,
+          "@name": "427",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "429",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 237,
+        "@id": "MedivacCaduceusReactor",
+        "@index": 3,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 70.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "431",
+          "@icon": "btn-upgrade-terran-caduceusreactor",
+          "@index": null,
+          "@name": "430",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "432",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 300,
     "@kill": 300

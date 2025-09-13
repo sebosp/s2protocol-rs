@@ -113,6 +113,58 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 192,
+        "@id": "zerglingattackspeed",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 130.0,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "958",
+          "@icon": "btn-upgrade-zerg-adrenalglands",
+          "@index": null,
+          "@name": "957",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "959",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 192,
+        "@id": "zerglingmovementspeed",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "961",
+          "@icon": "btn-upgrade-zerg-metabolicboost",
+          "@index": null,
+          "@name": "960",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "962",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 200,
     "@kill": 200

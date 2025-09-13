@@ -110,6 +110,226 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 182,
+        "@id": "ProtossGroundWeaponsLevel1",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 170.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "39",
+          "@icon": "BTN-Upgrade-Protoss-GroundWeaponsLevel1",
+          "@index": null,
+          "@name": "699",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "40",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 182,
+        "@id": "ProtossGroundWeaponsLevel2",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 202.5,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "42",
+          "@icon": "BTN-Upgrade-Protoss-GroundWeaponsLevel2",
+          "@index": null,
+          "@name": "700",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "43",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 182,
+        "@id": "ProtossGroundWeaponsLevel3",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 235.0,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "46",
+          "@icon": "BTN-Upgrade-Protoss-GroundWeaponsLevel3",
+          "@index": null,
+          "@name": "701",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "47",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 182,
+        "@id": "ProtossGroundArmorsLevel1",
+        "@index": 3,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 170.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "49",
+          "@icon": "BTN-Upgrade-Protoss-GroundArmorLevel1",
+          "@index": null,
+          "@name": "702",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "50",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 182,
+        "@id": "ProtossGroundArmorsLevel2",
+        "@index": 4,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 202.5,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "52",
+          "@icon": "BTN-Upgrade-Protoss-GroundArmorLevel2",
+          "@index": null,
+          "@name": "703",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "53",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 182,
+        "@id": "ProtossGroundArmorsLevel3",
+        "@index": 5,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 235.0,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "55",
+          "@icon": "BTN-Upgrade-Protoss-GroundArmorLevel3",
+          "@index": null,
+          "@name": "704",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "56",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 182,
+        "@id": "ProtossShieldsLevel1",
+        "@index": 6,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 170.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "58",
+          "@icon": "BTN-Upgrade-Protoss-ShieldsLevel1",
+          "@index": null,
+          "@name": "705",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "59",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 182,
+        "@id": "ProtossShieldsLevel2",
+        "@index": 7,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 200,
+          "@supply": null,
+          "@time": 202.5,
+          "@vespene": 200
+        },
+        "meta": {
+          "@hotkey": "61",
+          "@icon": "BTN-Upgrade-Protoss-ShieldsLevel2",
+          "@index": null,
+          "@name": "706",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "62",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 182,
+        "@id": "ProtossShieldsLevel3",
+        "@index": 8,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 235.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "64",
+          "@icon": "BTN-Upgrade-Protoss-ShieldsLevel3",
+          "@index": null,
+          "@name": "707",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "65",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 150,
     "@kill": 150

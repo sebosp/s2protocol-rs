@@ -398,6 +398,28 @@ pub struct Upgrade {
     pub levels: Vec<UpgradeLevel>,
 }
 
+/// A building may start an upgrade.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ResearchUpgrade {
+    #[serde(rename = "@id")]
+    pub id: String,
+    #[serde(rename = "@ability")]
+    pub ability: u16,
+    #[serde(rename = "@index")]
+    pub index: i64,
+    pub meta: Meta,
+    pub cost: Cost,
+    // we can add here the <requires> that could have a <unit (i.e. a Hatchenry) and an <upgrade>,
+    // i.e. previous level.
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename = "researches")]
+pub struct ResearchesTag {
+    #[serde(rename = "upgrade", default)]
+    pub inner: Vec<ResearchUpgrade>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename = "requires")]
 pub struct RequiresTag {
@@ -476,6 +498,8 @@ pub struct VersionedBalanceUnit {
     pub requires: RequiresTag,
     pub cost: Option<Cost>,
     #[serde(default)]
+    pub researches: Option<ResearchesTag>,
+    #[serde(default)]
     pub movement: Option<Movement>,
     pub score: Score,
     pub misc: Misc,
@@ -536,12 +560,19 @@ pub fn get_indexed_ability_command_name(
             }
         }
         for build in &balance_unit.builds.inner {
-            if let (Some(train_ability_id), Some(build_command_index)) =
+            if let (Some(build_ability_id), Some(build_command_index)) =
                 (build.ability_id, build.command_index)
-                && ability_id == train_ability_id
+                && ability_id == build_ability_id
                 && command_index == build_command_index
             {
                 return format!("Build.{}", build.id);
+            }
+        }
+        if let Some(balance_unit_researches) = &balance_unit.researches {
+            for research in &balance_unit_researches.inner {
+                if ability_id == research.ability && command_index == research.index {
+                    return format!("Research.{}", research.id);
+                }
             }
         }
         tracing::warn!("Unable to correlate ability for {:?}", balance_unit);
