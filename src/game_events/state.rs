@@ -129,6 +129,12 @@ pub fn handle_update_target_point(
             registered_unit.cmd.other_unit = None;
             registered_unit.last_game_loop = game_loop;
             user_selected_units.push(registered_unit.clone());
+        } else {
+            tracing::error!(
+                "handle_update_target_point Unable to locate selected unit {} for user_id {}",
+                selected_unit,
+                user_id
+            );
         }
     }
     (
@@ -182,6 +188,12 @@ pub fn handle_update_target_unit(
                 .set_data_target_unit(target_unit.m_target.clone().into());
             registered_unit.last_game_loop = game_loop;
             user_selected_units.push(registered_unit.clone());
+        } else {
+            tracing::error!(
+                "handle_update_target_unit Unable to locate selected unit {} for user_id {}",
+                selected_unit,
+                user_id
+            );
         }
     }
     (

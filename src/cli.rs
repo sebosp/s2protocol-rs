@@ -17,6 +17,7 @@ use crate::read_details;
 use crate::read_init_data;
 use crate::read_message_events;
 use crate::state::SC2EventIterator;
+use crate::tracker_events::{unit_tag_index, unit_tag_recycle};
 
 #[cfg(feature = "dep_arrow")]
 use clap::Args;
@@ -42,6 +43,12 @@ enum ReadTypes {
 }
 
 #[derive(Subcommand, Debug, Clone)]
+enum CommandUtils {
+    /// Translate unit tag to index, recycle pair
+    XlateTagToIndexRecycle { tag: i64 },
+}
+
+#[derive(Subcommand, Debug, Clone)]
 enum Commands {
     /// Generates Rust code for a specific protocol.
     Generate,
@@ -57,6 +64,10 @@ enum Commands {
     /// Writes Arrow IPC files for a specific event type from the SC2Replay MPQ Archive
     #[cfg(feature = "dep_arrow")]
     WriteArrowIpc(WriteArrowIpcProps),
+
+    /// Utilities, transforming tag index, recycle, etc.
+    #[command(subcommand)]
+    Util(CommandUtils),
 }
 
 ///  Create a subcommand that handles the max depth and max files to process
@@ -350,7 +361,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     .to_string();
                 match read_type {
                     ReadTypes::TrackerEvents => {
-                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
+                        let res = SC2EventIterator::new(&source_path, versioned_abilities.clone())?;
                         println!("[");
                         for evt in res.into_iter().filter(|e| e.is_tracker_event()) {
                             #[cfg(feature = "syntax")]
@@ -366,7 +377,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
 
                     ReadTypes::GameEvents => {
-                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
+                        let res = SC2EventIterator::new(&source_path, versioned_abilities.clone())?;
                         println!("[");
                         for evt in res.into_iter().filter(|e| e.is_game_event()) {
                             #[cfg(feature = "syntax")]
@@ -419,7 +430,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
-                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
+                        let res = SC2EventIterator::new(&source_path, versioned_abilities.clone())?;
                         let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
                         let res = res.with_filters(filters);
                         #[cfg(feature = "dep_ratatui")]
@@ -476,6 +487,13 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                 &versioned_abilities,
             )?;
         }
+        Commands::Util(cmd) => match cmd {
+            CommandUtils::XlateTagToIndexRecycle { tag } => {
+                let index = unit_tag_index(*tag);
+                let recycle = unit_tag_recycle(*tag);
+                println!("Index: {}, Recycle: {}", index, recycle)
+            }
+        },
     }
     if cli.timing {
         println!("Total time: {:?}", init_time.elapsed());

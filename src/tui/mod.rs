@@ -403,7 +403,10 @@ impl S2ProtoRatatuiApp {
         let map_size_x = self.init_data.sync_lobby_state.game_description.map_size_x;
         let map_size_y = self.init_data.sync_lobby_state.game_description.map_size_y;
         Canvas::default()
-            .block(Block::bordered().title(self.sc2_event_iter.sc2_state.filename.clone()))
+            .block(Block::bordered().title(format!(
+                "{} - size {}x{}",
+                self.sc2_event_iter.sc2_state.filename, map_size_x, map_size_y
+            )))
             .marker(self.marker)
             .x_bounds([0.0, f64::from(map_size_x)])
             .y_bounds([0.0, f64::from(map_size_y)])

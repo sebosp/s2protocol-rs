@@ -87,7 +87,7 @@ impl From<Details> for Vec<PlayerDetailsFlatRow> {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
@@ -188,7 +188,7 @@ impl TryFrom<&InitData> for Details {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
@@ -207,7 +207,7 @@ pub struct PlayerDetails {
     pub hero: String,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
@@ -219,7 +219,7 @@ pub struct ToonNameDetails {
     pub id: u64,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
@@ -231,7 +231,7 @@ pub struct Color {
     pub b: u8,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)

@@ -259,25 +259,24 @@ impl ArrowIpcTypes {
         let total_records = sources
             .par_iter()
             .filter_map(|source| {
-                let details: Details = Details::try_from(source).ok()?;
-                let source_path = PathBuf::from(&source.ext_fs_file_name);
                 let event_iterator =
-                    SC2EventIterator::new(&source_path, versioned_abilities.clone()).ok()?;
+                    SC2EventIterator::new(&source.ext_fs_file_name, versioned_abilities.clone())
+                        .ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::Stats => {
-                        let batch = event_iterator.collect_into_player_stats_flat_rows(&details);
+                        let batch = event_iterator.collect_into_player_stats_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::Upgrades => {
-                        let batch = event_iterator.collect_into_upgrades_flat_rows(&details);
+                        let batch = event_iterator.collect_into_upgrades_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::UnitBorn => {
-                        let batch = event_iterator.collect_into_unit_born_flat_rows(&details);
+                        let batch = event_iterator.collect_into_unit_born_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::UnitDied => {
-                        let batch = event_iterator.collect_into_unit_died_flat_rows(&details);
+                        let batch = event_iterator.collect_into_unit_died_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     _ => unimplemented!(),
@@ -305,19 +304,16 @@ impl ArrowIpcTypes {
         let total_records = sources
             .par_iter()
             .filter_map(|source| {
-                let details = Details::try_from(source).ok()?;
-                let source_path = PathBuf::from(&source.ext_fs_file_name);
                 let event_iterator =
-                    SC2EventIterator::new(&source_path, versioned_abilities.clone()).ok()?;
+                    SC2EventIterator::new(&source.ext_fs_file_name, versioned_abilities.clone())
+                        .ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::CmdTargetPoint => {
-                        let batch =
-                            event_iterator.collect_into_game_cmd_target_points_flat_rows(&details);
+                        let batch = event_iterator.collect_into_game_cmd_target_points_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::CmdTargetUnit => {
-                        let batch =
-                            event_iterator.collect_into_game_cmd_target_units_flat_rows(&details);
+                        let batch = event_iterator.collect_into_game_cmd_target_units_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     e => unimplemented!("{:?}", e),

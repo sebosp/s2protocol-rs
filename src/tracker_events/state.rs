@@ -1,6 +1,7 @@
 //! Handles the state change of units for TrackerEvents
 
 use super::*;
+use crate::details::PlayerDetails;
 use crate::game_events::VersionedBalanceUnits;
 use crate::*;
 
@@ -197,7 +198,7 @@ pub fn handle_unit_died(
 ) -> UnitChangeHint {
     // Clean up the unit from previous groups where it was selected.
     for (_idx, state) in sc2_state.user_state.iter_mut() {
-        for group_idx in 0..10 {
+        for group_idx in 0..11 {
             state.control_groups[group_idx].retain(|&x| x != unit_dead.unit_tag_index);
         }
     }
@@ -230,6 +231,7 @@ pub fn handle_tracker_event(
     tracker_loop: i64,
     evt: &ReplayTrackerEvent,
     balance_units: &VersionedBalanceUnits,
+    details: &crate::details::Details,
 ) -> UnitChangeHint {
     match &evt {
         ReplayTrackerEvent::UnitBorn(unit_born) => {
@@ -255,10 +257,30 @@ pub fn handle_tracker_event(
             UnitChangeHint::None
         }
         ReplayTrackerEvent::PlayerSetup(player_setup) => {
+            let mut player_details = PlayerDetails::default();
+            // XXX: This doesn't match, we gotta use the Exploratory Data Analysis links found on
+            // https://github.com/sebosp/s2-polars-data-analysis/blob/main/jupyter_notebooks/Exploratory_Data_Analysis.ipynb
+            tracing::info!(
+                "handle_tracker_event:: ReplayTrackerEvent::PlayerSetup Checking vs details{:?}",
+                details
+            );
+            if let Some(slot_id) = player_setup.slot_id {
+                for player in &details.player_list {
+                    if let Some(working_set_slot_id) = player.working_set_slot_id
+                        && slot_id == working_set_slot_id as u32
+                    {
+                        tracing::info!(
+                            "handle_tracker_event:: ReplayTrackerEvent::PlayerSetup found match {:?}",
+                            player
+                        );
+                        player_details = player.clone();
+                    }
+                }
+            }
             if let Some(user_id) = player_setup.user_id {
                 sc2_state
                     .user_state
-                    .insert(user_id as i64, SC2UserState::new());
+                    .insert(user_id as i64, SC2UserState::new(player_details));
                 // TODO: Should we return the user_id to the consumer?
             }
             UnitChangeHint::None

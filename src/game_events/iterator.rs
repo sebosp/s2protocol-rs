@@ -2,10 +2,10 @@
 
 use crate::error::S2ProtocolError;
 
-use crate::SC2EventType;
 use crate::game_events::{GameEvent, VersionedBalanceUnit};
 use crate::versions::protocol75689::bit_packed::GameEEventId as Protocol75689GameEEventId;
 use crate::versions::protocol87702::bit_packed::GameEEventId as Protocol87702GameEEventId;
+use crate::{SC2EventType, SC2UserState};
 use nom::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -82,6 +82,7 @@ impl GameEventIteratorState {
     pub fn get_next_event(
         &mut self,
         protocol_version: u32,
+        user_state: &HashMap<i64, SC2UserState>,
         abilities: &HashMap<String, VersionedBalanceUnit>,
     ) -> Option<SC2EventType> {
         loop {
@@ -100,10 +101,15 @@ impl GameEventIteratorState {
                         user_id,
                         event,
                     } = val;
+                    let mut player_name: Option<String> = None;
+                    if let Some(player_state) = user_state.get(&user_id) {
+                        player_name = Some(player_state.player_details.name.clone());
+                    }
                     let event = SC2EventType::Game {
                         game_loop: self.event_loop,
                         event: event.clone(),
                         user_id,
+                        player_name,
                     };
                     return Some(event);
                 }
