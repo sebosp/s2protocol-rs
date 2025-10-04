@@ -1,0 +1,81 @@
+{
+  "@id": "DestructibleGarage",
+  "abilities": {
+    "ability": []
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 400,
+    "@regenRate": null,
+    "@start": 400
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "Wireframe-terran-garage",
+    "@index": 565,
+    "@name": "2000",
+    "@race": "Neut",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "2001",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "FootprintDoodad3x3",
+    "@radius": 0.5,
+    "@range": null,
+    "@sightRadius": 0.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "researches": null,
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

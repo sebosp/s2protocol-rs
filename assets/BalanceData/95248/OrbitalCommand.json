@@ -1,0 +1,300 @@
+{
+  "@id": "OrbitalCommand",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "CalldownMULE",
+        "@index": 92,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1244",
+              "@icon": "BTN-Unit-Terran-mule",
+              "@index": null,
+              "@name": "1243",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1245",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "SupplyDrop",
+        "@index": 115,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1247",
+              "@icon": "BTN-Ability-Terran-CalldownExtraSupplies-color",
+              "@index": null,
+              "@name": "1246",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1248",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "que5CancelToSelection",
+        "@index": 126,
+        "command": [
+          {
+            "@id": "CancelLast",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "RallyCommand",
+        "@index": 106,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "122",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "121",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "123",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ScannerSweep",
+        "@index": 141,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1250",
+              "@icon": "btn-ability-terran-scannersweep-color",
+              "@index": null,
+              "@name": "1249",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1251",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "OrbitalLiftOff",
+        "@index": 232,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "221",
+              "@icon": "btn-ability-terran-liftoff",
+              "@index": null,
+              "@name": "220",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "222",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": null,
+    "@time": 35.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 1500,
+    "@regenRate": null,
+    "@start": 1500
+  },
+  "meta": {
+    "@hotkey": "230",
+    "@icon": "BTN-Building-Terran-SurveillanceStation",
+    "@index": 155,
+    "@name": "1241",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1242",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint5x5Contour",
+    "@radius": 2.5,
+    "@range": null,
+    "@sightRadius": 11.0,
+    "@speed": null,
+    "@supply": 15.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "CommandCenter",
+    "@name": "205"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "Barracks",
+        "@name": "232"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 550,
+    "@kill": 550
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": [
+      {
+        "@ability": 157,
+        "@id": "SCV",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 50,
+          "@supply": 1.0,
+          "@time": 17.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "234",
+          "@icon": "btn-unit-terran-scv",
+          "@index": null,
+          "@name": "233",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "235",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      }
+    ]
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranBuildingArmor",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "75",
+              "@icon": "BTN-upgrade-terran-buildingarmor",
+              "@index": null,
+              "@name": "74",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "76",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

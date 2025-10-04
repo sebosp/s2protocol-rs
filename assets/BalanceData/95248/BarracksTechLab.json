@@ -1,0 +1,241 @@
+{
+  "@id": "BarracksTechLab",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "que5Addon",
+        "@index": 128,
+        "command": [
+          {
+            "@id": "CancelLast",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 50,
+    "@supply": null,
+    "@time": 25.0,
+    "@vespene": 25
+  },
+  "life": {
+    "@max": 400,
+    "@regenRate": null,
+    "@start": 400
+  },
+  "meta": {
+    "@hotkey": "248",
+    "@icon": "btn-building-terran-techlab",
+    "@index": 60,
+    "@name": "69",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "70",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint2x2Contour",
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Barracks",
+    "@name": "232"
+  },
+  "requires": {
+    "unit": []
+  },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 167,
+        "@id": "Stimpack",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "474",
+          "@icon": "btn-ability-terran-stimpack-color",
+          "@index": null,
+          "@name": "473",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "475",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 167,
+        "@id": "ShieldWall",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "477",
+          "@icon": "BTN-techupgrade-terran-combatshield-color",
+          "@index": null,
+          "@name": "476",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "478",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 167,
+        "@id": "PunisherGrenades",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 50,
+          "@supply": null,
+          "@time": 60.0,
+          "@vespene": 50
+        },
+        "meta": {
+          "@hotkey": "480",
+          "@icon": "btn-ability-terran-punishergrenade-color",
+          "@index": null,
+          "@name": "479",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "481",
+          "@type": "command"
+        }
+      }
+    ]
+  },
+  "score": {
+    "@build": 75,
+    "@kill": 75
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranBuildingArmor",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "75",
+              "@icon": "BTN-upgrade-terran-buildingarmor",
+              "@index": null,
+              "@name": "74",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "76",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

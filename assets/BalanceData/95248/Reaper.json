@@ -1,0 +1,516 @@
+{
+  "@id": "Reaper",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "KD8Charge",
+        "@index": 632,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "549",
+              "@icon": "btn-upgrade-terran-kd8chargeex3",
+              "@index": null,
+              "@name": "548",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "550",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "JetPack",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "BTN-Ability-Terran-JetPack-color",
+              "@index": null,
+              "@name": "551",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "552",
+              "@type": "passive"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "CombatDrugs",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-upgrade-terran-reapercombatdrugs",
+              "@index": null,
+              "@name": "553",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "554",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Biological"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 50,
+    "@supply": 1.0,
+    "@time": 45.0,
+    "@vespene": 50
+  },
+  "life": {
+    "@max": 60,
+    "@regenRate": 2.0,
+    "@start": 60
+  },
+  "meta": {
+    "@hotkey": "255",
+    "@icon": "btn-unit-terran-reaper",
+    "@index": 72,
+    "@name": "546",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "256",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 1,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.375,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": -1.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 1000.0,
+    "@deceleration": 0.0,
+    "@speed": 3.75,
+    "@turnRate": 999.8436889648438,
+    "@type": "CliffJumper"
+  },
+  "producer": {
+    "@id": "Barracks",
+    "@name": "232"
+  },
+  "requires": {
+    "unit": []
+  },
+  "researches": null,
+  "score": {
+    "@build": 100,
+    "@kill": 100
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "SCV",
+        "@name": "208"
+      },
+      {
+        "@id": "Drone",
+        "@name": "437"
+      },
+      {
+        "@id": "Probe",
+        "@name": "438"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranInfantryWeapons",
+        "level": [
+          {
+            "@id": "TerranInfantryWeaponsLevel1",
+            "@index": 10,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "269",
+              "@icon": "btn-upgrade-terran-infantryweaponslevel1",
+              "@index": null,
+              "@name": "274",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "270",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranInfantryWeaponsLevel2",
+            "@index": 11,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "272",
+              "@icon": "btn-upgrade-terran-infantryweaponslevel2",
+              "@index": null,
+              "@name": "279",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "273",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Armory",
+                    "@name": "275"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "TerranInfantryWeaponsLevel1",
+                    "@name": "274"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranInfantryWeaponsLevel3",
+            "@index": 12,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "277",
+              "@icon": "btn-upgrade-terran-infantryweaponslevel3",
+              "@index": null,
+              "@name": "544",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "278",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Armory",
+                    "@name": "275"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "TerranInfantryWeaponsLevel2",
+                    "@name": "279"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "TerranInfantryArmors",
+        "level": [
+          {
+            "@id": "TerranInfantryArmorsLevel1",
+            "@index": 14,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "281",
+              "@icon": "btn-upgrade-terran-infantryarmorlevel1",
+              "@index": null,
+              "@name": "286",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "282",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranInfantryArmorsLevel2",
+            "@index": 15,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "284",
+              "@icon": "btn-upgrade-terran-infantryarmorlevel2",
+              "@index": null,
+              "@name": "290",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "285",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Armory",
+                    "@name": "275"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "TerranInfantryArmorsLevel1",
+                    "@name": "286"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranInfantryArmorsLevel3",
+            "@index": 16,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "288",
+              "@icon": "btn-upgrade-terran-infantryarmorlevel3",
+              "@index": null,
+              "@name": "534",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "289",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Armory",
+                    "@name": "275"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "TerranInfantryArmorsLevel2",
+                    "@name": "290"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Marauder",
+        "@name": "126"
+      },
+      {
+        "@id": "Roach",
+        "@name": "442"
+      },
+      {
+        "@id": "Stalker",
+        "@name": "128"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "P38ScytheGuassPistol",
+        "@index": 28,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-terran-infantryweaponslevel0",
+          "@index": null,
+          "@name": "547",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": 2,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 5.0,
+          "@sightRadius": null,
+          "@speed": 1.100000023841858,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
+}

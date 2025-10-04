@@ -1,0 +1,149 @@
+{
+  "@id": "RavagerCocoon",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "Rally",
+        "@index": 104,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "122",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "121",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "123",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "MorphToRavager",
+        "@index": 311,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "118",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "120",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 5,
+    "@start": 5
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Biological"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 25,
+    "@supply": 1.0,
+    "@time": 17.0,
+    "@vespene": 75
+  },
+  "life": {
+    "@max": 100,
+    "@regenRate": 0.2734000086784363,
+    "@start": 100
+  },
+  "meta": {
+    "@hotkey": "1158",
+    "@icon": "btn-unit-zerg-ravager",
+    "@index": 181,
+    "@name": "1331",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1332",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 5.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Roach",
+    "@name": "442"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "RoachWarren",
+        "@name": "1053"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

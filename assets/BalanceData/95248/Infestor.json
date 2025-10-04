@@ -1,0 +1,524 @@
+{
+  "@id": "Infestor",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "AcquireMove",
+            "@index": 3,
+            "meta": {
+              "@hotkey": "195",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "194",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "196",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BurrowInfestorDown",
+        "@index": 221,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "89",
+              "@icon": "btn-ability-zerg-burrow-color",
+              "@index": null,
+              "@name": "1166",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1167",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "NeuralParasite",
+        "@index": 112,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1169",
+              "@icon": "BTN-Ability-Zerg-NeuralParasite-color",
+              "@index": null,
+              "@name": "1168",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1170",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "FungalGrowth",
+        "@index": 72,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1173",
+              "@icon": "btn-ability-zerg-fungalgrowth-color",
+              "@index": null,
+              "@name": "1172",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1174",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "AmorphousArmorcloud",
+        "@index": 701,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1031",
+              "@icon": "btn-ability-zerg-darkswarm",
+              "@index": null,
+              "@name": "1030",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1032",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BurrowedMove",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-upgrade-zerg-burrowmove",
+              "@index": null,
+              "@name": "1176",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1177",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Psionic"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": 2.0,
+    "@time": 50.0,
+    "@vespene": 150
+  },
+  "life": {
+    "@max": 90,
+    "@regenRate": 0.2734000086784363,
+    "@start": 90
+  },
+  "meta": {
+    "@hotkey": "1164",
+    "@icon": "btn-unit-zerg-infestor",
+    "@index": 134,
+    "@name": "127",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1165",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 2,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.625,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 1000.0,
+    "@deceleration": 0.0,
+    "@speed": 2.25,
+    "@turnRate": 999.8436889648438,
+    "@type": "Ground"
+  },
+  "producer": {
+    "@id": "Larva",
+    "@name": "1085"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "InfestationPit",
+        "@name": "1024"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 250,
+    "@kill": 250
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Marine",
+        "@name": "26"
+      },
+      {
+        "@id": "Mutalisk",
+        "@name": "81"
+      },
+      {
+        "@id": "VoidRay",
+        "@name": "82"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ZergGroundArmors",
+        "level": [
+          {
+            "@id": "ZergGroundArmorsLevel1",
+            "@index": 59,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "93",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level1",
+              "@index": null,
+              "@name": "92",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "94",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ZergGroundArmorsLevel2",
+            "@index": 60,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "96",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level2",
+              "@index": null,
+              "@name": "95",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "97",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel1",
+                    "@name": "92"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ZergGroundArmorsLevel3",
+            "@index": 61,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "100",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level3",
+              "@index": null,
+              "@name": "99",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "101",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel2",
+                    "@name": "95"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "Burrow",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 100.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "112",
+              "@icon": "btn-ability-zerg-burrow-color",
+              "@index": null,
+              "@name": "91",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "113",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      },
+      {
+        "@id": "NeuralParasite",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 110.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "1028",
+              "@icon": "btn-ability-zerg-neuralparasite-color",
+              "@index": null,
+              "@name": "1171",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1029",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      },
+      {
+        "@id": "MicrobialShroud",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 110.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "1031",
+              "@icon": "btn-ability-zerg-darkswarm",
+              "@index": null,
+              "@name": "1175",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1032",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Ghost",
+        "@name": "555"
+      },
+      {
+        "@id": "Ultralisk",
+        "@name": "84"
+      },
+      {
+        "@id": "HighTemplar",
+        "@name": "556"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

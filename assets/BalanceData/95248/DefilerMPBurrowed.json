@@ -1,0 +1,102 @@
+{
+  "@id": "DefilerMPBurrowed",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "DefilerMPUnburrow",
+        "@index": 598,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1193",
+              "@icon": "btn-ability-zerg-upburrow-color",
+              "@index": null,
+              "@name": "1192",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1194",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Psionic"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 80,
+    "@regenRate": 0.2734000086784363,
+    "@start": 80
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-unit-zerg-defilerex3",
+    "@index": 988,
+    "@name": "2432",
+    "@race": "Zerg",
+    "@source": "Void.SC2Mod",
+    "@tooltip": "0",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 2,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 5.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "researches": null,
+  "score": {
+    "@build": 200,
+    "@kill": 200
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}
