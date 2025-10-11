@@ -1,0 +1,192 @@
+{
+  "@id": "RoachWarren",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "que5",
+        "@index": 125,
+        "command": [
+          {
+            "@id": "CancelLast",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": null,
+    "@time": 55.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 850,
+    "@regenRate": 0.2734000086784363,
+    "@start": 850
+  },
+  "meta": {
+    "@hotkey": "1054",
+    "@icon": "btn-building-zerg-roachwarren",
+    "@index": 120,
+    "@name": "1053",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1055",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint3x3CreepContour",
+    "@radius": 1.5,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Drone",
+    "@name": "437"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "SpawningPool",
+        "@name": "932"
+      }
+    ]
+  },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 109,
+        "@id": "GlialReconstitution",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "1057",
+          "@icon": "btn-upgrade-zerg-glialreconstitution",
+          "@index": null,
+          "@name": "1056",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1058",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 109,
+        "@id": "TunnelingClaws",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "1060",
+          "@icon": "btn-upgrade-zerg-tunnelingclaws",
+          "@index": null,
+          "@name": "1059",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1061",
+          "@type": "command"
+        }
+      }
+    ]
+  },
+  "score": {
+    "@build": 150,
+    "@kill": 150
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

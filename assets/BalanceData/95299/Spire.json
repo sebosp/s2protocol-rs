@@ -1,0 +1,322 @@
+{
+  "@id": "Spire",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "que5CancelToSelection",
+        "@index": 126,
+        "command": [
+          {
+            "@id": "CancelLast",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "UpgradeToGreaterSpire",
+        "@index": 190,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "991",
+              "@icon": "btn-building-zerg-greaterspire",
+              "@index": null,
+              "@name": "990",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "992",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "933",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "934",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": null,
+    "@time": 92.4000015258789,
+    "@vespene": 150
+  },
+  "life": {
+    "@max": 850,
+    "@regenRate": 0.2734000086784363,
+    "@start": 850
+  },
+  "meta": {
+    "@hotkey": "988",
+    "@icon": "btn-building-zerg-spire",
+    "@index": 115,
+    "@name": "987",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "989",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint2x2CreepContour",
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Drone",
+    "@name": "437"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "Lair",
+        "@name": "98"
+      }
+    ]
+  },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerWeaponsLevel1",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "994",
+          "@icon": "btn-upgrade-zerg-airattacks-level1",
+          "@index": null,
+          "@name": "993",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "995",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerWeaponsLevel2",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 175
+        },
+        "meta": {
+          "@hotkey": "997",
+          "@icon": "btn-upgrade-zerg-airattacks-level2",
+          "@index": null,
+          "@name": "996",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "998",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerWeaponsLevel3",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "1001",
+          "@icon": "btn-upgrade-zerg-airattacks-level3",
+          "@index": null,
+          "@name": "1000",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1002",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerArmorsLevel1",
+        "@index": 3,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "1005",
+          "@icon": "btn-upgrade-zerg-flyercarapace-level1",
+          "@index": null,
+          "@name": "1004",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1006",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerArmorsLevel2",
+        "@index": 4,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 175
+        },
+        "meta": {
+          "@hotkey": "1008",
+          "@icon": "btn-upgrade-zerg-flyercarapace-level2",
+          "@index": null,
+          "@name": "1007",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1009",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerArmorsLevel3",
+        "@index": 5,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "1012",
+          "@icon": "btn-upgrade-zerg-flyercarapace-level3",
+          "@index": null,
+          "@name": "1011",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1013",
+          "@type": "command"
+        }
+      }
+    ]
+  },
+  "score": {
+    "@build": 400,
+    "@kill": 400
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

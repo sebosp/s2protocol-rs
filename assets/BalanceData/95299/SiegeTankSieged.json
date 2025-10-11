@@ -1,0 +1,391 @@
+{
+  "@id": "SiegeTankSieged",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "298",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "297",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "299",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Unsiege",
+        "@index": 138,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "445",
+              "@icon": "btn-unit-terran-siegetank",
+              "@index": null,
+              "@name": "444",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "446",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 4,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 175,
+    "@regenRate": null,
+    "@start": 175
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-unit-terran-siegetanksiegemode",
+    "@index": 55,
+    "@name": "305",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "441",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "FootprintSieged",
+    "@radius": 0.875,
+    "@range": null,
+    "@sightRadius": 11.0,
+    "@speed": null,
+    "@supply": -3.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "researches": null,
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Marine",
+        "@name": "26"
+      },
+      {
+        "@id": "Roach",
+        "@name": "442"
+      },
+      {
+        "@id": "Stalker",
+        "@name": "128"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranVehicleWeapons",
+        "level": [
+          {
+            "@id": "TerranVehicleWeaponsLevel1",
+            "@index": 33,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "392",
+              "@icon": "btn-upgrade-terran-vehicleweaponslevel1",
+              "@index": null,
+              "@name": "397",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "393",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleWeaponsLevel2",
+            "@index": 34,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "395",
+              "@icon": "btn-upgrade-terran-vehicleweaponslevel2",
+              "@index": null,
+              "@name": "401",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "396",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleWeaponsLevel1",
+                    "@name": "397"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleWeaponsLevel3",
+            "@index": 35,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "399",
+              "@icon": "btn-upgrade-terran-vehicleweaponslevel3",
+              "@index": null,
+              "@name": "447",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "400",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleWeaponsLevel2",
+                    "@name": "401"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "TerranVehicleAndShipArmors",
+        "level": [
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel1",
+            "@index": 163,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel1",
+              "@index": null,
+              "@name": "418",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "415",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel2",
+            "@index": 164,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel2",
+              "@index": null,
+              "@name": "421",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "417",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel1",
+                    "@name": "418"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel3",
+            "@index": 165,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel3",
+              "@index": null,
+              "@name": "448",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "420",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel2",
+                    "@name": "421"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Banshee",
+        "@name": "294"
+      },
+      {
+        "@id": "Mutalisk",
+        "@name": "81"
+      },
+      {
+        "@id": "Immortal",
+        "@name": "306"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "CrucioShockCannon",
+        "@index": 6,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-terran-vehicleweaponslevel0",
+          "@index": null,
+          "@name": "443",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 13.0,
+          "@sightRadius": null,
+          "@speed": 3.0,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
+}
