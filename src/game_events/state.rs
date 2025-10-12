@@ -52,7 +52,6 @@ pub fn handle_cmd(
     user_id: i64,
     // The cmd is mut as we will enrich the ability field with the String value.
     mut cmd: GameSCmdEvent,
-    balance_data_units: &HashMap<String, VersionedBalanceUnit>,
 ) -> (ReplayGameEvent, UnitChangeHint) {
     // TODO:: Many commands, such as "Stop", should clear the unit.cmd.other_unit.
     // For now this is not implemented and a unit maybe have a target unit, even tho the active
@@ -74,7 +73,7 @@ pub fn handle_cmd(
                 None => continue,
                 Some(ref mut val) => {
                     val.ability = get_indexed_ability_command_name(
-                        balance_data_units,
+                        &sc2_state.balance_units,
                         registered_unit.name.as_str(),
                         val.m_abil_link,
                         val.m_abil_cmd_index,
@@ -399,7 +398,6 @@ pub fn handle_game_event(
     game_loop: i64,
     user_id: i64,
     evt: ReplayGameEvent,
-    balance_data_units: &HashMap<String, VersionedBalanceUnit>,
 ) -> (ReplayGameEvent, UnitChangeHint) {
     // NOTE: There are special cases that enrich the event, when there are abilities:
     // - Cmd
@@ -414,13 +412,9 @@ pub fn handle_game_event(
             evt,
             handle_camera_update(sc2_state, game_loop, user_id, &camera_update),
         ),
-        ReplayGameEvent::Cmd(game_cmd) => handle_cmd(
-            sc2_state,
-            game_loop,
-            user_id,
-            game_cmd.clone(),
-            balance_data_units,
-        ),
+        ReplayGameEvent::Cmd(game_cmd) => {
+            handle_cmd(sc2_state, game_loop, user_id, game_cmd.clone())
+        }
         ReplayGameEvent::CmdUpdateTargetPoint(target_point) => {
             handle_update_target_point(sc2_state, game_loop, user_id, target_point)
         }

@@ -103,7 +103,15 @@ impl GameEventIteratorState {
                     } = val;
                     let mut player_name: Option<String> = None;
                     if let Some(player_state) = user_state.get(&user_id) {
-                        player_name = Some(player_state.player_details.name.clone());
+                        // TODO: maybe here we need to adjust the user_id by minus one in some Game
+                        // Events.
+                        player_name = Some(
+                            player_state
+                                .player_lobby_details
+                                .player_details
+                                .name
+                                .clone(),
+                        );
                     }
                     let event = SC2EventType::Game {
                         game_loop: self.event_loop,

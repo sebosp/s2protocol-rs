@@ -18,7 +18,7 @@ use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::path::PathBuf;
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
@@ -90,7 +90,7 @@ impl TryFrom<(PathBuf, u64)> for InitData {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
@@ -128,7 +128,7 @@ pub struct UserInitialData {
     pub scaled_rating: Option<i32>,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
@@ -164,7 +164,7 @@ pub struct GameDescription {
     pub is_realtime_mode: bool,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
@@ -188,13 +188,14 @@ pub struct GameOptions {
     pub build_coach_enabled: bool,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 #[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum GameType {
+    #[default]
     EMelee,
     EFreeForAll,
     EUseSettings,
@@ -219,45 +220,48 @@ pub struct SlotDescription {
     pub allowed_ai_builds: Vec<u8>,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 #[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum OptionFog {
+    #[default]
     EDefault,
     EHideTerrain,
     EMapExplored,
     EAlwaysVisible,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 #[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum OptionObservers {
+    #[default]
     ENone,
     EOnJoin,
     EOnJoinAndDefeat,
     ERefereesOnJoin,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 #[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum OptionUserDifficulty {
+    #[default]
     ENone,
     EGlobal,
     EIndividual,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
@@ -277,13 +281,14 @@ pub struct LobbyState {
     pub default_ai_build: i64,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
 #[cfg_attr(feature = "dep_arrow", arrow_field(type = "dense"))]
 pub enum GamePhase {
+    #[default]
     EInitializing,
     ELobby,
     EClosed,
@@ -292,7 +297,7 @@ pub enum GamePhase {
     EGameover,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)

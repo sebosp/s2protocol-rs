@@ -1,4 +1,8 @@
 //! Decodes the Details.
+//! The cache_handles can be downloaded from blizzard depo URL , sort of like:
+//! ```bash
+//! for cache_hash in {list};do echo $cache_hash;curl -Lv https://eu-s2-depot.classic.blizzard.com/$cache_hash.s2ma -o $cache_hash.s2ma;done$
+//! ```
 
 use std::path::PathBuf;
 
@@ -6,7 +10,7 @@ use std::path::PathBuf;
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 use nom_mpq::MPQ;
 
-use crate::{InitData, error::S2ProtocolError};
+use crate::{GameDescription, InitData, LobbySlot, error::S2ProtocolError};
 use serde::{Deserialize, Serialize};
 
 /* Removed fields:
@@ -21,15 +25,16 @@ use serde::{Deserialize, Serialize};
 * mini_save always false
 */
 
-/// A Flat row of PlayerDetails for Arrow usage.
+/// A Flat row of PlayerDetails with LobbySyncState data
 /// without the cache_handles and mod_paths.
 /// because I haven't seen what they are used for yet.
+///
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
     derive(ArrowField, ArrowSerialize, ArrowDeserialize)
 )]
-pub struct PlayerDetailsFlatRow {
+pub struct PlayerLobbyDetailsFlatRow {
     pub player_name: String,
     pub player_toon_region: u8,
     pub player_toon_program_id: u32,
@@ -50,40 +55,111 @@ pub struct PlayerDetailsFlatRow {
     pub is_blizzard_map: bool,
     pub time_utc: i64,
     pub time_local_offset: i64,
+    pub lobby_slot_user_id: Option<i64>,
+    pub lobby_slot_observe: u8,
+    pub lobby_slot_map_size_x: u8,
+    pub lobby_slot_map_size_y: u8,
+    pub ext_fs_sha256: String,
+    pub ext_fs_file_name: String,
     pub ext_fs_id: u64,
     pub ext_datetime: chrono::NaiveDateTime,
 }
 
-impl From<Details> for Vec<PlayerDetailsFlatRow> {
-    fn from(details: Details) -> Self {
-        details
+impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
+    fn from(source: PlayerLobbyDetails) -> PlayerLobbyDetailsFlatRow {
+        PlayerLobbyDetailsFlatRow {
+            ext_fs_id: source.ext_fs_id,
+            ext_fs_sha256: source.init_data.ext_fs_sha256,
+            ext_fs_file_name: source.init_data.ext_fs_file_name,
+            ext_datetime: source.ext_datetime,
+            player_name: source.player_details.name,
+            player_toon_region: source.player_details.toon.region,
+            player_toon_program_id: source.player_details.toon.program_id,
+            player_toon_realm: source.player_details.toon.realm,
+            player_toon_id: source.player_details.toon.id,
+            player_race: source.player_details.race,
+            player_color_a: source.player_details.color.a,
+            player_color_r: source.player_details.color.r,
+            player_color_g: source.player_details.color.g,
+            player_color_b: source.player_details.color.b,
+            player_control: source.player_details.control,
+            player_team_id: source.player_details.team_id,
+            player_observe: source.player_details.observe,
+            player_result: source.player_details.result,
+            player_working_set_slot_id: source.player_details.working_set_slot_id,
+            player_hero: source.player_details.hero,
+            title: source.title,
+            is_blizzard_map: source.game_description.is_blizzard_map,
+            lobby_slot_user_id: source.lobby_slot.user_id,
+            lobby_slot_observe: source.lobby_slot.observe,
+            lobby_slot_map_size_x: source.game_description.map_size_x,
+            lobby_slot_map_size_y: source.game_description.map_size_y,
+            time_utc: source.time_utc,
+            time_local_offset: source.time_local_offset,
+        }
+    }
+}
+
+/// A joined version of the PlayerLobbySlot contained within the InitData sector and the Details
+/// sector
+/// The working_set_slot_id joins  the initData with the details.
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+pub struct PlayerLobbyDetails {
+    pub init_data: InitData,
+    pub player_details: PlayerDetails,
+    pub lobby_slot: LobbySlot,
+    /// The name of the map
+    pub title: String,
+    pub game_description: GameDescription,
+    pub time_utc: i64,
+    pub time_local_offset: i64,
+    pub ext_fs_sha256: String,
+    pub ext_fs_file_name: String,
+    pub ext_fs_id: u64,
+    pub ext_datetime: chrono::NaiveDateTime,
+}
+
+impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
+    type Error = S2ProtocolError;
+
+    fn try_from(init: &InitData) -> Result<Self, Self::Error> {
+        let details: Details = init.try_into()?;
+        let res = details
             .player_list
             .into_iter()
-            .map(|player| PlayerDetailsFlatRow {
-                ext_fs_id: details.ext_fs_id,
-                ext_datetime: details.ext_datetime,
-                player_name: player.name,
-                player_toon_region: player.toon.region,
-                player_toon_program_id: player.toon.program_id,
-                player_toon_realm: player.toon.realm,
-                player_toon_id: player.toon.id,
-                player_race: player.race,
-                player_color_a: player.color.a,
-                player_color_r: player.color.r,
-                player_color_g: player.color.g,
-                player_color_b: player.color.b,
-                player_control: player.control,
-                player_team_id: player.team_id,
-                player_observe: player.observe,
-                player_result: player.result,
-                player_working_set_slot_id: player.working_set_slot_id,
-                player_hero: player.hero,
-                title: details.title.clone(),
-                is_blizzard_map: details.is_blizzard_map,
-                time_utc: details.time_utc,
-                time_local_offset: details.time_local_offset,
+            .filter_map(|player| {
+                let mut slot_idx = None;
+                for (idx, lobby_slot) in init.sync_lobby_state.lobby_state.slots.iter().enumerate()
+                {
+                    if let (Some(init_slot_id), Some(details_slot_id)) =
+                        (lobby_slot.working_set_slot_id, player.working_set_slot_id)
+                        && init_slot_id == details_slot_id
+                    {
+                        slot_idx = Some(idx);
+                        break;
+                    }
+                }
+                let slot_idx = if let Some(idx) = slot_idx {
+                    idx
+                } else {
+                    return None;
+                };
+                Some(PlayerLobbyDetails {
+                    ext_fs_id: details.ext_fs_id,
+                    ext_fs_sha256: init.ext_fs_sha256.clone(),
+                    ext_fs_file_name: init.ext_fs_file_name.clone(),
+                    ext_datetime: details.ext_datetime,
+                    title: details.title.clone(),
+                    game_description: init.sync_lobby_state.game_description.clone(),
+                    lobby_slot: init.sync_lobby_state.lobby_state.slots[slot_idx].clone(),
+                    init_data: init.clone(),
+                    player_details: player.clone(),
+                    time_utc: details.time_utc,
+                    time_local_offset: details.time_local_offset,
+                })
             })
-            .collect()
+            .collect();
+        Ok(res)
     }
 }
 
@@ -145,6 +221,7 @@ impl Details {
     /// The player_id in this vector is off by one on the player_id in the tracker events, or is
     /// it? We should check this.
     pub fn get_player_name(&self, event_player_id: u8) -> String {
+        // TODO: Remove
         self.player_list
             .iter()
             .find(|player| {

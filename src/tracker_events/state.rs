@@ -1,8 +1,7 @@
 //! Handles the state change of units for TrackerEvents
 
 use super::*;
-use crate::details::PlayerDetails;
-use crate::game_events::VersionedBalanceUnits;
+use crate::details::PlayerLobbyDetails;
 use crate::*;
 
 /// The unit position seems to be 4 times the actual unit position to fit in the map.
@@ -19,7 +18,6 @@ pub fn handle_unit_init(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     unit_init: &UnitInitEvent,
-    balance_units: &VersionedBalanceUnits,
 ) -> UnitChangeHint {
     let mut sc2_unit = SC2Unit {
         last_game_loop: game_loop,
@@ -31,7 +29,7 @@ pub fn handle_unit_init(
         tag_index: unit_init.unit_tag_index,
         ..Default::default()
     };
-    sc2_unit.set_unit_props(balance_units);
+    sc2_unit.set_unit_props(&sc2_state.balance_units);
     tracing::info!("Initializing unit: {:?}", sc2_unit);
     if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_init.unit_tag_index) {
         // This happens for example when a unit is burrowed.
@@ -57,7 +55,6 @@ pub fn handle_unit_born(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     unit_born: &UnitBornEvent,
-    balance_units: &VersionedBalanceUnits,
 ) -> UnitChangeHint {
     let creator: Option<SC2Unit> = if let Some(creator_unit_tag) = unit_born.creator_unit_tag_index
     {
@@ -87,7 +84,7 @@ pub fn handle_unit_born(
             tag_index: unit_born.unit_tag_index,
             ..Default::default()
         };
-        sc2_unit.set_unit_props(balance_units);
+        sc2_unit.set_unit_props(&sc2_state.balance_units);
         sc2_state
             .units
             .insert(unit_born.unit_tag_index, sc2_unit.clone());
@@ -105,13 +102,12 @@ pub fn handle_unit_type_change(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     unit_change: &UnitTypeChangeEvent,
-    balance_units: &VersionedBalanceUnits,
 ) -> UnitChangeHint {
     if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_change.unit_tag_index) {
         let old_unit_state = unit.clone();
         unit.name.clone_from(&unit_change.unit_type_name);
         unit.last_game_loop = game_loop;
-        unit.set_unit_props(balance_units);
+        unit.set_unit_props(&sc2_state.balance_units);
         UnitChangeHint::Registered {
             unit: Box::new(unit.clone()),
             creator: Some(old_unit_state),
@@ -125,7 +121,7 @@ pub fn handle_unit_type_change(
             tag_index: unit_change.unit_tag_index,
             ..Default::default()
         };
-        sc2_unit.set_unit_props(balance_units);
+        sc2_unit.set_unit_props(&sc2_state.balance_units);
         sc2_state
             .units
             .insert(unit_change.unit_tag_index, sc2_unit.clone());
@@ -140,12 +136,11 @@ pub fn handle_unit_done(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     unit_done: &UnitDoneEvent,
-    balance_units: &VersionedBalanceUnits,
 ) -> UnitChangeHint {
     if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_done.unit_tag_index) {
         unit.last_game_loop = game_loop;
         unit.is_init = false;
-        unit.set_unit_props(balance_units);
+        unit.set_unit_props(&sc2_state.balance_units);
         UnitChangeHint::Registered {
             unit: Box::new(unit.clone()),
             creator: None,
@@ -230,21 +225,19 @@ pub fn handle_tracker_event(
     sc2_state: &mut SC2ReplayState,
     tracker_loop: i64,
     evt: &ReplayTrackerEvent,
-    balance_units: &VersionedBalanceUnits,
-    details: &crate::details::Details,
 ) -> UnitChangeHint {
     match &evt {
         ReplayTrackerEvent::UnitBorn(unit_born) => {
-            handle_unit_born(sc2_state, tracker_loop, unit_born, balance_units)
+            handle_unit_born(sc2_state, tracker_loop, unit_born)
         }
         ReplayTrackerEvent::UnitTypeChange(unit_change) => {
-            handle_unit_type_change(sc2_state, tracker_loop, unit_change, balance_units)
+            handle_unit_type_change(sc2_state, tracker_loop, unit_change)
         }
         ReplayTrackerEvent::UnitInit(unit_init) => {
-            handle_unit_init(sc2_state, tracker_loop, unit_init, balance_units)
+            handle_unit_init(sc2_state, tracker_loop, unit_init)
         }
         ReplayTrackerEvent::UnitDone(unit_done) => {
-            handle_unit_done(sc2_state, tracker_loop, unit_done, balance_units)
+            handle_unit_done(sc2_state, tracker_loop, unit_done)
         }
         ReplayTrackerEvent::UnitDied(unit_died) => {
             handle_unit_died(sc2_state, tracker_loop, unit_died)
@@ -257,15 +250,18 @@ pub fn handle_tracker_event(
             UnitChangeHint::None
         }
         ReplayTrackerEvent::PlayerSetup(player_setup) => {
-            let mut player_details = PlayerDetails::default();
+            let mut player_lobby_details = PlayerLobbyDetails::default();
             // XXX: This doesn't match, we gotta use the Exploratory Data Analysis links found on
             // https://github.com/sebosp/s2-polars-data-analysis/blob/main/jupyter_notebooks/Exploratory_Data_Analysis.ipynb
+            // NOTE: Tracker Event 0: Evt:PlayerSetup(PlayerSetupEvent { player_id: 1, m_type: 1, user_id: Some(4), slot_id: Some(0) }) Hint:None
+            // This  later matches the user_id in game_events.
             tracing::info!(
-                "handle_tracker_event:: ReplayTrackerEvent::PlayerSetup Checking vs details{:?}",
-                details
+                "handle_tracker_event:: ReplayTrackerEvent::PlayerSetup Checking {:?} vs {:?}",
+                player_setup,
+                sc2_state.details
             );
             if let Some(slot_id) = player_setup.slot_id {
-                for player in &details.player_list {
+                for player in &sc2_state.details.player_list {
                     if let Some(working_set_slot_id) = player.working_set_slot_id
                         && slot_id == working_set_slot_id as u32
                     {
@@ -273,14 +269,14 @@ pub fn handle_tracker_event(
                             "handle_tracker_event:: ReplayTrackerEvent::PlayerSetup found match {:?}",
                             player
                         );
-                        player_details = player.clone();
+                        player_lobby_details.player_details = player.clone();
                     }
                 }
             }
             if let Some(user_id) = player_setup.user_id {
                 sc2_state
                     .user_state
-                    .insert(user_id as i64, SC2UserState::new(player_details));
+                    .insert(user_id as i64, SC2UserState::new(player_lobby_details));
                 // TODO: Should we return the user_id to the consumer?
             }
             UnitChangeHint::None

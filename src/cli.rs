@@ -354,14 +354,13 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 };
                 let source_path: String = source
-                    .file_name()
-                    .expect("Failed to get file name")
                     .to_str()
                     .expect("Failed to convert file name to str")
                     .to_string();
+                let init_data = InitData::new(&source_path, 0u64, &mpq, &file_contents)?;
                 match read_type {
                     ReadTypes::TrackerEvents => {
-                        let res = SC2EventIterator::new(&source_path, versioned_abilities.clone())?;
+                        let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
                         println!("[");
                         for evt in res.into_iter().filter(|e| e.is_tracker_event()) {
                             #[cfg(feature = "syntax")]
@@ -377,7 +376,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
 
                     ReadTypes::GameEvents => {
-                        let res = SC2EventIterator::new(&source_path, versioned_abilities.clone())?;
+                        let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
                         println!("[");
                         for evt in res.into_iter().filter(|e| e.is_game_event()) {
                             #[cfg(feature = "syntax")]
@@ -430,7 +429,9 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
-                        let res = SC2EventIterator::new(&source_path, versioned_abilities.clone())?;
+                        // NOTE: A fake "ext_fs_id" is created because the current impl is thought
+                        // of mainly for writing arrow ipc files... Maybe this is not a good idea.
+                        let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
                         let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
                         let res = res.with_filters(filters);
                         #[cfg(feature = "dep_ratatui")]
