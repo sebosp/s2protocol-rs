@@ -243,10 +243,18 @@ pub struct SC2ReplayState {
 impl TryFrom<&InitData> for SC2ReplayState {
     type Error = S2ProtocolError;
     fn try_from(init_data: &InitData) -> Result<Self, Self::Error> {
+        let mut user_state: HashMap<i64, SC2UserState> = HashMap::new();
         let details = Details::try_from(init_data)?;
+        let player_lobby_slots: Vec<PlayerLobbyDetails> = init_data.try_into()?;
+        for player in player_lobby_slots.iter() {
+            if let Some(user_id) = player.lobby_slot.user_id {
+                user_state.insert(user_id, SC2UserState::new(player.clone()));
+            }
+        }
         Ok(Self {
             init_data: init_data.clone(),
             details,
+            user_state,
             ..Default::default()
         })
     }

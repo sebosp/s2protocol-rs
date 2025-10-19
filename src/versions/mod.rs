@@ -11,7 +11,7 @@ pub mod protocol75689;
 pub mod protocol87702;
 
 /// Attempts to read the tracker events, panics under unknown protocol
-#[tracing::instrument(level = "debug", skip(mpq, file_contents))]
+#[tracing::instrument(level = "error", skip(mpq, file_contents, file_name))]
 pub fn read_tracker_events(
     file_name: &str,
     mpq: &MPQ,
@@ -34,21 +34,15 @@ pub fn read_tracker_events(
             mpq,
             file_contents,
         ),
-        _ => {
-            tracing::warn!(
-                "Protocol version {:?} is not supported, falling back to 87702",
-                proto_header.m_version.m_base_build
-            );
-            protocol87702::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
-                mpq,
-                file_contents,
-            )
-        }
+        _ => protocol87702::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
+            mpq,
+            file_contents,
+        ),
     }
 }
 
 /// Attempts to read the game events, panics under unknown protocol
-#[tracing::instrument(level = "debug", skip(mpq, file_contents))]
+#[tracing::instrument(level = "error", skip(mpq, file_contents, file_name))]
 pub fn read_game_events(
     file_name: &str,
     mpq: &MPQ,
@@ -65,18 +59,12 @@ pub fn read_game_events(
         0..=75689 => protocol75689::bit_packed::GameEEventId::read_events(mpq, file_contents),
         83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
         | 91115 => protocol87702::bit_packed::GameEEventId::read_events(mpq, file_contents),
-        _ => {
-            tracing::warn!(
-                "Protocol version {:?} is not supported, falling back to 87702",
-                proto_header.m_version.m_base_build
-            );
-            protocol87702::bit_packed::GameEEventId::read_events(mpq, file_contents)
-        }
+        _ => protocol87702::bit_packed::GameEEventId::read_events(mpq, file_contents),
     }
 }
 
 /// Attempts to read the message events, panics under unknown protocol
-#[tracing::instrument(level = "debug", skip(mpq, file_contents))]
+#[tracing::instrument(level = "error", skip(mpq, file_contents, file_name))]
 pub fn read_message_events(
     file_name: &str,
     mpq: &MPQ,
@@ -93,18 +81,12 @@ pub fn read_message_events(
         0..=75689 => protocol75689::bit_packed::GameEMessageId::read_events(mpq, file_contents),
         83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
         | 91115 => protocol87702::bit_packed::GameEMessageId::read_events(mpq, file_contents),
-        _ => {
-            tracing::warn!(
-                "Protocol version {:?} is not supported, falling back to 87702",
-                proto_header.m_version.m_base_build
-            );
-            protocol87702::bit_packed::GameEMessageId::read_events(mpq, file_contents)
-        }
+        _ => protocol87702::bit_packed::GameEMessageId::read_events(mpq, file_contents),
     }
 }
 
 /// Attempts to read the details, panics under unknown protocol
-#[tracing::instrument(level = "debug", skip(mpq, file_contents))]
+#[tracing::instrument(level = "error", skip(mpq, file_contents, file_name))]
 pub fn read_details(
     file_name: &str,
     mpq: &MPQ,
@@ -121,13 +103,7 @@ pub fn read_details(
         0..=75689 => protocol75689::byte_aligned::GameSDetails::read_details(mpq, file_contents),
         83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
         | 91115 => protocol87702::byte_aligned::GameSDetails::read_details(mpq, file_contents),
-        _ => {
-            tracing::warn!(
-                "Protocol version {:?} is not supported, falling back to 87702",
-                proto_header.m_version.m_base_build
-            );
-            protocol87702::byte_aligned::GameSDetails::read_details(mpq, file_contents)
-        }
+        _ => protocol87702::byte_aligned::GameSDetails::read_details(mpq, file_contents),
     }
 }
 
@@ -139,7 +115,7 @@ pub fn read_init_data(
     file_contents: &[u8],
 ) -> Result<InitData, S2ProtocolError> {
     let (_tail, proto_header) = crate::read_protocol_header(mpq)?;
-    tracing::info!(
+    tracing::debug!(
         "Proto version: {:?} reading InitData from {:?}",
         proto_header.m_version.m_base_build,
         file_name
@@ -149,13 +125,7 @@ pub fn read_init_data(
         0..=75689 => protocol75689::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),
         83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
         | 91115 => protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),
-        _ => {
-            tracing::warn!(
-                "Protocol version {:?} is not supported, falling back to 87702",
-                proto_header.m_version.m_base_build
-            );
-            protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents)
-        }
+        _ => protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),
     };
     match res {
         Ok(mut res) => {

@@ -320,7 +320,10 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Get(read_type) => {
             let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
                 if cli.json_balance_data_dir.is_empty() {
-                    read_balance_data_from_json(PathBuf::from(&cli.source))?
+                    return Err(Box::new(std::io::Error::new(
+                        std::io::ErrorKind::InvalidInput,
+                        "Destination JSON Balance Data directory must be provided",
+                    )));
                 } else {
                     read_balance_data_from_json(PathBuf::from(&cli.json_balance_data_dir))?
                 };
@@ -357,6 +360,8 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     .to_str()
                     .expect("Failed to convert file name to str")
                     .to_string();
+                // NOTE: A fake "ext_fs_id" is created because the current impl is thought
+                // of mainly for writing arrow ipc files... Maybe this is not a good idea.
                 let init_data = InitData::new(&source_path, 0u64, &mpq, &file_contents)?;
                 match read_type {
                     ReadTypes::TrackerEvents => {
@@ -396,7 +401,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         for evt in res {
                             #[cfg(feature = "syntax")]
                             syntect_json_print(
-                                serde_json::to_string(&evt).unwrap(),
+                                serde_json::to_string_pretty(&evt).unwrap(),
                                 &syntect_syntax_set,
                                 &syntect_theme_set,
                             );
@@ -409,7 +414,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let evt = read_details(&source_path, &mpq, &file_contents)?;
                         #[cfg(feature = "syntax")]
                         syntect_json_print(
-                            serde_json::to_string(&evt).unwrap(),
+                            serde_json::to_string_pretty(&evt).unwrap(),
                             &syntect_syntax_set,
                             &syntect_theme_set,
                         );
@@ -420,7 +425,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let evt = read_init_data(&source_path, &mpq, &file_contents)?;
                         #[cfg(feature = "syntax")]
                         syntect_json_print(
-                            serde_json::to_string(&evt).unwrap(),
+                            serde_json::to_string_pretty(&evt).unwrap(),
                             &syntect_syntax_set,
                             &syntect_theme_set,
                         );
@@ -429,8 +434,6 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
-                        // NOTE: A fake "ext_fs_id" is created because the current impl is thought
-                        // of mainly for writing arrow ipc files... Maybe this is not a good idea.
                         let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
                         let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
                         let res = res.with_filters(filters);

@@ -220,7 +220,7 @@ impl ArrowIpcTypes {
             .par_iter()
             .filter_map(|source| {
                 let event_iterator =
-                    SC2EventIterator::new(&source, versioned_abilities.clone()).ok()?;
+                    SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::Stats => {
                         let batch = event_iterator.collect_into_player_stats_flat_rows();
@@ -264,7 +264,7 @@ impl ArrowIpcTypes {
             .par_iter()
             .filter_map(|source| {
                 let event_iterator =
-                    SC2EventIterator::new(&source, versioned_abilities.clone()).ok()?;
+                    SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::CmdTargetPoint => {
                         let batch = event_iterator.collect_into_game_cmd_target_points_flat_rows();

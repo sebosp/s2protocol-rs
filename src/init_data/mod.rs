@@ -155,7 +155,7 @@ pub struct GameDescription {
     pub slot_descriptions: Vec<SlotDescription>,
     pub default_difficulty: i64,
     pub default_ai_build: i64,
-    pub cache_handles: Vec<Vec<u8>>,
+    pub cache_handles: Vec<String>,
     pub has_extension_mod: bool,
     pub has_non_blizzard_extension_mod: bool,
     pub is_blizzard_map: bool,

@@ -69,8 +69,8 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
     fn from(source: PlayerLobbyDetails) -> PlayerLobbyDetailsFlatRow {
         PlayerLobbyDetailsFlatRow {
             ext_fs_id: source.ext_fs_id,
-            ext_fs_sha256: source.init_data.ext_fs_sha256,
-            ext_fs_file_name: source.init_data.ext_fs_file_name,
+            ext_fs_sha256: source.ext_fs_sha256,
+            ext_fs_file_name: source.ext_fs_file_name,
             ext_datetime: source.ext_datetime,
             player_name: source.player_details.name,
             player_toon_region: source.player_details.toon.region,
@@ -105,7 +105,6 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
 /// The working_set_slot_id joins  the initData with the details.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct PlayerLobbyDetails {
-    pub init_data: InitData,
     pub player_details: PlayerDetails,
     pub lobby_slot: LobbySlot,
     /// The name of the map
@@ -139,11 +138,7 @@ impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
                         break;
                     }
                 }
-                let slot_idx = if let Some(idx) = slot_idx {
-                    idx
-                } else {
-                    return None;
-                };
+                let slot_idx = slot_idx?;
                 Some(PlayerLobbyDetails {
                     ext_fs_id: details.ext_fs_id,
                     ext_fs_sha256: init.ext_fs_sha256.clone(),
@@ -152,7 +147,6 @@ impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
                     title: details.title.clone(),
                     game_description: init.sync_lobby_state.game_description.clone(),
                     lobby_slot: init.sync_lobby_state.lobby_state.slots[slot_idx].clone(),
-                    init_data: init.clone(),
                     player_details: player.clone(),
                     time_utc: details.time_utc,
                     time_local_offset: details.time_local_offset,
@@ -215,37 +209,6 @@ impl Details {
             .unwrap_or_default();
         self.ext_fs_id = ext_fs_id;
         self
-    }
-
-    /// Attempts to find the player id from the player_list vector.
-    /// The player_id in this vector is off by one on the player_id in the tracker events, or is
-    /// it? We should check this.
-    pub fn get_player_name(&self, event_player_id: u8) -> String {
-        // TODO: Remove
-        self.player_list
-            .iter()
-            .find(|player| {
-                let adjusted_player_id = match player.working_set_slot_id {
-                    // NOTE: The working_set_slot_id is 0-based
-                    // while the incoming event_player_id is 1-based
-                    Some(val) => val + 1,
-                    _ => return false,
-                };
-                adjusted_player_id == event_player_id
-            })
-            .map(|player| {
-                // The player name may be prepend by its clan.
-                // The clan seems to be URL encoded like "&lt&CLAN&gt<sp/>PLAYERNAME"
-                // Remove up to <sp/> if it exists from the player name
-                // This should be a different field and maybe we can consider removing
-                // it, this is because we change player names/tags through time.
-                let player_name = player.name.split("<sp/>").last().unwrap_or_default();
-                format!(
-                    "{}-{}-{}-{}",
-                    player.toon.region, player.toon.realm, player.toon.id, player_name
-                )
-            })
-            .unwrap_or("".to_string())
     }
 }
 

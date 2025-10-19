@@ -31,9 +31,9 @@ impl TryFrom<GameSDetails> for Details {
         let mut cache_handles = vec![];
         if let Some(m_cache_handles) = source.m_cache_handles {
             for cache_handle in m_cache_handles {
-                let mut cache_str = String::from("0x");
+                let mut cache_str = String::new();
                 for cache_byte in cache_handle {
-                    cache_str.push_str(&format!("{cache_byte:x}"));
+                    cache_str.push_str(&format!("{cache_byte:02x}"));
                 }
                 cache_handles.push(cache_str);
             }

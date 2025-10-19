@@ -1,7 +1,6 @@
 //! Handles the state change of units for TrackerEvents
 
 use super::*;
-use crate::details::PlayerLobbyDetails;
 use crate::*;
 
 /// The unit position seems to be 4 times the actual unit position to fit in the map.
@@ -249,38 +248,7 @@ pub fn handle_tracker_event(
             // For now the player stats are not recorded here.
             UnitChangeHint::None
         }
-        ReplayTrackerEvent::PlayerSetup(player_setup) => {
-            let mut player_lobby_details = PlayerLobbyDetails::default();
-            // XXX: This doesn't match, we gotta use the Exploratory Data Analysis links found on
-            // https://github.com/sebosp/s2-polars-data-analysis/blob/main/jupyter_notebooks/Exploratory_Data_Analysis.ipynb
-            // NOTE: Tracker Event 0: Evt:PlayerSetup(PlayerSetupEvent { player_id: 1, m_type: 1, user_id: Some(4), slot_id: Some(0) }) Hint:None
-            // This  later matches the user_id in game_events.
-            tracing::info!(
-                "handle_tracker_event:: ReplayTrackerEvent::PlayerSetup Checking {:?} vs {:?}",
-                player_setup,
-                sc2_state.details
-            );
-            if let Some(slot_id) = player_setup.slot_id {
-                for player in &sc2_state.details.player_list {
-                    if let Some(working_set_slot_id) = player.working_set_slot_id
-                        && slot_id == working_set_slot_id as u32
-                    {
-                        tracing::info!(
-                            "handle_tracker_event:: ReplayTrackerEvent::PlayerSetup found match {:?}",
-                            player
-                        );
-                        player_lobby_details.player_details = player.clone();
-                    }
-                }
-            }
-            if let Some(user_id) = player_setup.user_id {
-                sc2_state
-                    .user_state
-                    .insert(user_id as i64, SC2UserState::new(player_lobby_details));
-                // TODO: Should we return the user_id to the consumer?
-            }
-            UnitChangeHint::None
-        }
+        ReplayTrackerEvent::PlayerSetup(_) => UnitChangeHint::None,
         _ => {
             tracing::debug!("Skipping event: {:?}", evt);
             UnitChangeHint::None
