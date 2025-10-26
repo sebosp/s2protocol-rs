@@ -45,6 +45,8 @@ pub struct SC2Unit {
     pub last_game_loop: i64,
     /// The owner user_id
     pub user_id: Option<u8>,
+    /// The player name matching the control_player_id
+    pub player_name: Option<String>,
     /// The name of the unit.
     pub name: String,
     /// The XYZ position.

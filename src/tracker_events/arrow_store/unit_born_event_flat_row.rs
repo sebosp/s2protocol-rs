@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 /// An experiment creating a flat row of UnitBornEventFlatRow for Arrow usage
 /// TODO: is_init flag is not used yet, this happens when a unit is transitioning and could be
 /// cancelled.
+/// We should also add a field/enum for when it's Born/Done/TypeChange
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "dep_arrow",
@@ -30,6 +31,7 @@ pub struct UnitBornEventFlatRow {
     pub ext_replay_loop: i64,
     pub ext_replay_seconds: u32,
     pub ext_fs_id: u64,
+    pub player_name: Option<String>,
 }
 
 impl UnitBornEventFlatRow {
@@ -42,7 +44,7 @@ impl UnitBornEventFlatRow {
         details: &crate::details::Details,
         change_hint: UnitChangeHint,
     ) -> Option<Self> {
-        let (_unit, creator) = match change_hint {
+        let (unit, creator) = match change_hint {
             UnitChangeHint::Registered { unit, creator } => (unit, creator),
             _ => return None,
         };
@@ -66,6 +68,7 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
+            player_name: unit.player_name,
         })
     }
 
@@ -104,6 +107,7 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
+            player_name: unit.player_name,
         })
     }
 
@@ -140,6 +144,7 @@ impl UnitBornEventFlatRow {
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_id: details.ext_fs_id,
+            player_name: unit.player_name,
         })
     }
 }

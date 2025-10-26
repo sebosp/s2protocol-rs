@@ -7,6 +7,23 @@ use crate::*;
 /// So we have to divide the UnitPosition events by this number:
 pub const UNIT_POSITION_RATIO: f32 = 4.;
 
+/// The unit_born initially comes without a player_name, we have collected the PlayerSetupEvent
+/// which seems to contain a relationship between the player_id in the TrackerEvent(UnitBornEvent.control_player_id)
+pub fn get_player_name_by_tracker_control_player_id(
+    user_state: &HashMap<i64, SC2UserState>,
+    tracker_control_player_id: u8,
+) -> Option<String> {
+    for user_state in user_state.values() {
+        if let Some(tracker_setup_player_id) =
+            user_state.player_lobby_details.tracker_setup_player_id
+            && tracker_setup_player_id == tracker_control_player_id
+        {
+            return Some(user_state.player_lobby_details.player_details.name.clone());
+        }
+    }
+    None
+}
+
 /// Handles the state management for unit init messages
 #[tracing::instrument(
     level = "debug",
@@ -26,6 +43,10 @@ pub fn handle_unit_init(
         init_game_loop: game_loop,
         is_init: true,
         tag_index: unit_init.unit_tag_index,
+        player_name: get_player_name_by_tracker_control_player_id(
+            &sc2_state.user_state,
+            unit_init.control_player_id,
+        ),
         ..Default::default()
     };
     sc2_unit.set_unit_props(&sc2_state.balance_units);
@@ -52,27 +73,15 @@ pub fn handle_unit_init(
 
 /// Handles the state management for unit born messages
 /// These are units with instant creation such as at the start of the game.
-/// The unit_born initially comes without a player_name, we have collected the PlayerSetupEvent
-/// which seems to contain a relationship between the player_id in the TrackerEvent(UnitBornEvent.control_player_id)
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_unit_born(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
-    mut unit_born: UnitBornEvent,
+    unit_born: UnitBornEvent,
 ) -> (ReplayTrackerEvent, UnitChangeHint) {
-    for user_state in sc2_state.user_state.values_mut() {
-        if let Some(tracker_setup_player_id) =
-            user_state.player_lobby_details.tracker_setup_player_id
-            && tracker_setup_player_id == unit_born.control_player_id
-        {
-            unit_born.player_name =
-                Some(user_state.player_lobby_details.player_details.name.clone());
-            break;
-        }
-    }
     let creator: Option<SC2Unit> = if let Some(creator_unit_tag) = unit_born.creator_unit_tag_index
     {
-        if let Some(ref mut unit) = sc2_state.units.get_mut(&creator_unit_tag) {
+        if let Some(unit) = sc2_state.units.get_mut(&creator_unit_tag) {
             unit.last_game_loop = game_loop;
             Some(unit.clone())
         } else {
@@ -81,7 +90,8 @@ pub fn handle_unit_born(
     } else {
         None
     };
-    if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_born.unit_tag_index) {
+    if let Some(unit) = sc2_state.units.get_mut(&unit_born.unit_tag_index) {
+        // If the unit already exists, we update properties and return it.
         unit.creator_ability_name = unit_born.creator_ability_name.clone();
         unit.last_game_loop = game_loop;
         (
@@ -92,6 +102,7 @@ pub fn handle_unit_born(
             },
         )
     } else {
+        // If the unit doesn't exists, we initialize it and return it.
         let mut sc2_unit = SC2Unit {
             last_game_loop: game_loop,
             user_id: Some(unit_born.control_player_id),
@@ -99,6 +110,10 @@ pub fn handle_unit_born(
             pos: Vec3D::new(unit_born.x as f32, unit_born.y as f32, 0.),
             init_game_loop: game_loop,
             tag_index: unit_born.unit_tag_index,
+            player_name: get_player_name_by_tracker_control_player_id(
+                &sc2_state.user_state,
+                unit_born.control_player_id,
+            ),
             ..Default::default()
         };
         sc2_unit.set_unit_props(&sc2_state.balance_units);
@@ -142,6 +157,7 @@ pub fn handle_unit_type_change(
             name: unit_change.unit_type_name.clone(),
             init_game_loop: game_loop,
             tag_index: unit_change.unit_tag_index,
+            // In unit_type change there's no control_player_id
             ..Default::default()
         };
         sc2_unit.set_unit_props(&sc2_state.balance_units);
@@ -306,6 +322,16 @@ pub fn handle_tracker_event(
             }
             (
                 ReplayTrackerEvent::PlayerSetup(player_setup),
+                UnitChangeHint::None,
+            )
+        }
+        ReplayTrackerEvent::Upgrade(mut upgrade_evt) => {
+            upgrade_evt.player_name = get_player_name_by_tracker_control_player_id(
+                &sc2_state.user_state,
+                upgrade_evt.player_id,
+            );
+            (
+                ReplayTrackerEvent::Upgrade(upgrade_evt),
                 UnitChangeHint::None,
             )
         }
