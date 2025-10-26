@@ -14,13 +14,16 @@ pub fn handle_camera_save(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
-    camera_update: &CameraSaveEvent,
-) -> UnitChangeHint {
+    camera_save: CameraSaveEvent,
+) -> (ReplayGameEvent, UnitChangeHint) {
     if let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id) {
-        user_state.camera_pos.x = camera_update.m_target.x;
-        user_state.camera_pos.y = camera_update.m_target.y;
+        user_state.camera_pos.x = camera_save.m_target.x;
+        user_state.camera_pos.y = camera_save.m_target.y;
     }
-    UnitChangeHint::None
+    (
+        ReplayGameEvent::CameraSave(camera_save),
+        UnitChangeHint::None,
+    )
 }
 
 /// Unsure  why the camera target may be None, but for now let's just handle the Some()
@@ -29,15 +32,18 @@ pub fn handle_camera_update(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
-    camera_update: &CameraUpdateEvent,
-) -> UnitChangeHint {
+    camera_update: CameraUpdateEvent,
+) -> (ReplayGameEvent, UnitChangeHint) {
     if let Some(target) = &camera_update.m_target
         && let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id)
     {
         user_state.camera_pos.x = target.x;
         user_state.camera_pos.y = target.y;
     }
-    UnitChangeHint::None
+    (
+        ReplayGameEvent::CameraUpdate(camera_update),
+        UnitChangeHint::None,
+    )
 }
 
 /// The selected units for a specific players are given a specific command.
@@ -274,8 +280,8 @@ pub fn handle_selection_delta(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
-    selection_delta: &GameSSelectionDeltaEvent,
-) -> UnitChangeHint {
+    selection_delta: GameSSelectionDeltaEvent,
+) -> (ReplayGameEvent, UnitChangeHint) {
     let mut updated_units = vec![];
     if selection_delta.m_control_group_id == ACTIVE_UNITS_GROUP_IDX as u8 {
         let mut unmarked_units =
@@ -301,7 +307,10 @@ pub fn handle_selection_delta(
     }
     updated_units.sort_unstable();
     updated_units.dedup();
-    UnitChangeHint::Selection(updated_units)
+    (
+        ReplayGameEvent::SelectionDelta(selection_delta),
+        UnitChangeHint::Selection(updated_units),
+    )
 }
 
 /// Handles control group update events
@@ -311,8 +320,8 @@ pub fn update_control_group(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
     user_id: i64,
-    ctrl_group_evt: &GameSControlGroupUpdateEvent,
-) -> UnitChangeHint {
+    ctrl_group_evt: GameSControlGroupUpdateEvent,
+) -> (ReplayGameEvent, UnitChangeHint) {
     let mut updated_units = match unmark_previously_selected_units(sc2_state, game_loop, user_id) {
         UnitChangeHint::Selection(units) => units,
         _ => unreachable!(),
@@ -388,7 +397,10 @@ pub fn update_control_group(
             updated_units.append(&mut curr_units);
         }
     }
-    UnitChangeHint::Selection(updated_units)
+    (
+        ReplayGameEvent::ControlGroupUpdate(ctrl_group_evt),
+        UnitChangeHint::Selection(updated_units),
+    )
 }
 
 /// Handles a game event as it steps through the SC2 State.
@@ -403,32 +415,26 @@ pub fn handle_game_event(
     // - Cmd
     // - CmdUpdateTargetPoint
     // - CmdUpdateTargetUnit
-    match evt.clone() {
-        ReplayGameEvent::CameraSave(camera_save) => (
-            evt,
-            handle_camera_save(sc2_state, game_loop, user_id, &camera_save),
-        ),
-        ReplayGameEvent::CameraUpdate(camera_update) => (
-            evt,
-            handle_camera_update(sc2_state, game_loop, user_id, &camera_update),
-        ),
-        ReplayGameEvent::Cmd(game_cmd) => {
-            handle_cmd(sc2_state, game_loop, user_id, game_cmd.clone())
+    match evt {
+        ReplayGameEvent::CameraSave(camera_save) => {
+            handle_camera_save(sc2_state, game_loop, user_id, camera_save)
         }
+        ReplayGameEvent::CameraUpdate(camera_update) => {
+            handle_camera_update(sc2_state, game_loop, user_id, camera_update)
+        }
+        ReplayGameEvent::Cmd(game_cmd) => handle_cmd(sc2_state, game_loop, user_id, game_cmd),
         ReplayGameEvent::CmdUpdateTargetPoint(target_point) => {
             handle_update_target_point(sc2_state, game_loop, user_id, target_point)
         }
         ReplayGameEvent::CmdUpdateTargetUnit(target_unit) => {
             handle_update_target_unit(sc2_state, game_loop, user_id, target_unit)
         }
-        ReplayGameEvent::SelectionDelta(selection_delta) => (
-            evt,
-            handle_selection_delta(sc2_state, game_loop, user_id, &selection_delta),
-        ),
-        ReplayGameEvent::ControlGroupUpdate(ctrl_group) => (
-            evt,
-            update_control_group(sc2_state, game_loop, user_id, &ctrl_group),
-        ),
-        _ => (evt, UnitChangeHint::None),
+        ReplayGameEvent::SelectionDelta(selection_delta) => {
+            handle_selection_delta(sc2_state, game_loop, user_id, selection_delta)
+        }
+        ReplayGameEvent::ControlGroupUpdate(ctrl_group) => {
+            update_control_group(sc2_state, game_loop, user_id, ctrl_group)
+        }
+        _ => (evt.clone(), UnitChangeHint::None),
     }
 }

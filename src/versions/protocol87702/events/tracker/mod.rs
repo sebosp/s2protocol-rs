@@ -102,6 +102,7 @@ impl TryFrom<ReplayTrackerSUnitBornEvent> for ReplayTrackerEvent {
             creator_unit_tag_index: source.m_creator_unit_tag_index,
             creator_unit_tag_recycle: source.m_creator_unit_tag_recycle,
             creator_ability_name,
+            player_name: None,
         }))
     }
 }

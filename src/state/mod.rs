@@ -277,11 +277,11 @@ impl SC2ReplayState {
                 tracker_loop,
                 event,
             } => {
-                let change_hint = handle_tracker_event(self, tracker_loop, &event);
+                let (enriched_event, change_hint) = handle_tracker_event(self, tracker_loop, event);
                 SC2EventIteratorItem {
                     event_type: SC2EventType::Tracker {
                         tracker_loop,
-                        event,
+                        event: enriched_event,
                     },
                     change_hint,
                 }

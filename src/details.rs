@@ -102,7 +102,7 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
 
 /// A joined version of the PlayerLobbySlot contained within the InitData sector and the Details
 /// sector
-/// The working_set_slot_id joins  the initData with the details.
+/// The working_set_slot_id joins the initData with the details.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct PlayerLobbyDetails {
     pub player_details: PlayerDetails,
@@ -112,6 +112,11 @@ pub struct PlayerLobbyDetails {
     pub game_description: GameDescription,
     pub time_utc: i64,
     pub time_local_offset: i64,
+    pub user_init_data_name: String,
+    pub user_init_data_clan_tag: String,
+    // Attempt a join from the PlayerSetupEvent at the start of ReplayTrackerEvents
+    pub tracker_setup_player_id: Option<u8>,
+    pub tracker_setup_slot_id: Option<u32>, // Is this u32 or?
     pub ext_fs_sha256: String,
     pub ext_fs_file_name: String,
     pub ext_fs_id: u64,
@@ -150,6 +155,18 @@ impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
                     player_details: player.clone(),
                     time_utc: details.time_utc,
                     time_local_offset: details.time_local_offset,
+                    user_init_data_name: init
+                        .sync_lobby_state
+                        .user_initial_data
+                        .get(slot_idx)
+                        .map_or("".to_string(), |u| u.name.clone()),
+                    user_init_data_clan_tag: init
+                        .sync_lobby_state
+                        .user_initial_data
+                        .get(slot_idx)
+                        .map_or("".to_string(), |u| u.clan_tag.clone().unwrap_or_default()),
+                    tracker_setup_player_id: None,
+                    tracker_setup_slot_id: None,
                 })
             })
             .collect();

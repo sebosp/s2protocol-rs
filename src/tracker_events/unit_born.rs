@@ -24,6 +24,7 @@ pub struct UnitBornEvent {
     pub creator_unit_tag_index: Option<u32>,
     pub creator_unit_tag_recycle: Option<u32>,
     pub creator_ability_name: Option<String>,
+    pub player_name: Option<String>,
 }
 
 impl UnitBornEvent {
