@@ -1,0 +1,327 @@
+{
+  "@id": "LiberatorAG",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "LiberatorAATarget",
+        "@index": 618,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1831",
+              "@icon": "btn-ability-terran-liberator-aamode",
+              "@index": null,
+              "@name": "1830",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1832",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "LiberatorAGRangeUpgrade",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-upgrade-terran-advanceballistics",
+              "@index": null,
+              "@name": "1833",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1834",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 180,
+    "@regenRate": null,
+    "@start": 180
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-ability-terran-liberator-agmode",
+    "@index": 470,
+    "@name": "1827",
+    "@race": "Terr",
+    "@source": "Void.SC2Mod",
+    "@tooltip": "1828",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": -3.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "researches": null,
+  "score": {
+    "@build": 275,
+    "@kill": 275
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranVehicleAndShipArmors",
+        "level": [
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel1",
+            "@index": 163,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel1",
+              "@index": null,
+              "@name": "418",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "415",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel2",
+            "@index": 164,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel2",
+              "@index": null,
+              "@name": "421",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "417",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel1",
+                    "@name": "418"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel3",
+            "@index": 165,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel3",
+              "@index": null,
+              "@name": "448",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "420",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel2",
+                    "@name": "421"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "LiberatorAGRangeUpgrade",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 110.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "428",
+              "@icon": "btn-upgrade-terran-advanceballistics",
+              "@index": null,
+              "@name": "1835",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "429",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "FusionCore",
+                    "@name": "382"
+                  }
+                ],
+                "upgrade": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "LiberatorAGWeapon",
+        "@index": 109,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-terran-shipweaponslevel0",
+          "@index": null,
+          "@name": "1829",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 10.0,
+          "@sightRadius": null,
+          "@speed": 1.600000023841858,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
+}

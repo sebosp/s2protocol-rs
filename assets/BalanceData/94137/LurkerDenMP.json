@@ -113,6 +113,58 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 714,
+        "@id": "DiggingClaws",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 80.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "1301",
+          "@icon": "btn-upgrade-zerg-adaptivetalons",
+          "@index": null,
+          "@name": "1308",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1302",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 714,
+        "@id": "LurkerRange",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 80.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "1298",
+          "@icon": "btn-upgrade-kerrigan-seismicspines",
+          "@index": null,
+          "@name": "1309",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1299",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 250,
     "@kill": 250

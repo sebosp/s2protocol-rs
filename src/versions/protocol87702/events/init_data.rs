@@ -155,7 +155,13 @@ impl TryFrom<super::bit_packed::GameSGameDescription> for crate::init_data::Game
             .m_cache_handles
             .value
             .into_iter()
-            .map(|v| v.value.clone())
+            .map(|cache_handle| {
+                let mut res = String::new();
+                for val in cache_handle.value.iter() {
+                    res.push_str(&format!("{val:02x}"));
+                }
+                res
+            })
             .collect();
         let has_extension_mod = source.m_has_extension_mod;
         let has_non_blizzard_extension_mod = source.m_has_non_blizzard_extension_mod;

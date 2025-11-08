@@ -3,7 +3,7 @@ use super::*;
 #[cfg(feature = "syntax")]
 use syntect::easy::HighlightLines;
 #[cfg(feature = "syntax")]
-use syntect::highlighting::{Style, ThemeSet};
+use syntect::highlighting::{Color, Style, ThemeSet};
 #[cfg(feature = "syntax")]
 use syntect::parsing::SyntaxSet;
 #[cfg(feature = "syntax")]
@@ -17,6 +17,7 @@ use crate::read_details;
 use crate::read_init_data;
 use crate::read_message_events;
 use crate::state::SC2EventIterator;
+use crate::tracker_events::{unit_tag_index, unit_tag_recycle};
 
 #[cfg(feature = "dep_arrow")]
 use clap::Args;
@@ -42,6 +43,12 @@ enum ReadTypes {
 }
 
 #[derive(Subcommand, Debug, Clone)]
+enum CommandUtils {
+    /// Translate unit tag to index, recycle pair
+    XlateTagToIndexRecycle { tag: i64 },
+}
+
+#[derive(Subcommand, Debug, Clone)]
 enum Commands {
     /// Generates Rust code for a specific protocol.
     Generate,
@@ -57,6 +64,10 @@ enum Commands {
     /// Writes Arrow IPC files for a specific event type from the SC2Replay MPQ Archive
     #[cfg(feature = "dep_arrow")]
     WriteArrowIpc(WriteArrowIpcProps),
+
+    /// Utilities, transforming tag index, recycle, etc.
+    #[command(subcommand)]
+    Util(CommandUtils),
 }
 
 ///  Create a subcommand that handles the max depth and max files to process
@@ -149,6 +160,10 @@ pub struct Cli {
     /// Whether or not the PlayerStats event should be shown. To be replaced by a proper filter
     #[arg(long)]
     pub include_stats: bool,
+
+    /// Quiet allows debugging without emitting events in json/etc.
+    #[arg(long, default_value = "false")]
+    pub quiet: bool,
 }
 
 /// Matches a list of files in case the cli.source param is a directory
@@ -262,7 +277,21 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(feature = "syntax")]
     let syntect_syntax_set = SyntaxSet::load_defaults_newlines();
     #[cfg(feature = "syntax")]
-    let syntect_theme_set = ThemeSet::load_defaults();
+    let mut syntect_theme_set = ThemeSet::load_defaults();
+    #[cfg(feature = "syntax")]
+    {
+        syntect_theme_set
+            .themes
+            .get_mut("base16-ocean.dark")
+            .unwrap()
+            .settings
+            .background = Some(Color {
+            r: 0x00,
+            g: 0x00,
+            b: 0x00,
+            a: 0x00,
+        });
+    }
 
     match &cli.command {
         Commands::Generate => {
@@ -291,7 +320,10 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Get(read_type) => {
             let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
                 if cli.json_balance_data_dir.is_empty() {
-                    read_balance_data_from_json(PathBuf::from(&cli.source))?
+                    return Err(Box::new(std::io::Error::new(
+                        std::io::ErrorKind::InvalidInput,
+                        "Destination JSON Balance Data directory must be provided",
+                    )));
                 } else {
                     read_balance_data_from_json(PathBuf::from(&cli.json_balance_data_dir))?
                 };
@@ -325,14 +357,15 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 };
                 let source_path: String = source
-                    .file_name()
-                    .expect("Failed to get file name")
                     .to_str()
                     .expect("Failed to convert file name to str")
                     .to_string();
+                // NOTE: A fake "ext_fs_id" is created because the current impl is thought
+                // of mainly for writing arrow ipc files... Maybe this is not a good idea.
+                let init_data = InitData::new(&source_path, 0u64, &mpq, &file_contents)?;
                 match read_type {
                     ReadTypes::TrackerEvents => {
-                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
+                        let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
                         println!("[");
                         for evt in res.into_iter().filter(|e| e.is_tracker_event()) {
                             #[cfg(feature = "syntax")]
@@ -348,7 +381,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
 
                     ReadTypes::GameEvents => {
-                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
+                        let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
                         println!("[");
                         for evt in res.into_iter().filter(|e| e.is_game_event()) {
                             #[cfg(feature = "syntax")]
@@ -368,7 +401,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         for evt in res {
                             #[cfg(feature = "syntax")]
                             syntect_json_print(
-                                serde_json::to_string(&evt).unwrap(),
+                                serde_json::to_string_pretty(&evt).unwrap(),
                                 &syntect_syntax_set,
                                 &syntect_theme_set,
                             );
@@ -381,7 +414,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let evt = read_details(&source_path, &mpq, &file_contents)?;
                         #[cfg(feature = "syntax")]
                         syntect_json_print(
-                            serde_json::to_string(&evt).unwrap(),
+                            serde_json::to_string_pretty(&evt).unwrap(),
                             &syntect_syntax_set,
                             &syntect_theme_set,
                         );
@@ -392,7 +425,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                         let evt = read_init_data(&source_path, &mpq, &file_contents)?;
                         #[cfg(feature = "syntax")]
                         syntect_json_print(
-                            serde_json::to_string(&evt).unwrap(),
+                            serde_json::to_string_pretty(&evt).unwrap(),
                             &syntect_syntax_set,
                             &syntect_theme_set,
                         );
@@ -401,35 +434,43 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     ReadTypes::TransistEvents => {
                         tracing::info!("Transducing through both Game and Tracker Events");
-                        let res = SC2EventIterator::new(&source, versioned_abilities.clone())?;
+                        let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
                         let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
                         let res = res.with_filters(filters);
                         #[cfg(feature = "dep_ratatui")]
                         {
                             let details = read_details(&source_path, &mpq, &file_contents)?;
+                            let init_data = read_init_data(&source_path, &mpq, &file_contents)?;
                             return Ok(crate::tui::ratatui_main(
                                 res,
                                 details,
+                                init_data,
                                 syntect_syntax_set,
                                 syntect_theme_set,
                             )?);
                         }
                         #[cfg(not(feature = "dep_ratatui"))]
                         {
-                            println!("[");
-                            for evt in res.into_iter() {
-                                #[cfg(feature = "syntax")]
-                                syntect_json_print(
-                                    serde_json::to_string(&evt).unwrap(),
-                                    &syntect_syntax_set,
-                                    &syntect_theme_set,
-                                );
-                                #[cfg(not(feature = "syntax"))]
-                                println!("{}", serde_json::to_string(&evt).unwrap());
-
-                                println!(",");
+                            if !cli.quiet {
+                                println!("[");
                             }
-                            println!("]");
+                            for evt in res.into_iter() {
+                                if !cli.quiet {
+                                    #[cfg(feature = "syntax")]
+                                    syntect_json_print(
+                                        serde_json::to_string(&evt).unwrap(),
+                                        &syntect_syntax_set,
+                                        &syntect_theme_set,
+                                    );
+                                    #[cfg(not(feature = "syntax"))]
+                                    print!("{}", serde_json::to_string(&evt).unwrap());
+
+                                    println!(",");
+                                }
+                            }
+                            if !cli.quiet {
+                                println!("]");
+                            }
                         }
                     }
                 }
@@ -450,6 +491,13 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                 &versioned_abilities,
             )?;
         }
+        Commands::Util(cmd) => match cmd {
+            CommandUtils::XlateTagToIndexRecycle { tag } => {
+                let index = unit_tag_index(*tag);
+                let recycle = unit_tag_recycle(*tag);
+                println!("Index: {}, Recycle: {}", index, recycle)
+            }
+        },
     }
     if cli.timing {
         println!("Total time: {:?}", init_time.elapsed());

@@ -80,6 +80,7 @@ impl TryFrom<ReplayTrackerSUpgradeEvent> for ReplayTrackerEvent {
             player_id: source.m_player_id,
             upgrade_type_name,
             count: source.m_count,
+            player_name: None,
         }))
     }
 }

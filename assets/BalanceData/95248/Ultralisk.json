@@ -1,0 +1,631 @@
+{
+  "@id": "Ultralisk",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BurrowUltraliskDown",
+        "@index": 227,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "89",
+              "@icon": "btn-ability-zerg-burrow-color",
+              "@index": null,
+              "@name": "88",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "90",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Frenzied",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-ability-zerg-frenzied-color",
+              "@index": null,
+              "@name": "1150",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1151",
+              "@type": "passive"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "EvolveChitinousPlating",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-upgrade-zerg-chitinousplating",
+              "@index": null,
+              "@name": "1021",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1023",
+              "@type": "passive"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "EvolveAnabolicSynthesis2",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-upgrade-zerg-anabolicsynthesis",
+              "@index": null,
+              "@name": "1018",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1020",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 7,
+    "@start": 2
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Massive"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 275,
+    "@supply": 6.0,
+    "@time": 55.0,
+    "@vespene": 200
+  },
+  "life": {
+    "@max": 500,
+    "@regenRate": 0.2734000086784363,
+    "@start": 500
+  },
+  "meta": {
+    "@hotkey": "1147",
+    "@icon": "btn-unit-zerg-ultralisk",
+    "@index": 132,
+    "@name": "84",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1148",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 8,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": -6.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 1000.0,
+    "@deceleration": 0.0,
+    "@speed": 2.9530999660491943,
+    "@turnRate": 360.0,
+    "@type": "Ground"
+  },
+  "producer": {
+    "@id": "Larva",
+    "@name": "1085"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "UltraliskCavern",
+        "@name": "1015"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 475,
+    "@kill": 475
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Marine",
+        "@name": "26"
+      },
+      {
+        "@id": "Zergling",
+        "@name": "27"
+      },
+      {
+        "@id": "Zealot",
+        "@name": "28"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ZergMeleeWeapons",
+        "level": [
+          {
+            "@id": "ZergMeleeWeaponsLevel1",
+            "@index": 56,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "139",
+              "@icon": "btn-upgrade-zerg-meleeattacks-level1",
+              "@index": null,
+              "@name": "138",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "140",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ZergMeleeWeaponsLevel2",
+            "@index": 57,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "142",
+              "@icon": "btn-upgrade-zerg-meleeattacks-level2",
+              "@index": null,
+              "@name": "141",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "143",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergMeleeWeaponsLevel1",
+                    "@name": "138"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ZergMeleeWeaponsLevel3",
+            "@index": 58,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "145",
+              "@icon": "btn-upgrade-zerg-meleeattacks-level3",
+              "@index": null,
+              "@name": "144",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "146",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergMeleeWeaponsLevel2",
+                    "@name": "141"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "ZergGroundArmors",
+        "level": [
+          {
+            "@id": "ZergGroundArmorsLevel1",
+            "@index": 59,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "93",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level1",
+              "@index": null,
+              "@name": "92",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "94",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ZergGroundArmorsLevel2",
+            "@index": 60,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "96",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level2",
+              "@index": null,
+              "@name": "95",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "97",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel1",
+                    "@name": "92"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ZergGroundArmorsLevel3",
+            "@index": 61,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "100",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level3",
+              "@index": null,
+              "@name": "99",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "101",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel2",
+                    "@name": "95"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "ChitinousPlating",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 110.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "1022",
+              "@icon": "btn-upgrade-zerg-chitinousplating",
+              "@index": null,
+              "@name": "1152",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1023",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      },
+      {
+        "@id": "Burrow",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 100.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "112",
+              "@icon": "btn-ability-zerg-burrow-color",
+              "@index": null,
+              "@name": "91",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "113",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      },
+      {
+        "@id": "AnabolicSynthesis",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 60.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "1019",
+              "@icon": "btn-upgrade-zerg-anabolicsynthesis",
+              "@index": null,
+              "@name": "1153",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1020",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Ghost",
+        "@name": "555"
+      },
+      {
+        "@id": "BroodLord",
+        "@name": "464"
+      },
+      {
+        "@id": "Immortal",
+        "@name": "306"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "KaiserBlades",
+        "@index": 48,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-zerg-meleeattacks-level0",
+          "@index": null,
+          "@name": "1149",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 1.0,
+          "@sightRadius": null,
+          "@speed": 0.8600000143051147,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
+}

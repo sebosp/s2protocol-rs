@@ -113,6 +113,154 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerWeaponsLevel1",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "994",
+          "@icon": "btn-upgrade-zerg-airattacks-level1",
+          "@index": null,
+          "@name": "993",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "995",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerWeaponsLevel2",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 175
+        },
+        "meta": {
+          "@hotkey": "997",
+          "@icon": "btn-upgrade-zerg-airattacks-level2",
+          "@index": null,
+          "@name": "996",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "998",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerWeaponsLevel3",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "1001",
+          "@icon": "btn-upgrade-zerg-airattacks-level3",
+          "@index": null,
+          "@name": "1000",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1002",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerArmorsLevel1",
+        "@index": 3,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 160.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "1005",
+          "@icon": "btn-upgrade-zerg-flyercarapace-level1",
+          "@index": null,
+          "@name": "1004",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1006",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerArmorsLevel2",
+        "@index": 4,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": null,
+          "@time": 190.0,
+          "@vespene": 175
+        },
+        "meta": {
+          "@hotkey": "1008",
+          "@icon": "btn-upgrade-zerg-flyercarapace-level2",
+          "@index": null,
+          "@name": "1007",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1009",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 194,
+        "@id": "ZergFlyerArmorsLevel3",
+        "@index": 5,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 220.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "1012",
+          "@icon": "btn-upgrade-zerg-flyercarapace-level3",
+          "@index": null,
+          "@name": "1011",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1013",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 650,
     "@kill": 650

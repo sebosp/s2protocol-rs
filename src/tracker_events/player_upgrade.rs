@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 )]
 pub struct UpgradeEvent {
     pub player_id: u8,
+    pub player_name: Option<String>,
     pub upgrade_type_name: String,
     pub count: i32,
 }

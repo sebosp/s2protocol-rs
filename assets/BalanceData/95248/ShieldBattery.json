@@ -1,0 +1,187 @@
+{
+  "@id": "ShieldBattery",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ShieldBatteryRechargeEx5",
+        "@index": 702,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1902",
+              "@icon": "btn-ability-protoss-shieldbattery-color",
+              "@index": null,
+              "@name": "1901",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1903",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": null,
+    "@time": 40.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 200,
+    "@regenRate": null,
+    "@start": 200
+  },
+  "meta": {
+    "@hotkey": "922",
+    "@icon": "btn-building-protoss-shieldbattery",
+    "@index": 482,
+    "@name": "1900",
+    "@race": "Prot",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "923",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint2x2Contour",
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Probe",
+    "@name": "438"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "CyberneticsCore",
+        "@name": "679"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 100,
+    "@kill": 100
+  },
+  "shieldArmor": {
+    "@max": 1,
+    "@start": 0
+  },
+  "shields": {
+    "@delay": 10.0,
+    "@max": 200,
+    "@regenRate": 2.0,
+    "@start": 200
+  },
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ProtossShieldsLevel1",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 170.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "58",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel1",
+              "@index": null,
+              "@name": "57",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "59",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

@@ -12,8 +12,7 @@ use init_data::InitData;
 use rayon::prelude::*;
 
 use crate::cli::get_matching_files;
-use crate::details::Details;
-use crate::details::PlayerDetailsFlatRow;
+use crate::details::{PlayerLobbyDetails, PlayerLobbyDetailsFlatRow};
 use crate::game_events::VersionedBalanceUnit;
 use crate::tracker_events;
 use crate::*;
@@ -27,9 +26,7 @@ use ipc_writer::*;
 pub enum ArrowIpcTypes {
     /// Writes the [`crate::init_data::UserInitDataFlatRow`] flat row to an Arrow IPC file
     UserInitData,
-    /// Writes the [`crate::init_data::LobbySlotInitDataFlatRow`] flat row to an Arrow IPC file
-    LobbySlotInitData,
-    /// Writes the [`crate::details::PlayerDetailsFlatRow`] flat row to an Arrow IPC file
+    /// Writes the [`crate::details::PlayerLobbyDetailsFlatRow`] flat row to an Arrow IPC file
     Details,
     /// Writes the [`crate::tracker_events::PlayerStatsEvent`] to an Arrow IPC file
     Stats,
@@ -60,15 +57,8 @@ impl ArrowIpcTypes {
                     panic!("Invalid schema, expected struct");
                 }
             }
-            Self::LobbySlotInitData => {
-                if let DataType::Struct(fields) = init_data::LobbySlotInitDataFlatRow::data_type() {
-                    Schema::new(fields.clone())
-                } else {
-                    panic!("Invalid schema, expected struct");
-                }
-            }
             Self::Details => {
-                if let DataType::Struct(fields) = details::PlayerDetailsFlatRow::data_type() {
+                if let DataType::Struct(fields) = details::PlayerLobbyDetailsFlatRow::data_type() {
                     Schema::new(fields.clone())
                 } else {
                     panic!("Invalid schema, expected struct");
@@ -152,10 +142,6 @@ impl ArrowIpcTypes {
         // unit_born.ipc
         // unit_cmd_target_point.ipc
         // unit_cmd_target_unit.ipc
-        Self::LobbySlotInitData.handle_lobby_slot_init_data_ipc_cmd(
-            sources.clone(),
-            output.join("lobby_init_data.ipc"),
-        )?;
         Self::Details.handle_details_ipc_cmd(sources.clone(), output.join("details.ipc"))?;
         Self::Stats.handle_tracker_events(
             sources.clone(),
@@ -216,32 +202,6 @@ impl ArrowIpcTypes {
         Ok(())
     }
 
-    #[tracing::instrument(level = "debug")]
-    pub fn handle_lobby_slot_init_data_ipc_cmd(
-        &self,
-        sources: Vec<InitData>,
-        output: PathBuf,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        tracing::info!("Processing InitData IPC write request");
-
-        let init_data_flaw_rows: Vec<init_data::LobbySlotInitDataFlatRow> = sources
-            .iter()
-            .flat_map(|source| {
-                let res: Vec<init_data::LobbySlotInitDataFlatRow> = source.into();
-                res
-            })
-            .collect();
-        let res: ArrayRef = init_data_flaw_rows.try_into_arrow()?;
-        let chunk: RecordBatch = res
-            .as_any()
-            .downcast_ref::<arrow::array::StructArray>()
-            .unwrap()
-            .into();
-
-        write_batches(output, Self::LobbySlotInitData.schema(), chunk)?;
-        Ok(())
-    }
-
     /// Creates a new Arrow IPC file with the tracker events data
     /// This seems to be small enough to not need to be chunked and is done in parallel
     /// This requires 1.5GB of RAM for 3600 files, so maybe not good for real players.
@@ -259,25 +219,23 @@ impl ArrowIpcTypes {
         let total_records = sources
             .par_iter()
             .filter_map(|source| {
-                let details: Details = Details::try_from(source).ok()?;
-                let source_path = PathBuf::from(&source.ext_fs_file_name);
                 let event_iterator =
-                    SC2EventIterator::new(&source_path, versioned_abilities.clone()).ok()?;
+                    SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::Stats => {
-                        let batch = event_iterator.collect_into_player_stats_flat_rows(&details);
+                        let batch = event_iterator.collect_into_player_stats_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::Upgrades => {
-                        let batch = event_iterator.collect_into_upgrades_flat_rows(&details);
+                        let batch = event_iterator.collect_into_upgrades_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::UnitBorn => {
-                        let batch = event_iterator.collect_into_unit_born_flat_rows(&details);
+                        let batch = event_iterator.collect_into_unit_born_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::UnitDied => {
-                        let batch = event_iterator.collect_into_unit_died_flat_rows(&details);
+                        let batch = event_iterator.collect_into_unit_died_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     _ => unimplemented!(),
@@ -305,19 +263,15 @@ impl ArrowIpcTypes {
         let total_records = sources
             .par_iter()
             .filter_map(|source| {
-                let details = Details::try_from(source).ok()?;
-                let source_path = PathBuf::from(&source.ext_fs_file_name);
                 let event_iterator =
-                    SC2EventIterator::new(&source_path, versioned_abilities.clone()).ok()?;
+                    SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
                 let (res, batch_len): (ArrayRef, usize) = match self {
                     Self::CmdTargetPoint => {
-                        let batch =
-                            event_iterator.collect_into_game_cmd_target_points_flat_rows(&details);
+                        let batch = event_iterator.collect_into_game_cmd_target_points_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     Self::CmdTargetUnit => {
-                        let batch =
-                            event_iterator.collect_into_game_cmd_target_units_flat_rows(&details);
+                        let batch = event_iterator.collect_into_game_cmd_target_units_flat_rows();
                         (batch.try_into_arrow().ok()?, batch.len())
                     }
                     e => unimplemented!("{:?}", e),
@@ -339,17 +293,19 @@ impl ArrowIpcTypes {
         tracing::info!("Processing Read Once Write All IPC request");
         // process the sources in parallel consuming into the batch variable
 
-        let details_flaw_rows: Vec<PlayerDetailsFlatRow> = sources
+        let details_flaw_rows: Vec<PlayerLobbyDetailsFlatRow> = sources
             .iter()
             .flat_map(|source| {
-                let res: Vec<PlayerDetailsFlatRow> = match Details::try_from(source) {
-                    Ok(details) => details.into(),
+                let res: Vec<PlayerLobbyDetails> = match source.try_into() {
+                    Ok(details) => details,
                     Err(err) => {
                         tracing::error!("Error reading details: {:?}", err);
                         return vec![];
                     }
                 };
-                res
+                res.into_iter()
+                    .map(|d| d.into())
+                    .collect::<Vec<PlayerLobbyDetailsFlatRow>>()
             })
             .collect();
         let res: ArrayRef = details_flaw_rows.try_into_arrow()?;
@@ -372,17 +328,19 @@ impl ArrowIpcTypes {
         tracing::info!("Processing Details IPC write request");
         // process the sources in parallel consuming into the batch variable
 
-        let details_flaw_rows: Vec<PlayerDetailsFlatRow> = sources
+        let details_flaw_rows: Vec<PlayerLobbyDetailsFlatRow> = sources
             .iter()
             .flat_map(|source| {
-                let res: Vec<PlayerDetailsFlatRow> = match Details::try_from(source) {
-                    Ok(details) => details.into(),
+                let res: Vec<PlayerLobbyDetails> = match source.try_into() {
+                    Ok(details) => details,
                     Err(err) => {
                         tracing::error!("Error reading details: {:?}", err);
                         return vec![];
                     }
                 };
-                res
+                res.into_iter()
+                    .map(|d| d.into())
+                    .collect::<Vec<PlayerLobbyDetailsFlatRow>>()
             })
             .collect();
         let res: ArrayRef = details_flaw_rows.try_into_arrow()?;
