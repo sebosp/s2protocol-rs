@@ -9,6 +9,8 @@
 //! This means 10 max events types are supported.
 
 use super::*;
+use crate::details::Details;
+use crate::details::PlayerLobbyDetails;
 use crate::filters::SC2ReplayFilters;
 use crate::game_events::{
     GameEventIteratorState, VersionedBalanceUnit, VersionedBalanceUnits, handle_game_event,
@@ -28,7 +30,7 @@ pub const GAME_PRIORITY: i64 = 2;
 /// The game event loops and tracker event loops differ in their units.
 /// The true ratio should be identified somehow.
 /// There seems to be a ratio and the ratio based on initial calculations seems to be:
-pub const TRACKER_SPEED_RATIO: f32 = 0.70996;
+pub const TRACKER_SPEED_RATIO: f32 = 1.;
 
 /// The currently selected units is stored as a group outside of the boundaries of the usable
 /// groups.
@@ -43,6 +45,8 @@ pub struct SC2Unit {
     pub last_game_loop: i64,
     /// The owner user_id
     pub user_id: Option<u8>,
+    /// The player name matching the control_player_id
+    pub player_name: Option<String>,
     /// The name of the unit.
     pub name: String,
     /// The XYZ position.
@@ -107,11 +111,13 @@ pub enum SC2EventType {
     Game {
         game_loop: i64,
         user_id: i64,
+        player_name: Option<String>,
         event: ReplayGameEvent,
     },
 }
 
 impl SC2EventType {
+    #[tracing::instrument(level = "debug")]
     pub fn should_skip(&self, filters: &SC2ReplayFilters) -> bool {
         match self {
             SC2EventType::Tracker { event, .. } => event.should_skip(filters),
@@ -119,6 +125,7 @@ impl SC2EventType {
                 if let Some(user_id_filter) = filters.player_id
                     && *user_id as u8 != user_id_filter
                 {
+                    tracing::debug!("Skipping event for user_id filter {user_id_filter}");
                     return true;
                 }
                 event.should_skip(filters)
@@ -185,6 +192,9 @@ impl UnitChangeHint {
 /// The user state as it's collected through time.
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct SC2UserState {
+    /// The Player Details
+    pub player_lobby_details: PlayerLobbyDetails,
+
     /// An array of registered control groups per user, the control group indexed as 10th is the
     /// currently selected units.
     pub control_groups: Vec<Vec<u32>>,
@@ -194,13 +204,14 @@ pub struct SC2UserState {
 }
 
 impl SC2UserState {
-    pub fn new() -> Self {
+    pub fn new(player_lobby_details: PlayerLobbyDetails) -> Self {
         let mut control_groups = vec![];
         // populate as empty control groups.
         for _ in 0..11 {
             control_groups.push(vec![]);
         }
         Self {
+            player_lobby_details,
             control_groups,
             camera_pos: GameSPointMini { x: 0, y: 0 },
         }
@@ -211,6 +222,14 @@ impl SC2UserState {
 /// updated, unit position recorded, etc.
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct SC2ReplayState {
+    /// The parsed replay.initData from the MPQ, used to get further information about the players,
+    /// protocol version, map size, observe, user_id (can be used to match between different event
+    /// typse)
+    pub init_data: InitData,
+
+    /// The parsed replay.details from the MPQ, used to get information on the players
+    pub details: Details,
+
     /// The registered units state as they change through time.
     /// These are with unit index as reference
     pub units: HashMap<u32, SC2Unit>,
@@ -219,37 +238,52 @@ pub struct SC2ReplayState {
     /// through time.
     pub user_state: HashMap<i64, SC2UserState>,
 
-    /// The filename of the replay
-    pub filename: String,
+    /// The current protocol version abilities, containing a possible string translation.
+    pub balance_units: VersionedBalanceUnits,
+}
 
-    /// The sha256 digest of the replay file.
-    pub sha256: String,
+impl TryFrom<&InitData> for SC2ReplayState {
+    type Error = S2ProtocolError;
+    fn try_from(init_data: &InitData) -> Result<Self, Self::Error> {
+        let mut user_state: HashMap<i64, SC2UserState> = HashMap::new();
+        let details = Details::try_from(init_data)?;
+        let player_lobby_slots: Vec<PlayerLobbyDetails> = init_data.try_into()?;
+        for player in player_lobby_slots.iter() {
+            if let Some(user_id) = player.lobby_slot.user_id {
+                user_state.insert(user_id, SC2UserState::new(player.clone()));
+            }
+        }
+        Ok(Self {
+            init_data: init_data.clone(),
+            details,
+            user_state,
+            ..Default::default()
+        })
+    }
 }
 
 impl SC2ReplayState {
+    pub fn with_balance_units(
+        mut self,
+        balance_units: HashMap<String, VersionedBalanceUnit>,
+    ) -> Self {
+        self.balance_units = balance_units;
+        self
+    }
+
     /// When an event is meant to be consumed (i.e. it's the next in order), then the state of the
     /// game needs to transition through the event, returning a Hint of what has changed.
-    pub fn handle_transition_to_next_event(
-        &mut self,
-        balance_units: &VersionedBalanceUnits,
-        event: SC2EventType,
-    ) -> SC2EventIteratorItem {
+    pub fn handle_transition_to_next_event(&mut self, event: SC2EventType) -> SC2EventIteratorItem {
         match event {
             SC2EventType::Tracker {
                 tracker_loop,
                 event,
             } => {
-                let change_hint = handle_tracker_event(self, tracker_loop, &event, balance_units);
-                tracing::info!(
-                    "Trac [{:>08}]: Evt:{:?} Hint:{:?}",
-                    tracker_loop,
-                    event,
-                    change_hint
-                );
+                let (enriched_event, change_hint) = handle_tracker_event(self, tracker_loop, event);
                 SC2EventIteratorItem {
                     event_type: SC2EventType::Tracker {
                         tracker_loop,
-                        event,
+                        event: enriched_event,
                     },
                     change_hint,
                 }
@@ -257,21 +291,16 @@ impl SC2ReplayState {
             SC2EventType::Game {
                 game_loop,
                 user_id,
+                player_name,
                 event,
             } => {
                 let (enriched_event, change_hint) =
-                    handle_game_event(self, game_loop, user_id, event, balance_units);
-                tracing::info!(
-                    "Game [{:>08}]: uid: {} Evt:{:?} Hint:{:?}",
-                    game_loop,
-                    user_id,
-                    enriched_event,
-                    change_hint
-                );
+                    handle_game_event(self, game_loop, user_id, event);
                 SC2EventIteratorItem {
                     event_type: SC2EventType::Game {
                         game_loop,
                         user_id,
+                        player_name,
                         event: enriched_event,
                     },
                     change_hint,
@@ -284,8 +313,6 @@ impl SC2ReplayState {
 /// The iterator that returns the events as they happen.
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct SC2EventIterator {
-    /// The protocol version
-    protocol_version: u32,
     /// The replay state machine transducer
     pub sc2_state: SC2ReplayState,
     /// The tracker event iterator.
@@ -298,36 +325,27 @@ pub struct SC2EventIterator {
     next_game_event: Option<SC2EventType>,
     /// The iterator filter helpers
     filters: Option<SC2ReplayFilters>,
-    /// The current protocol version abilities, containing a possible string translation.
-    balance_units: VersionedBalanceUnits,
 }
 
 impl SC2EventIterator {
     /// Creates a new SC2EventIterator from a PathBuf
     #[tracing::instrument(level = "debug")]
     pub fn new(
-        source: &PathBuf,
+        init_data: &InitData,
         multi_version_abilities: HashMap<(u32, String), VersionedBalanceUnit>,
     ) -> Result<Self, S2ProtocolError> {
+        let source = PathBuf::from(init_data.ext_fs_file_name.clone());
         let total_initial_abilities = multi_version_abilities.len();
-        // The sc2 replay state is not shared between the two iterators...
-        tracing::debug!("Processing {:?}", source);
-        let file_contents = crate::read_file(source)?;
-        let source_filename = format!("{source:?}");
+        let file_contents = crate::read_file(&source)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
-        let (_tail, proto_header) = crate::read_protocol_header(&mpq)?;
         let (_event_tail, tracker_events) =
             mpq.read_mpq_file_sector("replay.tracker.events", false, &file_contents)?;
         let (_event_tail, game_events) =
             mpq.read_mpq_file_sector("replay.game.events", false, &file_contents)?;
-        let sc2_state = SC2ReplayState {
-            filename: source_filename,
-            ..Default::default()
-        };
         let balance_units: HashMap<String, VersionedBalanceUnit> = multi_version_abilities
             .into_iter()
             .filter_map(|((version, name), unit)| {
-                if version == proto_header.m_version.m_base_build {
+                if version == init_data.version {
                     Some((name, unit))
                 } else {
                     None
@@ -337,15 +355,15 @@ impl SC2EventIterator {
         tracing::info!(
             "Collected {} unit definitions for protocol version {} out of {} total definitions",
             balance_units.len(),
-            proto_header.m_version.m_base_build,
+            init_data.version,
             total_initial_abilities
         );
+
+        let sc2_state = SC2ReplayState::try_from(init_data)?.with_balance_units(balance_units);
         Ok(Self {
-            protocol_version: proto_header.m_version.m_base_build,
             sc2_state,
             tracker_iterator_state: tracker_events.into(),
             game_iterator_state: game_events.into(),
-            balance_units,
             ..Default::default()
         })
     }
@@ -376,8 +394,8 @@ impl SC2EventIterator {
     #[cfg(feature = "dep_arrow")]
     pub fn collect_into_game_cmd_target_points_flat_rows(
         self,
-        details: &crate::details::Details,
     ) -> Vec<game_events::CmdTargetPointEventFlatRow> {
+        let details = self.sc2_state.details.clone();
         // We could return some Iterator and write in batches.
         // Right now everything is expanded into memory for a given replay.
         let res: Vec<game_events::CmdTargetPointEventFlatRow> = self
@@ -387,14 +405,16 @@ impl SC2EventIterator {
                     event: game_events::ReplayGameEvent::Cmd(event),
                     game_loop,
                     user_id,
+                    player_name,
                 } = event_item.event_type
                     && let game_events::GameSCmdData::TargetPoint(_) = event.m_data
                 {
                     return game_events::CmdTargetPointEventFlatRow::new(
-                        details,
+                        &details,
                         event,
                         game_loop,
                         user_id,
+                        player_name,
                         event_item.change_hint,
                     );
                 }
@@ -409,8 +429,8 @@ impl SC2EventIterator {
     #[cfg(feature = "dep_arrow")]
     pub fn collect_into_game_cmd_target_units_flat_rows(
         self,
-        details: &crate::details::Details,
     ) -> Vec<game_events::CmdTargetUnitEventFlatRow> {
+        let details = self.sc2_state.details.clone();
         let res: Vec<game_events::CmdTargetUnitEventFlatRow> = self
             .into_iter()
             .flat_map(|event_item| {
@@ -418,14 +438,16 @@ impl SC2EventIterator {
                     event: game_events::ReplayGameEvent::Cmd(event),
                     game_loop,
                     user_id,
+                    player_name,
                 } = event_item.event_type
                     && let game_events::GameSCmdData::TargetUnit(_) = event.m_data
                 {
                     return game_events::CmdTargetUnitEventFlatRow::new(
-                        details,
+                        &details,
                         event,
                         game_loop,
                         user_id,
+                        player_name,
                         event_item.change_hint,
                     );
                 }
@@ -438,10 +460,8 @@ impl SC2EventIterator {
 
     /// Consumes the Iterator collecting only the PlayerStats events into a vector of PlayerStatsFlatRow
     #[cfg(feature = "dep_arrow")]
-    pub fn collect_into_player_stats_flat_rows(
-        self,
-        details: &crate::details::Details,
-    ) -> Vec<tracker_events::PlayerStatsFlatRow> {
+    pub fn collect_into_player_stats_flat_rows(self) -> Vec<tracker_events::PlayerStatsFlatRow> {
+        let details = self.sc2_state.details.clone();
         self.into_iter()
             .filter_map(|event_item| match event_item.event_type {
                 SC2EventType::Tracker {
@@ -465,10 +485,8 @@ impl SC2EventIterator {
 
     /// Consumes the Iterator collecting only the Upgrade events into a vector of UpgradeEventFlatRow
     #[cfg(feature = "dep_arrow")]
-    pub fn collect_into_upgrades_flat_rows(
-        self,
-        details: &crate::details::Details,
-    ) -> Vec<tracker_events::UpgradeEventFlatRow> {
+    pub fn collect_into_upgrades_flat_rows(self) -> Vec<tracker_events::UpgradeEventFlatRow> {
+        let details = self.sc2_state.details.clone();
         self.into_iter()
             .filter_map(|event_item| match event_item.event_type {
                 SC2EventType::Tracker {
@@ -492,10 +510,8 @@ impl SC2EventIterator {
 
     /// Consumes the Iterator collecting only the UnitBorn events into a vector of UnitBornEventFlatRow
     #[cfg(feature = "dep_arrow")]
-    pub fn collect_into_unit_born_flat_rows(
-        self,
-        details: &crate::details::Details,
-    ) -> Vec<tracker_events::UnitBornEventFlatRow> {
+    pub fn collect_into_unit_born_flat_rows(self) -> Vec<tracker_events::UnitBornEventFlatRow> {
+        let details = self.sc2_state.details.clone();
         self.into_iter()
             .filter_map(|event_item| match event_item.event_type {
                 SC2EventType::Tracker {
@@ -506,7 +522,7 @@ impl SC2EventIterator {
                         tracker_events::UnitBornEventFlatRow::from_unit_born(
                             event,
                             tracker_loop,
-                            details,
+                            &details,
                             event_item.change_hint,
                         )
                     }
@@ -514,7 +530,7 @@ impl SC2EventIterator {
                         tracker_events::UnitBornEventFlatRow::from_unit_done(
                             event,
                             tracker_loop,
-                            details,
+                            &details,
                             event_item.change_hint,
                         )
                     }
@@ -525,7 +541,7 @@ impl SC2EventIterator {
                                 tracker_events::UnitBornEventFlatRow::from_unit_type_change(
                                     event,
                                     tracker_loop,
-                                    details,
+                                    &details,
                                     change_hint,
                                 )
                             }
@@ -540,10 +556,8 @@ impl SC2EventIterator {
 
     /// Consumes the Iterator collecting only the UnitDied events into a vector of UnitBornEventFlatRow
     #[cfg(feature = "dep_arrow")]
-    pub fn collect_into_unit_died_flat_rows(
-        self,
-        details: &crate::details::Details,
-    ) -> Vec<tracker_events::UnitDiedEventFlatRow> {
+    pub fn collect_into_unit_died_flat_rows(self) -> Vec<tracker_events::UnitDiedEventFlatRow> {
+        let details = self.sc2_state.details.clone();
         self.into_iter()
             .filter_map(|event_item| match event_item.event_type {
                 SC2EventType::Tracker {
@@ -552,7 +566,7 @@ impl SC2EventIterator {
                 } => {
                     if let tracker_events::ReplayTrackerEvent::UnitDied(event) = event {
                         tracker_events::UnitDiedEventFlatRow::new(
-                            details,
+                            &details,
                             event,
                             tracker_loop,
                             event_item.change_hint,
@@ -585,17 +599,20 @@ impl SC2EventIteratorItem {
     }
 
     /// Returns true if the event should be skipped based on the filters
+    #[tracing::instrument(level = "debug")]
     fn shoud_skip_event(&self, event: &SC2EventType, filters: &SC2ReplayFilters) -> bool {
         if let Some(min_loop) = filters.min_loop
             && let SC2EventType::Tracker { tracker_loop, .. } = event
             && *tracker_loop < min_loop
         {
+            tracing::debug!("Skipping event below min_loop {min_loop}");
             return true;
         }
         if let Some(max_loop) = filters.max_loop
             && let SC2EventType::Tracker { tracker_loop, .. } = event
             && *tracker_loop > max_loop
         {
+            tracing::debug!("Skipping event above max_loop {max_loop}");
             return true;
         }
         event.should_skip(filters)
@@ -609,6 +626,41 @@ impl SC2EventIteratorItem {
     /// Retuns true if the variant of event type is Tracker
     pub fn is_tracker_event(&self) -> bool {
         matches!(self.event_type, SC2EventType::Tracker { .. })
+    }
+
+    /// Emits an info log for the event.
+    pub fn emit_info_log(&self) {
+        // When a username is not present or not possible to be translaated from user_id to
+        // player_name, we show it as "SYS"
+        let system_username: String = String::from("SYS");
+        match &self.event_type {
+            SC2EventType::Tracker {
+                tracker_loop,
+                event,
+            } => {
+                tracing::info!(
+                    "Trac [{:>08}]: Evt:{:?} Hint:{:?}",
+                    tracker_loop,
+                    event,
+                    self.change_hint
+                );
+            }
+            SC2EventType::Game {
+                game_loop,
+                user_id,
+                player_name,
+                event,
+            } => {
+                tracing::info!(
+                    "Game [{:>08}]: uid: [{:>16}:{}] Evt:{:?} Hint:{:?}",
+                    game_loop,
+                    player_name.as_ref().unwrap_or(&system_username),
+                    user_id,
+                    event,
+                    self.change_hint
+                );
+            }
+        }
     }
 }
 
@@ -625,39 +677,41 @@ impl Iterator for SC2EventIterator {
             if self.next_tracker_event.is_none() {
                 self.next_tracker_event = self
                     .tracker_iterator_state
-                    .get_next_event(self.protocol_version);
+                    .get_next_event(self.sc2_state.init_data.version);
             }
             // Likewise, fill the next game event if it's empty.
             if self.next_game_event.is_none() {
-                self.next_game_event = self
-                    .game_iterator_state
-                    .get_next_event(self.protocol_version, &self.balance_units);
+                self.next_game_event = self.game_iterator_state.get_next_event(
+                    self.sc2_state.init_data.version,
+                    &self.sc2_state.user_state,
+                    &self.sc2_state.balance_units,
+                );
             }
             // Now compare the adjusted game loops and return the event with the lowest one, be it game or tracker.
             let next_tracker_event_loop = self.get_tracker_loop();
             let next_game_event_loop = self.get_game_loop();
-            let event: SC2EventType = if let Some(next_tracker_event_loop) = next_tracker_event_loop
-            {
-                if let Some(next_game_event_loop) = next_game_event_loop {
+            let event: SC2EventType = match (next_tracker_event_loop, next_game_event_loop) {
+                (Some(next_tracker_event_loop), Some(next_game_event_loop)) => {
                     // Both events are populated, compare the loop and return the lowest one
-                    if next_tracker_event_loop <= next_game_event_loop {
+                    if next_tracker_event_loop
+                        < (next_game_event_loop as f32 * TRACKER_SPEED_RATIO) as i64
+                    {
                         self.next_tracker_event.take().unwrap()
                     } else {
                         self.next_game_event.take().unwrap()
                     }
-                } else {
+                }
+                (None, Some(_)) => {
+                    // The tracker event is not populated, return the game event.
+                    self.next_game_event.take().unwrap()
+                }
+                (Some(_), None) => {
                     // The game event is not populated, return the tracker event.
                     self.next_tracker_event.take().unwrap()
                 }
-            } else if next_game_event_loop.is_some() {
-                // The tracker event is not populated, return the game event.
-                self.next_game_event.take().unwrap()
-            } else {
-                return None;
+                (None, None) => return None,
             };
-            let iterator_item = self
-                .sc2_state
-                .handle_transition_to_next_event(&self.balance_units, event);
+            let iterator_item = self.sc2_state.handle_transition_to_next_event(event);
             if let Some(ref mut filters) = self.filters {
                 if iterator_item.shoud_skip_event(&iterator_item.event_type, filters) {
                     continue;
@@ -667,6 +721,7 @@ impl Iterator for SC2EventIterator {
                     return None;
                 }
             }
+            iterator_item.emit_info_log();
             return Some(iterator_item);
         }
     }

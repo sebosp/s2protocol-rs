@@ -113,6 +113,34 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 225,
+        "@id": "NeuralParasite",
+        "@index": 3,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 150,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 150
+        },
+        "meta": {
+          "@hotkey": "1028",
+          "@icon": "btn-ability-zerg-neuralparasite-color",
+          "@index": null,
+          "@name": "1027",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1029",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 200,
     "@kill": 200

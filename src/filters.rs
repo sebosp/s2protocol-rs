@@ -1,6 +1,5 @@
-//! Provides way to provide common filter operations.
-//! This should be use in combination with the iterators and filter(), but helps a lot of the code
-//! required to match and dive into types.
+//! Provides common filter operations.
+//! This should be use in combination with the iterators and filter()
 
 use serde::{Deserialize, Serialize};
 

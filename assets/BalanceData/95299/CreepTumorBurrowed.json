@@ -1,0 +1,113 @@
+{
+  "@id": "CreepTumorBurrowed",
+  "abilities": {
+    "ability": []
+  },
+  "armor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": [
+      {
+        "@ability": 267,
+        "@id": "CreepTumor",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": 19.0,
+          "@energy": null,
+          "@life": null,
+          "@minerals": null,
+          "@supply": null,
+          "@time": 15.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "949",
+          "@icon": "btn-building-zerg-creeptumor",
+          "@index": null,
+          "@name": "1266",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1267",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      }
+    ]
+  },
+  "cost": null,
+  "life": {
+    "@max": 50,
+    "@regenRate": 0.2734000086784363,
+    "@start": 50
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-building-zerg-creeptumor",
+    "@index": 160,
+    "@name": "951",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1265",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "CreepTumorBurrowed",
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "researches": null,
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

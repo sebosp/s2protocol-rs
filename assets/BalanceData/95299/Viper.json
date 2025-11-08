@@ -1,0 +1,403 @@
+{
+  "@id": "Viper",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "AcquireMove",
+            "@index": 3,
+            "meta": {
+              "@hotkey": "195",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "194",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "196",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ViperConsumeStructure",
+        "@index": 388,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1889",
+              "@icon": "btn-ability-zerg-consume",
+              "@index": null,
+              "@name": "1888",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1890",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BlindingCloud",
+        "@index": 383,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1892",
+              "@icon": "btn-ability-zerg-blindingcloud",
+              "@index": null,
+              "@name": "1891",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1893",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Yoink",
+        "@index": 385,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1895",
+              "@icon": "btn-ability-zerg-abduct",
+              "@index": null,
+              "@name": "1894",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1896",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "ParasiticBomb",
+        "@index": 609,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1898",
+              "@icon": "btn-ability-zerg-parasiticbomb",
+              "@index": null,
+              "@name": "1897",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1899",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 4,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Psionic"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": 3.0,
+    "@time": 40.0,
+    "@vespene": 200
+  },
+  "life": {
+    "@max": 150,
+    "@regenRate": 0.2734000086784363,
+    "@start": 150
+  },
+  "meta": {
+    "@hotkey": "1369",
+    "@icon": "btn-unit-zerg-viper",
+    "@index": 481,
+    "@name": "1142",
+    "@race": "Zerg",
+    "@source": "Swarm.SC2Mod",
+    "@tooltip": "1370",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 11.0,
+    "@speed": null,
+    "@supply": -3.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 3.0,
+    "@deceleration": 0.0,
+    "@speed": 2.9530999660491943,
+    "@turnRate": 999.8436889648438,
+    "@type": "Fly"
+  },
+  "producer": {
+    "@id": "Larva",
+    "@name": "1085"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "Hive",
+        "@name": "102"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 300,
+    "@kill": 300
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "SiegeTank",
+        "@name": "305"
+      },
+      {
+        "@id": "Mutalisk",
+        "@name": "81"
+      },
+      {
+        "@id": "Colossus",
+        "@name": "21"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ZergFlyerArmors",
+        "level": [
+          {
+            "@id": "ZergFlyerArmorsLevel1",
+            "@index": 74,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "1005",
+              "@icon": "btn-upgrade-zerg-flyercarapace-level1",
+              "@index": null,
+              "@name": "1010",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1006",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ZergFlyerArmorsLevel2",
+            "@index": 75,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "1008",
+              "@icon": "btn-upgrade-zerg-flyercarapace-level2",
+              "@index": null,
+              "@name": "1014",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1009",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergFlyerArmorsLevel1",
+                    "@name": "1010"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ZergFlyerArmorsLevel3",
+            "@index": 76,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "1012",
+              "@icon": "btn-upgrade-zerg-flyercarapace-level3",
+              "@index": null,
+              "@name": "1125",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1013",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergFlyerArmorsLevel2",
+                    "@name": "1014"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Ghost",
+        "@name": "555"
+      },
+      {
+        "@id": "Corruptor",
+        "@name": "30"
+      },
+      {
+        "@id": "HighTemplar",
+        "@name": "556"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

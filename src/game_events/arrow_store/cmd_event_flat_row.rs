@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 )]
 pub struct CmdTargetPointEventFlatRow {
     pub user_id: i64,
+    pub player_name: Option<String>,
     pub cmd_flags: i64,
     pub abil_link: Option<u16>,
     pub abil_cmd_index: Option<i64>,
@@ -37,6 +38,7 @@ impl CmdTargetPointEventFlatRow {
         event: GameSCmdEvent,
         game_loop: i64,
         user_id: i64,
+        player_name: Option<String>,
         change_hint: crate::UnitChangeHint,
     ) -> Vec<Self> {
         let mut res = vec![];
@@ -46,17 +48,19 @@ impl CmdTargetPointEventFlatRow {
         };
         let ext_replay_seconds = crate::convert_game_loop_to_seconds(game_loop);
         if let crate::UnitChangeHint::Abilities { units, .. } = change_hint {
+            let ability: String = event
+                .m_abil
+                .as_ref()
+                .map(|abil| abil.ability.clone())
+                .unwrap_or_default();
             for unit in units {
                 let unit_name = unit.name.clone();
                 res.push(Self {
                     user_id,
+                    player_name: player_name.clone(),
                     cmd_flags: event.m_cmd_flags,
                     abil_link: event.m_abil.as_ref().map(|abil| abil.m_abil_link),
-                    ability: event
-                        .m_abil
-                        .as_ref()
-                        .map(|abil| abil.ability.clone())
-                        .unwrap_or_default(),
+                    ability: ability.clone(),
                     abil_cmd_index: event.m_abil.as_ref().map(|abil| abil.m_abil_cmd_index),
                     target_point_x: map_coord.x,
                     target_point_y: map_coord.y,
@@ -82,6 +86,7 @@ impl CmdTargetPointEventFlatRow {
 )]
 pub struct CmdTargetUnitEventFlatRow {
     pub user_id: i64,
+    pub player_name: Option<String>,
     pub cmd_flags: i64,
     pub abil_link: Option<u16>,
     pub abil_cmd_index: Option<i64>,
@@ -109,6 +114,7 @@ impl CmdTargetUnitEventFlatRow {
         event: GameSCmdEvent,
         game_loop: i64,
         user_id: i64,
+        player_name: Option<String>,
         change_hint: crate::UnitChangeHint,
     ) -> Vec<Self> {
         let mut res = vec![];
@@ -131,6 +137,7 @@ impl CmdTargetUnitEventFlatRow {
                 };
                 res.push(Self {
                     user_id,
+                    player_name: player_name.clone(),
                     cmd_flags: event.m_cmd_flags,
                     abil_link: event.m_abil.as_ref().map(|abil| abil.m_abil_link),
                     abil_cmd_index: event.m_abil.as_ref().map(|abil| abil.m_abil_cmd_index),

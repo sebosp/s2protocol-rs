@@ -2,10 +2,10 @@
 
 use crate::error::S2ProtocolError;
 
+use crate::SC2EventType;
 use crate::tracker_events::TrackerEvent;
 use crate::versions::protocol75689::byte_aligned::ReplayTrackerEEventId as Protocol75689ReplayTrackerEEventId;
 use crate::versions::protocol87702::byte_aligned::ReplayTrackerEEventId as Protocol87702ReplayTrackerEEventId;
-use crate::{SC2EventType, TRACKER_SPEED_RATIO};
 use nom::*;
 use serde::{Deserialize, Serialize};
 
@@ -74,9 +74,9 @@ impl TrackertEventIteratorState {
                 Ok(val) => {
                     // After the event is collected, the loop is adjusted to be in the same units as the
                     // game loops.
-                    let adjusted_loop = (self.event_loop as f32 / TRACKER_SPEED_RATIO) as i64;
+                    let tracker_loop = self.event_loop;
                     let event = SC2EventType::Tracker {
-                        tracker_loop: adjusted_loop,
+                        tracker_loop,
                         event: val.event.clone(),
                     };
                     return Some(event);

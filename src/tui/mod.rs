@@ -5,8 +5,9 @@
 //!
 
 use crate::{
-    SC2EventIteratorItem,
+    ACTIVE_UNITS_GROUP_IDX, SC2EventIteratorItem,
     state::{SC2EventIterator, SC2EventType, UnitChangeHint},
+    tracker_events::unit_tag_index,
 };
 use std::{
     io::stdout,
@@ -38,6 +39,7 @@ use syntect_tui::translate_style;
 pub fn ratatui_main(
     sc2_event_iter: SC2EventIterator,
     details: crate::details::Details,
+    init_data: crate::init_data::InitData,
     syntect_syntax_set: SyntaxSet,
     syntect_theme_set: ThemeSet,
 ) -> Result<()> {
@@ -47,6 +49,7 @@ pub fn ratatui_main(
     let app_result = S2ProtoRatatuiApp::new(
         sc2_event_iter,
         details,
+        init_data,
         syntect_syntax_set,
         syntect_theme_set,
     )
@@ -78,6 +81,7 @@ struct S2ProtoRatatuiApp {
     points: Vec<Position>,
     is_drawing: bool,
     details: crate::details::Details,
+    init_data: crate::init_data::InitData,
     sc2_event_iter: SC2EventIterator,
     current_event: Option<SC2EventIteratorItem>,
     syntect_syntax_set: SyntaxSet,
@@ -85,12 +89,36 @@ struct S2ProtoRatatuiApp {
 }
 
 impl S2ProtoRatatuiApp {
-    const fn new(
-        sc2_event_iter: SC2EventIterator,
+    fn new(
+        mut sc2_event_iter: SC2EventIterator,
         details: crate::details::Details,
+        init_data: crate::init_data::InitData,
         syntect_syntax_set: SyntaxSet,
         syntect_theme_set: ThemeSet,
     ) -> Self {
+        let mut current_event = sc2_event_iter.next();
+        loop {
+            let mut should_break = true;
+            match &current_event {
+                Some(event) => match event.event_type {
+                    SC2EventType::Tracker { tracker_loop, .. } => {
+                        if tracker_loop == 0 {
+                            should_break = false;
+                        }
+                    }
+                    SC2EventType::Game { game_loop, .. } => {
+                        if game_loop == 0 {
+                            should_break = false;
+                        }
+                    }
+                },
+                None => break,
+            }
+            if should_break {
+                break;
+            }
+            current_event = sc2_event_iter.next();
+        }
         Self {
             exit: false,
             x: 0.0,
@@ -100,8 +128,9 @@ impl S2ProtoRatatuiApp {
             points: vec![],
             is_drawing: false,
             details,
+            init_data,
             sc2_event_iter,
-            current_event: None,
+            current_event,
             syntect_syntax_set,
             syntect_theme_set,
         }
@@ -160,9 +189,8 @@ impl S2ProtoRatatuiApp {
     fn on_tick(&mut self) {
         self.tick_count += 1;
         if (self.tick_count % 10) == 0 {
-            self.current_event = self.sc2_event_iter.next();
+            // self.current_event = self.sc2_event_iter.next();
         }
-        // bounce the ball by flipping the velocity vector
     }
 
     fn draw(&self, frame: &mut Frame) {
@@ -171,35 +199,69 @@ impl S2ProtoRatatuiApp {
         let vertical = Layout::vertical([Constraint::Percentage(25), Constraint::Percentage(75)]);
         let [left, right] = horizontal.areas(frame.area());
         let [draw, map] = vertical.areas(left);
-        let [pong, _right_bottom_pane] = vertical.areas(right);
+        let [details, player_selection_area] = vertical.areas(right);
+        let [player1_selected_units, player2_selected_units] =
+            vertical.areas(player_selection_area);
 
         frame.render_widget(self.map_canvas(), map);
         frame.render_widget(self.event_canvas(), draw);
-        frame.render_widget(self.replay_canvas(), pong);
+        frame.render_widget(self.details_canvas(), details);
+        frame.render_widget(self.selected_player_units(0), player1_selected_units);
+        frame.render_widget(self.selected_player_units(1), player2_selected_units);
     }
 
     fn event_canvas(&self) -> impl Widget + '_ {
         let mut text: Vec<Line<'_>> = vec![];
+        let mut spans = vec![];
         if let Some(event_item) = &self.current_event {
             match event_item.event_type {
                 SC2EventType::Tracker {
-                    event: _,
+                    ref event,
                     tracker_loop,
                 } => {
                     let game_secs = tracker_loop as f64 / 22.0;
                     text.push(text::Line::from(Span::from(format!(
                         "TRCK[{game_secs:>10.3}s][{tracker_loop:0>8}]: "
                     ))));
+                    for (style, data) in syntect_json_highlight(
+                        serde_json::to_string(&event).unwrap().as_str(),
+                        &self.syntect_syntax_set,
+                        &self.syntect_theme_set,
+                    ) {
+                        spans.push(Span::styled(
+                            String::from(data),
+                            translate_style(style).unwrap(),
+                        ))
+                    }
+                    text.push(Line::from(spans));
                 }
                 SC2EventType::Game {
-                    event: _,
-                    user_id: _,
+                    ref event,
+                    user_id,
                     game_loop,
                 } => {
+                    text.push(text::Line::from(Span::styled(
+                        format!(
+                            "UID[{user_id:<02}{:>20}]",
+                            self.details.get_player_name(user_id as u8)
+                        ),
+                        Style::default().fg(self.get_player_color(user_id)),
+                    )));
                     let game_secs = game_loop as f64 / 22.0;
                     text.push(text::Line::from(Span::from(format!(
                         "GAME[{game_secs:>10.3}s][{game_loop:0>8}]: "
                     ))));
+                    for (style, data) in syntect_json_highlight(
+                        serde_json::to_string(&event).unwrap().as_str(),
+                        &self.syntect_syntax_set,
+                        &self.syntect_theme_set,
+                    ) {
+                        spans.push(Span::styled(
+                            String::from(data),
+                            translate_style(style).unwrap(),
+                        ))
+                    }
+                    text.push(Line::from(spans));
                 }
             }
             match &event_item.change_hint {
@@ -222,7 +284,7 @@ impl S2ProtoRatatuiApp {
                         .unwrap_or(format!("None{ability}"));
 
                     text.push(text::Line::from(Span::from(format!(
-                        "Unit: {unit}. creator: {creator}"
+                        "[{unit:>15}]. creator: {creator}",
                     ))));
                 }
                 UnitChangeHint::Positions(units) => {
@@ -312,18 +374,22 @@ impl S2ProtoRatatuiApp {
                 }
             }
         }
-        let mut spans = vec![];
-        for (style, data) in syntect_json_highlight(
-            serde_json::to_string(&self.current_event).unwrap().as_str(),
-            &self.syntect_syntax_set,
-            &self.syntect_theme_set,
-        ) {
-            spans.push(Span::styled(
-                String::from(data),
-                translate_style(style).unwrap(),
-            ))
+        if let Some(current_event) = &self.current_event {
+            let mut spans = vec![];
+            for (style, data) in syntect_json_highlight(
+                serde_json::to_string(&current_event.change_hint)
+                    .unwrap()
+                    .as_str(),
+                &self.syntect_syntax_set,
+                &self.syntect_theme_set,
+            ) {
+                spans.push(Span::styled(
+                    String::from(data),
+                    translate_style(style).unwrap(),
+                ))
+            }
+            text.push(Line::from(spans));
         }
-        text.push(Line::from(spans));
         let block = Block::bordered().title(Span::styled(
             "Event",
             Style::default()
@@ -334,11 +400,16 @@ impl S2ProtoRatatuiApp {
     }
 
     fn map_canvas(&self) -> impl Widget + '_ {
+        let map_size_x = self.init_data.sync_lobby_state.game_description.map_size_x;
+        let map_size_y = self.init_data.sync_lobby_state.game_description.map_size_y;
         Canvas::default()
-            .block(Block::bordered().title(self.sc2_event_iter.sc2_state.filename.clone()))
+            .block(Block::bordered().title(format!(
+                "{} - size {}x{}",
+                self.sc2_event_iter.sc2_state.filename, map_size_x, map_size_y
+            )))
             .marker(self.marker)
-            .x_bounds([50.0, 200.0])
-            .y_bounds([50.0, 200.0])
+            .x_bounds([0.0, f64::from(map_size_x)])
+            .y_bounds([0.0, f64::from(map_size_y)])
             .paint(move |ctx| {
                 for unit in self.sc2_event_iter.sc2_state.units.values() {
                     ctx.draw(&Circle {
@@ -354,23 +425,57 @@ impl S2ProtoRatatuiApp {
                         y: (user.camera_pos.y as f64 / GAME_SPOINT_MINI_TO_MAP_RATIO) - 10.0,
                         width: 20.0,
                         height: 20.0,
-                        color: self.get_player_color(user_id),
+                        color: self.get_player_color(*user_id),
                     });
                 }
             })
     }
 
-    fn get_player_color(&self, user_id: &i64) -> Color {
+    fn selected_player_units(&self, user_index: usize) -> impl Widget + '_ {
+        let mut text: Vec<Line<'_>> = vec![];
+        for (idx, (_uid, user_state)) in self.sc2_event_iter.sc2_state.user_state.iter().enumerate()
+        {
+            if user_index != idx {
+                continue;
+            }
+            for selected_unit in user_state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone() {
+                let unit_index = unit_tag_index(selected_unit as i64);
+                if let Some(registered_unit) = self.sc2_event_iter.sc2_state.units.get(&unit_index)
+                {
+                    text.push(text::Line::from(format!(
+                        "{}[@{}]:{}",
+                        registered_unit.name,
+                        registered_unit.tag_index,
+                        registered_unit
+                            .cmd
+                            .abil
+                            .clone()
+                            .map(|a| a.ability)
+                            .unwrap_or("".to_string())
+                    )));
+                }
+            }
+        }
+        let block = Block::bordered().title(Span::styled(
+            format!("{user_index} Selected Units"),
+            Style::default()
+                .fg(Color::LightBlue)
+                .add_modifier(Modifier::BOLD),
+        ));
+        Paragraph::new(text).block(block).wrap(Wrap { trim: true })
+    }
+
+    fn get_player_color(&self, user_id: i64) -> Color {
         self.details
             .player_list
             .iter()
-            .find(|player| player.working_set_slot_id == Some(*user_id as u8))
+            .find(|player| player.working_set_slot_id == Some(user_id as u8))
             .map_or(Color::White, |player| {
                 Color::Rgb(player.color.r, player.color.g, player.color.b)
             })
     }
 
-    fn replay_canvas(&self) -> impl Widget + '_ {
+    fn details_canvas(&self) -> impl Widget + '_ {
         let mut text: Vec<Line<'_>> = vec![];
         for player in &self.details.player_list {
             if let Some(slot_id) = player.working_set_slot_id {
@@ -379,11 +484,11 @@ impl S2ProtoRatatuiApp {
                         "{}/{}/{}",
                         player.toon.region, player.toon.realm, player.toon.id
                     ),
-                    Style::default().fg(self.get_player_color(&i64::from(slot_id))),
+                    Style::default().fg(self.get_player_color(i64::from(slot_id))),
                 )));
                 text.push(text::Line::from(Span::styled(
                     format!(" - {:>32} Slot: {}", player.name, slot_id),
-                    Style::default().fg(self.get_player_color(&i64::from(slot_id))),
+                    Style::default().fg(self.get_player_color(i64::from(slot_id))),
                 )));
                 text.push(text::Line::from(Span::styled(
                     format!("- {:>24} Result: {}", player.race, player.result),

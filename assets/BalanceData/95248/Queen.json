@@ -1,0 +1,606 @@
+{
+  "@id": "Queen",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BurrowQueenDown",
+        "@index": 217,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "89",
+              "@icon": "btn-ability-zerg-burrow-color",
+              "@index": null,
+              "@name": "88",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "90",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "SpawnLarva",
+        "@index": 113,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1212",
+              "@icon": "BTN-Unit-Zerg-Larva",
+              "@index": null,
+              "@name": "1211",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1213",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Transfusion",
+        "@index": 247,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1215",
+              "@icon": "btn-ability-zerg-transfusion-color",
+              "@index": null,
+              "@name": "1214",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1216",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 4,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Psionic"
+      }
+    ]
+  },
+  "builds": {
+    "unit": [
+      {
+        "@ability": 262,
+        "@id": "CreepTumorQueen",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": 25,
+          "@life": null,
+          "@minerals": null,
+          "@supply": null,
+          "@time": 15.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "1219",
+          "@icon": "btn-building-zerg-creeptumor",
+          "@index": null,
+          "@name": "1218",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1220",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": []
+        }
+      }
+    ]
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 175,
+    "@supply": 2.0,
+    "@time": 50.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 175,
+    "@regenRate": 0.2734000086784363,
+    "@start": 175
+  },
+  "meta": {
+    "@hotkey": "946",
+    "@icon": "btn-unit-zerg-queen",
+    "@index": 149,
+    "@name": "1207",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "947",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 2,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.875,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": -2.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 1000.0,
+    "@deceleration": 0.0,
+    "@speed": 0.9375,
+    "@turnRate": 999.8436889648438,
+    "@type": "Ground"
+  },
+  "producer": {
+    "@id": "Hatchery",
+    "@name": "926"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "SpawningPool",
+        "@name": "932"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 175,
+    "@kill": 175
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Hellion",
+        "@name": "594"
+      },
+      {
+        "@id": "Mutalisk",
+        "@name": "81"
+      },
+      {
+        "@id": "Oracle",
+        "@name": "869"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ZergGroundArmors",
+        "level": [
+          {
+            "@id": "ZergGroundArmorsLevel1",
+            "@index": 59,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "93",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level1",
+              "@index": null,
+              "@name": "92",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "94",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ZergGroundArmorsLevel2",
+            "@index": 60,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "96",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level2",
+              "@index": null,
+              "@name": "95",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "97",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel1",
+                    "@name": "92"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ZergGroundArmorsLevel3",
+            "@index": 61,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "100",
+              "@icon": "btn-upgrade-zerg-groundcarapace-level3",
+              "@index": null,
+              "@name": "99",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "101",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergGroundArmorsLevel2",
+                    "@name": "95"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "ZergMissileWeapons",
+        "level": [
+          {
+            "@id": "ZergMissileWeaponsLevel1",
+            "@index": 62,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "104",
+              "@icon": "btn-upgrade-zerg-missileattacks-level1",
+              "@index": null,
+              "@name": "103",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "105",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ZergMissileWeaponsLevel2",
+            "@index": 63,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "107",
+              "@icon": "btn-upgrade-zerg-missileattacks-level2",
+              "@index": null,
+              "@name": "106",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "108",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Lair",
+                    "@name": "98"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergMissileWeaponsLevel1",
+                    "@name": "103"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ZergMissileWeaponsLevel3",
+            "@index": 64,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "110",
+              "@icon": "btn-upgrade-zerg-missileattacks-level3",
+              "@index": null,
+              "@name": "109",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "111",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "Hive",
+                    "@name": "102"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ZergMissileWeaponsLevel2",
+                    "@name": "106"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "Burrow",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 100.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "112",
+              "@icon": "btn-ability-zerg-burrow-color",
+              "@index": null,
+              "@name": "91",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "113",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Marine",
+        "@name": "26"
+      },
+      {
+        "@id": "Zergling",
+        "@name": "27"
+      },
+      {
+        "@id": "Zealot",
+        "@name": "28"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "AcidSpines",
+        "@index": 61,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-zerg-missileattacks-level0",
+          "@index": null,
+          "@name": "1208",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1209",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": null,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 7.0,
+          "@sightRadius": null,
+          "@speed": 1.0,
+          "@supply": null,
+          "@targets": "air"
+        },
+        "score": null
+      },
+      {
+        "@id": "TalonsMissile",
+        "@index": 85,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-zerg-missileattacks-level0",
+          "@index": null,
+          "@name": "1210",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": 2,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 5.0,
+          "@sightRadius": null,
+          "@speed": 1.0,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
+}

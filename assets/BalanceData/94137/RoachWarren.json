@@ -113,6 +113,58 @@
       }
     ]
   },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 109,
+        "@id": "GlialReconstitution",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "1054",
+          "@icon": "btn-upgrade-zerg-glialreconstitution",
+          "@index": null,
+          "@name": "1053",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1055",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 109,
+        "@id": "TunnelingClaws",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 110.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "1057",
+          "@icon": "btn-upgrade-zerg-tunnelingclaws",
+          "@index": null,
+          "@name": "1056",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "1058",
+          "@type": "command"
+        }
+      }
+    ]
+  },
   "score": {
     "@build": 150,
     "@kill": 150
