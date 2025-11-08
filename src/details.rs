@@ -1,7 +1,13 @@
 //! Decodes the Details.
 //! The cache_handles can be downloaded from blizzard depo URL , sort of like:
+//! The first 8 bytes of the cache_handle are the extension, for example "s2ma".
+//! The other 2 characters are the region, for example "EU".
 //! ```bash
-//! for cache_hash in {list};do echo $cache_hash;curl -Lv https://eu-s2-depot.classic.blizzard.com/$cache_hash.s2ma -o $cache_hash.s2ma;done$
+//!❯ echo "73326d6100004555"|xxd -r -ps
+//! s2maEU
+//! ````
+//! ```bash
+//!./target/debug/s2protocol -v error --source 'SomeReplay' --json-balance-data-dir=/home/seb/git/s2protocol-rs/assets/BalanceData/ --quiet get details|jq '.cache_handles.[]' -r|while read cache_handle; do cache_hash=$(echo $cache_handle|sed 's/^73326d6100004555//g'); curl -L https://eu-s2-depot.classic.blizzard.com/$cache_hash.s2ma -o $cache_hash.s2ma;done
 //! ```
 
 use std::path::PathBuf;
