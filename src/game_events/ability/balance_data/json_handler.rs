@@ -1,5 +1,6 @@
 //! Writes a snapshot of the BalanceData read from XML into JSON format for posterity.
 
+use include_assets::{NamedArchive, include_dir};
 use serde_json::json;
 use std::collections::HashMap;
 use std::error::Error;
@@ -39,8 +40,9 @@ pub fn write_balance_data_to_json<P: AsRef<Path>>(
     }
     Ok(())
 }
+
 /// Reads the BalanceData from a JSON file at the specified path.
-pub fn read_balance_data_from_json<P: AsRef<Path>>(
+pub fn read_balance_data_from_json_dir<P: AsRef<Path>>(
     root_path: P,
 ) -> Result<HashMap<(u32, String), VersionedBalanceUnit>, Box<dyn Error>> {
     // Each subdirectory in the root_path corresponds to a version.
@@ -88,5 +90,36 @@ pub fn read_balance_data_from_json<P: AsRef<Path>>(
         balance_data.len()
     );
 
+    Ok(balance_data)
+}
+
+pub fn read_balance_data_from_included_assets()
+-> Result<HashMap<(u32, String), VersionedBalanceUnit>, Box<dyn Error>> {
+    tracing::info!("Reading balance data from included assets");
+    let mut balance_data: HashMap<(u32, String), VersionedBalanceUnit> = HashMap::new();
+
+    let archive = NamedArchive::load(include_dir!("assets/BalanceData"));
+
+    for (fname, contents) in archive.assets() {
+        let parts: Vec<&str> = fname.split('/').collect();
+        if parts.len() != 2 {
+            tracing::warn!("Skipping invalid asset file: {}", fname);
+            continue;
+        }
+        let version: u32 = match parts[0].parse() {
+            Ok(v) => v,
+            Err(_) => {
+                tracing::warn!("Skipping non-numeric version in asset file: {}", fname);
+                continue;
+            }
+        };
+        let unit_name = parts[1].trim_end_matches(".json").to_string();
+        let versioned_balance_unit: VersionedBalanceUnit = serde_json::from_slice(contents)?;
+        balance_data.insert((version, unit_name), versioned_balance_unit);
+    }
+    tracing::info!(
+        "Read {} versioned balance units from included assets",
+        balance_data.len()
+    );
     Ok(balance_data)
 }

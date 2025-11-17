@@ -64,10 +64,6 @@ macro_rules! ok_or_return_missing_field_err {
         match $req_field {
             Some(v) => v,
             None => {
-                tracing::error!(
-                    missing_field = stringify!($req_field),
-                    "Required field not provided"
-                );
                 return Err(S2ProtocolError::MissingField(
                     stringify!($req_field).to_string(),
                 ));

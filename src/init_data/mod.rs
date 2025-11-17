@@ -58,8 +58,25 @@ impl InitData {
     }
 
     #[tracing::instrument(level = "error")]
-    pub fn set_version(&mut self, version: u32) {
+    pub fn with_version(mut self, version: u32) -> Self {
         self.version = version;
+        self
+    }
+
+    /// Returns all the players from the sync lobby state.
+    /// That is the ones that are not observers.
+    pub fn get_player_names(&self) -> Vec<String> {
+        self.sync_lobby_state
+            .user_initial_data
+            .iter()
+            .filter_map(|u| {
+                if u.observe == crate::common::OBSERVE_NONE {
+                    Some(u.name.clone())
+                } else {
+                    None
+                }
+            })
+            .collect()
     }
 }
 

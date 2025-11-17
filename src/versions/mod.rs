@@ -107,7 +107,7 @@ pub fn read_details(
     }
 }
 
-/// Attempts to read the initData, panics under unknown protocol
+/// Attempts to read the initData, panics if signature doesn't match
 #[tracing::instrument(level = "error", skip(mpq, file_contents, file_name))]
 pub fn read_init_data(
     file_name: &str,
@@ -127,17 +127,9 @@ pub fn read_init_data(
         | 91115 => protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),
         _ => protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),
     };
-    match res {
-        Ok(mut res) => {
-            res.set_version(proto_header.m_version.m_base_build);
-            Ok(res)
-        }
-        Err(e) => {
-            tracing::error!("Error reading InitData: {:?}", e);
-            Err(e)
-        }
-    }
+    Ok(res?.with_version(proto_header.m_version.m_base_build))
 }
+
 #[cfg(test)]
 mod tests {
     use crate::versions::protocol87702::byte_aligned::ReplayTrackerEEventId;

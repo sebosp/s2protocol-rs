@@ -1,4 +1,9 @@
 use super::*;
+pub mod cmd_get;
+pub use cmd_get::*;
+
+pub mod cmd_scan;
+pub use cmd_scan::*;
 
 #[cfg(feature = "syntax")]
 use syntect::easy::HighlightLines;
@@ -10,52 +15,36 @@ use syntect::parsing::SyntaxSet;
 use syntect::util::{LinesWithEndings, as_24_bit_terminal_escaped};
 
 use crate::game_events::VersionedBalanceUnit;
-use crate::game_events::ability::json_handler::read_balance_data_from_json;
+use crate::game_events::ability::balance_data::json_handler::read_balance_data_from_included_assets;
+use crate::game_events::ability::balance_data::json_handler::read_balance_data_from_json_dir;
+
 use crate::game_events::ability::traverse_versioned_balance_abilities;
 use crate::generator::proto_morphist::ProtoMorphist;
-use crate::read_details;
-use crate::read_init_data;
-use crate::read_message_events;
-use crate::state::SC2EventIterator;
 use crate::tracker_events::{unit_tag_index, unit_tag_recycle};
 
 #[cfg(feature = "dep_arrow")]
 use clap::Args;
 
 use clap::{Parser, Subcommand};
-use nom_mpq::parser;
 use std::path::PathBuf;
 
 #[derive(Subcommand, Debug, Clone)]
-enum ReadTypes {
-    /// Reads the tracker events from an SC2Replay MPQ Archive
-    TrackerEvents,
-    /// Reads the game events from an SC2Replay MPQ Archive
-    GameEvents,
-    /// Reads the message events from an SC2Replay MPQ Archive
-    MessageEvents,
-    /// Reads the details from an SC2Replay MPQ Archive
-    Details,
-    /// Reads the initData from an SC2Replay MPQ Archive
-    InitData,
-    /// Transist through the state machine and print change hints
-    TransistEvents,
-}
-
-#[derive(Subcommand, Debug, Clone)]
-enum CommandUtils {
+pub enum CommandUtils {
     /// Translate unit tag to index, recycle pair
     XlateTagToIndexRecycle { tag: i64 },
 }
 
 #[derive(Subcommand, Debug, Clone)]
-enum Commands {
+pub enum Commands {
     /// Generates Rust code for a specific protocol.
     Generate,
 
     /// Generates static json files for a specific Balance Data export.
     ///
     BalanceDataToJson,
+
+    /// Scan a direcctory for SC2Replay files and returns basic information
+    Scan,
 
     /// Gets a specific event type from the SC2Replay MPQ Archive
     #[command(subcommand)]
@@ -293,6 +282,12 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
         });
     }
 
+    let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
+        if cli.json_balance_data_dir.is_empty() {
+            read_balance_data_from_included_assets()?
+        } else {
+            read_balance_data_from_json_dir(PathBuf::from(&cli.json_balance_data_dir))?
+        };
     match &cli.command {
         Commands::Generate => {
             ProtoMorphist::r#gen(&cli.source, &cli.output.expect("Requires --output"))?;
@@ -318,172 +313,17 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             )?;
         }
         Commands::Get(read_type) => {
-            let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
-                if cli.json_balance_data_dir.is_empty() {
-                    return Err(Box::new(std::io::Error::new(
-                        std::io::ErrorKind::InvalidInput,
-                        "Destination JSON Balance Data directory must be provided",
-                    )));
-                } else {
-                    read_balance_data_from_json(PathBuf::from(&cli.json_balance_data_dir))?
-                };
-            let sources: Vec<PathBuf> = if PathBuf::from(&cli.source).is_dir() {
-                let mut sources = Vec::new();
-                for entry in std::fs::read_dir(&cli.source)? {
-                    let entry = entry?;
-                    let path = entry.path();
-                    if path.is_file() {
-                        sources.push(path);
-                    }
-                }
-                sources
-            } else {
-                vec![cli.source.clone().into()]
-            };
-            for source in sources {
-                tracing::info!("Processing {:?}", source);
-                let file_contents = match crate::read_file(&source) {
-                    Ok(res) => res,
-                    Err(e) => {
-                        tracing::error!("Error reading file: {:?}", e);
-                        continue;
-                    }
-                };
-                let (_input, mpq) = match parser::parse(&file_contents) {
-                    Ok(res) => res,
-                    Err(e) => {
-                        tracing::error!("Error parsing file: {:?}", e);
-                        continue;
-                    }
-                };
-                let source_path: String = source
-                    .to_str()
-                    .expect("Failed to convert file name to str")
-                    .to_string();
-                // NOTE: A fake "ext_fs_id" is created because the current impl is thought
-                // of mainly for writing arrow ipc files... Maybe this is not a good idea.
-                let init_data = InitData::new(&source_path, 0u64, &mpq, &file_contents)?;
-                match read_type {
-                    ReadTypes::TrackerEvents => {
-                        let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
-                        println!("[");
-                        for evt in res.into_iter().filter(|e| e.is_tracker_event()) {
-                            #[cfg(feature = "syntax")]
-                            syntect_json_print(
-                                serde_json::to_string(&evt).unwrap(),
-                                &syntect_syntax_set,
-                                &syntect_theme_set,
-                            );
-                            #[cfg(not(feature = "syntax"))]
-                            println!("{}", serde_json::to_string(&evt).unwrap());
-                        }
-                        println!("]");
-                    }
-
-                    ReadTypes::GameEvents => {
-                        let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
-                        println!("[");
-                        for evt in res.into_iter().filter(|e| e.is_game_event()) {
-                            #[cfg(feature = "syntax")]
-                            syntect_json_print(
-                                serde_json::to_string(&evt).unwrap(),
-                                &syntect_syntax_set,
-                                &syntect_theme_set,
-                            );
-                            #[cfg(not(feature = "syntax"))]
-                            println!("{}", serde_json::to_string(&evt).unwrap());
-                        }
-                        println!("]");
-                    }
-                    ReadTypes::MessageEvents => {
-                        let res = read_message_events(&source_path, &mpq, &file_contents)?;
-                        println!("[");
-                        for evt in res {
-                            #[cfg(feature = "syntax")]
-                            syntect_json_print(
-                                serde_json::to_string_pretty(&evt).unwrap(),
-                                &syntect_syntax_set,
-                                &syntect_theme_set,
-                            );
-                            #[cfg(not(feature = "syntax"))]
-                            println!("{}", serde_json::to_string(&evt).unwrap());
-                        }
-                        println!("]");
-                    }
-                    ReadTypes::Details => {
-                        let evt = read_details(&source_path, &mpq, &file_contents)?;
-                        #[cfg(feature = "syntax")]
-                        syntect_json_print(
-                            serde_json::to_string_pretty(&evt).unwrap(),
-                            &syntect_syntax_set,
-                            &syntect_theme_set,
-                        );
-                        #[cfg(not(feature = "syntax"))]
-                        println!("{}", serde_json::to_string(&evt).unwrap());
-                    }
-                    ReadTypes::InitData => {
-                        let evt = read_init_data(&source_path, &mpq, &file_contents)?;
-                        #[cfg(feature = "syntax")]
-                        syntect_json_print(
-                            serde_json::to_string_pretty(&evt).unwrap(),
-                            &syntect_syntax_set,
-                            &syntect_theme_set,
-                        );
-                        #[cfg(not(feature = "syntax"))]
-                        println!("{}", serde_json::to_string(&evt).unwrap());
-                    }
-                    ReadTypes::TransistEvents => {
-                        tracing::info!("Transducing through both Game and Tracker Events");
-                        let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
-                        let filters = crate::filters::SC2ReplayFilters::from(cli.clone());
-                        let res = res.with_filters(filters);
-                        #[cfg(feature = "dep_ratatui")]
-                        {
-                            let details = read_details(&source_path, &mpq, &file_contents)?;
-                            let init_data = read_init_data(&source_path, &mpq, &file_contents)?;
-                            return Ok(crate::tui::ratatui_main(
-                                res,
-                                details,
-                                init_data,
-                                syntect_syntax_set,
-                                syntect_theme_set,
-                            )?);
-                        }
-                        #[cfg(not(feature = "dep_ratatui"))]
-                        {
-                            if !cli.quiet {
-                                println!("[");
-                            }
-                            for evt in res.into_iter() {
-                                if !cli.quiet {
-                                    #[cfg(feature = "syntax")]
-                                    syntect_json_print(
-                                        serde_json::to_string(&evt).unwrap(),
-                                        &syntect_syntax_set,
-                                        &syntect_theme_set,
-                                    );
-                                    #[cfg(not(feature = "syntax"))]
-                                    print!("{}", serde_json::to_string(&evt).unwrap());
-
-                                    println!(",");
-                                }
-                            }
-                            if !cli.quiet {
-                                println!("]");
-                            }
-                        }
-                    }
-                }
-            }
+            cmd_get::handle_get_cmd(
+                &cli,
+                read_type,
+                #[cfg(feature = "syntax")]
+                &syntect_syntax_set,
+                #[cfg(feature = "syntax")]
+                &syntect_theme_set,
+            )?;
         }
         #[cfg(feature = "dep_arrow")]
         Commands::WriteArrowIpc(cmd) => {
-            let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
-                if cli.json_balance_data_dir.is_empty() {
-                    read_balance_data_from_json(PathBuf::from(&cli.source))?
-                } else {
-                    read_balance_data_from_json(PathBuf::from(&cli.json_balance_data_dir))?
-                };
             ArrowIpcTypes::handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),
                 PathBuf::from(&cli.output.expect("Requires --output")),
@@ -498,6 +338,10 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                 println!("Index: {}, Recycle: {}", index, recycle)
             }
         },
+        Commands::Scan => {
+            let stats = handle_scan_cmd(&cli, &versioned_abilities)?;
+            tracing::info!("Scan complete: {:?}", stats);
+        }
     }
     if cli.timing {
         println!("Total time: {:?}", init_time.elapsed());
