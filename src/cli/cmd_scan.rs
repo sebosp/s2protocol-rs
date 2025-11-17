@@ -1,4 +1,6 @@
 use super::*;
+use crate::game_events::VersionedBalanceUnit;
+use crate::game_events::ability::balance_data::json_handler::read_balance_data_from_included_assets;
 
 use nom_mpq::parser;
 use rayon::prelude::*;
@@ -17,11 +19,26 @@ pub struct SC2ReplaysDirStats {
     pub abily_supported_replays: usize,
 }
 
-pub fn handle_scan_cmd(
+impl SC2ReplaysDirStats {
+    pub fn from_directory(dir_path: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        let unit_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
+            read_balance_data_from_included_assets()?;
+        scan_path(dir_path, &unit_abilities)
+    }
+}
+
+pub fn handle_scan_cli_cmd(
     cli: &Cli,
     unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
 ) -> Result<SC2ReplaysDirStats, Box<dyn std::error::Error>> {
-    let dir_path = PathBuf::from(&cli.source);
+    scan_path(&cli.source, unit_abilities)
+}
+
+pub fn scan_path(
+    path: &str,
+    unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+) -> Result<SC2ReplaysDirStats, Box<dyn std::error::Error>> {
+    let dir_path = PathBuf::from(path);
     tracing::info!("Scanning SC2 replays in directory: {:?}", dir_path);
 
     let sources = get_matching_files(dir_path.clone(), 1_000_000usize, 10usize)?;

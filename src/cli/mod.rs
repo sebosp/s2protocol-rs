@@ -339,7 +339,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             }
         },
         Commands::Scan => {
-            let stats = handle_scan_cmd(&cli, &versioned_abilities)?;
+            let stats = handle_scan_cli_cmd(&cli, &versioned_abilities)?;
             tracing::info!("Scan complete: {:?}", stats);
         }
     }
