@@ -233,6 +233,21 @@ impl Details {
         self.ext_fs_id = ext_fs_id;
         self
     }
+
+    /// Returns all the players from the sync lobby state.
+    /// That is the ones that are not observers.
+    pub fn get_player_names(&self) -> Vec<String> {
+        self.player_list
+            .iter()
+            .filter_map(|u| {
+                if u.observe == crate::common::OBSERVE_NONE {
+                    Some(u.name.clone())
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
 }
 
 impl TryFrom<&InitData> for Details {

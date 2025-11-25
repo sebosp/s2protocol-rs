@@ -1,4 +1,5 @@
 use super::*;
+use crate::details::Details;
 use crate::game_events::VersionedBalanceUnit;
 use crate::game_events::ability::balance_data::json_handler::read_balance_data_from_included_assets;
 
@@ -16,7 +17,7 @@ pub struct SC2ReplaysDirStats {
     pub total_supported_replays: usize,
     /// Top 10 players by number of replays
     pub top_10_players: Vec<(String, usize)>,
-    pub abily_supported_replays: usize,
+    pub ability_supported_replays: usize,
 }
 
 impl SC2ReplaysDirStats {
@@ -46,7 +47,7 @@ pub fn scan_path(
         total_files: sources.len(),
         total_supported_replays: 0,
         top_10_players: Vec::new(),
-        abily_supported_replays: 0,
+        ability_supported_replays: 0,
     };
 
     let mut user_freq: HashMap<String, usize> = HashMap::new();
@@ -62,11 +63,15 @@ pub fn scan_path(
     stats.total_supported_replays = init_data_files.len();
 
     for init_data in init_data_files {
-        for user in init_data.get_player_names() {
-            *user_freq.entry(user).or_insert(0) += 1;
-        }
         if versions_with_abilities.contains(&init_data.version) {
-            stats.abily_supported_replays += 1;
+            stats.ability_supported_replays += 1;
+        }
+        let details: Details = match Details::try_from(&init_data) {
+            Ok(details) => details,
+            Err(_) => continue,
+        };
+        for user in details.get_player_names() {
+            *user_freq.entry(user).or_insert(0) += 1;
         }
     }
 
