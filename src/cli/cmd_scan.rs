@@ -15,9 +15,12 @@ pub struct SC2ReplaysDirStats {
     pub total_files: usize,
     /// Total number of replays with valid InitData
     pub total_supported_replays: usize,
+    /// The number of replays that are supported by ability balance data
+    pub ability_supported_replays: usize,
     /// Top 10 players by number of replays
     pub top_10_players: Vec<(String, usize)>,
-    pub ability_supported_replays: usize,
+    /// The top 10 maps
+    pub top_10_maps: Vec<(String, usize)>,
 }
 
 impl SC2ReplaysDirStats {
@@ -46,11 +49,13 @@ pub fn scan_path(
     let mut stats = SC2ReplaysDirStats {
         total_files: sources.len(),
         total_supported_replays: 0,
-        top_10_players: Vec::new(),
         ability_supported_replays: 0,
+        top_10_players: Vec::new(),
+        top_10_maps: Vec::new(),
     };
 
     let mut user_freq: HashMap<String, usize> = HashMap::new();
+    let mut map_freq: HashMap<String, usize> = HashMap::new();
     let versions_with_abilities: Vec<u32> =
         unit_abilities.keys().map(|(version, _)| *version).collect();
 
@@ -73,11 +78,15 @@ pub fn scan_path(
         for user in details.get_player_names() {
             *user_freq.entry(user).or_insert(0) += 1;
         }
+        *map_freq.entry(details.title).or_insert(0) += 1;
     }
 
     let mut user_freq_vec: Vec<(String, usize)> = user_freq.into_iter().collect();
     user_freq_vec.sort_by(|a, b| b.1.cmp(&a.1));
     stats.top_10_players = user_freq_vec.into_iter().take(10).collect();
+    let mut map_freq_vec: Vec<(String, usize)> = map_freq.into_iter().collect();
+    map_freq_vec.sort_by(|a, b| b.1.cmp(&a.1));
+    stats.top_10_maps = map_freq_vec.into_iter().take(10).collect();
 
     Ok(stats)
 }
