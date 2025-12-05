@@ -24,10 +24,13 @@ pub struct SC2ReplaysDirStats {
 }
 
 impl SC2ReplaysDirStats {
-    pub fn from_directory(dir_path: &str) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn from_directory(
+        dir_path: &str,
+        serial: bool,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let unit_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
             read_balance_data_from_included_assets()?;
-        scan_path(dir_path, &unit_abilities, false)
+        scan_path(dir_path, &unit_abilities, serial)
     }
 }
 
