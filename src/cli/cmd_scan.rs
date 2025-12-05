@@ -27,7 +27,7 @@ impl SC2ReplaysDirStats {
     pub fn from_directory(dir_path: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let unit_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
             read_balance_data_from_included_assets()?;
-        scan_path(dir_path, &unit_abilities)
+        scan_path(dir_path, &unit_abilities, false)
     }
 }
 
@@ -35,12 +35,13 @@ pub fn handle_scan_cli_cmd(
     cli: &Cli,
     unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
 ) -> Result<SC2ReplaysDirStats, Box<dyn std::error::Error>> {
-    scan_path(&cli.source, unit_abilities)
+    scan_path(&cli.source, unit_abilities, false)
 }
 
 pub fn scan_path(
     path: &str,
     unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+    serially: bool,
 ) -> Result<SC2ReplaysDirStats, Box<dyn std::error::Error>> {
     let dir_path = PathBuf::from(path);
     tracing::info!("Scanning SC2 replays in directory: {:?}", dir_path);
@@ -59,11 +60,19 @@ pub fn scan_path(
     let versions_with_abilities: Vec<u32> =
         unit_abilities.keys().map(|(version, _)| *version).collect();
 
-    let init_data_files: Vec<InitData> = sources
-        .par_iter()
-        .enumerate()
-        .filter_map(|(index, source)| try_read_init_data(source, index as u64).ok())
-        .collect();
+    let init_data_files: Vec<InitData> = if serially {
+        sources
+            .iter()
+            .enumerate()
+            .filter_map(|(index, source)| try_read_init_data(source, index as u64).ok())
+            .collect()
+    } else {
+        sources
+            .par_iter()
+            .enumerate()
+            .filter_map(|(index, source)| try_read_init_data(source, index as u64).ok())
+            .collect()
+    };
 
     stats.total_supported_replays = init_data_files.len();
 
