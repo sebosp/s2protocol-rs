@@ -153,6 +153,10 @@ pub struct Cli {
     /// Quiet allows debugging without emitting events in json/etc.
     #[arg(long, default_value = "false")]
     pub quiet: bool,
+
+    /// Whether or not to process files serially
+    #[arg(long, default_value = "false")]
+    pub serially: bool,
 }
 
 /// Matches a list of files in case the cli.source param is a directory
@@ -329,6 +333,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                 PathBuf::from(&cli.output.expect("Requires --output")),
                 cmd,
                 &versioned_abilities,
+                cli.serially,
             )?;
         }
         Commands::Util(cmd) => match cmd {

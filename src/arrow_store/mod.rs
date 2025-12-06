@@ -131,6 +131,7 @@ impl ArrowIpcTypes {
         sources: Vec<InitData>,
         output: PathBuf,
         unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+        serially: bool,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if !output.is_dir() {
             panic!("Output must be a directory for types 'all'");
@@ -147,58 +148,38 @@ impl ArrowIpcTypes {
             sources.clone(),
             output.join("stats.ipc"),
             unit_abilities,
+            serially,
         )?;
         Self::Upgrades.handle_tracker_events(
             sources.clone(),
             output.join("upgrades.ipc"),
             unit_abilities,
+            serially,
         )?;
         Self::UnitBorn.handle_tracker_events(
             sources.clone(),
             output.join("unit_born.ipc"),
             unit_abilities,
+            serially,
         )?;
         Self::UnitDied.handle_tracker_events(
             sources.clone(),
             output.join("unit_died.ipc"),
             unit_abilities,
+            serially,
         )?;
         Self::CmdTargetPoint.handle_game_events(
             sources.clone(),
             output.join("cmd_target_point.ipc"),
             unit_abilities,
+            serially,
         )?;
         Self::CmdTargetUnit.handle_game_events(
             sources.clone(),
             output.join("cmd_target_unit.ipc"),
             unit_abilities,
+            serially,
         )?;
-        Ok(())
-    }
-
-    #[tracing::instrument(level = "debug")]
-    pub fn handle_user_init_data_ipc_cmd(
-        &self,
-        sources: Vec<InitData>,
-        output: PathBuf,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        tracing::info!("Processing InitData IPC write request");
-
-        let init_data_flaw_rows: Vec<init_data::UserInitDataFlatRow> = sources
-            .iter()
-            .flat_map(|source| {
-                let res: Vec<init_data::UserInitDataFlatRow> = source.into();
-                res
-            })
-            .collect();
-        let res: ArrayRef = init_data_flaw_rows.try_into_arrow()?;
-        let chunk: RecordBatch = res
-            .as_any()
-            .downcast_ref::<arrow::array::StructArray>()
-            .unwrap()
-            .into();
-
-        write_batches(output, Self::UserInitData.schema(), chunk)?;
         Ok(())
     }
 
@@ -211,38 +192,69 @@ impl ArrowIpcTypes {
         sources: Vec<InitData>,
         output: PathBuf,
         versioned_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+        serially: bool,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing TrackerEvents IPC write request: {:?}", self);
         let writer = open_arrow_mutex_writer(output, self.schema())?;
 
-        // process files in parallel, the internal iterators will fight for the lock
-        let total_records = sources
-            .par_iter()
-            .filter_map(|source| {
-                let event_iterator =
-                    SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
-                let (res, batch_len): (ArrayRef, usize) = match self {
-                    Self::Stats => {
-                        let batch = event_iterator.collect_into_player_stats_flat_rows();
-                        (batch.try_into_arrow().ok()?, batch.len())
-                    }
-                    Self::Upgrades => {
-                        let batch = event_iterator.collect_into_upgrades_flat_rows();
-                        (batch.try_into_arrow().ok()?, batch.len())
-                    }
-                    Self::UnitBorn => {
-                        let batch = event_iterator.collect_into_unit_born_flat_rows();
-                        (batch.try_into_arrow().ok()?, batch.len())
-                    }
-                    Self::UnitDied => {
-                        let batch = event_iterator.collect_into_unit_died_flat_rows();
-                        (batch.try_into_arrow().ok()?, batch.len())
-                    }
-                    _ => unimplemented!(),
-                };
-                write_to_arrow_mutex_writer(&writer, res, batch_len)
-            })
-            .sum::<usize>();
+        // XXX: Ok this is really very ugly/embarrasing, gotta find a way to switch between serial and parallel processing
+        let total_records = if serially {
+            sources
+                .iter()
+                .filter_map(|source| {
+                    let event_iterator =
+                        SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
+                    let (res, batch_len): (ArrayRef, usize) = match self {
+                        Self::Stats => {
+                            let batch = event_iterator.collect_into_player_stats_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        Self::Upgrades => {
+                            let batch = event_iterator.collect_into_upgrades_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        Self::UnitBorn => {
+                            let batch = event_iterator.collect_into_unit_born_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        Self::UnitDied => {
+                            let batch = event_iterator.collect_into_unit_died_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        _ => unimplemented!(),
+                    };
+                    write_to_arrow_mutex_writer(&writer, res, batch_len)
+                })
+                .sum::<usize>()
+        } else {
+            sources
+                .par_iter()
+                .filter_map(|source| {
+                    let event_iterator =
+                        SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
+                    let (res, batch_len): (ArrayRef, usize) = match self {
+                        Self::Stats => {
+                            let batch = event_iterator.collect_into_player_stats_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        Self::Upgrades => {
+                            let batch = event_iterator.collect_into_upgrades_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        Self::UnitBorn => {
+                            let batch = event_iterator.collect_into_unit_born_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        Self::UnitDied => {
+                            let batch = event_iterator.collect_into_unit_died_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        _ => unimplemented!(),
+                    };
+                    write_to_arrow_mutex_writer(&writer, res, batch_len)
+                })
+                .sum::<usize>()
+        };
         tracing::info!("Loaded {} records", total_records);
         close_arrow_mutex_writer(writer)
     }
@@ -255,30 +267,56 @@ impl ArrowIpcTypes {
         sources: Vec<InitData>,
         output: PathBuf,
         versioned_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+        serially: bool,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing GameEvents IPC write request: {:?}", self);
         let writer = open_arrow_mutex_writer(output, self.schema())?;
 
-        // process files in parallel, the internal iterators will fight for the lock
-        let total_records = sources
-            .par_iter()
-            .filter_map(|source| {
-                let event_iterator =
-                    SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
-                let (res, batch_len): (ArrayRef, usize) = match self {
-                    Self::CmdTargetPoint => {
-                        let batch = event_iterator.collect_into_game_cmd_target_points_flat_rows();
-                        (batch.try_into_arrow().ok()?, batch.len())
-                    }
-                    Self::CmdTargetUnit => {
-                        let batch = event_iterator.collect_into_game_cmd_target_units_flat_rows();
-                        (batch.try_into_arrow().ok()?, batch.len())
-                    }
-                    e => unimplemented!("{:?}", e),
-                };
-                write_to_arrow_mutex_writer(&writer, res, batch_len)
-            })
-            .sum::<usize>();
+        let total_records = if serially {
+            sources
+                .iter()
+                .filter_map(|source| {
+                    let event_iterator =
+                        SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
+                    let (res, batch_len): (ArrayRef, usize) = match self {
+                        Self::CmdTargetPoint => {
+                            let batch =
+                                event_iterator.collect_into_game_cmd_target_points_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        Self::CmdTargetUnit => {
+                            let batch =
+                                event_iterator.collect_into_game_cmd_target_units_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        e => unimplemented!("{:?}", e),
+                    };
+                    write_to_arrow_mutex_writer(&writer, res, batch_len)
+                })
+                .sum::<usize>()
+        } else {
+            sources
+                .par_iter()
+                .filter_map(|source| {
+                    let event_iterator =
+                        SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
+                    let (res, batch_len): (ArrayRef, usize) = match self {
+                        Self::CmdTargetPoint => {
+                            let batch =
+                                event_iterator.collect_into_game_cmd_target_points_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        Self::CmdTargetUnit => {
+                            let batch =
+                                event_iterator.collect_into_game_cmd_target_units_flat_rows();
+                            (batch.try_into_arrow().ok()?, batch.len())
+                        }
+                        e => unimplemented!("{:?}", e),
+                    };
+                    write_to_arrow_mutex_writer(&writer, res, batch_len)
+                })
+                .sum::<usize>()
+        };
         tracing::info!("Loaded {} records", total_records);
         close_arrow_mutex_writer(writer)
     }
@@ -361,6 +399,7 @@ impl ArrowIpcTypes {
         output: PathBuf,
         cmd: &WriteArrowIpcProps,
         unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+        serially: bool,
     ) -> Result<(), Box<dyn std::error::Error>> {
         println!(
             "Processing Arrow write request with scan_max_files: {}, traverse_max_depth: {}, process_max_files: {}, min_version: {:?}, max_version: {:?}",
@@ -372,13 +411,24 @@ impl ArrowIpcTypes {
         );
         let sources = get_matching_files(source, cmd.scan_max_files, cmd.traverse_max_depth)?;
         println!("Located {} matching files by extension", sources.len());
+        let sources: Vec<InitData> = if !serially {
+            sources
+                .iter()
+                .enumerate()
+                .filter_map(|(idx, source)| {
+                    InitData::try_from((source.clone(), u64::try_from(idx).unwrap())).ok()
+                })
+                .collect::<Vec<InitData>>()
+        } else {
+            sources
+                .par_iter()
+                .enumerate()
+                .filter_map(|(idx, source)| {
+                    InitData::try_from((source.clone(), u64::try_from(idx).unwrap())).ok()
+                })
+                .collect::<Vec<InitData>>()
+        };
         let sources: Vec<InitData> = sources
-            .par_iter()
-            .enumerate()
-            .filter_map(|(idx, source)| {
-                InitData::try_from((source.clone(), u64::try_from(idx).unwrap())).ok()
-            })
-            .collect::<Vec<InitData>>()
             .into_iter()
             .filter(|source| {
                 if let Some(min_version) = cmd.min_version
@@ -403,6 +453,6 @@ impl ArrowIpcTypes {
                 sources.len()
             );
         }
-        Self::handle_write_snapshot(sources, output, unit_abilities)
+        Self::handle_write_snapshot(sources, output, unit_abilities, serially)
     }
 }
