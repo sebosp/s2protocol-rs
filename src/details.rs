@@ -32,8 +32,7 @@ use serde::{Deserialize, Serialize};
 */
 
 /// A Flat row of PlayerDetails with LobbySyncState data
-/// without the cache_handles and mod_paths.
-/// because I haven't seen what they are used for yet.
+/// without the mod_paths because I haven't seen what it's used for yet.
 ///
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[cfg_attr(
@@ -65,6 +64,7 @@ pub struct PlayerLobbyDetailsFlatRow {
     pub lobby_slot_observe: u8,
     pub lobby_slot_map_size_x: u8,
     pub lobby_slot_map_size_y: u8,
+    pub cache_handles: String,
     pub ext_fs_sha256: String,
     pub ext_fs_file_name: String,
     pub ext_fs_id: u64,
@@ -74,10 +74,6 @@ pub struct PlayerLobbyDetailsFlatRow {
 impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
     fn from(source: PlayerLobbyDetails) -> PlayerLobbyDetailsFlatRow {
         PlayerLobbyDetailsFlatRow {
-            ext_fs_id: source.ext_fs_id,
-            ext_fs_sha256: source.ext_fs_sha256,
-            ext_fs_file_name: source.ext_fs_file_name,
-            ext_datetime: source.ext_datetime,
             player_name: source.player_details.name,
             player_toon_region: source.player_details.toon.region,
             player_toon_program_id: source.player_details.toon.program_id,
@@ -96,12 +92,17 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
             player_hero: source.player_details.hero,
             title: source.title,
             is_blizzard_map: source.game_description.is_blizzard_map,
+            time_utc: source.time_utc,
+            time_local_offset: source.time_local_offset,
             lobby_slot_user_id: source.lobby_slot.user_id,
             lobby_slot_observe: source.lobby_slot.observe,
             lobby_slot_map_size_x: source.game_description.map_size_x,
             lobby_slot_map_size_y: source.game_description.map_size_y,
-            time_utc: source.time_utc,
-            time_local_offset: source.time_local_offset,
+            cache_handles: source.cache_handles.join(","),
+            ext_fs_id: source.ext_fs_id,
+            ext_fs_sha256: source.ext_fs_sha256,
+            ext_fs_file_name: source.ext_fs_file_name,
+            ext_datetime: source.ext_datetime,
         }
     }
 }
@@ -123,6 +124,7 @@ pub struct PlayerLobbyDetails {
     // Attempt a join from the PlayerSetupEvent at the start of ReplayTrackerEvents
     pub tracker_setup_player_id: Option<u8>,
     pub tracker_setup_slot_id: Option<u32>, // Is this u32 or?
+    pub cache_handles: Vec<String>,
     pub ext_fs_sha256: String,
     pub ext_fs_file_name: String,
     pub ext_fs_id: u64,
@@ -151,10 +153,6 @@ impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
                 }
                 let slot_idx = slot_idx?;
                 Some(PlayerLobbyDetails {
-                    ext_fs_id: details.ext_fs_id,
-                    ext_fs_sha256: init.ext_fs_sha256.clone(),
-                    ext_fs_file_name: init.ext_fs_file_name.clone(),
-                    ext_datetime: details.ext_datetime,
                     title: details.title.clone(),
                     game_description: init.sync_lobby_state.game_description.clone(),
                     lobby_slot: init.sync_lobby_state.lobby_state.slots[slot_idx].clone(),
@@ -173,6 +171,11 @@ impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
                         .map_or("".to_string(), |u| u.clan_tag.clone().unwrap_or_default()),
                     tracker_setup_player_id: None,
                     tracker_setup_slot_id: None,
+                    cache_handles: details.cache_handles.clone(),
+                    ext_fs_id: details.ext_fs_id,
+                    ext_fs_sha256: init.ext_fs_sha256.clone(),
+                    ext_fs_file_name: init.ext_fs_file_name.clone(),
+                    ext_datetime: details.ext_datetime,
                 })
             })
             .collect();
