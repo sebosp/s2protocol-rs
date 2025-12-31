@@ -1,0 +1,175 @@
+{
+  "@id": "NydusCanal",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "Rally",
+        "@index": 104,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1037",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "1036",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1038",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "NydusWormTransport",
+        "@index": 539,
+        "command": [
+          {
+            "@id": "Load",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "1283",
+              "@icon": "btn-ability-terran-load",
+              "@index": null,
+              "@name": "1282",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1284",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "UnloadAll",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "1043",
+              "@icon": "btn-ability-terran-unloadall",
+              "@index": null,
+              "@name": "1042",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "1044",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": 20.0,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 75,
+    "@supply": null,
+    "@time": 20.0,
+    "@vespene": 75
+  },
+  "life": {
+    "@max": 300,
+    "@regenRate": 0.2734000086784363,
+    "@start": 300
+  },
+  "meta": {
+    "@hotkey": "1048",
+    "@icon": "btn-building-zerg-nydusworm",
+    "@index": 165,
+    "@name": "1280",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1281",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": 255,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint3x3IgnoreCreepContour",
+    "@radius": 1.0,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "NydusNetwork",
+    "@name": "1033"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "NydusNetwork",
+        "@name": "1033"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 150,
+    "@kill": 150
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

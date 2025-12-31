@@ -58,8 +58,9 @@ impl InitData {
     }
 
     #[tracing::instrument(level = "error")]
-    pub fn set_version(&mut self, version: u32) {
+    pub fn with_version(mut self, version: u32) -> Self {
         self.version = version;
+        self
     }
 }
 
