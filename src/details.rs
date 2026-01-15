@@ -64,6 +64,8 @@ pub struct PlayerLobbyDetailsFlatRow {
     pub lobby_slot_observe: u8,
     pub lobby_slot_map_size_x: u8,
     pub lobby_slot_map_size_y: u8,
+    pub cache_handle_region: Option<String>,
+    pub cache_handle_extension: Option<String>,
     pub cache_handles: String,
     pub ext_fs_sha256: String,
     pub ext_fs_file_name: String,
@@ -73,6 +75,32 @@ pub struct PlayerLobbyDetailsFlatRow {
 
 impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
     fn from(source: PlayerLobbyDetails) -> PlayerLobbyDetailsFlatRow {
+        // transform the cache handles into their utf 8 representation
+        // take 2 characters at a time from the hex string and convert to bytes
+        let mut cache_handles = String::new();
+        let mut cache_handle_region = None;
+        let mut cache_handle_extension = None;
+        for cache_handle in &source.cache_handles {
+            // 8 characters for the extension
+            let (ext_str, remaining) = cache_handle.split_at(8);
+            let extension = make_string_from_hex_chars(ext_str);
+            if cache_handle_extension.is_none() {
+                cache_handle_extension = Some(extension.to_string());
+            }
+            // skip the "0000" delimiter.
+            let remaining = &remaining[4..];
+
+            // 4 characters for the region
+            let (region_str, cache_handle_hash) = remaining.split_at(4);
+            let region = make_string_from_hex_chars(region_str);
+
+            if cache_handle_region.is_none() {
+                cache_handle_region = Some(region.to_string());
+            }
+            cache_handles.push_str(cache_handle_hash);
+            cache_handles.push(',');
+        }
+        cache_handles.pop(); // remove last comma
         PlayerLobbyDetailsFlatRow {
             player_name: source.player_details.name,
             player_toon_region: source.player_details.toon.region,
@@ -98,13 +126,34 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
             lobby_slot_observe: source.lobby_slot.observe,
             lobby_slot_map_size_x: source.game_description.map_size_x,
             lobby_slot_map_size_y: source.game_description.map_size_y,
-            cache_handles: source.cache_handles.join(","),
+            cache_handle_region,
+            cache_handle_extension,
+            cache_handles,
             ext_fs_id: source.ext_fs_id,
             ext_fs_sha256: source.ext_fs_sha256,
             ext_fs_file_name: source.ext_fs_file_name,
             ext_datetime: source.ext_datetime,
         }
     }
+}
+
+/// Transforms a string containing hex characters into a string
+/// These are contained in the cache_handles
+fn make_string_from_hex_chars(input_str: &str) -> String {
+    input_str
+        .chars()
+        .collect::<Vec<char>>()
+        .chunks(2)
+        .map(parse_hex_chars_to_u8_char)
+        .collect()
+}
+
+/// Transforms two characters that are hex into u8 then char
+/// i.e. String("73") -> u8 value 115 (ascii) -> char 's'
+fn parse_hex_chars_to_u8_char(chars: &[char]) -> char {
+    let string_chunk: String = chars.iter().collect();
+    let byte_chunk = u8::from_str_radix(&string_chunk, 16).unwrap();
+    byte_chunk as char
 }
 
 /// A joined version of the PlayerLobbySlot contained within the InitData sector and the Details
