@@ -1,0 +1,533 @@
+{
+  "@id": "Banshee",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "34",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "33",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "35",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "move",
+        "@index": 43,
+        "command": [
+          {
+            "@id": "Move",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "9",
+              "@icon": "btn-command-move",
+              "@index": null,
+              "@name": "8",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "10",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Patrol",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "12",
+              "@icon": "btn-command-patrol",
+              "@index": null,
+              "@name": "11",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "13",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "HoldPos",
+            "@index": 2,
+            "meta": {
+              "@hotkey": "15",
+              "@icon": "btn-command-holdposition",
+              "@index": null,
+              "@name": "14",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "16",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BansheeCloak",
+        "@index": 139,
+        "command": [
+          {
+            "@id": "On",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "620",
+              "@icon": "btn-ability-terran-cloak-color",
+              "@index": null,
+              "@name": "619",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "621",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Off",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "564",
+              "@icon": "BTN-Ability-Terran-Decloak-color",
+              "@index": null,
+              "@name": "563",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "565",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Mechanical"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": 3.0,
+    "@time": 60.0,
+    "@vespene": 100
+  },
+  "life": {
+    "@max": 140,
+    "@regenRate": null,
+    "@start": 140
+  },
+  "meta": {
+    "@hotkey": "374",
+    "@icon": "btn-unit-terran-banshee",
+    "@index": 78,
+    "@name": "294",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "375",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": -3.0,
+    "@targets": null
+  },
+  "movement": {
+    "@acceleration": 3.25,
+    "@deceleration": 0.0,
+    "@speed": 2.75,
+    "@turnRate": 1499.94140625,
+    "@type": "Fly"
+  },
+  "producer": {
+    "@id": "Starport",
+    "@name": "364"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "TechLab",
+        "@name": "69"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 250,
+    "@kill": 250
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "SiegeTank",
+        "@name": "305"
+      },
+      {
+        "@id": "Ravager",
+        "@name": "617"
+      },
+      {
+        "@id": "Adept",
+        "@name": "85"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranShipWeapons",
+        "level": [
+          {
+            "@id": "TerranShipWeaponsLevel1",
+            "@index": 39,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "403",
+              "@icon": "btn-upgrade-terran-shipweaponslevel1",
+              "@index": null,
+              "@name": "408",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "404",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranShipWeaponsLevel2",
+            "@index": 40,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "406",
+              "@icon": "btn-upgrade-terran-shipweaponslevel2",
+              "@index": null,
+              "@name": "412",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "407",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranShipWeaponsLevel1",
+                    "@name": "408"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranShipWeaponsLevel3",
+            "@index": 41,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "410",
+              "@icon": "btn-upgrade-terran-shipweaponslevel3",
+              "@index": null,
+              "@name": "461",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "411",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranShipWeaponsLevel2",
+                    "@name": "412"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "TerranVehicleAndShipArmors",
+        "level": [
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel1",
+            "@index": 163,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 160.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel1",
+              "@index": null,
+              "@name": "418",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "415",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel2",
+            "@index": 164,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 175,
+              "@supply": null,
+              "@time": 190.0,
+              "@vespene": 175
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel2",
+              "@index": null,
+              "@name": "421",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "417",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel1",
+                    "@name": "418"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "TerranVehicleAndShipArmorsLevel3",
+            "@index": 165,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 220.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "414",
+              "@icon": "btn-upgrade-terran-vehicleplatinglevel3",
+              "@index": null,
+              "@name": "448",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "420",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [],
+                "upgrade": [
+                  {
+                    "@id": "TerranVehicleAndShipArmorsLevel2",
+                    "@name": "421"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@id": "BansheeCloak",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 110.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "492",
+              "@icon": "btn-ability-terran-cloak-color",
+              "@index": null,
+              "@name": "622",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "493",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      },
+      {
+        "@id": "BansheeSpeed",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 125,
+              "@supply": null,
+              "@time": 110.5999984741211,
+              "@vespene": 125
+            },
+            "meta": {
+              "@hotkey": "495",
+              "@icon": "btn-upgrade-terran-hyperflightrotors",
+              "@index": null,
+              "@name": "623",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "496",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "VikingFighter",
+        "@name": "29"
+      },
+      {
+        "@id": "Hydralisk",
+        "@name": "439"
+      },
+      {
+        "@id": "Phoenix",
+        "@name": "295"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "BacklashRockets",
+        "@index": 35,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-terran-shipweaponslevel0",
+          "@index": null,
+          "@name": "618",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": 2,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 6.0,
+          "@sightRadius": null,
+          "@speed": 1.25,
+          "@supply": null,
+          "@targets": "ground"
+        },
+        "score": null
+      }
+    ]
+  }
+}
