@@ -1,1 +1,1 @@
-cargo watch -x clippy -x 'run -- -v info --timing --source "/home/seb/SCReplaysOnNVMe/2025EWCReplayPack/3 - Playoffs/8 - Grand Finals - Serral vs Classic/20250725 - Game7 - Classic vs Serral - Magannatha.SC2Replay" --json-balance-data-dir=/home/seb/git/s2protocol-rs/assets/BalanceData/ --color --max-events 4115 get transist-events'
+cargo watch -x clippy -x 'run -r --no-default-features --features=dep_arrow,tracing_off -- -v error --timing --source /home/seb/SCReplaysOnNVMe/ --output /home/seb/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 1000000'
