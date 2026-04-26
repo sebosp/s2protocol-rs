@@ -1,0 +1,308 @@
+{
+  "@id": "MissileTurret",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Halt",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "210",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "209",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "211",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "stop",
+        "@index": 41,
+        "command": [
+          {
+            "@id": "Stop",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "attack",
+        "@index": 46,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "298",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "297",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "299",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Detector",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "BTN-Status-Detector",
+              "@index": null,
+              "@name": "300",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "301",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 2,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": null,
+    "@time": 25.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 250,
+    "@regenRate": null,
+    "@start": 250
+  },
+  "meta": {
+    "@hotkey": "292",
+    "@icon": "btn-building-terran-missileturret",
+    "@index": 44,
+    "@name": "291",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "293",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint2x2Contour",
+    "@radius": 0.75,
+    "@range": null,
+    "@sightRadius": 11.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "SCV",
+    "@name": "208"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "EngineeringBay",
+        "@name": "226"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 100,
+    "@kill": 100
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Banshee",
+        "@name": "294"
+      },
+      {
+        "@id": "Mutalisk",
+        "@name": "81"
+      },
+      {
+        "@id": "Phoenix",
+        "@name": "295"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "HiSecAutoTracking",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 80.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "188",
+              "@icon": "BTN-Upgrade-Terran-hisecautotracking",
+              "@index": null,
+              "@name": "187",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "189",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      },
+      {
+        "@id": "TerranBuildingArmor",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "75",
+              "@icon": "BTN-upgrade-terran-buildingarmor",
+              "@index": null,
+              "@name": "74",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "76",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "Marine",
+        "@name": "26"
+      },
+      {
+        "@id": "Zergling",
+        "@name": "27"
+      },
+      {
+        "@id": "Zealot",
+        "@name": "28"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": [
+      {
+        "@id": "LongboltMissile",
+        "@index": 7,
+        "meta": {
+          "@hotkey": null,
+          "@icon": "btn-upgrade-terran-hisecautotracking",
+          "@index": null,
+          "@name": "296",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "0",
+          "@type": null
+        },
+        "misc": {
+          "@cargoCapacity": null,
+          "@cargoSize": null,
+          "@count": 2,
+          "@footprint": null,
+          "@radius": null,
+          "@range": 7.0,
+          "@sightRadius": null,
+          "@speed": 0.86080002784729,
+          "@supply": null,
+          "@targets": "air"
+        },
+        "score": null
+      }
+    ]
+  }
+}

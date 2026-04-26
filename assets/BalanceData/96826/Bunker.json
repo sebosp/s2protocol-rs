@@ -1,0 +1,345 @@
+{
+  "@id": "Bunker",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Halt",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "210",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "209",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "211",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "BunkerTransport",
+        "@index": 145,
+        "command": [
+          {
+            "@id": "Load",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "308",
+              "@icon": "btn-ability-terran-load",
+              "@index": null,
+              "@name": "307",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "309",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "UnloadAll",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "311",
+              "@icon": "btn-ability-terran-unloadall",
+              "@index": null,
+              "@name": "310",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "312",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "SalvageEffect",
+        "@index": 733,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "314",
+              "@icon": "btn-ability-terran-salvage",
+              "@index": null,
+              "@name": "313",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "315",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "Rally",
+        "@index": 104,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "317",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "316",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "318",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "StimpackRedirect",
+        "@index": 257,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "320",
+              "@icon": "btn-ability-terran-stimpack-color",
+              "@index": null,
+              "@name": "319",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "321",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "StimpackMarauderRedirect",
+        "@index": 258,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "320",
+              "@icon": "btn-ability-terran-stimpack-color",
+              "@index": null,
+              "@name": "319",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "321",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "StopRedirect",
+        "@index": 260,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "6",
+              "@icon": "btn-command-stop",
+              "@index": null,
+              "@name": "5",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "7",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "AttackRedirect",
+        "@index": 256,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "298",
+              "@icon": "btn-command-attack",
+              "@index": null,
+              "@name": "323",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "324",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 3,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": null,
+    "@time": 40.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 400,
+    "@regenRate": null,
+    "@start": 400
+  },
+  "meta": {
+    "@hotkey": "303",
+    "@icon": "btn-building-terran-bunker",
+    "@index": 45,
+    "@name": "302",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "304",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": 4,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint3x3Contour",
+    "@radius": 1.25,
+    "@range": null,
+    "@sightRadius": 10.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "SCV",
+    "@name": "208"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "Barracks",
+        "@name": "232"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 100,
+    "@kill": 100
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": [
+      {
+        "@id": "Marine",
+        "@name": "26"
+      },
+      {
+        "@id": "Zergling",
+        "@name": "27"
+      },
+      {
+        "@id": "Zealot",
+        "@name": "28"
+      }
+    ]
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "TerranBuildingArmor",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "75",
+              "@icon": "BTN-upgrade-terran-buildingarmor",
+              "@index": null,
+              "@name": "74",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "76",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": [
+      {
+        "@id": "SiegeTank",
+        "@name": "305"
+      },
+      {
+        "@id": "Baneling",
+        "@name": "124"
+      },
+      {
+        "@id": "Immortal",
+        "@name": "306"
+      }
+    ]
+  },
+  "weapons": {
+    "weapon": []
+  }
+}
