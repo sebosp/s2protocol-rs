@@ -1,0 +1,422 @@
+{
+  "@id": "CyberneticsCore",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "que5",
+        "@index": 125,
+        "command": [
+          {
+            "@id": "CancelLast",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 150,
+    "@supply": null,
+    "@time": 50.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 550,
+    "@regenRate": null,
+    "@start": 550
+  },
+  "meta": {
+    "@hotkey": "785",
+    "@icon": "btn-building-protoss-CyberneticsCore",
+    "@index": 95,
+    "@name": "679",
+    "@race": "Prot",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "786",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint3x3Contour",
+    "@radius": 1.5,
+    "@range": null,
+    "@sightRadius": 9.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Probe",
+    "@name": "438"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "Gateway",
+        "@name": "667"
+      }
+    ]
+  },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 238,
+        "@id": "ProtossAirWeaponsLevel1",
+        "@index": 0,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 180.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "166",
+          "@icon": "BTN-Upgrade-Protoss-AirWeaponsLevel1",
+          "@index": null,
+          "@name": "787",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "167",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "ProtossAirWeaponsLevel2",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": null,
+          "@time": 215.0,
+          "@vespene": 175
+        },
+        "meta": {
+          "@hotkey": "169",
+          "@icon": "BTN-Upgrade-Protoss-AirWeaponsLevel2",
+          "@index": null,
+          "@name": "788",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "170",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "ProtossAirWeaponsLevel3",
+        "@index": 2,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 250.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "172",
+          "@icon": "BTN-Upgrade-Protoss-AirWeaponsLevel3",
+          "@index": null,
+          "@name": "789",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "173",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "ProtossAirArmorsLevel1",
+        "@index": 3,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 180.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "175",
+          "@icon": "BTN-Upgrade-Protoss-AirArmorLevel1",
+          "@index": null,
+          "@name": "790",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "176",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "ProtossAirArmorsLevel2",
+        "@index": 4,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": null,
+          "@time": 215.0,
+          "@vespene": 175
+        },
+        "meta": {
+          "@hotkey": "178",
+          "@icon": "BTN-Upgrade-Protoss-AirArmorLevel2",
+          "@index": null,
+          "@name": "791",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "179",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "ProtossAirArmorsLevel3",
+        "@index": 5,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 250,
+          "@supply": null,
+          "@time": 250.0,
+          "@vespene": 250
+        },
+        "meta": {
+          "@hotkey": "181",
+          "@icon": "BTN-Upgrade-Protoss-AirArmorLevel3",
+          "@index": null,
+          "@name": "792",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "182",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 238,
+        "@id": "WarpGateResearch",
+        "@index": 6,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 50,
+          "@supply": null,
+          "@time": 140.0,
+          "@vespene": 50
+        },
+        "meta": {
+          "@hotkey": "694",
+          "@icon": "BTN-Building-Protoss-WarpGate",
+          "@index": null,
+          "@name": "793",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "695",
+          "@type": "command"
+        }
+      }
+    ]
+  },
+  "score": {
+    "@build": 150,
+    "@kill": 150
+  },
+  "shieldArmor": {
+    "@max": 3,
+    "@start": 0
+  },
+  "shields": {
+    "@delay": 10.0,
+    "@max": 550,
+    "@regenRate": 2.0,
+    "@start": 550
+  },
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "ProtossShields",
+        "level": [
+          {
+            "@id": "ProtossShieldsLevel1",
+            "@index": 48,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 170.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "58",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel1",
+              "@index": null,
+              "@name": "57",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "59",
+              "@type": null
+            },
+            "requires": []
+          },
+          {
+            "@id": "ProtossShieldsLevel2",
+            "@index": 49,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 200,
+              "@supply": null,
+              "@time": 202.5,
+              "@vespene": 200
+            },
+            "meta": {
+              "@hotkey": "61",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel2",
+              "@index": null,
+              "@name": "60",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "62",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossShieldsLevel1",
+                    "@name": "57"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "@id": "ProtossShieldsLevel3",
+            "@index": 50,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 250,
+              "@supply": null,
+              "@time": 235.0,
+              "@vespene": 250
+            },
+            "meta": {
+              "@hotkey": "64",
+              "@icon": "BTN-Upgrade-Protoss-ShieldsLevel3",
+              "@index": null,
+              "@name": "63",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "65",
+              "@type": null
+            },
+            "requires": [
+              {
+                "unit": [
+                  {
+                    "@id": "TwilightCouncil",
+                    "@name": "44"
+                  }
+                ],
+                "upgrade": [
+                  {
+                    "@id": "ProtossShieldsLevel2",
+                    "@name": "60"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}
