@@ -198,7 +198,7 @@ pub fn get_matching_files(
         }
         Ok(sources)
     } else {
-        Ok(vec![source.clone()])
+        Ok(vec![])
     }
 }
 
