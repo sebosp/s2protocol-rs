@@ -1,7 +1,7 @@
 use super::*;
+use crate::game_events::VersionedBalanceUnit;
 use crate::game_events::ability::balance_data::json_handler::read_balance_data_from_included_assets;
 use crate::game_events::ability::balance_data::json_handler::read_balance_data_from_json_dir;
-use crate::game_events::VersionedBalanceUnit;
 use crate::read_details;
 use crate::read_message_events;
 use crate::state::SC2EventIterator;
@@ -28,8 +28,8 @@ pub enum ReadTypes {
 pub fn handle_get_cmd(
     cli: &Cli,
     read_type: &ReadTypes,
-    #[cfg(feature = "syntax")] syntect_syntax_set: &SyntaxSet,
-    #[cfg(feature = "syntax")] syntect_theme_set: &ThemeSet,
+    #[cfg(feature = "syntax")] syntect_syntax_set: SyntaxSet,
+    #[cfg(feature = "syntax")] syntect_theme_set: ThemeSet,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
         if cli.json_balance_data_dir.is_empty() {
@@ -81,8 +81,8 @@ pub fn handle_get_cmd(
                     #[cfg(feature = "syntax")]
                     syntect_json_print(
                         serde_json::to_string(&evt).unwrap(),
-                        syntect_syntax_set,
-                        syntect_theme_set,
+                        &syntect_syntax_set,
+                        &syntect_theme_set,
                     );
                     #[cfg(not(feature = "syntax"))]
                     println!("{}", serde_json::to_string(&evt).unwrap());
@@ -97,8 +97,8 @@ pub fn handle_get_cmd(
                     #[cfg(feature = "syntax")]
                     syntect_json_print(
                         serde_json::to_string(&evt).unwrap(),
-                        syntect_syntax_set,
-                        syntect_theme_set,
+                        &syntect_syntax_set,
+                        &syntect_theme_set,
                     );
                     #[cfg(not(feature = "syntax"))]
                     println!("{}", serde_json::to_string(&evt).unwrap());
@@ -112,8 +112,8 @@ pub fn handle_get_cmd(
                     #[cfg(feature = "syntax")]
                     syntect_json_print(
                         serde_json::to_string_pretty(&evt).unwrap(),
-                        syntect_syntax_set,
-                        syntect_theme_set,
+                        &syntect_syntax_set,
+                        &syntect_theme_set,
                     );
                     #[cfg(not(feature = "syntax"))]
                     println!("{}", serde_json::to_string(&evt).unwrap());
@@ -125,8 +125,8 @@ pub fn handle_get_cmd(
                 #[cfg(feature = "syntax")]
                 syntect_json_print(
                     serde_json::to_string_pretty(&evt).unwrap(),
-                    syntect_syntax_set,
-                    syntect_theme_set,
+                    &syntect_syntax_set,
+                    &syntect_theme_set,
                 );
                 #[cfg(not(feature = "syntax"))]
                 println!("{}", serde_json::to_string(&evt).unwrap());
@@ -135,8 +135,8 @@ pub fn handle_get_cmd(
                 #[cfg(feature = "syntax")]
                 syntect_json_print(
                     serde_json::to_string_pretty(&init_data).unwrap(),
-                    syntect_syntax_set,
-                    syntect_theme_set,
+                    &syntect_syntax_set,
+                    &syntect_theme_set,
                 );
                 #[cfg(not(feature = "syntax"))]
                 println!("{}", serde_json::to_string(&init_data).unwrap());

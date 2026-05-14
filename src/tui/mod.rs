@@ -14,7 +14,6 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::syntect_json_highlight;
 use color_eyre::Result;
 use ratatui::crossterm::{
     ExecutableCommand,
@@ -34,7 +33,7 @@ use ratatui::{
 };
 use syntect::highlighting::ThemeSet;
 use syntect::parsing::SyntaxSet;
-use syntect_tui::translate_style;
+use tui_syntax_highlight::Highlighter;
 
 pub fn ratatui_main(
     sc2_event_iter: SC2EventIterator,
@@ -212,7 +211,9 @@ impl S2ProtoRatatuiApp {
 
     fn event_canvas(&self) -> impl Widget + '_ {
         let mut text: Vec<Line<'_>> = vec![];
-        let mut spans = vec![];
+        let theme = self.syntect_theme_set.themes["base16-ocean.dark"].clone();
+        let highlighter = Highlighter::new(theme);
+        let syntax = self.syntect_syntax_set.find_syntax_by_name("json").unwrap();
         if let Some(event_item) = &self.current_event {
             match event_item.event_type {
                 SC2EventType::Tracker {
@@ -223,45 +224,42 @@ impl S2ProtoRatatuiApp {
                     text.push(text::Line::from(Span::from(format!(
                         "TRCK[{game_secs:>10.3}s][{tracker_loop:0>8}]: "
                     ))));
-                    for (style, data) in syntect_json_highlight(
-                        serde_json::to_string(&event).unwrap().as_str(),
-                        &self.syntect_syntax_set,
-                        &self.syntect_theme_set,
-                    ) {
-                        spans.push(Span::styled(
-                            String::from(data),
-                            translate_style(style).unwrap(),
-                        ))
-                    }
-                    text.push(Line::from(spans));
+                    let highlighted_text = highlighter
+                        .highlight_lines(
+                            serde_json::to_string(&event).unwrap().lines(),
+                            syntax,
+                            &self.syntect_syntax_set,
+                        )
+                        .unwrap();
+                    text.extend(highlighted_text.lines);
                 }
                 SC2EventType::Game {
+                    ref player_name,
                     ref event,
                     user_id,
                     game_loop,
                 } => {
+                    let player_name: String = if let Some(player) = player_name {
+                        player.to_string()
+                    } else {
+                        String::from("unknown")
+                    };
                     text.push(text::Line::from(Span::styled(
-                        format!(
-                            "UID[{user_id:<02}{:>20}]",
-                            self.details.get_player_name(user_id as u8)
-                        ),
+                        format!("UID[{user_id:<02}{:>20}]", player_name,),
                         Style::default().fg(self.get_player_color(user_id)),
                     )));
                     let game_secs = game_loop as f64 / 22.0;
                     text.push(text::Line::from(Span::from(format!(
                         "GAME[{game_secs:>10.3}s][{game_loop:0>8}]: "
                     ))));
-                    for (style, data) in syntect_json_highlight(
-                        serde_json::to_string(&event).unwrap().as_str(),
-                        &self.syntect_syntax_set,
-                        &self.syntect_theme_set,
-                    ) {
-                        spans.push(Span::styled(
-                            String::from(data),
-                            translate_style(style).unwrap(),
-                        ))
-                    }
-                    text.push(Line::from(spans));
+                    let highlighted_text = highlighter
+                        .highlight_lines(
+                            serde_json::to_string(&event).unwrap().lines(),
+                            syntax,
+                            &self.syntect_syntax_set,
+                        )
+                        .unwrap();
+                    text.extend(highlighted_text.lines);
                 }
             }
             match &event_item.change_hint {
@@ -375,20 +373,14 @@ impl S2ProtoRatatuiApp {
             }
         }
         if let Some(current_event) = &self.current_event {
-            let mut spans = vec![];
-            for (style, data) in syntect_json_highlight(
-                serde_json::to_string(&current_event.change_hint)
-                    .unwrap()
-                    .as_str(),
-                &self.syntect_syntax_set,
-                &self.syntect_theme_set,
-            ) {
-                spans.push(Span::styled(
-                    String::from(data),
-                    translate_style(style).unwrap(),
-                ))
-            }
-            text.push(Line::from(spans));
+            let highlighted_text = highlighter
+                .highlight_lines(
+                    serde_json::to_string(&current_event).unwrap().lines(),
+                    syntax,
+                    &self.syntect_syntax_set,
+                )
+                .unwrap();
+            text.extend(highlighted_text.lines);
         }
         let block = Block::bordered().title(Span::styled(
             "Event",
@@ -405,7 +397,7 @@ impl S2ProtoRatatuiApp {
         Canvas::default()
             .block(Block::bordered().title(format!(
                 "{} - size {}x{}",
-                self.sc2_event_iter.sc2_state.filename, map_size_x, map_size_y
+                self.sc2_event_iter.sc2_state.init_data.ext_fs_file_name, map_size_x, map_size_y
             )))
             .marker(self.marker)
             .x_bounds([0.0, f64::from(map_size_x)])

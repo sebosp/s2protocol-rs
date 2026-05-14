@@ -321,9 +321,9 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                 &cli,
                 read_type,
                 #[cfg(feature = "syntax")]
-                &syntect_syntax_set,
+                syntect_syntax_set,
                 #[cfg(feature = "syntax")]
-                &syntect_theme_set,
+                syntect_theme_set,
             )?;
         }
         #[cfg(feature = "dep_arrow")]
