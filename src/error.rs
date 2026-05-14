@@ -50,6 +50,9 @@ pub enum S2ProtocolError {
     /// The data structure tag is not recognized
     #[error("BitPackedTooLarge: {0}")]
     BitPackedMoreThan64Bits(usize),
+    /// The MapParserError
+    #[error("Map Error {0}")]
+    Map(#[from] crate::cache_handles::map::MapError),
 }
 
 /// Conversion of errors from byte aligned parser

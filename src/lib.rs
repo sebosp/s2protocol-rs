@@ -3,6 +3,7 @@
 #[cfg(feature = "dep_arrow")]
 pub mod arrow_store;
 pub mod bit_packed_decoder;
+pub mod cache_handles;
 pub mod cli;
 pub mod common;
 pub mod details;
