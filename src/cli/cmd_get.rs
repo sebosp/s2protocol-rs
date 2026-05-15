@@ -167,8 +167,8 @@ pub fn handle_get_cmd(
                             #[cfg(feature = "syntax")]
                             syntect_json_print(
                                 serde_json::to_string(&evt).unwrap(),
-                                syntect_syntax_set,
-                                syntect_theme_set,
+                                &syntect_syntax_set,
+                                &syntect_theme_set,
                             );
                             #[cfg(not(feature = "syntax"))]
                             print!("{}", serde_json::to_string(&evt).unwrap());

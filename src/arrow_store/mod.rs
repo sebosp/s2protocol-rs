@@ -137,46 +137,46 @@ impl ArrowIpcTypes {
             panic!("Output must be a directory for types 'all'");
         }
         // output must be a directory, for this directory we will create the following files:
-        // details.ipc
-        // stats.ipc
-        // upgrades.ipc
-        // unit_born.ipc
-        // unit_cmd_target_point.ipc
-        // unit_cmd_target_unit.ipc
-        Self::Details.handle_details_ipc_cmd(sources.clone(), output.join("details.ipc"))?;
+        // details.arrow
+        // stats.arrow
+        // upgrades.arrow
+        // unit_born.arrow
+        // unit_cmd_target_point.arrow
+        // unit_cmd_target_unit.arrow
+        Self::Details.handle_details_ipc_cmd(sources.clone(), output.join("details.arrow"))?;
         Self::Stats.handle_tracker_events(
             sources.clone(),
-            output.join("stats.ipc"),
+            output.join("stats.arrow"),
             unit_abilities,
             serially,
         )?;
         Self::Upgrades.handle_tracker_events(
             sources.clone(),
-            output.join("upgrades.ipc"),
+            output.join("upgrades.arrow"),
             unit_abilities,
             serially,
         )?;
         Self::UnitBorn.handle_tracker_events(
             sources.clone(),
-            output.join("unit_born.ipc"),
+            output.join("unit_born.arrow"),
             unit_abilities,
             serially,
         )?;
         Self::UnitDied.handle_tracker_events(
             sources.clone(),
-            output.join("unit_died.ipc"),
+            output.join("unit_died.arrow"),
             unit_abilities,
             serially,
         )?;
         Self::CmdTargetPoint.handle_game_events(
             sources.clone(),
-            output.join("cmd_target_point.ipc"),
+            output.join("cmd_target_point.arrow"),
             unit_abilities,
             serially,
         )?;
         Self::CmdTargetUnit.handle_game_events(
             sources.clone(),
-            output.join("cmd_target_unit.ipc"),
+            output.join("cmd_target_unit.arrow"),
             unit_abilities,
             serially,
         )?;
