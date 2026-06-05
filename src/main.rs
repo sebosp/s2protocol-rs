@@ -12,5 +12,6 @@ fn reset_sigpipe() {
 
 fn main() {
     reset_sigpipe();
+    #[cfg(feature = "dep_cli")]
     s2protocol::cli::process_cli_request().unwrap();
 }

@@ -11,7 +11,7 @@ pub mod protocol75689;
 pub mod protocol87702;
 
 /// Attempts to read the tracker events, panics under unknown protocol
-#[tracing::instrument(level = "error", skip(mpq, file_contents, file_name))]
+#[tracing::instrument(level = "debug", skip(mpq, file_contents, file_name))]
 pub fn read_tracker_events(
     file_name: &str,
     mpq: &MPQ,
@@ -42,7 +42,7 @@ pub fn read_tracker_events(
 }
 
 /// Attempts to read the game events, panics under unknown protocol
-#[tracing::instrument(level = "error", skip(mpq, file_contents, file_name))]
+#[tracing::instrument(level = "debug", skip(mpq, file_contents, file_name))]
 pub fn read_game_events(
     file_name: &str,
     mpq: &MPQ,
@@ -64,7 +64,7 @@ pub fn read_game_events(
 }
 
 /// Attempts to read the message events, panics under unknown protocol
-#[tracing::instrument(level = "error", skip(mpq, file_contents, file_name))]
+#[tracing::instrument(level = "debug", skip(mpq, file_contents, file_name))]
 pub fn read_message_events(
     file_name: &str,
     mpq: &MPQ,
@@ -86,7 +86,7 @@ pub fn read_message_events(
 }
 
 /// Attempts to read the details, panics under unknown protocol
-#[tracing::instrument(level = "error", skip(mpq, file_contents, file_name))]
+#[tracing::instrument(level = "debug", skip(mpq, file_contents, file_name))]
 pub fn read_details(
     file_name: &str,
     mpq: &MPQ,
@@ -108,7 +108,7 @@ pub fn read_details(
 }
 
 /// Attempts to read the initData, panics if signature doesn't match
-#[tracing::instrument(level = "error", skip(mpq, file_contents, file_name))]
+#[tracing::instrument(level = "debug", skip(mpq, file_contents, file_name))]
 pub fn read_init_data(
     file_name: &str,
     mpq: &MPQ,

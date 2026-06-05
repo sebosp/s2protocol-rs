@@ -29,7 +29,7 @@ impl T3HeightMap {
         Ok(t3_height_map)
     }
 
-    #[tracing::instrument(level = "info", skip(input), fields(input = peek_hex(input)))]
+    #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
     pub fn parse<'a>(input: &'a [u8], map_info: &MapInfo) -> S2ProtoResult<&'a [u8], Self> {
         let (tail, _) = dbg_peek_hex(tag(&b"HMAP"[..]), "read file magic, HMAP bytes")(input)?;
         let (tail, _) = dbg_peek_hex(

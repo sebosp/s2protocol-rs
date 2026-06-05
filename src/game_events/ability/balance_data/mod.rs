@@ -575,12 +575,12 @@ pub fn get_indexed_ability_command_name(
                 }
             }
         }
-        tracing::warn!(
+        tracing::debug!(
             "Unable to correlate ability[{ability_id}:{command_index}] for {:?}",
             balance_unit
         );
     } else {
-        tracing::warn!(
+        tracing::debug!(
             "Balance ability[{ability_id}:{command_index}] not found for unit {}",
             unit_name
         );

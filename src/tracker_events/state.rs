@@ -50,7 +50,10 @@ pub fn handle_unit_init(
         ..Default::default()
     };
     sc2_unit.set_unit_props(&sc2_state.balance_units);
+
+    #[cfg(feature = "tracing_info_level")]
     tracing::info!("Initializing unit: {:?}", sc2_unit);
+
     if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_init.unit_tag_index) {
         // This happens for example when a unit is burrowed.
         unit.last_game_loop = game_loop;
@@ -314,6 +317,8 @@ pub fn handle_tracker_event(
                 user_state.player_lobby_details.tracker_setup_player_id =
                     Some(player_setup.player_id);
                 user_state.player_lobby_details.tracker_setup_slot_id = player_setup.slot_id;
+
+                #[cfg(feature = "tracing_info_level")]
                 tracing::info!(
                     "Mapped tracker player id {} to user id {} (key in user_state hashmap)",
                     player_setup.player_id,

@@ -4,9 +4,15 @@
 pub mod arrow_store;
 pub mod bit_packed_decoder;
 pub mod cache_handles;
+
+#[cfg(feature = "dep_cli")]
 pub mod cli;
+
+#[cfg(feature = "dep_cli")]
+pub use cli::*;
 pub mod common;
 pub mod details;
+pub mod dir_stats;
 pub mod error;
 pub mod filters;
 pub mod game_events;
@@ -32,7 +38,6 @@ pub use arrow_store::*;
 pub use bit_packed_decoder::*;
 use chrono::DateTime;
 use chrono::Utc;
-pub use cli::*;
 use colored::*;
 pub use common::*;
 pub use error::*;
@@ -200,6 +205,50 @@ pub fn convert_game_loop_to_seconds(game_replay_loop: i64) -> u32 {
     // TODO: For now let's use seconds, we'll move this to milliseconds as we need more precision.
     let ext_replay_milliseconds = game_replay_loop as f32 * 68.58391;
     (ext_replay_milliseconds / 1000.0) as u32
+}
+
+/// Matches a list of files in case the cli.source param is a directory
+#[tracing::instrument(level = "debug")]
+pub fn get_matching_files(
+    source: PathBuf,
+    max_files: usize,
+    max_depth: usize,
+) -> Result<Vec<PathBuf>, Box<dyn std::error::Error>> {
+    if max_depth == 0 {
+        tracing::info!("Reached max depth");
+        return Ok(Vec::new());
+    }
+    if source.is_dir() {
+        // if this is a directory, let's recurse to go through subdirectories.
+        let mut sources = Vec::new();
+        for entry in std::fs::read_dir(source)? {
+            let entry = entry?;
+            let path = entry.path();
+            if path.is_dir() {
+                let mut sub_dir =
+                    get_matching_files(path, max_files - sources.len(), max_depth - 1)?;
+                if !sub_dir.is_empty() {
+                    // store n sub_dir files without breaking the max_files limit
+                    let remaining = max_files - sources.len();
+                    if sub_dir.len() > remaining {
+                        sub_dir.truncate(remaining);
+                    }
+                    sources.append(&mut sub_dir);
+                }
+            } else if let Some(ext) = path.extension()
+                && ext == "SC2Replay"
+                && path.is_file()
+            {
+                if sources.len() >= max_files {
+                    break;
+                }
+                sources.push(path);
+            }
+        }
+        Ok(sources)
+    } else {
+        Ok(vec![])
+    }
 }
 
 #[cfg(test)]

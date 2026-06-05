@@ -46,7 +46,7 @@ impl MapInfo {
         Ok(map_info)
     }
 
-    #[tracing::instrument(level = "info", skip(input), fields(input = peek_hex(input)))]
+    #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
         let (tail, _) = dbg_peek_hex(tag(&b"IpaM"[..]), "read file magic, IpaM bytes")(input)?;
 

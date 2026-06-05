@@ -7,6 +7,7 @@ use nom_mpq::MPQ;
 
 impl ReplaySInitData {
     /// Read the Init Data
+    #[tracing::instrument(level = "debug", skip(mpq, file_contents))]
     pub fn read_init_data(mpq: &MPQ, file_contents: &[u8]) -> Result<InitData, S2ProtocolError> {
         let (_, init_data_sector) =
             mpq.read_mpq_file_sector("replay.initData", false, file_contents)?;

@@ -136,7 +136,8 @@ pub fn handle_update_target_point(
             user_selected_units.push(registered_unit.clone());
         } else {
             tracing::error!(
-                "handle_update_target_point Unable to locate selected unit {} for user_id {}",
+                "{} handle_update_target_point Unable to locate selected unit {} for user_id {}",
+                sc2_state.init_data.ext_fs_file_name,
                 selected_unit,
                 user_id
             );
@@ -195,7 +196,8 @@ pub fn handle_update_target_unit(
             user_selected_units.push(registered_unit.clone());
         } else {
             tracing::error!(
-                "handle_update_target_unit Unable to locate selected unit {} for user_id {}",
+                "{} handle_update_target_unit Unable to locate selected unit {} for user_id {}",
+                sc2_state.init_data.ext_fs_file_name,
                 selected_unit,
                 user_id
             );

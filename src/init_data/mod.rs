@@ -38,7 +38,7 @@ pub struct InitData {
 
 impl InitData {
     /// Calls the per-protocol parser for the InitData and sets the metadadata.
-    #[tracing::instrument(level = "error", skip(file_contents, mpq))]
+    #[tracing::instrument(level = "debug", skip(file_contents, mpq))]
     pub fn new(
         file_name: &str,
         ext_fs_id: u64,
@@ -57,7 +57,7 @@ impl InitData {
         self
     }
 
-    #[tracing::instrument(level = "error")]
+    #[tracing::instrument(level = "debug")]
     pub fn with_version(mut self, version: u32) -> Self {
         self.version = version;
         self
@@ -75,19 +75,12 @@ impl TryFrom<(PathBuf, u64)> for InitData {
         let (path, ext_fs_id) = replay;
         let file_contents = crate::read_file(&path)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
-        match Self::new(
+        Self::new(
             path.to_str().unwrap_or_default(),
             ext_fs_id,
             &mpq,
             &file_contents,
-        ) {
-            Ok(init_data) => Ok(init_data.set_metadata(
-                path.to_str().unwrap_or_default(),
-                ext_fs_id,
-                &file_contents,
-            )),
-            Err(err) => Err(err),
-        }
+        )
     }
 }
 

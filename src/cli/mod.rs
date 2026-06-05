@@ -2,9 +2,6 @@ use super::*;
 pub mod cmd_get;
 pub use cmd_get::*;
 
-pub mod cmd_scan;
-pub use cmd_scan::*;
-
 #[cfg(feature = "syntax")]
 use syntect::easy::HighlightLines;
 #[cfg(feature = "syntax")]
@@ -21,6 +18,9 @@ use crate::game_events::ability::balance_data::json_handler::read_balance_data_f
 use crate::game_events::ability::traverse_versioned_balance_abilities;
 use crate::generator::proto_morphist::ProtoMorphist;
 use crate::tracker_events::{unit_tag_index, unit_tag_recycle};
+
+use crate::dir_stats::SC2ReplaysDirStats;
+use crate::filters::SC2ReplayFilters;
 
 #[cfg(feature = "dep_arrow")]
 use clap::Args;
@@ -57,27 +57,6 @@ pub enum Commands {
     /// Utilities, transforming tag index, recycle, etc.
     #[command(subcommand)]
     Util(CommandUtils),
-}
-
-///  Create a subcommand that handles the max depth and max files to process
-#[cfg(feature = "dep_arrow")]
-#[derive(Args, Debug, Clone)]
-pub struct WriteArrowIpcProps {
-    /// Reads these many  files recursing, these files may or may not be valid.
-    #[arg(long, default_value = "1000000")]
-    pub scan_max_files: usize,
-    /// The maximum number of files to process
-    #[arg(long, default_value = "1000000")]
-    pub process_max_files: usize,
-    /// The maximum directory depth to traverse
-    #[arg(long, default_value = "8")]
-    pub traverse_max_depth: usize,
-    /// The minimum protocol version
-    #[arg(long)]
-    pub min_version: Option<u32>,
-    /// The maximum protocol version
-    #[arg(long)]
-    pub max_version: Option<u32>,
 }
 
 #[derive(Parser, Debug, Clone)]
@@ -157,49 +136,6 @@ pub struct Cli {
     /// Whether or not to process files serially
     #[arg(long, default_value = "false")]
     pub serially: bool,
-}
-
-/// Matches a list of files in case the cli.source param is a directory
-#[tracing::instrument(level = "debug")]
-pub fn get_matching_files(
-    source: PathBuf,
-    max_files: usize,
-    max_depth: usize,
-) -> Result<Vec<PathBuf>, Box<dyn std::error::Error>> {
-    if max_depth == 0 {
-        tracing::info!("Reached max depth");
-        return Ok(Vec::new());
-    }
-    if source.is_dir() {
-        // if this is a directory, let's recurse to go through subdirectories.
-        let mut sources = Vec::new();
-        for entry in std::fs::read_dir(source)? {
-            let entry = entry?;
-            let path = entry.path();
-            if path.is_dir() {
-                let mut sub_dir = get_matching_files(path, max_files, max_depth - 1)?;
-                if !sub_dir.is_empty() {
-                    // store n sub_dir files without breaking the max_files limit
-                    let remaining = max_files - sources.len();
-                    if sub_dir.len() > remaining {
-                        sub_dir.truncate(remaining);
-                    }
-                    sources.append(&mut sub_dir);
-                }
-            } else if let Some(ext) = path.extension()
-                && ext == "SC2Replay"
-                && path.is_file()
-            {
-                if sources.len() >= max_files {
-                    break;
-                }
-                sources.push(path);
-            }
-        }
-        Ok(sources)
-    } else {
-        Ok(vec![])
-    }
 }
 
 /// Prints the json strings with syntect::easy
@@ -352,4 +288,26 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
         println!("Total time: {:?}", init_time.elapsed());
     }
     Ok(())
+}
+
+pub fn handle_scan_cli_cmd(
+    cli: &Cli,
+    unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+) -> Result<SC2ReplaysDirStats, Box<dyn std::error::Error>> {
+    scan_path(&cli.source, unit_abilities, false)
+}
+
+impl From<Cli> for SC2ReplayFilters {
+    fn from(cli: Cli) -> Self {
+        SC2ReplayFilters {
+            player_id: cli.player_id,
+            min_loop: cli.min_loop,
+            max_loop: cli.max_loop,
+            event_type: cli.event_type,
+            unit_name: cli.unit_name,
+            max_events: cli.max_events,
+            include_stats: cli.include_stats,
+            ..Default::default()
+        }
+    }
 }

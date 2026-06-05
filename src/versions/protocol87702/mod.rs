@@ -18186,7 +18186,7 @@ pub mod bit_packed {
             tracing::debug!("m_sync_lobby_state: {:?}", m_sync_lobby_state);
             Ok((tail, m_sync_lobby_state))
         }
-        #[tracing::instrument(name="87702::bit_packed::ReplaySInitData::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
+        #[tracing::instrument(name="87702::bit_packed::ReplaySInitData::Parse", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_sync_lobby_state: Option<GameSLobbySyncState> = None;

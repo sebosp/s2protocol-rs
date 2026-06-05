@@ -68,7 +68,7 @@ impl DocumentHeader {
         Ok(document_header)
     }
 
-    #[tracing::instrument(level = "info", skip(input), fields(input = peek_hex(input)))]
+    #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
     pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
         let mut res = Self::default();
         let (tail, _) = dbg_peek_hex(tag(&b"H2CS"[..]), "read file magic, H2CS bytes")(input)?;

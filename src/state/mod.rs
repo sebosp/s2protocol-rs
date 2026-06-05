@@ -721,7 +721,9 @@ impl Iterator for SC2EventIterator {
                     return None;
                 }
             }
+            #[cfg(feature = "tracing_info_level")]
             iterator_item.emit_info_log();
+
             return Some(iterator_item);
         }
     }

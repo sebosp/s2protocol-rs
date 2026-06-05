@@ -3,7 +3,6 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::cli::Cli;
 use crate::details::Details;
 
 /// A set of known filters for users of the library
@@ -61,20 +60,5 @@ impl SC2ReplayFilters {
             return true;
         }
         false
-    }
-}
-
-impl From<Cli> for SC2ReplayFilters {
-    fn from(cli: Cli) -> Self {
-        SC2ReplayFilters {
-            player_id: cli.player_id,
-            min_loop: cli.min_loop,
-            max_loop: cli.max_loop,
-            event_type: cli.event_type,
-            unit_name: cli.unit_name,
-            max_events: cli.max_events,
-            include_stats: cli.include_stats,
-            ..Default::default()
-        }
     }
 }

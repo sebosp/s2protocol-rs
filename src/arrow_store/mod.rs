@@ -11,18 +11,60 @@ use init_data::InitData;
 #[cfg(feature = "dep_arrow")]
 use rayon::prelude::*;
 
-use crate::cli::get_matching_files;
+use crate::get_matching_files;
+
 use crate::details::{PlayerLobbyDetails, PlayerLobbyDetailsFlatRow};
 use crate::game_events::VersionedBalanceUnit;
 use crate::tracker_events;
 use crate::*;
-use clap::Subcommand;
+
+#[cfg(feature = "dep_cli")]
+use clap::{Args, Subcommand};
+
 use std::path::PathBuf;
 pub mod ipc_writer;
 use ipc_writer::*;
 
+///  Create a subcommand that handles the max depth and max files to process
+#[cfg(feature = "dep_cli")]
+#[derive(Args, Debug, Clone)]
+pub struct WriteArrowIpcProps {
+    /// Reads these many  files recursing, these files may or may not be valid.
+    #[arg(long, default_value = "1000000")]
+    pub scan_max_files: usize,
+    /// The maximum number of files to process
+    #[arg(long, default_value = "1000000")]
+    pub process_max_files: usize,
+    /// The maximum directory depth to traverse
+    #[arg(long, default_value = "8")]
+    pub traverse_max_depth: usize,
+    /// The minimum protocol version
+    #[arg(long)]
+    pub min_version: Option<u32>,
+    /// The maximum protocol version
+    #[arg(long)]
+    pub max_version: Option<u32>,
+}
+
+///  Create a subcommand that handles the max depth and max files to process
+#[cfg(not(feature = "dep_cli"))]
+#[derive(Debug, Clone)]
+pub struct WriteArrowIpcProps {
+    /// Reads these many  files recursing, these files may or may not be valid.
+    pub scan_max_files: usize,
+    /// The maximum number of files to process
+    pub process_max_files: usize,
+    /// The maximum directory depth to traverse
+    pub traverse_max_depth: usize,
+    /// The minimum protocol version
+    pub min_version: Option<u32>,
+    /// The maximum protocol version
+    pub max_version: Option<u32>,
+}
+
 /// The supported Arrow IPC types
-#[derive(Debug, Subcommand, Clone)]
+#[derive(Debug, Clone)]
+#[cfg_attr(feature = "dep_cli", derive(Subcommand))]
 pub enum ArrowIpcTypes {
     /// Writes the [`crate::init_data::UserInitDataFlatRow`] flat row to an Arrow IPC file
     UserInitData,
@@ -131,7 +173,7 @@ impl ArrowIpcTypes {
         sources: Vec<InitData>,
         output: PathBuf,
         unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
-        serially: bool,
+        disable_parallel_scans: bool,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if !output.is_dir() {
             panic!("Output must be a directory for types 'all'");
@@ -148,37 +190,37 @@ impl ArrowIpcTypes {
             sources.clone(),
             output.join("stats.arrow"),
             unit_abilities,
-            serially,
+            disable_parallel_scans,
         )?;
         Self::Upgrades.handle_tracker_events(
             sources.clone(),
             output.join("upgrades.arrow"),
             unit_abilities,
-            serially,
+            disable_parallel_scans,
         )?;
         Self::UnitBorn.handle_tracker_events(
             sources.clone(),
             output.join("unit_born.arrow"),
             unit_abilities,
-            serially,
+            disable_parallel_scans,
         )?;
         Self::UnitDied.handle_tracker_events(
             sources.clone(),
             output.join("unit_died.arrow"),
             unit_abilities,
-            serially,
+            disable_parallel_scans,
         )?;
         Self::CmdTargetPoint.handle_game_events(
             sources.clone(),
             output.join("cmd_target_point.arrow"),
             unit_abilities,
-            serially,
+            disable_parallel_scans,
         )?;
         Self::CmdTargetUnit.handle_game_events(
             sources.clone(),
             output.join("cmd_target_unit.arrow"),
             unit_abilities,
-            serially,
+            disable_parallel_scans,
         )?;
         Ok(())
     }
@@ -192,13 +234,13 @@ impl ArrowIpcTypes {
         sources: Vec<InitData>,
         output: PathBuf,
         versioned_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
-        serially: bool,
+        disable_parallel_scans: bool,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing TrackerEvents IPC write request: {:?}", self);
         let writer = open_arrow_mutex_writer(output, self.schema())?;
 
         // XXX: Ok this is really very ugly/embarrasing, gotta find a way to switch between serial and parallel processing
-        let total_records = if serially {
+        let total_records = if disable_parallel_scans {
             sources
                 .iter()
                 .filter_map(|source| {
@@ -267,12 +309,12 @@ impl ArrowIpcTypes {
         sources: Vec<InitData>,
         output: PathBuf,
         versioned_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
-        serially: bool,
+        disable_parallel_scans: bool,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing GameEvents IPC write request: {:?}", self);
         let writer = open_arrow_mutex_writer(output, self.schema())?;
 
-        let total_records = if serially {
+        let total_records = if disable_parallel_scans {
             sources
                 .iter()
                 .filter_map(|source| {
@@ -399,19 +441,20 @@ impl ArrowIpcTypes {
         output: PathBuf,
         cmd: &WriteArrowIpcProps,
         unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
-        serially: bool,
+        disable_parallel_scans: bool,
     ) -> Result<(), Box<dyn std::error::Error>> {
         println!(
             "Processing Arrow write request with scan_max_files: {}, traverse_max_depth: {}, process_max_files: {}, min_version: {:?}, max_version: {:?}",
             cmd.scan_max_files,
-            cmd.process_max_files,
             cmd.traverse_max_depth,
+            cmd.process_max_files,
             cmd.min_version,
             cmd.max_version
         );
         let sources = get_matching_files(source, cmd.scan_max_files, cmd.traverse_max_depth)?;
         println!("Located {} matching files by extension", sources.len());
-        let sources: Vec<InitData> = if !serially {
+        let sources: Vec<InitData> = if disable_parallel_scans {
+            tracing::debug!("Working serially");
             sources
                 .iter()
                 .enumerate()
@@ -420,6 +463,7 @@ impl ArrowIpcTypes {
                 })
                 .collect::<Vec<InitData>>()
         } else {
+            tracing::debug!("Working in parallel");
             sources
                 .par_iter()
                 .enumerate()
@@ -453,6 +497,6 @@ impl ArrowIpcTypes {
                 sources.len()
             );
         }
-        Self::handle_write_snapshot(sources, output, unit_abilities, serially)
+        Self::handle_write_snapshot(sources, output, unit_abilities, disable_parallel_scans)
     }
 }
