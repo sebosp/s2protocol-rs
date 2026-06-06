@@ -1,37 +1,67 @@
-use super::*;
+#[path = "./cmd_get.rs"]
 pub mod cmd_get;
 pub use cmd_get::*;
 
-#[cfg(feature = "syntax")]
+use clap::{Args, Parser, Subcommand};
+use s2protocol::WriteArrowIpcProps;
+use std::collections::HashMap;
+use std::path::PathBuf;
 use syntect::easy::HighlightLines;
-#[cfg(feature = "syntax")]
 use syntect::highlighting::{Color, Style, ThemeSet};
-#[cfg(feature = "syntax")]
 use syntect::parsing::SyntaxSet;
-#[cfg(feature = "syntax")]
 use syntect::util::{LinesWithEndings, as_24_bit_terminal_escaped};
 
-use crate::game_events::VersionedBalanceUnit;
-use crate::game_events::ability::balance_data::json_handler::read_balance_data_from_included_assets;
-use crate::game_events::ability::balance_data::json_handler::read_balance_data_from_json_dir;
-
-use crate::game_events::ability::traverse_versioned_balance_abilities;
-use crate::generator::proto_morphist::ProtoMorphist;
-use crate::tracker_events::{unit_tag_index, unit_tag_recycle};
-
-use crate::dir_stats::SC2ReplaysDirStats;
-use crate::filters::SC2ReplayFilters;
-
-#[cfg(feature = "dep_arrow")]
-use clap::Args;
-
-use clap::{Parser, Subcommand};
-use std::path::PathBuf;
+use s2protocol::dir_stats::{SC2ReplaysDirStats, scan_path};
+use s2protocol::filters::SC2ReplayFilters;
+use s2protocol::game_events::VersionedBalanceUnit;
+use s2protocol::game_events::ability::balance_data::json_handler::*;
+use s2protocol::game_events::ability::traverse_versioned_balance_abilities;
+use s2protocol::generator::proto_morphist::ProtoMorphist;
+use s2protocol::tracker_events::{unit_tag_index, unit_tag_recycle};
 
 #[derive(Subcommand, Debug, Clone)]
 pub enum CommandUtils {
     /// Translate unit tag to index, recycle pair
     XlateTagToIndexRecycle { tag: i64 },
+}
+
+///  Create a subcommand that handles the max depth and max files to process
+#[derive(Args, Debug, Clone)]
+pub struct WriteArrowIpcPropsArgs {
+    /// Reads these many  files recursing, these files may or may not be valid.
+    #[arg(long, default_value = "1000000")]
+    pub scan_max_files: usize,
+    /// The maximum number of files to process
+    #[arg(long, default_value = "1000000")]
+    pub process_max_files: usize,
+    /// The maximum directory depth to traverse
+    #[arg(long, default_value = "8")]
+    pub traverse_max_depth: usize,
+    /// The minimum protocol version
+    #[arg(long)]
+    pub min_version: Option<u32>,
+    /// The maximum protocol version
+    #[arg(long)]
+    pub max_version: Option<u32>,
+}
+
+impl From<WriteArrowIpcPropsArgs> for s2protocol::WriteArrowIpcProps {
+    fn from(src: WriteArrowIpcPropsArgs) -> WriteArrowIpcProps {
+        let WriteArrowIpcPropsArgs {
+            scan_max_files,
+            process_max_files,
+            traverse_max_depth,
+            min_version,
+            max_version,
+        } = src;
+        WriteArrowIpcProps {
+            scan_max_files,
+            process_max_files,
+            traverse_max_depth,
+            min_version,
+            max_version,
+        }
+    }
 }
 
 #[derive(Subcommand, Debug, Clone)]
@@ -51,8 +81,7 @@ pub enum Commands {
     Get(ReadTypes),
 
     /// Writes Arrow IPC files for a specific event type from the SC2Replay MPQ Archive
-    #[cfg(feature = "dep_arrow")]
-    WriteArrowIpc(WriteArrowIpcProps),
+    WriteArrowIpc(WriteArrowIpcPropsArgs),
 
     /// Utilities, transforming tag index, recycle, etc.
     #[command(subcommand)]
@@ -133,13 +162,17 @@ pub struct Cli {
     #[arg(long, default_value = "false")]
     pub quiet: bool,
 
-    /// Whether or not to process files serially
+    /// Whether or not to work in parallel.
     #[arg(long, default_value = "false")]
-    pub serially: bool,
+    pub disable_paralellism: bool,
+
+    /// Runs the event transition through ratatui.
+    /// Caution, very slow.
+    #[arg(long, default_value = "false")]
+    pub tui: bool,
 }
 
 /// Prints the json strings with syntect::easy
-#[cfg(feature = "syntax")]
 pub fn syntect_json_highlight<'a>(
     json_str: &'a str,
     syntect_syntax_set: &SyntaxSet,
@@ -160,7 +193,6 @@ pub fn syntect_json_highlight<'a>(
 }
 
 /// Prints the json strings with syntect::easy
-#[cfg(feature = "syntax")]
 pub fn syntect_json_print(
     json_str: String,
     syntect_syntax_set: &SyntaxSet,
@@ -203,11 +235,8 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             .with_env_filter(level.to_string())
             .init();
     }
-    #[cfg(feature = "syntax")]
     let syntect_syntax_set = SyntaxSet::load_defaults_newlines();
-    #[cfg(feature = "syntax")]
     let mut syntect_theme_set = ThemeSet::load_defaults();
-    #[cfg(feature = "syntax")]
     {
         syntect_theme_set
             .themes
@@ -247,29 +276,18 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             }
             let versioned_abilities =
                 traverse_versioned_balance_abilities(PathBuf::from(&cli.source))?;
-            crate::game_events::ability::balance_data::json_handler::write_balance_data_to_json(
-                &cli.json_balance_data_dir,
-                versioned_abilities,
-            )?;
+            write_balance_data_to_json(&cli.json_balance_data_dir, versioned_abilities)?;
         }
         Commands::Get(read_type) => {
-            cmd_get::handle_get_cmd(
-                &cli,
-                read_type,
-                #[cfg(feature = "syntax")]
-                syntect_syntax_set,
-                #[cfg(feature = "syntax")]
-                syntect_theme_set,
-            )?;
+            cmd_get::handle_get_cmd(&cli, read_type, syntect_syntax_set, syntect_theme_set)?;
         }
-        #[cfg(feature = "dep_arrow")]
         Commands::WriteArrowIpc(cmd) => {
-            ArrowIpcTypes::handle_arrow_ipc_cmd(
+            s2protocol::ArrowIpcTypes::handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),
                 PathBuf::from(&cli.output.expect("Requires --output")),
-                cmd,
+                &cmd.to_owned().into(),
                 &versioned_abilities,
-                cli.serially,
+                cli.disable_paralellism,
             )?;
         }
         Commands::Util(cmd) => match cmd {

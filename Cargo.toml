@@ -11,46 +11,30 @@ keywords = ["sc2replay", "polars", "arrow", "starcraft2", "mpq"]
 categories = ["games", "parsing"]
 
 [dependencies]
-nom-mpq = "2.0.7"
+nom-mpq = { path = "../nom-mpq/" }
 nom = "8.0"
 thiserror = "2"
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = [
-  "env-filter",
-], optional = true }
-clap = { version = "4.6", features = ["derive"], optional = true }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 convert_case = "0.11"
-colored = "3.0"
 arrow = { version = "57", optional = true }
 arrow_convert = { version = "0.11.0", optional = true }
 sha256 = { version = "1.6", default-features = false }
 rayon = "1.11"
 chrono = { version = "0.4", features = ["serde"] }
-libc = "0.2"
-syntect = { version = "5.3", optional = true }
-ratatui = { version = "0.30", optional = true }
-tui-syntax-highlight = { version = "0.2.0", optional = true }
-crossterm = { version = "0.29", optional = true }
-color-eyre = { version = "0.6", optional = true }
-itertools = { version = "0.14", optional = true }
+colored = "3.0"
 serde-xml-rs = "0.8"
 include_assets = "1.0.0"
 
 [features]
-default = ["dep_arrow", "syntax", "tracing/max_level_off"]
+default = ["dep_arrow", "tracing_info_level"]
 # A feature that allows extra tracing, disabled by default because of performance
 dep_arrow = ["arrow", "arrow_convert"]
 tracing_off = [
   "tracing/max_level_off",
   "tracing/release_max_level_off",
   "nom-mpq/tracing_off",
-]
-tracing_trace_level = [
-  "tracing/max_level_trace",
-  "tracing/release_max_level_trace",
-  "nom-mpq/tracing_trace_level",
 ]
 tracing_debug_level = [
   "tracing/max_level_debug",
@@ -62,18 +46,15 @@ tracing_info_level = [
   "tracing/release_max_level_info",
   "nom-mpq/tracing_info_level",
 ]
-dep_cli = ["tracing-subscriber", "clap"]
-dep_ratatui = [
-  "tracing-subscriber",
-  "clap",
-  "ratatui",
-  "crossterm",
-  "color-eyre",
-  "itertools",
-  "syntax",
-]
-syntax = ["syntect", "tui-syntax-highlight", "color-eyre"]
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+clap = { version = "4.6", features = ["derive"] }
+ratatui = "0.30"
+crossterm = "0.29"
+color-eyre = "0.6"
+itertools = "0.14"
+tui-syntax-highlight = "0.2.0"
+syntect = "5.3"
+libc = "0.2"

@@ -4,7 +4,7 @@
 //! https://github.com/ratatui/ratatui/blob/main/examples/apps/canvas/src/main.rs
 //!
 
-use crate::{
+use s2protocol::{
     ACTIVE_UNITS_GROUP_IDX, SC2EventIteratorItem,
     state::{SC2EventIterator, SC2EventType, UnitChangeHint},
     tracker_events::unit_tag_index,
@@ -37,8 +37,8 @@ use tui_syntax_highlight::Highlighter;
 
 pub fn ratatui_main(
     sc2_event_iter: SC2EventIterator,
-    details: crate::details::Details,
-    init_data: crate::init_data::InitData,
+    details: s2protocol::details::Details,
+    init_data: s2protocol::init_data::InitData,
     syntect_syntax_set: SyntaxSet,
     syntect_theme_set: ThemeSet,
 ) -> Result<()> {
@@ -58,18 +58,7 @@ pub fn ratatui_main(
     app_result
 }
 
-use std::fmt;
-
 pub const GAME_SPOINT_MINI_TO_MAP_RATIO: f64 = 250.;
-
-pub struct PrettyPrintBuffer(pub Vec<String>);
-
-impl fmt::Write for PrettyPrintBuffer {
-    fn write_str(&mut self, s: &str) -> fmt::Result {
-        self.0.push(s.to_string());
-        Ok(())
-    }
-}
 
 struct S2ProtoRatatuiApp {
     exit: bool,
@@ -79,8 +68,8 @@ struct S2ProtoRatatuiApp {
     marker: Marker,
     points: Vec<Position>,
     is_drawing: bool,
-    details: crate::details::Details,
-    init_data: crate::init_data::InitData,
+    details: s2protocol::details::Details,
+    init_data: s2protocol::init_data::InitData,
     sc2_event_iter: SC2EventIterator,
     current_event: Option<SC2EventIteratorItem>,
     syntect_syntax_set: SyntaxSet,
@@ -90,8 +79,8 @@ struct S2ProtoRatatuiApp {
 impl S2ProtoRatatuiApp {
     fn new(
         mut sc2_event_iter: SC2EventIterator,
-        details: crate::details::Details,
-        init_data: crate::init_data::InitData,
+        details: s2protocol::details::Details,
+        init_data: s2protocol::init_data::InitData,
         syntect_syntax_set: SyntaxSet,
         syntect_theme_set: ThemeSet,
     ) -> Self {

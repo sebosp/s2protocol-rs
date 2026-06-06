@@ -1,3 +1,6 @@
+#[path = "cli/mod.rs"]
+mod cli;
+
 #[cfg(unix)]
 fn reset_sigpipe() {
     unsafe {
@@ -12,6 +15,5 @@ fn reset_sigpipe() {
 
 fn main() {
     reset_sigpipe();
-    #[cfg(feature = "dep_cli")]
-    s2protocol::cli::process_cli_request().unwrap();
+    cli::process_cli_request().unwrap();
 }

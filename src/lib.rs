@@ -5,11 +5,6 @@ pub mod arrow_store;
 pub mod bit_packed_decoder;
 pub mod cache_handles;
 
-#[cfg(feature = "dep_cli")]
-pub mod cli;
-
-#[cfg(feature = "dep_cli")]
-pub use cli::*;
 pub mod common;
 pub mod details;
 pub mod dir_stats;
@@ -55,11 +50,6 @@ pub use versioned_decoder::*;
 pub use nom_mpq::MPQ;
 /// Re-export to avoid having to also add this crate to other consumers.
 pub use nom_mpq::parser::{self, peek_hex};
-
-#[cfg(feature = "dep_ratatui")]
-pub mod tui;
-#[cfg(feature = "dep_ratatui")]
-pub use tui::*;
 
 /// Many fields are optional, this macro will return an Ok for the nom::IResult but the value will
 /// be an Err(S2ProtocolError::MissingField) if the field is not present.

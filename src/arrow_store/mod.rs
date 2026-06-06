@@ -18,36 +18,11 @@ use crate::game_events::VersionedBalanceUnit;
 use crate::tracker_events;
 use crate::*;
 
-#[cfg(feature = "dep_cli")]
-use clap::{Args, Subcommand};
-
 use std::path::PathBuf;
 pub mod ipc_writer;
 use ipc_writer::*;
 
 ///  Create a subcommand that handles the max depth and max files to process
-#[cfg(feature = "dep_cli")]
-#[derive(Args, Debug, Clone)]
-pub struct WriteArrowIpcProps {
-    /// Reads these many  files recursing, these files may or may not be valid.
-    #[arg(long, default_value = "1000000")]
-    pub scan_max_files: usize,
-    /// The maximum number of files to process
-    #[arg(long, default_value = "1000000")]
-    pub process_max_files: usize,
-    /// The maximum directory depth to traverse
-    #[arg(long, default_value = "8")]
-    pub traverse_max_depth: usize,
-    /// The minimum protocol version
-    #[arg(long)]
-    pub min_version: Option<u32>,
-    /// The maximum protocol version
-    #[arg(long)]
-    pub max_version: Option<u32>,
-}
-
-///  Create a subcommand that handles the max depth and max files to process
-#[cfg(not(feature = "dep_cli"))]
 #[derive(Debug, Clone)]
 pub struct WriteArrowIpcProps {
     /// Reads these many  files recursing, these files may or may not be valid.
@@ -64,7 +39,6 @@ pub struct WriteArrowIpcProps {
 
 /// The supported Arrow IPC types
 #[derive(Debug, Clone)]
-#[cfg_attr(feature = "dep_cli", derive(Subcommand))]
 pub enum ArrowIpcTypes {
     /// Writes the [`crate::init_data::UserInitDataFlatRow`] flat row to an Arrow IPC file
     UserInitData,
