@@ -11,7 +11,7 @@ keywords = ["sc2replay", "polars", "arrow", "starcraft2", "mpq"]
 categories = ["games", "parsing"]
 
 [dependencies]
-nom-mpq = { path = "../nom-mpq/" }
+nom-mpq = "2.0.8"
 nom = "8.0"
 thiserror = "2"
 tracing = "0.1"
