@@ -15,6 +15,8 @@ use tracing::instrument;
 pub struct DocumentHeader {
     pub maybe_dimension_x1: i32,
     pub maybe_dimension_y1: i32,
+    // TODO: these are not epochs, probably more like units that are 1000th the value of the
+    // maybe_dimension_x1
     pub some_epoch_1: i32,
     pub some_epoch_2: i32,
     pub mod_info: String,
