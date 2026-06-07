@@ -41,6 +41,15 @@ impl DocumentHeader {
             | "MapInfo/Player01/Name"
             | "MapInfo/Player02/Name"
             | "MapInfo/Player03/Name"
+            | "MapInfo/Player04/Name"
+            | "MapInfo/Player05/Name"
+            | "MapInfo/Player06/Name"
+            | "MapInfo/Player07/Name"
+            | "MapInfo/Player08/Name"
+            | "MapInfo/Team00/Name"
+            | "MapInfo/Team01/Name"
+            | "MapInfo/Team02/Name"
+            | "MapInfo/Team03/Name"
             // These values are seen on Heart Of The Swarm it seems, may be related to GameHeart.
             // Thus far the information I am looking for appears in the Legacy of the Void and the
             // structs are easy to parse, I hope I don't have to try to understand the Swarm one,
@@ -60,7 +69,7 @@ impl DocumentHeader {
         }
     }
 
-    #[instrument(skip(mpq, file_contents))]
+    #[instrument(level = "debug", skip(mpq, file_contents))]
     pub fn from_mpq(mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
         let (_, document_header_sector) =
             mpq.read_mpq_file_sector("DocumentHeader", false, file_contents)?;
@@ -75,13 +84,25 @@ impl DocumentHeader {
 
         let (tail, maybe_file_version_bytes) =
             dbg_peek_hex(take(4usize), "read maybe_file_version, 4 bytes")(tail)?;
-        let (_, _maybe_file_version) =
+        let (_, maybe_file_version) =
             i32(nom::number::Endianness::Little)(maybe_file_version_bytes)?;
+
+        tracing::debug!(
+            "maybe_file_version '{maybe_file_version_bytes:?}' '{:?}' tail is {}",
+            maybe_file_version,
+            peek_hex(tail)
+        );
 
         let (tail, maybe_map_compatibility_bytes) =
             dbg_peek_hex(take(4usize), "read maybe_map_compatibility, 4 bytes")(tail)?;
-        let _maybe_compatibility =
+        let maybe_compatibility =
             String::from_utf8_lossy(maybe_map_compatibility_bytes).to_string();
+
+        tracing::debug!(
+            "maybe_compatibility '{maybe_map_compatibility_bytes:?}' '{}', tail is {}",
+            maybe_compatibility,
+            peek_hex(tail)
+        );
 
         let (tail, _unknown_bytes) =
             dbg_peek_hex(take(4usize), "read _unknown_bytes after S2.., 4 bytes")(tail)?;
@@ -125,7 +146,7 @@ impl DocumentHeader {
             )));
         }
 
-        tracing::info!("Got mod_info: {}", res.mod_info);
+        tracing::debug!("Got mod_info: {}", res.mod_info);
 
         let (tail, _past_the_zero_delim) = dbg_peek_hex(
             take(1usize),
@@ -136,8 +157,8 @@ impl DocumentHeader {
             dbg_peek_hex(take(2usize), "read doc_info field count, 2 bytes")(tail)?;
         let (_, docinfo_field_count) =
             u16(nom::number::Endianness::Little)(docinfo_field_count_bytes)?;
-        tracing::info!(
-            "after read filed count filed count bytes: {:?} tail is {}",
+        tracing::debug!(
+            "field count field count bytes: {:?} tail is {}",
             docinfo_field_count_bytes,
             peek_hex(tail)
         );
@@ -145,34 +166,63 @@ impl DocumentHeader {
         let (mut new_tail, _) =
             dbg_peek_hex(tag(&[0, 0][..]), "doc_info element count delimiter.")(tail)?;
 
-        tracing::info!("Expect to read {} fields", docinfo_field_count);
-        for _ in 0..docinfo_field_count {
-            tracing::info!("after read string size, tail is {}", peek_hex(new_tail));
+        tracing::debug!("Expect to read {} fields", docinfo_field_count);
+        for field_num in 0..docinfo_field_count {
             let (tail, next_str_size_bytes) =
                 dbg_peek_hex(take(2usize), "read string size, 2 bytes")(new_tail)?;
             let (_, next_str_size) = u16(nom::number::Endianness::Little)(next_str_size_bytes)?;
 
+            tracing::debug!(
+                "{field_num}: field NAME string size {}, tail is {}",
+                next_str_size,
+                peek_hex(new_tail)
+            );
+
             let (tail, docinfo_field_name_bytes) =
                 dbg_peek_hex(take(next_str_size), "read docinfo_field_name, n bytes")(tail)?;
             let docinfo_field_name = String::from_utf8_lossy(docinfo_field_name_bytes).to_string();
-            tracing::info!(
-                "after field name: {} {}",
+            tracing::debug!(
+                "{field_num} field NAME: '{}' {}",
                 docinfo_field_name,
                 peek_hex(tail)
             );
 
-            let (tail, _) =
-                dbg_peek_hex(tag(&b"SUne"[..]), "doc_info file type, SUne bytes")(tail)?;
+            // Internationalization str, 4 bytes
+            let (tail, i18n_bytes) = dbg_peek_hex(take(4usize), "read i18n bytes, n bytes")(tail)?;
+            let i18n_str_rev = String::from_utf8_lossy(i18n_bytes).to_string();
+            let i18n_str: String = i18n_str_rev.chars().rev().collect();
+            tracing::debug!(
+                "{field_num} field language/i8n: '{}' {}",
+                i18n_str,
+                peek_hex(tail)
+            );
 
             let (tail, next_str_size_bytes) =
                 dbg_peek_hex(take(2usize), "read string size, 2 bytes")(tail)?;
             let (_, next_str_size) = u16(nom::number::Endianness::Little)(next_str_size_bytes)?;
 
+            tracing::debug!(
+                "{field_num}: field VALUE string size {}, tail is {}",
+                next_str_size,
+                peek_hex(new_tail)
+            );
+
             let (tail, docinfo_field_value_bytes) =
                 dbg_peek_hex(take(next_str_size), "read docinfo_field_value, n bytes")(tail)?;
             let docinfo_field_value =
                 String::from_utf8_lossy(docinfo_field_value_bytes).to_string();
-            res.set_field_by_name(&docinfo_field_name, docinfo_field_value);
+
+            tracing::debug!(
+                "{field_num} field VALUE: '{}' {}",
+                docinfo_field_value,
+                peek_hex(tail)
+            );
+
+            if i18n_str == "enUS" {
+                res.set_field_by_name(&docinfo_field_name, docinfo_field_value);
+            } else {
+                tracing::debug!("Skipping language '{i18n_str}'");
+            }
             new_tail = tail;
         }
 
@@ -207,7 +257,8 @@ pub mod document_header_tests {
             0x0c, 0x00, // next string size, 12 characters...
             0x44, 0x6f, 0x63, 0x49, 0x6e, 0x66, 0x6f, 0x2f, 0x4e, 0x61, 0x6d,
             0x65, // 12 characters up to here: DocInfo/Name
-            0x53, 0x55, 0x6e, 0x65, // "SUne" Some field type identifier:
+            0x53, 0x55, 0x6e,
+            0x65, // "SUne" reverse for 4 characters internationalization, enUS
             // - S for String
             0x0a, 0x00, // next string size, 10 characters.
             0x54, 0x6f, 0x6b, 0x61, 0x6d, 0x61, 0x6b, 0x20, 0x4c, 0x45,
