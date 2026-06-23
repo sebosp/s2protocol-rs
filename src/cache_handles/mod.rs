@@ -7,4 +7,6 @@ pub mod document_header;
 pub mod map;
 pub mod map_info;
 pub mod t3_height_map;
+pub mod t3_terrain;
+
 pub use map::*;

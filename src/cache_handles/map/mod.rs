@@ -7,10 +7,10 @@ use coords::*;
 pub enum MapError {
     /// Map Size is bigger than max supported in game (I guess...)
     #[error("Expected max 256 for map size, got {0}")]
-    InvalidMapSize(i32),
+    InvalidMapSize(usize),
     // /The map coordinates bounds are invalid
     #[error("Expected coordinate {0} to be less than {1}")]
-    InvalidCoordinateBounds(String, i32, String, i32),
+    InvalidCoordinateBounds(String, usize, String, usize),
     /// The MapInfo and t3HeightMay dimensions do not match
     #[error("T3 Height Map Terrain Dimensions {0:?} do not match Map Info Map Dimensions {1:?}")]
     T3HeightDimDoNotMatchMapInfoDim(MapTerrainCoord, MapTerrainCoord),

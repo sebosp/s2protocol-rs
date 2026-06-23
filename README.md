@@ -80,9 +80,13 @@ where `94137` is the version of the exported XMLs.
 
 To transform the --xml-data into an local-jsonified-version (stored in assets directory for now):
 ```
-$ cargo run -r -- -v info --timing --source $HOME/SC2Replays/BalanceData/ --json-balance-data-dir $PWD/assets/BalanceData/ --output $PWD/assets/BalanceData/ balance-data-to-json
-2025-08-30T18:18:04.528202Z  INFO s2protocol::game_events::ability::balance_data: Processed 1058 total units
-2025-08-30T18:18:04.528218Z  INFO s2protocol::game_events::ability::balance_data::json_handler: Writing balance data to JSON files in /home/seb/git/s2protocol-rs/assets/BalanceData/
+❯ cargo run --example full -r -- -v info --source $HOME/SC2Replays/BalanceData/ --json-balance-data-dir $PWD/assets/BalanceData/ --output $PWD/assets/BalanceData/ balance-data-to-json
+    Finished `release` profile [optimized] target(s) in 29.23s
+     Running `target/release/examples/full -v info --source /home/seb/SC2Replays/BalanceData/ --json-balance-data-dir /home/seb/git/s2protocol-rs/assets/BalanceData/ --output /home/seb/git/s2protocol-rs/assets/BalanceData/ balance-data-to-json`
+2026-06-23T18:03:56.284789Z  INFO s2protocol::game_events::ability::balance_data::json_handler: Reading balance data from JSON files in /home/seb/git/s2protocol-rs/assets/BalanceData/
+2026-06-23T18:03:58.347528Z  INFO s2protocol::game_events::ability::balance_data::json_handler: Read 7406 versioned balance units from JSON files
+2026-06-23T18:04:53.779981Z  INFO s2protocol::game_events::ability::balance_data: Processed 7320 total units
+2026-06-23T18:04:53.779998Z  INFO s2protocol::game_events::ability::balance_data::json_handler: Writing balance data to JSON files in /home/seb/git/s2protocol-rs/assets/BalanceData/
 ```
 
 For example:

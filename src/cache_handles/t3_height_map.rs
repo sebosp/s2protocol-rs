@@ -11,8 +11,8 @@ use tracing::instrument;
 
 #[derive(Default, Debug, Clone)]
 pub struct T3HeightMap {
-    pub width: i32,
-    pub height: i32,
+    pub width: usize,
+    pub height: usize,
     pub data: Vec<u8>,
 }
 
@@ -39,11 +39,14 @@ impl T3HeightMap {
 
         let (tail, width_bytes) =
             dbg_peek_hex(take(4usize), "read map terrain width, 4 bytes")(tail)?;
-        let (_, width) = i32(nom::number::Endianness::Little)(width_bytes)?;
+        let (_, width) = u32(nom::number::Endianness::Little)(width_bytes)?;
+        let width: usize = width.try_into()?;
 
         let (tail, height_bytes) =
             dbg_peek_hex(take(4usize), "read map terrain height, 4 bytes")(tail)?;
-        let (_, height) = i32(nom::number::Endianness::Little)(height_bytes)?;
+        let (_, height) = u32(nom::number::Endianness::Little)(height_bytes)?;
+
+        let height: usize = height.try_into()?;
 
         let terrain_dimensions = MapTerrainCoord::new(width, height);
         let map_info_dimensions = map_info.terrain_dim_map();
@@ -56,7 +59,7 @@ impl T3HeightMap {
         let (tail, _unknown_bytes) = dbg_peek_hex(take(16usize), "read 16 unknown bytes")(tail)?;
 
         // Expect terrain map to have 6 bytes per terrain unit.
-        let expected_terrain_data_size = (width * height * 6) as usize;
+        let expected_terrain_data_size = width * height * 6;
 
         if tail.len() < expected_terrain_data_size {
             return Err(S2ProtocolError::Map(MapError::T3HeightNotEnoughBytes(
