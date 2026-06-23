@@ -68,13 +68,13 @@ impl Display for MapCoord {
 /// Unit short (mt)
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct MapTerrainCoord {
-    pub x: i32,
-    pub y: i32,
+    pub x: usize,
+    pub y: usize,
 }
 
 impl MapTerrainCoord {
     /// Create a new MapTerrainCoord
-    pub fn new(x: i32, y: i32) -> Self {
+    pub fn new(x: usize, y: usize) -> Self {
         Self { x, y }
     }
 }
@@ -83,8 +83,8 @@ impl MapTerrainCoord {
 impl From<MapCoord> for MapTerrainCoord {
     fn from(map_coord: MapCoord) -> Self {
         Self {
-            x: (map_coord.x + 0.5) as i32,
-            y: (map_coord.y + 0.5) as i32,
+            x: (map_coord.x + 0.5) as usize,
+            y: (map_coord.y + 0.5) as usize,
         }
     }
 }
@@ -112,13 +112,13 @@ impl Display for MapTerrainCoord {
 /// Unit short (mc)
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct MapCellCoord {
-    pub x: i32,
-    pub y: i32,
+    pub x: usize,
+    pub y: usize,
 }
 
 impl MapCellCoord {
     /// Create a new MapCellCoord
-    pub fn new(x: i32, y: i32) -> Self {
+    pub fn new(x: usize, y: usize) -> Self {
         Self { x, y }
     }
 }
@@ -132,8 +132,8 @@ impl Display for MapCellCoord {
 impl From<MapCoord> for MapCellCoord {
     fn from(map_coord: MapCoord) -> Self {
         Self {
-            x: map_coord.x as i32,
-            y: map_coord.y as i32,
+            x: map_coord.x as usize,
+            y: map_coord.y as usize,
         }
     }
 }
@@ -153,13 +153,13 @@ impl From<MapCellCoord> for MapCoord {
 /// Playable Terrain Coordinates
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct PlayableTerrainCoord {
-    pub x: i32,
-    pub y: i32,
+    pub x: usize,
+    pub y: usize,
 }
 
 impl PlayableTerrainCoord {
     /// Create a new PlayableTerrainCoord
-    pub fn new(x: i32, y: i32) -> Self {
+    pub fn new(x: usize, y: usize) -> Self {
         Self { x, y }
     }
 
