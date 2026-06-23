@@ -51,8 +51,10 @@ pub enum S2ProtocolError {
     #[error("BitPackedTooLarge: {0}")]
     BitPackedMoreThan64Bits(usize),
     /// The MapParserError
-    #[error("Map Error {0}")]
+    #[error("cache_handles Map {0}")]
     Map(#[from] crate::cache_handles::map::MapError),
+    #[error("SerdeXml Error : {0}")]
+    SerdeXML(#[from] serde_xml_rs::Error),
 }
 
 /// Conversion of errors from byte aligned parser

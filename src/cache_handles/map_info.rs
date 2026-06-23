@@ -22,8 +22,8 @@ pub const IMAGE_DIMENSIONS_PER_CELL_UNIT: i32 = 6;
 #[derive(Default, Debug, Clone)]
 pub struct MapInfo {
     pub file_version: i32,
-    pub cell_width: i32,
-    pub cell_height: i32,
+    pub cell_width: usize,
+    pub cell_height: usize,
     /// Mostly seen empty?
     pub first_string: String,
     /// Also empty?
@@ -32,10 +32,10 @@ pub struct MapInfo {
     pub third_string: String,
     // Some name, "Zerus" in the test case, maybe map maker?
     pub fourth_string: String,
-    pub cell_left: i32,
-    pub cell_bottom: i32,
-    pub cell_right: i32,
-    pub cell_top: i32,
+    pub cell_left: usize,
+    pub cell_bottom: usize,
+    pub cell_right: usize,
+    pub cell_top: usize,
 }
 
 impl MapInfo {
@@ -62,10 +62,12 @@ impl MapInfo {
         let (tail, cell_width_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_width, 4 bytes")(tail)?;
         let (_, cell_width) = i32(nom::number::Endianness::Little)(cell_width_bytes)?;
+        let cell_width: usize = cell_width.try_into()?;
 
         let (tail, cell_height_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_height, 4 bytes")(tail)?;
         let (_, cell_height) = i32(nom::number::Endianness::Little)(cell_height_bytes)?;
+        let cell_height: usize = cell_height.try_into()?;
 
         if cell_width > 256 || cell_height > 256 {
             tracing::warn!(
@@ -122,18 +124,22 @@ impl MapInfo {
         let (tail, cell_left_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_left, 4 bytes")(tail)?;
         let (_, cell_left) = i32(nom::number::Endianness::Little)(cell_left_bytes)?;
+        let cell_left: usize = cell_left.try_into()?;
 
         let (tail, cell_bottom_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_bottom, 4 bytes")(tail)?;
         let (_, cell_bottom) = i32(nom::number::Endianness::Little)(cell_bottom_bytes)?;
+        let cell_bottom: usize = cell_bottom.try_into()?;
 
         let (tail, cell_right_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_right, 4 bytes")(tail)?;
         let (_, cell_right) = i32(nom::number::Endianness::Little)(cell_right_bytes)?;
+        let cell_right: usize = cell_right.try_into()?;
 
         let (tail, cell_top_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_top, 4 bytes")(tail)?;
         let (_, cell_top) = i32(nom::number::Endianness::Little)(cell_top_bytes)?;
+        let cell_top: usize = cell_top.try_into()?;
 
         if cell_left >= cell_right {
             return Err(S2ProtocolError::Map(MapError::InvalidCoordinateBounds(
