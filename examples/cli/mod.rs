@@ -4,6 +4,10 @@ pub use cmd_get::*;
 
 use clap::{Args, Parser, Subcommand};
 use s2protocol::WriteArrowIpcProps;
+use s2protocol::cache_handles::document_header::DocumentHeader;
+use s2protocol::cache_handles::map_info::MapInfo;
+use s2protocol::cache_handles::t3_height_map::T3HeightMap;
+use s2protocol::cache_handles::t3_terrain::T3Terrain;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use syntect::easy::HighlightLines;
@@ -23,6 +27,18 @@ use s2protocol::tracker_events::{unit_tag_index, unit_tag_recycle};
 pub enum CommandUtils {
     /// Translate unit tag to index, recycle pair
     XlateTagToIndexRecycle { tag: i64 },
+}
+
+#[derive(Subcommand, Debug, Clone)]
+pub enum CacheUtils {
+    /// Prints the MapInfo sector within the MPQ archite at source
+    MapInfo,
+    /// Prints the T3HeightMap sector within the MPQ archite at source
+    T3HeightMap,
+    /// Prints the DocumentHeader sector within the MPQ archite at source
+    DocumentHeader,
+    /// Prints the t3Terrain.xml sector within the MPQ archite at source
+    T3TerrainXml,
 }
 
 ///  Create a subcommand that handles the max depth and max files to process
@@ -86,6 +102,10 @@ pub enum Commands {
     /// Utilities, transforming tag index, recycle, etc.
     #[command(subcommand)]
     Util(CommandUtils),
+
+    /// Cache Utils
+    #[command(subcommand)]
+    Cache(CacheUtils),
 }
 
 #[derive(Parser, Debug, Clone)]
@@ -127,7 +147,7 @@ pub struct Cli {
     timing: bool,
 
     /// colorize the output
-    #[arg(short, long, default_value = "false")]
+    #[arg(short, long, default_value = "true")]
     color: bool,
 
     /// filters a specific player id.
@@ -221,8 +241,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             tracing::Level::INFO
         }
     };
-    let color = cli.color;
-    if color {
+    if cli.color {
         tracing_subscriber::fmt()
             .with_max_level(level)
             .with_ansi(true)
@@ -235,6 +254,21 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             .with_env_filter(level.to_string())
             .init();
     }
+
+    cli_command_handler(&cli)?;
+    if cli.timing {
+        println!("Total time: {:?}", init_time.elapsed());
+    }
+    Ok(())
+}
+
+fn cli_command_handler(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
+    let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
+        if cli.json_balance_data_dir.is_empty() {
+            read_balance_data_from_included_assets()?
+        } else {
+            read_balance_data_from_json_dir(PathBuf::from(&cli.json_balance_data_dir))?
+        };
     let syntect_syntax_set = SyntaxSet::load_defaults_newlines();
     let mut syntect_theme_set = ThemeSet::load_defaults();
     {
@@ -250,33 +284,12 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             a: 0x00,
         });
     }
-
-    let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
-        if cli.json_balance_data_dir.is_empty() {
-            read_balance_data_from_included_assets()?
-        } else {
-            read_balance_data_from_json_dir(PathBuf::from(&cli.json_balance_data_dir))?
-        };
     match &cli.command {
         Commands::Generate => {
-            ProtoMorphist::r#gen(&cli.source, &cli.output.expect("Requires --output"))?;
+            ProtoMorphist::r#gen(&cli.source, &cli.output.clone().expect("Requires --output"))?;
         }
         Commands::BalanceDataToJson => {
-            if cli.source.is_empty() {
-                return Err(Box::new(std::io::Error::new(
-                    std::io::ErrorKind::InvalidInput,
-                    "Source XML Balance Data directory must be provided",
-                )));
-            }
-            if cli.json_balance_data_dir.is_empty() {
-                return Err(Box::new(std::io::Error::new(
-                    std::io::ErrorKind::InvalidInput,
-                    "Destination JSON Balance Data directory must be provided",
-                )));
-            }
-            let versioned_abilities =
-                traverse_versioned_balance_abilities(PathBuf::from(&cli.source))?;
-            write_balance_data_to_json(&cli.json_balance_data_dir, versioned_abilities)?;
+            cmd_balance_data_to_json_export(&cli)?;
         }
         Commands::Get(read_type) => {
             cmd_get::handle_get_cmd(&cli, read_type, syntect_syntax_set, syntect_theme_set)?;
@@ -284,7 +297,7 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
         Commands::WriteArrowIpc(cmd) => {
             s2protocol::ArrowIpcTypes::handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),
-                PathBuf::from(&cli.output.expect("Requires --output")),
+                PathBuf::from(&cli.output.clone().expect("Requires --output")),
                 &cmd.to_owned().into(),
                 &versioned_abilities,
                 cli.disable_paralellism,
@@ -297,15 +310,102 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
                 println!("Index: {}, Recycle: {}", index, recycle)
             }
         },
+        Commands::Cache(cache_params) => cmd_cache_handle(
+            &cli.source,
+            cli.color,
+            cache_params,
+            syntect_syntax_set,
+            syntect_theme_set,
+        )?,
         Commands::Scan => {
             let stats = handle_scan_cli_cmd(&cli, &versioned_abilities)?;
             tracing::info!("Scan complete: {:?}", stats);
         }
     }
-    if cli.timing {
-        println!("Total time: {:?}", init_time.elapsed());
+    Ok(())
+}
+
+fn cmd_cache_handle(
+    source: &str,
+    color: bool,
+    cache_params: &CacheUtils,
+    syntect_syntax_set: SyntaxSet,
+    syntect_theme_set: ThemeSet,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let (mpq, cache_contents) = s2protocol::read_mpq(source)?;
+    match cache_params {
+        CacheUtils::MapInfo => {
+            let map_info = MapInfo::from_mpq(&mpq, &cache_contents)?;
+            if color {
+                tracing::info!("----- MapInfo: ");
+                syntect_json_print(
+                    serde_json::to_string(&map_info).unwrap(),
+                    &syntect_syntax_set,
+                    &syntect_theme_set,
+                );
+            } else {
+                tracing::info!("{:?}", map_info);
+            }
+        }
+        CacheUtils::T3HeightMap => {
+            tracing::info!("T3HeightMap validation requires MapInfo as dependency. Parsing...");
+            let map_info = MapInfo::from_mpq(&mpq, &cache_contents)?;
+            let t3_height_map = T3HeightMap::from_mpq(&mpq, &cache_contents, &map_info)?;
+            if color {
+                tracing::info!("----- T3HeightMap: ");
+                syntect_json_print(
+                    serde_json::to_string(&t3_height_map).unwrap(),
+                    &syntect_syntax_set,
+                    &syntect_theme_set,
+                );
+            } else {
+                tracing::info!("{:?}", map_info);
+            }
+        }
+        CacheUtils::DocumentHeader => {
+            let document_header = DocumentHeader::from_mpq(&mpq, &cache_contents)?;
+            if color {
+                tracing::info!("----- DocumentHeader: ");
+                syntect_json_print(
+                    serde_json::to_string(&document_header).unwrap(),
+                    &syntect_syntax_set,
+                    &syntect_theme_set,
+                );
+            } else {
+                tracing::info!("{:?}", document_header);
+            }
+        }
+        CacheUtils::T3TerrainXml => {
+            let t3_terrain_xml = T3Terrain::from_mpq(&mpq, &cache_contents)?;
+            if color {
+                tracing::info!("----- t3Terrain.xml: ");
+                syntect_json_print(
+                    serde_json::to_string(&t3_terrain_xml).unwrap(),
+                    &syntect_syntax_set,
+                    &syntect_theme_set,
+                );
+            } else {
+                tracing::info!("{:?}", t3_terrain_xml);
+            }
+        }
     }
     Ok(())
+}
+fn cmd_balance_data_to_json_export(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
+    if cli.source.is_empty() {
+        return Err(Box::new(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "Source XML Balance Data directory must be provided",
+        )));
+    }
+    if cli.json_balance_data_dir.is_empty() {
+        return Err(Box::new(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "Destination JSON Balance Data directory must be provided",
+        )));
+    }
+    let versioned_abilities = traverse_versioned_balance_abilities(PathBuf::from(&cli.source))?;
+    write_balance_data_to_json(&cli.json_balance_data_dir, versioned_abilities)
 }
 
 pub fn handle_scan_cli_cmd(

@@ -9,9 +9,10 @@ use nom::bytes::complete::*;
 use nom::number::complete::*;
 use nom_mpq::MPQ;
 use nom_mpq::parser::peek_hex;
+use serde::{Deserialize, Serialize};
 use tracing::instrument;
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct DocumentHeader {
     pub maybe_dimension_x1: i32,
     pub maybe_dimension_y1: i32,

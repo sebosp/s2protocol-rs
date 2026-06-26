@@ -7,9 +7,10 @@ use nom::bytes::complete::*;
 use nom::number::complete::*;
 use nom_mpq::MPQ;
 use nom_mpq::parser::peek_hex;
+use serde::{Deserialize, Serialize};
 use tracing::instrument;
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct T3HeightMap {
     pub width: usize,
     pub height: usize,

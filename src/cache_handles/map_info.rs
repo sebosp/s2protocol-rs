@@ -7,6 +7,7 @@ use nom::bytes::complete::*;
 use nom::number::complete::*;
 use nom_mpq::MPQ;
 use nom_mpq::parser::peek_hex;
+use serde::{Deserialize, Serialize};
 use tracing::instrument;
 
 /// There are 8x8 pixels per terrain unit.
@@ -19,7 +20,7 @@ pub const IMAGE_DIMENSIONS_PER_CELL_UNIT: i32 = 6;
 /// Showing the playable terrain.
 /// The width and height defined in the MapInfo determine the width and height of the
 /// coords::MapCellCoord.
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct MapInfo {
     pub file_version: i32,
     pub cell_width: usize,

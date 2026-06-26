@@ -31,21 +31,34 @@ use serde::{Deserialize, Serialize};
 use tracing::instrument;
 
 #[derive(Debug, Serialize, Deserialize, Default)]
+#[serde(rename = "terrain")]
 pub struct T3Terrain {
-    #[serde(rename = "heightMap", default)]
+    #[serde(rename = "heightMap")]
     pub height_map: HeightMap,
+    #[serde(rename = "@version")]
+    pub version: u32,
 }
+
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct HeightMap {
-    #[serde(rename = "rampList", default)]
-    ramp_list: Vec<Ramp>,
+    #[serde(rename = "rampList")]
+    pub ramp_list: RampListTag,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct RampListTag {
+    #[serde(rename = "ramp", default)]
+    pub inner: Vec<Ramp>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct Ramp {
+    #[serde(default)]
     pub dir: u8,
     /// Looks like cell layer/height
+    #[serde(default)]
     pub hi: u8,
+    #[serde(default)]
     pub lo: u8,
     // "u(-1.000000e+00, 0.000000e+00) r(0.000000e+00, 1.000000e+00) c=(1.420000e+02, 4.400000e+01) w=2.000000e+00 h=2.000000e+00"
     // Looks SVG-ish, maybe u=up r=right c=center w=width h=height ?
@@ -57,8 +70,11 @@ pub struct Ramp {
     pub right_lo: String,
     #[serde(rename = "@rightHi", default)]
     pub right_hi: String,
+    #[serde(default)]
     pub base: String,
+    #[serde(default)]
     pub mid: String,
+    #[serde(default)]
     pub cid: usize,
     #[serde(rename = "@leftLoVar", default)]
     pub left_lo_var: u32,
