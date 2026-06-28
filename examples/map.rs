@@ -6,22 +6,11 @@ use std::fs::File;
 use std::io::Read;
 use tracing::*;
 
-/// Attempts to read the s2ma file.
-pub fn read_mpq_file(path: &str) -> Result<Vec<u8>, S2ProtocolError> {
-    tracing::info!("Opening file.");
-    let mut f = File::open(path)?;
-    tracing::info!("Reading into buffer.");
-    let mut buffer: Vec<u8> = vec![];
-    // read the whole file
-    f.read_to_end(&mut buffer)?;
-    Ok(buffer)
-}
-
 fn try_get_t3_height_map_from_mpq(
     cache_handle_fname: &str,
 ) -> Result<(MapInfo, T3HeightMap, Option<DocumentHeader>), S2ProtocolError> {
     let mut document_header: Option<DocumentHeader> = None;
-    let cache_contents = read_mpq_file(cache_handle_fname)?;
+    let (_, cache_contents) = s2protocol::read_mpq(cache_handle_fname)?;
     // based on sc2-map-analyzer/analyser/read.cpp
     let (_input, mpq) = nom_mpq::parser::parse(&cache_contents)?;
     for (file, _file_size) in mpq.get_files(&cache_contents)? {
