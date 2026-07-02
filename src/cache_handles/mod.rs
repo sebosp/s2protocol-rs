@@ -5,16 +5,19 @@
 
 use crate::S2ProtocolError;
 
+pub mod cache_objects;
 pub mod document_header;
 pub mod map;
 pub mod map_info;
 pub mod t3_height_map;
 pub mod t3_terrain;
 
-use crate::cache_handles::document_header::DocumentHeader;
-use crate::cache_handles::map_info::MapInfo;
-use crate::cache_handles::t3_height_map::T3HeightMap;
-use crate::cache_handles::t3_terrain::T3Terrain;
+use cache_objects::PlacedObjects;
+use document_header::DocumentHeader;
+use map_info::MapInfo;
+use t3_height_map::T3HeightMap;
+use t3_terrain::T3Terrain;
+
 pub use map::*;
 use nom_mpq::MPQ;
 use tracing::{self, instrument};
@@ -112,7 +115,7 @@ impl CacheCollection {
         }
     }
 
-    pub fn load_t3_terrain(self) -> Result<T3Terrain, S2ProtocolError> {
+    pub fn load_t3_terrain(&self) -> Result<T3Terrain, S2ProtocolError> {
         if let Ok(Some((mpq, cache_contents))) = self.try_get_mpq_by_name(T3_TERRAIN_MAP_FILE_NAME)
         {
             T3Terrain::from_mpq(&mpq, &cache_contents)
@@ -120,6 +123,17 @@ impl CacheCollection {
             Err(S2ProtocolError::CacheResource(format!(
                 "Unable to locate {} in path {} with cache_ids {}",
                 T3_TERRAIN_MAP_FILE_NAME, self.cache_path, self.cache_ids
+            )))
+        }
+    }
+
+    pub fn load_objects(&self) -> Result<PlacedObjects, S2ProtocolError> {
+        if let Ok(Some((mpq, cache_contents))) = self.try_get_mpq_by_name(OBJECTS_FILE_NAME) {
+            PlacedObjects::from_mpq(&mpq, &cache_contents)
+        } else {
+            Err(S2ProtocolError::CacheResource(format!(
+                "Unable to locate {} in path {} with cache_ids {}",
+                OBJECTS_FILE_NAME, self.cache_path, self.cache_ids
             )))
         }
     }
