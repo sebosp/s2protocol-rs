@@ -84,7 +84,8 @@ pub const MAX_INITIAL_CAPACITY_BYTES: usize = 65536;
 /// Reads the MPQ file and returns both the MPQ read file and the reference to its contents.
 pub fn read_mpq(path: &str) -> Result<(MPQ, Vec<u8>), S2ProtocolError> {
     tracing::info!("Processing MPQ file {}", path);
-    let file_contents = parser::read_file(path);
+    let path = PathBuf::from(path);
+    let file_contents = crate::read_file(&path)?;
     let (_, mpq) = parser::parse(&file_contents)?;
     Ok((mpq, file_contents))
 }
