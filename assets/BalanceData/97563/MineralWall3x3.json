@@ -1,0 +1,78 @@
+{
+  "@id": "MineralWall3x3",
+  "abilities": {
+    "ability": []
+  },
+  "armor": {
+    "@max": 4,
+    "@start": 4
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 1000,
+    "@regenRate": null,
+    "@start": 1000
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "Wireframe-General-MineralField",
+    "@index": 696,
+    "@name": "0",
+    "@race": "Neut",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "1979",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "MineralWall3x3",
+    "@radius": 1.5,
+    "@range": null,
+    "@sightRadius": 0.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "researches": null,
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}
