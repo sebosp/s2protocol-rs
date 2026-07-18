@@ -59,6 +59,15 @@ pub enum S2ProtocolError {
     /// A CacheResource error
     #[error("CacheResource: {0}")]
     CacheResource(String),
+
+    /// Reqwest error, used for downloading replay caches from blizzard depots.
+    #[error("Reqwest Error: {0}")]
+    Reqwest(#[from] reqwest::Error),
+
+    /// A serde_json error, used when parsing per-protocol ability parsing
+    /// included in the binary with include_assets.
+    #[error("serde_json")]
+    SerdeJson(#[from] serde_json::Error),
 }
 
 /// Conversion of errors from byte aligned parser

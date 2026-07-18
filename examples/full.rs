@@ -1,3 +1,4 @@
+use tokio::prelude::*;
 #[path = "cli/mod.rs"]
 mod cli;
 
@@ -13,7 +14,8 @@ fn reset_sigpipe() {
     // no-op
 }
 
-fn main() {
+#[tokio_main]
+async fn main() {
     reset_sigpipe();
-    cli::process_cli_request().unwrap();
+    cli::process_cli_request().await.unwrap();
 }

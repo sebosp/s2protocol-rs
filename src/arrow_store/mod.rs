@@ -11,6 +11,7 @@ use init_data::InitData;
 #[cfg(feature = "dep_arrow")]
 use rayon::prelude::*;
 
+use crate::cache_handles::download_cache;
 use crate::get_matching_files;
 
 use crate::details::{PlayerLobbyDetails, PlayerLobbyDetailsFlatRow};
@@ -18,7 +19,7 @@ use crate::game_events::VersionedBalanceUnit;
 use crate::tracker_events;
 use crate::*;
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 pub mod ipc_writer;
 use ipc_writer::*;
 
@@ -410,12 +411,13 @@ impl ArrowIpcTypes {
 
     /// Handles the Arrow IPC command variants
     #[tracing::instrument(level = "debug")]
-    pub fn handle_arrow_ipc_cmd(
+    pub async fn handle_arrow_ipc_cmd(
         source: PathBuf,
         output: PathBuf,
         cmd: &WriteArrowIpcProps,
         unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
         disable_parallel_scans: bool,
+        cache_path: &Path,
     ) -> Result<(), Box<dyn std::error::Error>> {
         println!(
             "Processing Arrow write request with scan_max_files: {}, traverse_max_depth: {}, process_max_files: {}, min_version: {:?}, max_version: {:?}",
@@ -446,6 +448,19 @@ impl ArrowIpcTypes {
                 })
                 .collect::<Vec<InitData>>()
         };
+        let mut cache_handle_ids: HashMap<String, ()> = HashMap::new();
+        for source in sources.iter() {
+            for cache_handle in &source.sync_lobby_state.game_description.cache_handles {
+                if let None = cache_handle_ids.get(cache_handle) {
+                    cache_handle_ids.insert(cache_handle.to_string(), ());
+                }
+            }
+        }
+        for handle in cache_handle_ids.keys() {
+            if let Err(err) = download_cache(handle, cache_path).await {
+                tracing::error!("Unable to download cache: {:?}, skipping.", err);
+            }
+        }
         let sources: Vec<InitData> = sources
             .into_iter()
             .filter(|source| {

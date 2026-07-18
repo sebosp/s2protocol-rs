@@ -15,6 +15,7 @@ pub mod t3_terrain;
 use cache_objects::PlacedObjects;
 use document_header::DocumentHeader;
 use map_info::MapInfo;
+use std::path::Path;
 use t3_height_map::T3HeightMap;
 use t3_terrain::T3Terrain;
 
@@ -159,4 +160,34 @@ impl CacheCollection {
             )))
         }
     }
+}
+
+/// Attempts to download the replay cache from the
+#[instrument]
+pub async fn download_cache(handle: &str, destination: &Path) -> Result<(), S2ProtocolError> {
+    tracing::info!("Downloading cache with handle: {}", handle);
+    let cache_download_target = destination.join(format!("{}.s2ma", handle));
+    if cache_download_target.exists() {
+        tracing::info!(
+            "Cache {} already exists, skipping download.",
+            cache_download_target.display()
+        );
+        return Ok(());
+    }
+
+    let response = reqwest::get(format!(
+        "https://eu-s2-depot.classic.blizzard.com/{}.s2ma",
+        handle
+    ))
+    .await?;
+    if !response.status().is_success() {
+        return Err(S2ProtocolError::CacheResource(format!(
+            "Failed to download cache {}, status code: {}",
+            handle,
+            response.status()
+        )));
+    }
+    let response_bytes = response.bytes().await?;
+    std::fs::write(&cache_download_target, response_bytes)?;
+    Ok(())
 }

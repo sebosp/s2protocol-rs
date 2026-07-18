@@ -9,7 +9,7 @@ use s2protocol::cache_handles::map_info::MapInfo;
 use s2protocol::cache_handles::t3_height_map::T3HeightMap;
 use s2protocol::cache_handles::t3_terrain::T3Terrain;
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use syntect::easy::HighlightLines;
 use syntect::highlighting::{Color, Style, ThemeSet};
 use syntect::parsing::SyntaxSet;
@@ -190,6 +190,10 @@ pub struct Cli {
     /// Caution, very slow.
     #[arg(long, default_value = "false")]
     pub tui: bool,
+
+    /// The Cache Handle path, to be downloaded from blizzard depots.
+    #[arg(long, default_value = "false")]
+    pub cache_path: String,
 }
 
 /// Prints the json strings with syntect::easy
@@ -226,7 +230,7 @@ pub fn syntect_json_print(
 }
 
 /// Handles the request from the CLI when used as a binary
-pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
     let init_time = std::time::Instant::now();
     let cli = Cli::parse();
     // use the cli verbosity level to set the tracing level
@@ -255,14 +259,14 @@ pub fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
             .init();
     }
 
-    cli_command_handler(&cli)?;
+    cli_command_handler(&cli).await?;
     if cli.timing {
         println!("Total time: {:?}", init_time.elapsed());
     }
     Ok(())
 }
 
-fn cli_command_handler(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
+async fn cli_command_handler(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
     let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
         if cli.json_balance_data_dir.is_empty() {
             read_balance_data_from_included_assets()?
@@ -295,13 +299,16 @@ fn cli_command_handler(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
             cmd_get::handle_get_cmd(&cli, read_type, syntect_syntax_set, syntect_theme_set)?;
         }
         Commands::WriteArrowIpc(cmd) => {
+    let cache_path = Path::new(&cli.cache_path);
             s2protocol::ArrowIpcTypes::handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),
                 PathBuf::from(&cli.output.clone().expect("Requires --output")),
                 &cmd.to_owned().into(),
                 &versioned_abilities,
                 cli.disable_paralellism,
-            )?;
+                &cache_path,
+            )
+            .await?;
         }
         Commands::Util(cmd) => match cmd {
             CommandUtils::XlateTagToIndexRecycle { tag } => {

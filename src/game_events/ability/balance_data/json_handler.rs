@@ -1,6 +1,6 @@
 //! Writes a snapshot of the BalanceData read from XML into JSON format for posterity.
 
-use include_assets::{NamedArchive, include_dir};
+use include_dir::{Dir, include_dir};
 use serde_json::json;
 use std::collections::HashMap;
 use std::error::Error;
@@ -8,6 +8,7 @@ use std::fs::File;
 use std::path::Path;
 use tracing;
 
+use crate::S2ProtocolError;
 use crate::game_events::VersionedBalanceUnit;
 
 /// Writes the BalanceData to a JSON file at the specified path.
@@ -93,28 +94,43 @@ pub fn read_balance_data_from_json_dir<P: AsRef<Path>>(
     Ok(balance_data)
 }
 
+static ARCHIVE_DIR: Dir = include_dir!("assets/BalanceData");
 pub fn read_balance_data_from_included_assets()
--> Result<HashMap<(u32, String), VersionedBalanceUnit>, Box<dyn Error>> {
+-> Result<HashMap<(u32, String), VersionedBalanceUnit>, S2ProtocolError> {
     tracing::info!("Reading balance data from included assets");
     let mut balance_data: HashMap<(u32, String), VersionedBalanceUnit> = HashMap::new();
 
-    let archive = NamedArchive::load(include_dir!("assets/BalanceData"));
-
-    for (fname, contents) in archive.assets() {
-        let parts: Vec<&str> = fname.split('/').collect();
+    let glob = "**/*.json";
+    for entry in ARCHIVE_DIR.find(glob).unwrap() {
+        let fname = entry.path();
+        let parts: Vec<&str> = if let Some(fname_os_str) = fname.as_os_str().to_str() {
+            fname_os_str.split('/').collect()
+        } else {
+            continue;
+        };
         if parts.len() != 2 {
-            tracing::warn!("Skipping invalid asset file: {}", fname);
+            tracing::warn!("Skipping invalid asset file: {:?}", fname);
             continue;
         }
+        let contents = if let Some(file) = entry.as_file()
+            && let Some(file_contents) = file.contents_utf8()
+        {
+            file_contents
+        } else {
+            continue;
+        };
         let version: u32 = match parts[0].parse() {
             Ok(v) => v,
             Err(_) => {
-                tracing::warn!("Skipping non-numeric version in asset file: {}", fname);
+                tracing::warn!(
+                    "Skipping non-numeric version in asset file: {}",
+                    fname.display()
+                );
                 continue;
             }
         };
         let unit_name = parts[1].trim_end_matches(".json").to_string();
-        let versioned_balance_unit: VersionedBalanceUnit = serde_json::from_slice(contents)?;
+        let versioned_balance_unit: VersionedBalanceUnit = serde_json::from_str(contents)?;
         balance_data.insert((version, unit_name), versioned_balance_unit);
     }
     tracing::info!(
