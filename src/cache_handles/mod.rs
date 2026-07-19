@@ -3,7 +3,7 @@
 //! containing map resources, mod information, visual resources such
 //! as images used in overlays for tournament, organizers, etc.
 
-use crate::S2ProtocolError;
+use crate::{InitData, S2ProtocolError};
 
 pub mod cache_objects;
 pub mod document_header;
@@ -15,7 +15,7 @@ pub mod t3_terrain;
 use cache_objects::PlacedObjects;
 use document_header::DocumentHeader;
 use map_info::MapInfo;
-use std::path::Path;
+use std::{collections::HashMap, path::Path};
 use t3_height_map::T3HeightMap;
 use t3_terrain::T3Terrain;
 
@@ -37,14 +37,24 @@ pub const OBJECTS_FILE_NAME: &'static str = "Objects";
 #[derive(Debug)]
 pub struct CacheCollection {
     pub cache_path: String,
-    pub cache_ids: String,
+    pub cache_ids: Vec<String>,
+    pub map_info: Option<MapInfo>,
+    pub document_header: Option<DocumentHeader>,
+    pub t3_height_map: Option<T3HeightMap>,
+    pub t3_terrain: Option<T3Terrain>,
+    pub placed_objects: Option<PlacedObjects>,
 }
 
 impl CacheCollection {
-    pub fn new(cache_path: String, cache_ids: String) -> Self {
+    pub fn new(cache_path: String, cache_ids: Vec<String>) -> Self {
         Self {
             cache_path,
             cache_ids,
+            map_info: None,
+            document_header: None,
+            t3_height_map: None,
+            t3_terrain: None,
+            placed_objects: None,
         }
     }
 
@@ -73,8 +83,8 @@ impl CacheCollection {
     pub fn try_get_file_from_mpq_list(
         &self,
         target_file_name: &str,
-    ) -> Result<Option<(MPQ, Vec<u8>)>, S2ProtocolError> {
-        for cache_handle_id in self.cache_ids.split(",") {
+    ) -> Result<Option<(String, MPQ, Vec<u8>)>, S2ProtocolError> {
+        for cache_handle_id in &self.cache_ids {
             if cache_handle_id.is_empty() {
                 continue;
             }
@@ -87,33 +97,35 @@ impl CacheCollection {
             else {
                 continue;
             };
-            return Ok(Some((mpq, cache_contents)));
+            return Ok(Some((cache_handle_id.to_owned(), mpq, cache_contents)));
         }
         Ok(None)
     }
 
     #[instrument(level = "debug", skip(self))]
-    pub fn load_map_info(&self) -> Result<MapInfo, S2ProtocolError> {
-        if let Ok(Some((mpq, cache_contents))) = self.try_get_file_from_mpq_list(MAP_INFO_FILE_NAME)
+    pub fn load_map_info(&mut self) -> Result<(), S2ProtocolError> {
+        if let Ok(Some((cache_handle_id, mpq, cache_contents))) =
+            self.try_get_file_from_mpq_list(MAP_INFO_FILE_NAME)
         {
-            MapInfo::from_mpq(&mpq, &cache_contents)
+            self.map_info = Some(MapInfo::from_mpq(cache_handle_id, &mpq, &cache_contents)?);
         } else {
-            Err(S2ProtocolError::CacheResource(format!(
-                "Unable to locate {} in path {} with cache_ids {}",
+            return Err(S2ProtocolError::CacheResource(format!(
+                "Unable to locate {} in path {} with cache_ids {:?}",
                 MAP_INFO_FILE_NAME, self.cache_path, self.cache_ids
-            )))
+            )));
         }
+        Ok(())
     }
 
     #[instrument(level = "debug", skip(self))]
     pub fn load_document_header(&self) -> Result<DocumentHeader, S2ProtocolError> {
-        if let Ok(Some((mpq, cache_contents))) =
+        if let Ok(Some((cache_handle_id, mpq, cache_contents))) =
             self.try_get_file_from_mpq_list(DOCUMENT_HEADER_FILE_NAME)
         {
-            DocumentHeader::from_mpq(&mpq, &cache_contents)
+            DocumentHeader::from_mpq(cache_handle_id, &mpq, &cache_contents)
         } else {
             Err(S2ProtocolError::CacheResource(format!(
-                "Unable to locate {} in path {} with cache_ids {}",
+                "Unable to locate {} in path {} with cache_ids {:?}",
                 DOCUMENT_HEADER_FILE_NAME, self.cache_path, self.cache_ids
             )))
         }
@@ -124,38 +136,39 @@ impl CacheCollection {
     #[instrument(level = "debug", skip(self))]
     pub fn load_t3_height_map(&self) -> Result<T3HeightMap, S2ProtocolError> {
         let map_info = self.load_map_info()?;
-        if let Ok(Some((mpq, cache_contents))) =
+        if let Ok(Some((cache_handle_id, mpq, cache_contents))) =
             self.try_get_file_from_mpq_list(T3_HEIGHT_MAP_FILE_NAME)
         {
-            T3HeightMap::from_mpq(&mpq, &cache_contents, &map_info)
+            T3HeightMap::from_mpq(cache_handle_id, &mpq, &cache_contents, &map_info)
         } else {
             Err(S2ProtocolError::CacheResource(format!(
-                "Unable to locate {} in path {} with cache_ids {}",
+                "Unable to locate {} in path {} with cache_ids {:?}",
                 T3_HEIGHT_MAP_FILE_NAME, self.cache_path, self.cache_ids
             )))
         }
     }
 
     pub fn load_t3_terrain(&self) -> Result<T3Terrain, S2ProtocolError> {
-        if let Ok(Some((mpq, cache_contents))) =
+        if let Ok(Some((cache_handle_id, mpq, cache_contents))) =
             self.try_get_file_from_mpq_list(T3_TERRAIN_MAP_FILE_NAME)
         {
-            T3Terrain::from_mpq(&mpq, &cache_contents)
+            T3Terrain::from_mpq(cache_handle_id, &mpq, &cache_contents)
         } else {
             Err(S2ProtocolError::CacheResource(format!(
-                "Unable to locate {} in path {} with cache_ids {}",
+                "Unable to locate {} in path {} with cache_ids {:?}",
                 T3_TERRAIN_MAP_FILE_NAME, self.cache_path, self.cache_ids
             )))
         }
     }
 
     pub fn load_objects(&self) -> Result<PlacedObjects, S2ProtocolError> {
-        if let Ok(Some((mpq, cache_contents))) = self.try_get_file_from_mpq_list(OBJECTS_FILE_NAME)
+        if let Ok(Some((cache_handle_id, mpq, cache_contents))) =
+            self.try_get_file_from_mpq_list(OBJECTS_FILE_NAME)
         {
-            PlacedObjects::from_mpq(&mpq, &cache_contents)
+            PlacedObjects::from_mpq(cache_handle_id, &mpq, &cache_contents)
         } else {
             Err(S2ProtocolError::CacheResource(format!(
-                "Unable to locate {} in path {} with cache_ids {}",
+                "Unable to locate {} in path {} with cache_ids {:?}",
                 OBJECTS_FILE_NAME, self.cache_path, self.cache_ids
             )))
         }
@@ -163,10 +176,48 @@ impl CacheCollection {
 }
 
 /// Attempts to download the replay cache from the
+/// The caches are needed to identify a unique map version.
+/// There's a version to a map, but I haven't identified it yet from the decoded data.
 #[instrument]
-pub async fn download_cache(handle: &str, destination: &Path) -> Result<(), S2ProtocolError> {
+pub async fn download_init_data_cache_handles(
+    sources: &[InitData],
+    destination: String,
+) -> HashMap<String, String> {
+    let mut cache_handle_ids: HashMap<String, String> = HashMap::new();
+    for source in sources.iter() {
+        for cache_handle_str in &source.sync_lobby_state.game_description.cache_handles {
+            if let Some(_) = cache_handle_ids.get(cache_handle_str) {
+                continue;
+            }
+            let cache_handle = match download_cache(cache_handle_str, &destination).await {
+                Ok(handle) => handle,
+                Err(err) => {
+                    tracing::error!("Unable to download cache: {:?}, skipping.", err);
+                    continue;
+                }
+            };
+
+            cache_handle_ids.insert(cache_handle_str.to_owned(), String::from(""));
+        }
+        CacheCollection::new(
+            destination.clone(),
+            source
+                .sync_lobby_state
+                .game_description
+                .cache_handles
+                .clone(),
+        );
+    }
+    cache_handle_ids
+}
+
+/// Attempts to download the replay cache from the
+#[instrument]
+pub async fn download_cache(handle: &str, destination: &str) -> Result<(), S2ProtocolError> {
+    let destination = Path::new(destination);
     tracing::info!("Downloading cache with handle: {}", handle);
-    let cache_download_target = destination.join(format!("{}.s2ma", handle));
+    let cache_download_target =
+        destination.join(format!("{}.{}", handle, CACHE_MPQ_ARCHIVE_EXTENSION));
     if cache_download_target.exists() {
         tracing::info!(
             "Cache {} already exists, skipping download.",

@@ -14,6 +14,8 @@ use tracing::instrument;
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct DocumentHeader {
+    /// The cache_handle_id where the Document Header was found.
+    pub cache_handle_id: String,
     pub maybe_dimension_x1: i32,
     pub maybe_dimension_y1: i32,
     // TODO: these are not epochs, probably more like units that are 1000th the value of the
@@ -73,15 +75,19 @@ impl DocumentHeader {
     }
 
     #[instrument(level = "debug", skip(mpq, file_contents))]
-    pub fn from_mpq(mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
+    pub fn from_mpq(
+        cache_handle_id: String,
+        mpq: &MPQ,
+        file_contents: &[u8],
+    ) -> Result<Self, S2ProtocolError> {
         let (_, document_header_sector) =
             mpq.read_mpq_file_sector("DocumentHeader", false, file_contents)?;
-        let (_, document_header) = Self::parse(&document_header_sector)?;
+        let (_, document_header) = Self::parse(cache_handle_id, &document_header_sector)?;
         Ok(document_header)
     }
 
     #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
-    pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
+    pub fn parse(cache_handle_id: String, input: &[u8]) -> S2ProtoResult<&[u8], Self> {
         let mut res = Self::default();
         let (tail, _) = dbg_peek_hex(tag(&b"H2CS"[..]), "read file magic, H2CS bytes")(input)?;
 
@@ -301,7 +307,8 @@ pub mod document_header_tests {
     #[test_log::test]
     fn test_parse_document_header() {
         let cache_contents: Vec<u8> = document_header_cache_content();
-        let (_, document_header) = DocumentHeader::parse(&cache_contents).unwrap();
+        let (_, document_header) =
+            DocumentHeader::parse(String::from("test"), &cache_contents).unwrap();
         assert_eq!(document_header.name, "Tokamak LE");
         assert_eq!(
             document_header.mod_info,

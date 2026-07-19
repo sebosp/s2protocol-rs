@@ -33,6 +33,9 @@ use tracing::instrument;
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename = "terrain")]
 pub struct T3Terrain {
+    /// The cache_handle_id where the t3Terrain file was found.
+    #[serde(skip)]
+    pub cache_handle_id: String,
     #[serde(rename = "heightMap")]
     pub height_map: HeightMap,
     #[serde(rename = "@version")]
@@ -87,31 +90,40 @@ pub struct Ramp {
 }
 
 #[instrument]
-pub fn try_get_t3_height_map_from_mpq(
+pub fn probably_delete_me_try_get_t3_height_map_from_mpq(
+    cache_handle_id: String,
     cache_handle_fname: &str,
 ) -> Result<T3Terrain, S2ProtocolError> {
     let (mpq, cache_contents) = read_mpq(cache_handle_fname)?;
     // based on sc2-map-analyzer/analyser/read.cpp
     for (file, _file_size) in mpq.get_files(&cache_contents)? {
         if file == "t3Terrain.xml" {
-            return Ok(serde_xml_rs::from_str::<T3Terrain>(&file)?);
+            let mut res = serde_xml_rs::from_str::<T3Terrain>(&file)?;
+            res.cache_handle_id = cache_handle_id;
+            return Ok(res);
         }
     }
     Ok(T3Terrain::default())
 }
 impl T3Terrain {
     #[instrument(level = "debug", skip(file_contents))]
-    pub fn parse(file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
+    pub fn parse(cache_handle_id: String, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
         let str_content = str::from_utf8(file_contents)?;
-        Ok(serde_xml_rs::from_str::<T3Terrain>(str_content)?)
+        let mut res = serde_xml_rs::from_str::<T3Terrain>(str_content)?;
+        res.cache_handle_id = cache_handle_id;
+        Ok(res)
     }
 
     /// Extract the xml file from the MPQ archive and parse its content.
     #[instrument(level = "debug", skip(mpq, file_contents))]
-    pub fn from_mpq(mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
+    pub fn from_mpq(
+        cache_handle_id: String,
+        mpq: &MPQ,
+        file_contents: &[u8],
+    ) -> Result<Self, S2ProtocolError> {
         let (_, t3_terrain_sector) =
             mpq.read_mpq_file_sector("t3Terrain.xml", false, file_contents)?;
-        let t3_terrain = Self::parse(&t3_terrain_sector)?;
+        let t3_terrain = Self::parse(cache_handle_id, &t3_terrain_sector)?;
         Ok(t3_terrain)
     }
 }

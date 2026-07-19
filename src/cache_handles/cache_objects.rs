@@ -7,6 +7,9 @@ use tracing::instrument;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PlacedObjects {
+    /// The cache_handle_id where the placedobjects were found.
+    #[serde(skip)]
+    pub cache_handle_id: String,
     #[serde(rename = "@Version")]
     pub version: u32,
     #[serde(rename = "ObjectPoint", default)]
@@ -69,17 +72,23 @@ pub struct ObjectUnit {
 
 impl PlacedObjects {
     #[instrument(level = "debug", skip(file_contents))]
-    pub fn parse(file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
+    pub fn parse(cache_handle_id: String, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
         let str_content = str::from_utf8(file_contents)?;
-        Ok(serde_xml_rs::from_str::<PlacedObjects>(str_content)?)
+        let mut res = serde_xml_rs::from_str::<PlacedObjects>(str_content)?;
+        res.cache_handle_id = cache_handle_id;
+        Ok(res)
     }
 
     /// Extract the xml file from the MPQ archive and prase its content.
     #[instrument(level = "debug", skip(mpq, file_contents))]
-    pub fn from_mpq(mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
+    pub fn from_mpq(
+        cache_handle_id: String,
+        mpq: &MPQ,
+        file_contents: &[u8],
+    ) -> Result<Self, S2ProtocolError> {
         let (_, placed_objects_sector) =
             mpq.read_mpq_file_sector(super::OBJECTS_FILE_NAME, false, file_contents)?;
-        let placed_objects = Self::parse(&placed_objects_sector)?;
+        let placed_objects = Self::parse(cache_handle_id, &placed_objects_sector)?;
         Ok(placed_objects)
     }
 }

@@ -11,7 +11,7 @@ use init_data::InitData;
 #[cfg(feature = "dep_arrow")]
 use rayon::prelude::*;
 
-use crate::cache_handles::download_cache;
+use crate::cache_handles::download_init_data_cache_handles;
 use crate::get_matching_files;
 
 use crate::details::{PlayerLobbyDetails, PlayerLobbyDetailsFlatRow};
@@ -417,7 +417,7 @@ impl ArrowIpcTypes {
         cmd: &WriteArrowIpcProps,
         unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
         disable_parallel_scans: bool,
-        cache_path: &Path,
+        ache_path: String,
     ) -> Result<(), Box<dyn std::error::Error>> {
         println!(
             "Processing Arrow write request with scan_max_files: {}, traverse_max_depth: {}, process_max_files: {}, min_version: {:?}, max_version: {:?}",
@@ -448,19 +448,7 @@ impl ArrowIpcTypes {
                 })
                 .collect::<Vec<InitData>>()
         };
-        let mut cache_handle_ids: HashMap<String, ()> = HashMap::new();
-        for source in sources.iter() {
-            for cache_handle in &source.sync_lobby_state.game_description.cache_handles {
-                if let None = cache_handle_ids.get(cache_handle) {
-                    cache_handle_ids.insert(cache_handle.to_string(), ());
-                }
-            }
-        }
-        for handle in cache_handle_ids.keys() {
-            if let Err(err) = download_cache(handle, cache_path).await {
-                tracing::error!("Unable to download cache: {:?}, skipping.", err);
-            }
-        }
+        let mut cache_handle_ids = download_init_data_cache_handles(&sources, cache_path).await;
         let sources: Vec<InitData> = sources
             .into_iter()
             .filter(|source| {

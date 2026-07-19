@@ -2,8 +2,6 @@ use s2protocol::cache_handles::document_header::*;
 use s2protocol::cache_handles::map_info::*;
 use s2protocol::cache_handles::t3_height_map::*;
 use s2protocol::error::S2ProtocolError;
-use std::fs::File;
-use std::io::Read;
 use tracing::*;
 
 fn try_get_t3_height_map_from_mpq(

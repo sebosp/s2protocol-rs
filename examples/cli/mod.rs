@@ -299,14 +299,13 @@ async fn cli_command_handler(cli: &Cli) -> Result<(), Box<dyn std::error::Error>
             cmd_get::handle_get_cmd(&cli, read_type, syntect_syntax_set, syntect_theme_set)?;
         }
         Commands::WriteArrowIpc(cmd) => {
-    let cache_path = Path::new(&cli.cache_path);
             s2protocol::ArrowIpcTypes::handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),
                 PathBuf::from(&cli.output.clone().expect("Requires --output")),
                 &cmd.to_owned().into(),
                 &versioned_abilities,
                 cli.disable_paralellism,
-                &cache_path,
+                cli.cache_path,
             )
             .await?;
         }

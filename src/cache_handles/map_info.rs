@@ -22,6 +22,8 @@ pub const IMAGE_DIMENSIONS_PER_CELL_UNIT: i32 = 6;
 /// coords::MapCellCoord.
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct MapInfo {
+    /// The cache_handle_id where the MapInfo was located.
+    pub cache_handle_id: String,
     pub file_version: i32,
     pub cell_width: usize,
     pub cell_height: usize,
@@ -41,14 +43,18 @@ pub struct MapInfo {
 
 impl MapInfo {
     #[instrument(skip(mpq, file_contents))]
-    pub fn from_mpq(mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
+    pub fn from_mpq(
+        cache_handle_id: String,
+        mpq: &MPQ,
+        file_contents: &[u8],
+    ) -> Result<Self, S2ProtocolError> {
         let (_, map_info_sector) = mpq.read_mpq_file_sector("MapInfo", false, file_contents)?;
-        let (_, map_info) = Self::parse(&map_info_sector)?;
+        let (_, map_info) = Self::parse(cache_handle_id, &map_info_sector)?;
         Ok(map_info)
     }
 
     #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
-    pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
+    pub fn parse(cache_handle_id: String, input: &[u8]) -> S2ProtoResult<&[u8], Self> {
         let (tail, _) = dbg_peek_hex(tag(&b"IpaM"[..]), "read file magic, IpaM bytes")(input)?;
 
         let (mut tail, file_version_bytes) =
@@ -180,6 +186,7 @@ impl MapInfo {
         Ok((
             tail,
             Self {
+                cache_handle_id,
                 file_version,
                 cell_width,
                 cell_height,
@@ -295,7 +302,7 @@ pub mod map_info_tests {
     #[test]
     fn test_parse_map_info() {
         let cache_contents: Vec<u8> = map_info_cache_content();
-        let (_, map_info) = MapInfo::parse(&cache_contents).unwrap();
+        let (_, map_info) = MapInfo::parse(String::from("test"), &cache_contents).unwrap();
         assert_eq!(map_info.cell_width, 168);
         assert_eq!(map_info.cell_height, 168);
         assert_eq!(map_info.third_string, "Dark".to_string());
