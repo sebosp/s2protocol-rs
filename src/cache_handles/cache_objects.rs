@@ -87,7 +87,7 @@ impl PlacedObjects {
         file_contents: &[u8],
     ) -> Result<Self, S2ProtocolError> {
         let (_, placed_objects_sector) =
-            mpq.read_mpq_file_sector(super::OBJECTS_FILE_NAME, false, file_contents)?;
+            mpq.read_mpq_file_sector(super::PLACED_OBJECTS_FILE_NAME, false, file_contents)?;
         let placed_objects = Self::parse(cache_handle_id, &placed_objects_sector)?;
         Ok(placed_objects)
     }

@@ -28,7 +28,7 @@ pub const MAP_INFO_FILE_NAME: &'static str = "MapInfo";
 pub const DOCUMENT_HEADER_FILE_NAME: &'static str = "DocumentHeader";
 pub const T3_HEIGHT_MAP_FILE_NAME: &'static str = "t3HeightMap";
 pub const T3_TERRAIN_MAP_FILE_NAME: &'static str = "t3Terrain.xml";
-pub const OBJECTS_FILE_NAME: &'static str = "Objects";
+pub const PLACED_OBJECTS_FILE_NAME: &'static str = "Objects";
 
 /// The SC2Replay has a list of cache files, these caches must be downloaded from the blizzard depots.
 /// This struct helps loading caches from this list.
@@ -38,23 +38,25 @@ pub const OBJECTS_FILE_NAME: &'static str = "Objects";
 pub struct CacheCollection {
     pub cache_path: String,
     pub cache_ids: Vec<String>,
-    pub map_info: Option<MapInfo>,
-    pub document_header: Option<DocumentHeader>,
-    pub t3_height_map: Option<T3HeightMap>,
-    pub t3_terrain: Option<T3Terrain>,
-    pub placed_objects: Option<PlacedObjects>,
+    pub map_info: MapInfo,
+    pub document_header: DocumentHeader,
+    pub t3_height_map: T3HeightMap,
+    pub t3_terrain: T3Terrain,
+    pub placed_objects: PlacedObjects,
 }
 
-impl CacheCollection {
+// A helper build to attempt to locate the different resources from the CacheCollection.
+#[derive(Debug)]
+pub struct CacheCollectionBuilder {
+    pub cache_path: String,
+    pub cache_ids: Vec<String>,
+}
+
+impl CacheCollectionBuilder {
     pub fn new(cache_path: String, cache_ids: Vec<String>) -> Self {
         Self {
             cache_path,
             cache_ids,
-            map_info: None,
-            document_header: None,
-            t3_height_map: None,
-            t3_terrain: None,
-            placed_objects: None,
         }
     }
 
@@ -83,7 +85,7 @@ impl CacheCollection {
     pub fn try_get_file_from_mpq_list(
         &self,
         target_file_name: &str,
-    ) -> Result<Option<(String, MPQ, Vec<u8>)>, S2ProtocolError> {
+    ) -> Result<(String, MPQ, Vec<u8>), S2ProtocolError> {
         for cache_handle_id in &self.cache_ids {
             if cache_handle_id.is_empty() {
                 continue;
@@ -97,85 +99,45 @@ impl CacheCollection {
             else {
                 continue;
             };
-            return Ok(Some((cache_handle_id.to_owned(), mpq, cache_contents)));
+            return Ok((cache_handle_id.to_owned(), mpq, cache_contents));
         }
-        Ok(None)
+        Err(S2ProtocolError::CacheResource(format!(
+            "Unable to locate {} in path {} with cache_ids {:?}",
+            target_file_name, self.cache_path, self.cache_ids
+        )))
     }
 
     #[instrument(level = "debug", skip(self))]
-    pub fn load_map_info(&mut self) -> Result<(), S2ProtocolError> {
-        if let Ok(Some((cache_handle_id, mpq, cache_contents))) =
-            self.try_get_file_from_mpq_list(MAP_INFO_FILE_NAME)
-        {
-            self.map_info = Some(MapInfo::from_mpq(cache_handle_id, &mpq, &cache_contents)?);
-        } else {
-            return Err(S2ProtocolError::CacheResource(format!(
-                "Unable to locate {} in path {} with cache_ids {:?}",
-                MAP_INFO_FILE_NAME, self.cache_path, self.cache_ids
-            )));
-        }
-        Ok(())
-    }
-
-    #[instrument(level = "debug", skip(self))]
-    pub fn load_document_header(&self) -> Result<DocumentHeader, S2ProtocolError> {
-        if let Ok(Some((cache_handle_id, mpq, cache_contents))) =
-            self.try_get_file_from_mpq_list(DOCUMENT_HEADER_FILE_NAME)
-        {
-            DocumentHeader::from_mpq(cache_handle_id, &mpq, &cache_contents)
-        } else {
-            Err(S2ProtocolError::CacheResource(format!(
-                "Unable to locate {} in path {} with cache_ids {:?}",
-                DOCUMENT_HEADER_FILE_NAME, self.cache_path, self.cache_ids
-            )))
-        }
-    }
-
-    /// Tries to  locate the [`T3_HEIGHT_MAP_FILE_NAME`] from the configured caches.
-    /// Calculating the boundaries of the T3HeightMap requires getting the map information as well.
-    #[instrument(level = "debug", skip(self))]
-    pub fn load_t3_height_map(&self) -> Result<T3HeightMap, S2ProtocolError> {
-        let map_info = self.load_map_info()?;
-        if let Ok(Some((cache_handle_id, mpq, cache_contents))) =
-            self.try_get_file_from_mpq_list(T3_HEIGHT_MAP_FILE_NAME)
-        {
-            T3HeightMap::from_mpq(cache_handle_id, &mpq, &cache_contents, &map_info)
-        } else {
-            Err(S2ProtocolError::CacheResource(format!(
-                "Unable to locate {} in path {} with cache_ids {:?}",
-                T3_HEIGHT_MAP_FILE_NAME, self.cache_path, self.cache_ids
-            )))
-        }
-    }
-
-    pub fn load_t3_terrain(&self) -> Result<T3Terrain, S2ProtocolError> {
-        if let Ok(Some((cache_handle_id, mpq, cache_contents))) =
-            self.try_get_file_from_mpq_list(T3_TERRAIN_MAP_FILE_NAME)
-        {
-            T3Terrain::from_mpq(cache_handle_id, &mpq, &cache_contents)
-        } else {
-            Err(S2ProtocolError::CacheResource(format!(
-                "Unable to locate {} in path {} with cache_ids {:?}",
-                T3_TERRAIN_MAP_FILE_NAME, self.cache_path, self.cache_ids
-            )))
-        }
-    }
-
-    pub fn load_objects(&self) -> Result<PlacedObjects, S2ProtocolError> {
-        if let Ok(Some((cache_handle_id, mpq, cache_contents))) =
-            self.try_get_file_from_mpq_list(OBJECTS_FILE_NAME)
-        {
-            PlacedObjects::from_mpq(cache_handle_id, &mpq, &cache_contents)
-        } else {
-            Err(S2ProtocolError::CacheResource(format!(
-                "Unable to locate {} in path {} with cache_ids {:?}",
-                OBJECTS_FILE_NAME, self.cache_path, self.cache_ids
-            )))
-        }
+    pub fn build(self) -> Result<CacheCollection, S2ProtocolError> {
+        let (cache_handle_id, mpq, cache_contents) =
+            self.try_get_file_from_mpq_list(MAP_INFO_FILE_NAME)?;
+        let map_info = MapInfo::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
+        let (cache_handle_id, mpq, cache_contents) =
+            self.try_get_file_from_mpq_list(DOCUMENT_HEADER_FILE_NAME)?;
+        let document_header = DocumentHeader::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
+        let (cache_handle_id, mpq, cache_contents) =
+            self.try_get_file_from_mpq_list(T3_HEIGHT_MAP_FILE_NAME)?;
+        let t3_height_map =
+            T3HeightMap::from_mpq(cache_handle_id, &mpq, &cache_contents, &map_info)?;
+        let (cache_handle_id, mpq, cache_contents) =
+            self.try_get_file_from_mpq_list(T3_TERRAIN_MAP_FILE_NAME)?;
+        let t3_terrain = T3Terrain::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
+        let (cache_handle_id, mpq, cache_contents) =
+            self.try_get_file_from_mpq_list(PLACED_OBJECTS_FILE_NAME)?;
+        let placed_objects = PlacedObjects::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
+        Ok(CacheCollection {
+            cache_path: self.cache_path,
+            cache_ids: self.cache_ids,
+            map_info,
+            document_header,
+            t3_height_map,
+            t3_terrain,
+            placed_objects,
+        })
     }
 }
 
-/// Attempts to download the replay cache from the
+/// Attempts to download the replay cache from theblizzard depots.
 /// The caches are needed to identify a unique map version.
 /// There's a version to a map, but I haven't identified it yet from the decoded data.
 #[instrument]
@@ -189,7 +151,7 @@ pub async fn download_init_data_cache_handles(
             if let Some(_) = cache_handle_ids.get(cache_handle_str) {
                 continue;
             }
-            let cache_handle = match download_cache(cache_handle_str, &destination).await {
+            match download_cache(cache_handle_str, &destination).await {
                 Ok(handle) => handle,
                 Err(err) => {
                     tracing::error!("Unable to download cache: {:?}, skipping.", err);
@@ -199,7 +161,7 @@ pub async fn download_init_data_cache_handles(
 
             cache_handle_ids.insert(cache_handle_str.to_owned(), String::from(""));
         }
-        CacheCollection::new(
+        let cache_builder = CacheCollectionBuilder::new(
             destination.clone(),
             source
                 .sync_lobby_state
@@ -207,6 +169,14 @@ pub async fn download_init_data_cache_handles(
                 .cache_handles
                 .clone(),
         );
+        if let Ok(cache_collecion) = cache_builder.build() {
+            cache_handle_ids.insert(
+                cache_collecion.map_info.cache_handle_id,
+                cache_collecion.map_info.sector_sha256_sum,
+            );
+        } else {
+            continue;
+        }
     }
     cache_handle_ids
 }

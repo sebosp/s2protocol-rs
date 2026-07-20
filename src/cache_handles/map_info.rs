@@ -23,7 +23,10 @@ pub const IMAGE_DIMENSIONS_PER_CELL_UNIT: i32 = 6;
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct MapInfo {
     /// The cache_handle_id where the MapInfo was located.
+    /// The cache_handle_id is itself a sha256 sum of its bundlsed contents.
     pub cache_handle_id: String,
+    /// The MapInfo file sector sha256sum (in contrast to a bundle of files on cache_handle_id)
+    pub sector_sha256_sum: String,
     pub file_version: i32,
     pub cell_width: usize,
     pub cell_height: usize,
@@ -186,6 +189,7 @@ impl MapInfo {
         Ok((
             tail,
             Self {
+                sector_sha256_sum: sha256::digest(input),
                 cache_handle_id,
                 file_version,
                 cell_width,

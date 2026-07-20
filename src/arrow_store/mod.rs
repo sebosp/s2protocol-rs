@@ -417,7 +417,7 @@ impl ArrowIpcTypes {
         cmd: &WriteArrowIpcProps,
         unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
         disable_parallel_scans: bool,
-        ache_path: String,
+        cache_path: String,
     ) -> Result<(), Box<dyn std::error::Error>> {
         println!(
             "Processing Arrow write request with scan_max_files: {}, traverse_max_depth: {}, process_max_files: {}, min_version: {:?}, max_version: {:?}",
