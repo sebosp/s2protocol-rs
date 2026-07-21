@@ -19,7 +19,7 @@ use crate::game_events::VersionedBalanceUnit;
 use crate::tracker_events;
 use crate::*;
 
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 pub mod ipc_writer;
 use ipc_writer::*;
 
@@ -449,7 +449,7 @@ impl ArrowIpcTypes {
                 .collect::<Vec<InitData>>()
         };
         // Identify from the cache handle bundles where the map info is located and get its sha256 digest for uniqueness.
-        let cache_handle_to_map_info_digest =
+        let _cache_handle_to_map_info_digest =
             download_init_data_cache_handles(&sources, cache_path).await;
         let sources: Vec<InitData> = sources
             .into_iter()

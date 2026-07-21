@@ -1,91 +1,35 @@
-use crate::versions::protocol87702::events::*;
 pub mod byte_aligned {
     //! Generated code from source: ../s2protocol/json/protocol75689.json
     //! All byte aligned types are compatible with protocol87702
-    use crate::versions::protocol87702::byte_aligned::EObserve;
-    use crate::versions::protocol87702::byte_aligned::GameCPlayerDetailsArray;
-    use crate::versions::protocol87702::byte_aligned::GameEGameSpeed;
-    use crate::versions::protocol87702::byte_aligned::GameEResultDetails;
-    use crate::versions::protocol87702::byte_aligned::GameSColor;
+
     pub(crate) use crate::versions::protocol87702::byte_aligned::GameSDetails;
-    use crate::versions::protocol87702::byte_aligned::GameSPlayerDetails;
-    use crate::versions::protocol87702::byte_aligned::GameSThumbnail;
-    use crate::versions::protocol87702::byte_aligned::GameSToonNameDetails;
-    use crate::versions::protocol87702::byte_aligned::ReplaySHeader;
+
     pub(crate) use crate::versions::protocol87702::byte_aligned::ReplayTrackerEEventId;
-    use crate::versions::protocol87702::byte_aligned::ReplayTrackerSPlayerSetupEvent;
-    use crate::versions::protocol87702::byte_aligned::ReplayTrackerSPlayerStats;
-    use crate::versions::protocol87702::byte_aligned::ReplayTrackerSPlayerStatsEvent;
-    use crate::versions::protocol87702::byte_aligned::ReplayTrackerSUnitBornEvent;
-    use crate::versions::protocol87702::byte_aligned::ReplayTrackerSUnitDiedEvent;
-    use crate::versions::protocol87702::byte_aligned::ReplayTrackerSUnitDoneEvent;
-    use crate::versions::protocol87702::byte_aligned::ReplayTrackerSUnitInitEvent;
-    use crate::versions::protocol87702::byte_aligned::ReplayTrackerSUnitOwnerChangeEvent;
-    use crate::versions::protocol87702::byte_aligned::ReplayTrackerSUnitPositionsEvent;
-    use crate::versions::protocol87702::byte_aligned::ReplayTrackerSUnitTypeChangeEvent;
-    use crate::versions::protocol87702::byte_aligned::ReplayTrackerSUpgradeEvent;
-    use crate::versions::protocol87702::byte_aligned::SVarUint32;
-    use crate::versions::protocol87702::byte_aligned::SVersion;
-    use crate::versions::protocol87702::byte_aligned::Smd5;
 }
 pub mod bit_packed {
     //! Generated code from source: ../s2protocol/json/protocol75689.json
     use crate::game_events::ReplayGameEvent;
     use crate::versions::GameEvent;
-    use crate::versions::protocol87702::bit_packed::CAllowedObserveTypes;
-    use crate::versions::protocol87702::bit_packed::CAllowedRaces;
-    use crate::versions::protocol87702::bit_packed::CArtifactHandle;
-    use crate::versions::protocol87702::bit_packed::CCacheHandle;
-    use crate::versions::protocol87702::bit_packed::CClanTag;
+
     use crate::versions::protocol87702::bit_packed::CCommanderHandle;
-    use crate::versions::protocol87702::bit_packed::CFilePath;
+
     use crate::versions::protocol87702::bit_packed::CHeroHandle;
     use crate::versions::protocol87702::bit_packed::CMountHandle;
     use crate::versions::protocol87702::bit_packed::CSkinHandle;
     use crate::versions::protocol87702::bit_packed::CToonHandle;
-    use crate::versions::protocol87702::bit_packed::CUserInitialDataArray;
-    use crate::versions::protocol87702::bit_packed::CUserName;
-    use crate::versions::protocol87702::bit_packed::ELeaveReason;
+
     use crate::versions::protocol87702::bit_packed::EObserve;
-    use crate::versions::protocol87702::bit_packed::EReconnectStatus;
-    use crate::versions::protocol87702::bit_packed::GameCAllowedAiBuild;
-    use crate::versions::protocol87702::bit_packed::GameCAllowedColors;
-    use crate::versions::protocol87702::bit_packed::GameCAllowedControls;
-    use crate::versions::protocol87702::bit_packed::GameCAllowedDifficulty;
+
     use crate::versions::protocol87702::bit_packed::GameCArtifactArray;
-    use crate::versions::protocol87702::bit_packed::GameCAuthorName;
-    use crate::versions::protocol87702::bit_packed::GameCCacheHandle;
-    use crate::versions::protocol87702::bit_packed::GameCCacheHandles;
-    use crate::versions::protocol87702::bit_packed::GameCChatString;
-    use crate::versions::protocol87702::bit_packed::GameCCheatString;
+
     use crate::versions::protocol87702::bit_packed::GameCCommanderMasteryTalentArray;
-    use crate::versions::protocol87702::bit_packed::GameCLobbySlotArray;
-    use crate::versions::protocol87702::bit_packed::GameCModPaths;
-    use crate::versions::protocol87702::bit_packed::GameCPlayerDetailsArray;
+
     use crate::versions::protocol87702::bit_packed::GameCRewardArray;
-    use crate::versions::protocol87702::bit_packed::GameCRewardOverride;
+
     use crate::versions::protocol87702::bit_packed::GameCRewardOverrideArray;
-    use crate::versions::protocol87702::bit_packed::GameCTriggerChatMessageString;
-    use crate::versions::protocol87702::bit_packed::GameEClientDebugFlags;
-    use crate::versions::protocol87702::bit_packed::GameECommandManagerState;
-    use crate::versions::protocol87702::bit_packed::GameEControl;
-    use crate::versions::protocol87702::bit_packed::GameEControlGroupUpdate;
-    use crate::versions::protocol87702::bit_packed::GameEConversationSkip;
-    use crate::versions::protocol87702::bit_packed::GameEDebug;
-    use crate::versions::protocol87702::bit_packed::GameEGameLaunch;
-    use crate::versions::protocol87702::bit_packed::GameEGameSpeed;
-    use crate::versions::protocol87702::bit_packed::GameEGameType;
-    use crate::versions::protocol87702::bit_packed::GameEHijackMethod;
+
     pub(crate) use crate::versions::protocol87702::bit_packed::GameEMessageId;
-    use crate::versions::protocol87702::bit_packed::GameEMessageRecipient;
-    use crate::versions::protocol87702::bit_packed::GameEOptionFog;
-    use crate::versions::protocol87702::bit_packed::GameEOptionObservers;
-    use crate::versions::protocol87702::bit_packed::GameEOptionUserDifficulty;
-    use crate::versions::protocol87702::bit_packed::GameEPhase;
-    use crate::versions::protocol87702::bit_packed::GameEResultCode;
-    use crate::versions::protocol87702::bit_packed::GameEResultDetails;
-    use crate::versions::protocol87702::bit_packed::GameESynchronous;
-    use crate::versions::protocol87702::bit_packed::GameESynthesized;
+
     use crate::versions::protocol87702::bit_packed::GameSAchievementAwardedEvent;
     use crate::versions::protocol87702::bit_packed::GameSAddAbsoluteGameSpeedEvent;
     use crate::versions::protocol87702::bit_packed::GameSAddGameSpeedEvent;
@@ -99,51 +43,39 @@ pub mod bit_packed {
     use crate::versions::protocol87702::bit_packed::GameSCameraSaveEvent;
     use crate::versions::protocol87702::bit_packed::GameSCameraUpdateEvent;
     use crate::versions::protocol87702::bit_packed::GameSCatalogModifyEvent;
-    use crate::versions::protocol87702::bit_packed::GameSChatMessage;
-    use crate::versions::protocol87702::bit_packed::GameSCheatEventData;
+
     use crate::versions::protocol87702::bit_packed::GameSCmdAbil;
     use crate::versions::protocol87702::bit_packed::GameSCmdData;
-    use crate::versions::protocol87702::bit_packed::GameSCmdDataTargetUnit;
+
     use crate::versions::protocol87702::bit_packed::GameSCmdUpdateTargetPointEvent;
     use crate::versions::protocol87702::bit_packed::GameSCmdUpdateTargetUnitEvent;
-    use crate::versions::protocol87702::bit_packed::GameSColor;
+
     use crate::versions::protocol87702::bit_packed::GameSCommandManagerResetEvent;
     use crate::versions::protocol87702::bit_packed::GameSCommandManagerStateEvent;
     use crate::versions::protocol87702::bit_packed::GameSControlGroupUpdateEvent;
     use crate::versions::protocol87702::bit_packed::GameSConvertToReplaySessionEvent;
     use crate::versions::protocol87702::bit_packed::GameSDecrementGameTimeRemainingEvent;
-    use crate::versions::protocol87702::bit_packed::GameSDetails;
+
     use crate::versions::protocol87702::bit_packed::GameSDropOurselvesEvent;
     use crate::versions::protocol87702::bit_packed::GameSDropUserEvent;
     use crate::versions::protocol87702::bit_packed::GameSGameCheatEvent;
-    use crate::versions::protocol87702::bit_packed::GameSGameDescription;
-    use crate::versions::protocol87702::bit_packed::GameSGameOptions;
-    use crate::versions::protocol87702::bit_packed::GameSGameSyncInfo;
+
     use crate::versions::protocol87702::bit_packed::GameSGameUserJoinEvent;
     use crate::versions::protocol87702::bit_packed::GameSGameUserLeaveEvent;
     use crate::versions::protocol87702::bit_packed::GameSHeroTalentTreeSelectedEvent;
     use crate::versions::protocol87702::bit_packed::GameSHeroTalentTreeSelectionPanelToggledEvent;
     use crate::versions::protocol87702::bit_packed::GameSHijackReplayGameEvent;
-    use crate::versions::protocol87702::bit_packed::GameSHijackReplayGameUserInfo;
+
     use crate::versions::protocol87702::bit_packed::GameSHijackReplaySessionEvent;
-    use crate::versions::protocol87702::bit_packed::GameSHijackReplaySessionUserInfo;
+
     use crate::versions::protocol87702::bit_packed::GameSLoadGameDoneEvent;
-    use crate::versions::protocol87702::bit_packed::GameSLoadingProgressMessage;
-    use crate::versions::protocol87702::bit_packed::GameSLobbyState;
-    use crate::versions::protocol87702::bit_packed::GameSLobbySyncState;
-    use crate::versions::protocol87702::bit_packed::GameSMapCoord;
-    use crate::versions::protocol87702::bit_packed::GameSMapCoord3D;
+
     use crate::versions::protocol87702::bit_packed::GameSMuteChatEvent;
     use crate::versions::protocol87702::bit_packed::GameSPauseGameEvent;
     use crate::versions::protocol87702::bit_packed::GameSPeerSetSyncLoadingTimeEvent;
     use crate::versions::protocol87702::bit_packed::GameSPeerSetSyncPlayingTimeEvent;
     use crate::versions::protocol87702::bit_packed::GameSPickMapTagEvent;
-    use crate::versions::protocol87702::bit_packed::GameSPingMessage;
-    use crate::versions::protocol87702::bit_packed::GameSPlayerDetails;
-    use crate::versions::protocol87702::bit_packed::GameSPoint;
-    use crate::versions::protocol87702::bit_packed::GameSPoint3;
-    use crate::versions::protocol87702::bit_packed::GameSPointMini;
-    use crate::versions::protocol87702::bit_packed::GameSReconnectNotifyMessage;
+
     use crate::versions::protocol87702::bit_packed::GameSReplayJumpEvent;
     use crate::versions::protocol87702::bit_packed::GameSResourceRequestCancelEvent;
     use crate::versions::protocol87702::bit_packed::GameSResourceRequestEvent;
@@ -151,15 +83,13 @@ pub mod bit_packed {
     use crate::versions::protocol87702::bit_packed::GameSResourceTradeEvent;
     use crate::versions::protocol87702::bit_packed::GameSSaveGameDoneEvent;
     use crate::versions::protocol87702::bit_packed::GameSSaveGameEvent;
-    use crate::versions::protocol87702::bit_packed::GameSSelectionDelta;
+
     use crate::versions::protocol87702::bit_packed::GameSSelectionDeltaEvent;
-    use crate::versions::protocol87702::bit_packed::GameSSelectionDeltaSubgroup;
-    use crate::versions::protocol87702::bit_packed::GameSSelectionMask;
+
     use crate::versions::protocol87702::bit_packed::GameSSelectionSyncCheckEvent;
-    use crate::versions::protocol87702::bit_packed::GameSSelectionSyncData;
-    use crate::versions::protocol87702::bit_packed::GameSServerPingMessage;
+
     use crate::versions::protocol87702::bit_packed::GameSSessionCheatEvent;
-    use crate::versions::protocol87702::bit_packed::GameSSessionSyncInfo;
+
     use crate::versions::protocol87702::bit_packed::GameSSetAbsoluteGameSpeedEvent;
     use crate::versions::protocol87702::bit_packed::GameSSetGameDurationEvent;
     use crate::versions::protocol87702::bit_packed::GameSSetGameSpeedEvent;
@@ -167,12 +97,9 @@ pub mod bit_packed {
     use crate::versions::protocol87702::bit_packed::GameSSetSyncLoadingTimeEvent;
     use crate::versions::protocol87702::bit_packed::GameSSetSyncPlayingTimeEvent;
     use crate::versions::protocol87702::bit_packed::GameSSingleStepGameEvent;
-    use crate::versions::protocol87702::bit_packed::GameSSlotDescription;
-    use crate::versions::protocol87702::bit_packed::GameSSlotDescriptions;
+
     use crate::versions::protocol87702::bit_packed::GameSStartGameEvent;
-    use crate::versions::protocol87702::bit_packed::GameSSyncSoundLength;
-    use crate::versions::protocol87702::bit_packed::GameSThumbnail;
-    use crate::versions::protocol87702::bit_packed::GameSToonNameDetails;
+
     use crate::versions::protocol87702::bit_packed::GameSTriggerAbortMissionEvent;
     use crate::versions::protocol87702::bit_packed::GameSTriggerAnimLengthQueryByNameEvent;
     use crate::versions::protocol87702::bit_packed::GameSTriggerAnimLengthQueryByPropsEvent;
@@ -239,84 +166,38 @@ pub mod bit_packed {
     use crate::versions::protocol87702::bit_packed::GameSUserFinishedLoadingSyncEvent;
     use crate::versions::protocol87702::bit_packed::GameSUserOptionsEvent;
     use crate::versions::protocol87702::bit_packed::GameSaiCommunicateEvent;
-    use crate::versions::protocol87702::bit_packed::GameSelectionIndexArrayType;
-    use crate::versions::protocol87702::bit_packed::GameSelectionMaskType;
-    use crate::versions::protocol87702::bit_packed::GameSuiCoord;
-    use crate::versions::protocol87702::bit_packed::GameTAbilLink;
-    use crate::versions::protocol87702::bit_packed::GameTAchievementLink;
-    use crate::versions::protocol87702::bit_packed::GameTAchievementTermLink;
-    use crate::versions::protocol87702::bit_packed::GameTButtonLink;
-    use crate::versions::protocol87702::bit_packed::GameTColorCount;
-    use crate::versions::protocol87702::bit_packed::GameTColorId;
+
     use crate::versions::protocol87702::bit_packed::GameTColorPreference;
-    use crate::versions::protocol87702::bit_packed::GameTControlCount;
-    use crate::versions::protocol87702::bit_packed::GameTControlGroupCount;
-    use crate::versions::protocol87702::bit_packed::GameTControlGroupId;
-    use crate::versions::protocol87702::bit_packed::GameTControlGroupIndex;
+
     use crate::versions::protocol87702::bit_packed::GameTControlId;
     use crate::versions::protocol87702::bit_packed::GameTDifficulty;
-    use crate::versions::protocol87702::bit_packed::GameTFixedBits;
-    use crate::versions::protocol87702::bit_packed::GameTFixedInt;
-    use crate::versions::protocol87702::bit_packed::GameTFixedMiniBitsSigned;
-    use crate::versions::protocol87702::bit_packed::GameTFixedMiniBitsUnsigned;
-    use crate::versions::protocol87702::bit_packed::GameTFixedUInt;
-    use crate::versions::protocol87702::bit_packed::GameTFlexLicenseAttributeName;
-    use crate::versions::protocol87702::bit_packed::GameTFlexLicenseAttributeValue;
-    use crate::versions::protocol87702::bit_packed::GameTFlexLicenseName;
-    use crate::versions::protocol87702::bit_packed::GameTHeroLink;
+
     use crate::versions::protocol87702::bit_packed::GameTLicense;
-    use crate::versions::protocol87702::bit_packed::GameTLobbySlotCount;
-    use crate::versions::protocol87702::bit_packed::GameTLobbySlotId;
-    use crate::versions::protocol87702::bit_packed::GameTMapCoordFixedBits;
-    use crate::versions::protocol87702::bit_packed::GameTPlayerCount;
-    use crate::versions::protocol87702::bit_packed::GameTPlayerId;
+
     use crate::versions::protocol87702::bit_packed::GameTPlayerLogoIndex;
-    use crate::versions::protocol87702::bit_packed::GameTQueryId;
-    use crate::versions::protocol87702::bit_packed::GameTReward;
-    use crate::versions::protocol87702::bit_packed::GameTSelectionCount;
-    use crate::versions::protocol87702::bit_packed::GameTSelectionIndex;
-    use crate::versions::protocol87702::bit_packed::GameTSubgroupCount;
-    use crate::versions::protocol87702::bit_packed::GameTSubgroupIndex;
-    use crate::versions::protocol87702::bit_packed::GameTSubgroupPriority;
-    use crate::versions::protocol87702::bit_packed::GameTSyncChecksum;
-    use crate::versions::protocol87702::bit_packed::GameTSyncValue;
-    use crate::versions::protocol87702::bit_packed::GameTTeamCount;
+
     use crate::versions::protocol87702::bit_packed::GameTTeamId;
-    use crate::versions::protocol87702::bit_packed::GameTTriggerSoundTag;
-    use crate::versions::protocol87702::bit_packed::GameTTriggerThreadTag;
-    use crate::versions::protocol87702::bit_packed::GameTUnitLink;
+
     use crate::versions::protocol87702::bit_packed::GameTUnitTag;
     use crate::versions::protocol87702::bit_packed::GameTaiBuild;
-    use crate::versions::protocol87702::bit_packed::GameTuiCoordX;
-    use crate::versions::protocol87702::bit_packed::GameTuiCoordY;
-    use crate::versions::protocol87702::bit_packed::Int8;
-    use crate::versions::protocol87702::bit_packed::Int16;
-    use crate::versions::protocol87702::bit_packed::Int32;
-    use crate::versions::protocol87702::bit_packed::Int64;
-    use crate::versions::protocol87702::bit_packed::MEventData;
+
     use crate::versions::protocol87702::bit_packed::ReplaySGameUserId;
     pub(crate) use crate::versions::protocol87702::bit_packed::ReplaySInitData;
-    use crate::versions::protocol87702::bit_packed::SUserInitialData;
+
     use crate::versions::protocol87702::bit_packed::SVarUint32;
-    use crate::versions::protocol87702::bit_packed::SVersion;
-    use crate::versions::protocol87702::bit_packed::Smd5;
-    use crate::versions::protocol87702::bit_packed::TRaceCount;
-    use crate::versions::protocol87702::bit_packed::TRaceId;
+
     use crate::versions::protocol87702::bit_packed::TRacePreference;
-    use crate::versions::protocol87702::bit_packed::TTeamPreference;
-    use crate::versions::protocol87702::bit_packed::TUserCount;
+
     use crate::versions::protocol87702::bit_packed::TUserId;
-    use crate::versions::protocol87702::bit_packed::Uint6;
+
     use crate::versions::protocol87702::bit_packed::Uint8;
-    use crate::versions::protocol87702::bit_packed::Uint14;
-    use crate::versions::protocol87702::bit_packed::Uint16;
-    use crate::versions::protocol87702::bit_packed::Uint22;
+
     use crate::versions::protocol87702::bit_packed::Uint32;
     use crate::*;
     use nom::*;
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEEventId {
+    pub(crate) enum GameEEventId {
         ESetLobbySlot(GameSSetLobbySlotEvent),
         EDropUser(GameSDropUserEvent),
         EStartGame(GameSStartGameEvent),
@@ -445,7 +326,7 @@ pub mod bit_packed {
 
     impl GameEEventId {
         #[tracing::instrument(name="75689::GameEEventId::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
+        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // Total fields: 120
             let num_bits: usize = 7;
             let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
@@ -1197,7 +1078,7 @@ pub mod bit_packed {
         }
         /// Reads a delta, GameEvent set
         #[tracing::instrument(name="GameEvents::parse_events", level = "debug", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_event_triplet(
+        pub(crate) fn parse_event_triplet(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), (i64, i64, GameEEventId)> {
             let (tail, delta) = SVarUint32::parse(input)?;
@@ -1294,7 +1175,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCmdEvent {
+    pub(crate) struct GameSCmdEvent {
         pub m_cmd_flags: i64,
         pub m_abil: Option<GameSCmdAbil>,
         pub m_data: GameSCmdData,
@@ -1304,13 +1185,15 @@ pub mod bit_packed {
     }
     impl GameSCmdEvent {
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_cmd_flags(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), i64> {
+        pub(crate) fn parse_m_cmd_flags(
+            input: (&[u8], usize),
+        ) -> S2ProtoResult<(&[u8], usize), i64> {
             let (tail, m_cmd_flags) = parse_packed_int(input, 0, 26usize)?;
             tracing::trace!("res: {:?}", m_cmd_flags);
             Ok((tail, m_cmd_flags))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_abil(
+        pub(crate) fn parse_m_abil(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameSCmdAbil>> {
             let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
@@ -1324,19 +1207,23 @@ pub mod bit_packed {
             Ok((tail, m_abil))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_data(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), GameSCmdData> {
+        pub(crate) fn parse_m_data(
+            input: (&[u8], usize),
+        ) -> S2ProtoResult<(&[u8], usize), GameSCmdData> {
             let (tail, m_data) = GameSCmdData::parse(input)?;
             tracing::trace!("res: {:?}", m_data);
             Ok((tail, m_data))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_sequence(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), i64> {
+        pub(crate) fn parse_m_sequence(
+            input: (&[u8], usize),
+        ) -> S2ProtoResult<(&[u8], usize), i64> {
             let (tail, m_sequence) = parse_packed_int(input, 1, 32usize)?;
             tracing::trace!("res: {:?}", m_sequence);
             Ok((tail, m_sequence))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_other_unit(
+        pub(crate) fn parse_m_other_unit(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<GameTUnitTag>> {
             let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
@@ -1350,7 +1237,7 @@ pub mod bit_packed {
             Ok((tail, m_other_unit))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_unit_group(
+        pub(crate) fn parse_m_unit_group(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Uint32>> {
             let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
@@ -1364,7 +1251,7 @@ pub mod bit_packed {
             Ok((tail, m_unit_group))
         }
         #[tracing::instrument(name="75689::bit_packed::GameSCmdEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
+        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_cmd_flags: Option<i64> = None;
             let mut m_abil: Option<Option<GameSCmdAbil>> = Some(None);
@@ -1417,12 +1304,12 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTHandicap {
+    pub(crate) struct GameTHandicap {
         pub value: i64,
     }
     impl GameTHandicap {
         #[tracing::instrument(name="75689::GameTHandicap::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
+        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 7;
             let (tail, value) = parse_packed_int(input, offset, num_bits)?;
@@ -1431,12 +1318,12 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCLicenseArray {
+    pub(crate) struct GameCLicenseArray {
         pub value: Vec<GameTLicense>,
     }
     impl GameCLicenseArray {
         #[tracing::instrument(name="75689::GameCLicenseArray::ArrayType::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
+        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let array_length_num_bits: usize = 13;
             let (mut tail, array_length) = parse_packed_int(input, 0, array_length_num_bits)?;
             // compat_count(GameTLicense::parse, array_length as usize)(tail)?;
@@ -1454,7 +1341,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSLobbySlot {
+    pub(crate) struct GameSLobbySlot {
         pub m_control: GameTControlId,
         pub m_user_id: Option<TUserId>,
         pub m_team_id: GameTTeamId,
@@ -1485,7 +1372,7 @@ pub mod bit_packed {
     }
     impl GameSLobbySlot {
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_control(
+        pub(crate) fn parse_m_control(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTControlId> {
             let (tail, m_control) = GameTControlId::parse(input)?;
@@ -1493,7 +1380,7 @@ pub mod bit_packed {
             Ok((tail, m_control))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_user_id(
+        pub(crate) fn parse_m_user_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<TUserId>> {
             let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
@@ -1507,7 +1394,7 @@ pub mod bit_packed {
             Ok((tail, m_user_id))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_team_id(
+        pub(crate) fn parse_m_team_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTTeamId> {
             let (tail, m_team_id) = GameTTeamId::parse(input)?;
@@ -1515,7 +1402,7 @@ pub mod bit_packed {
             Ok((tail, m_team_id))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_color_pref(
+        pub(crate) fn parse_m_color_pref(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTColorPreference> {
             let (tail, m_color_pref) = GameTColorPreference::parse(input)?;
@@ -1523,7 +1410,7 @@ pub mod bit_packed {
             Ok((tail, m_color_pref))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_race_pref(
+        pub(crate) fn parse_m_race_pref(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), TRacePreference> {
             let (tail, m_race_pref) = TRacePreference::parse(input)?;
@@ -1531,7 +1418,7 @@ pub mod bit_packed {
             Ok((tail, m_race_pref))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_difficulty(
+        pub(crate) fn parse_m_difficulty(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTDifficulty> {
             let (tail, m_difficulty) = GameTDifficulty::parse(input)?;
@@ -1539,7 +1426,7 @@ pub mod bit_packed {
             Ok((tail, m_difficulty))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_ai_build(
+        pub(crate) fn parse_m_ai_build(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTaiBuild> {
             let (tail, m_ai_build) = GameTaiBuild::parse(input)?;
@@ -1547,7 +1434,7 @@ pub mod bit_packed {
             Ok((tail, m_ai_build))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_handicap(
+        pub(crate) fn parse_m_handicap(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTHandicap> {
             let (tail, m_handicap) = GameTHandicap::parse(input)?;
@@ -1555,13 +1442,15 @@ pub mod bit_packed {
             Ok((tail, m_handicap))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_observe(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), EObserve> {
+        pub(crate) fn parse_m_observe(
+            input: (&[u8], usize),
+        ) -> S2ProtoResult<(&[u8], usize), EObserve> {
             let (tail, m_observe) = EObserve::parse(input)?;
             tracing::trace!("res: {:?}", m_observe);
             Ok((tail, m_observe))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_logo_index(
+        pub(crate) fn parse_m_logo_index(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameTPlayerLogoIndex> {
             let (tail, m_logo_index) = GameTPlayerLogoIndex::parse(input)?;
@@ -1569,25 +1458,31 @@ pub mod bit_packed {
             Ok((tail, m_logo_index))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_hero(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CHeroHandle> {
+        pub(crate) fn parse_m_hero(
+            input: (&[u8], usize),
+        ) -> S2ProtoResult<(&[u8], usize), CHeroHandle> {
             let (tail, m_hero) = CHeroHandle::parse(input)?;
             tracing::trace!("res: {:?}", m_hero);
             Ok((tail, m_hero))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_skin(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CSkinHandle> {
+        pub(crate) fn parse_m_skin(
+            input: (&[u8], usize),
+        ) -> S2ProtoResult<(&[u8], usize), CSkinHandle> {
             let (tail, m_skin) = CSkinHandle::parse(input)?;
             tracing::trace!("res: {:?}", m_skin);
             Ok((tail, m_skin))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_mount(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), CMountHandle> {
+        pub(crate) fn parse_m_mount(
+            input: (&[u8], usize),
+        ) -> S2ProtoResult<(&[u8], usize), CMountHandle> {
             let (tail, m_mount) = CMountHandle::parse(input)?;
             tracing::trace!("res: {:?}", m_mount);
             Ok((tail, m_mount))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_artifacts(
+        pub(crate) fn parse_m_artifacts(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCArtifactArray> {
             let (tail, m_artifacts) = GameCArtifactArray::parse(input)?;
@@ -1595,7 +1490,7 @@ pub mod bit_packed {
             Ok((tail, m_artifacts))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_working_set_slot_id(
+        pub(crate) fn parse_m_working_set_slot_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<Uint8>> {
             let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
@@ -1609,7 +1504,7 @@ pub mod bit_packed {
             Ok((tail, m_working_set_slot_id))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_rewards(
+        pub(crate) fn parse_m_rewards(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCRewardArray> {
             let (tail, m_rewards) = GameCRewardArray::parse(input)?;
@@ -1617,7 +1512,7 @@ pub mod bit_packed {
             Ok((tail, m_rewards))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_toon_handle(
+        pub(crate) fn parse_m_toon_handle(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CToonHandle> {
             let (tail, m_toon_handle) = CToonHandle::parse(input)?;
@@ -1625,7 +1520,7 @@ pub mod bit_packed {
             Ok((tail, m_toon_handle))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_licenses(
+        pub(crate) fn parse_m_licenses(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCLicenseArray> {
             let (tail, m_licenses) = GameCLicenseArray::parse(input)?;
@@ -1633,7 +1528,7 @@ pub mod bit_packed {
             Ok((tail, m_licenses))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_tandem_leader_id(
+        pub(crate) fn parse_m_tandem_leader_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<TUserId>> {
             let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
@@ -1647,7 +1542,7 @@ pub mod bit_packed {
             Ok((tail, m_tandem_leader_id))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_commander(
+        pub(crate) fn parse_m_commander(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), CCommanderHandle> {
             let (tail, m_commander) = CCommanderHandle::parse(input)?;
@@ -1655,7 +1550,7 @@ pub mod bit_packed {
             Ok((tail, m_commander))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_commander_level(
+        pub(crate) fn parse_m_commander_level(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_commander_level) = Uint32::parse(input)?;
@@ -1663,7 +1558,7 @@ pub mod bit_packed {
             Ok((tail, m_commander_level))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_has_silence_penalty(
+        pub(crate) fn parse_m_has_silence_penalty(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), bool> {
             let (tail, m_has_silence_penalty) = parse_bool(input)?;
@@ -1671,7 +1566,7 @@ pub mod bit_packed {
             Ok((tail, m_has_silence_penalty))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_tandem_id(
+        pub(crate) fn parse_m_tandem_id(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Option<TUserId>> {
             let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
@@ -1685,7 +1580,7 @@ pub mod bit_packed {
             Ok((tail, m_tandem_id))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_commander_mastery_level(
+        pub(crate) fn parse_m_commander_mastery_level(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_commander_mastery_level) = Uint32::parse(input)?;
@@ -1693,7 +1588,7 @@ pub mod bit_packed {
             Ok((tail, m_commander_mastery_level))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_commander_mastery_talents(
+        pub(crate) fn parse_m_commander_mastery_talents(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCCommanderMasteryTalentArray> {
             let (tail, m_commander_mastery_talents) =
@@ -1702,13 +1597,15 @@ pub mod bit_packed {
             Ok((tail, m_commander_mastery_talents))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_trophy_id(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Uint32> {
+        pub(crate) fn parse_m_trophy_id(
+            input: (&[u8], usize),
+        ) -> S2ProtoResult<(&[u8], usize), Uint32> {
             let (tail, m_trophy_id) = Uint32::parse(input)?;
             tracing::trace!("res: {:?}", m_trophy_id);
             Ok((tail, m_trophy_id))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse_m_reward_overrides(
+        pub(crate) fn parse_m_reward_overrides(
             input: (&[u8], usize),
         ) -> S2ProtoResult<(&[u8], usize), GameCRewardOverrideArray> {
             let (tail, m_reward_overrides) = GameCRewardOverrideArray::parse(input)?;
@@ -1716,7 +1613,7 @@ pub mod bit_packed {
             Ok((tail, m_reward_overrides))
         }
         #[tracing::instrument(name="75689::bit_packed::GameSLobbySlot::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
+        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_control: Option<GameTControlId> = None;
             let mut m_user_id: Option<Option<TUserId>> = Some(None);
@@ -1927,7 +1824,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameSLobbySlotChange {
+    pub(crate) enum GameSLobbySlotChange {
         MControl(GameTControlId),
         MUserId(Option<TUserId>),
         MTeamId(GameTTeamId),
@@ -1951,7 +1848,7 @@ pub mod bit_packed {
     }
     impl GameSLobbySlotChange {
         #[tracing::instrument(name="75689::GameSLobbySlotChange::ChoiceType::parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
+        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             // ChoiceType:
             // Use the number of elements in the json .fields to calculate how many
             // bits to have unique tags.
