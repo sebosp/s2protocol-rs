@@ -81,7 +81,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub(crate) struct SVersion {
+    pub struct SVersion {
         pub m_flags: u8,
         pub m_major: u8,
         pub m_minor: u8,
@@ -91,49 +91,49 @@ pub mod byte_aligned {
     }
     impl SVersion {
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
-        pub(crate) fn parse_m_flags(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
+        pub fn parse_m_flags(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_flags) = tagged_vlq_int(input)?;
 
             tracing::debug!("m_flags: {:?}", m_flags);
             Ok((tail, u8::try_from(m_flags)?))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
-        pub(crate) fn parse_m_major(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
+        pub fn parse_m_major(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_major) = tagged_vlq_int(input)?;
 
             tracing::debug!("m_major: {:?}", m_major);
             Ok((tail, u8::try_from(m_major)?))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
-        pub(crate) fn parse_m_minor(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
+        pub fn parse_m_minor(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_minor) = tagged_vlq_int(input)?;
 
             tracing::debug!("m_minor: {:?}", m_minor);
             Ok((tail, u8::try_from(m_minor)?))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
-        pub(crate) fn parse_m_revision(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
+        pub fn parse_m_revision(input: &[u8]) -> S2ProtoResult<&[u8], u8> {
             let (tail, m_revision) = tagged_vlq_int(input)?;
 
             tracing::debug!("m_revision: {:?}", m_revision);
             Ok((tail, u8::try_from(m_revision)?))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
-        pub(crate) fn parse_m_build(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
+        pub fn parse_m_build(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_build) = tagged_vlq_int(input)?;
 
             tracing::debug!("m_build: {:?}", m_build);
             Ok((tail, u32::try_from(m_build)?))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
-        pub(crate) fn parse_m_base_build(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
+        pub fn parse_m_base_build(input: &[u8]) -> S2ProtoResult<&[u8], u32> {
             let (tail, m_base_build) = tagged_vlq_int(input)?;
 
             tracing::debug!("m_base_build: {:?}", m_base_build);
             Ok((tail, u32::try_from(m_base_build)?))
         }
         #[tracing::instrument(name="87702::byte_aligned::SVersion::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
-        pub(crate) fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
+        pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
             let mut m_flags: Option<u8> = None;
@@ -244,15 +244,13 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub(crate) struct Smd5 {
+    pub struct Smd5 {
         pub m_data_deprecated: Option<Vec<u8>>,
         pub m_data: Vec<u8>,
     }
     impl Smd5 {
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
-        pub(crate) fn parse_m_data_deprecated(
-            input: &[u8],
-        ) -> S2ProtoResult<&[u8], Option<Vec<u8>>> {
+        pub fn parse_m_data_deprecated(input: &[u8]) -> S2ProtoResult<&[u8], Option<Vec<u8>>> {
             let (tail, _) = validate_opt_tag(input)?;
             let (tail, is_provided) = nom::number::complete::u8(tail)?;
             let (tail, m_data_deprecated) = if is_provided != 0 {
@@ -277,14 +275,14 @@ pub mod byte_aligned {
             Ok((tail, m_data_deprecated))
         }
         #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_hex(input)))]
-        pub(crate) fn parse_m_data(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
+        pub fn parse_m_data(input: &[u8]) -> S2ProtoResult<&[u8], Vec<u8>> {
             let (tail, m_data) = tagged_blob(input)?;
 
             tracing::debug!("m_data: {:?}", m_data);
             Ok((tail, m_data))
         }
         #[tracing::instrument(name="87702::byte_aligned::Smd5::Parse", level = "trace", skip(input), fields(peek = peek_hex(input)))]
-        pub(crate) fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
+        pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
             let (tail, _) = validate_struct_tag(input)?;
             let (mut tail, struct_field_count) = parse_vlq_int(tail)?;
             let mut m_data_deprecated: Option<Option<Vec<u8>>> = Some(None);
@@ -5232,12 +5230,12 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub(crate) struct Int64 {
+    pub struct Int64 {
         pub value: i64,
     }
     impl Int64 {
         #[tracing::instrument(name="87702::Int64::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
+        pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = -9223372036854775808;
             let num_bits: usize = 64;
             let (tail, value) = parse_packed_int(input, offset, num_bits)?;
@@ -5246,12 +5244,12 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub(crate) struct Uint8 {
+    pub struct Uint8 {
         pub value: i64,
     }
     impl Uint8 {
         #[tracing::instrument(name="87702::Uint8::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
+        pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 8;
             let (tail, value) = parse_packed_int(input, offset, num_bits)?;
@@ -5274,12 +5272,12 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub(crate) struct Uint32 {
+    pub struct Uint32 {
         pub value: i64,
     }
     impl Uint32 {
         #[tracing::instrument(name="87702::Uint32::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
+        pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 32;
             let (tail, value) = parse_packed_int(input, offset, num_bits)?;
@@ -5288,12 +5286,12 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub(crate) struct Uint64 {
+    pub struct Uint64 {
         pub value: i64,
     }
     impl Uint64 {
         #[tracing::instrument(name="87702::Uint64::IntType::Parse::PowExpr", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
+        pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let offset: i64 = 0;
             let num_bits: usize = 64;
             let (tail, value) = parse_packed_int(input, offset, num_bits)?;
@@ -18346,44 +18344,6 @@ pub mod bit_packed {
             Ok((tail, array))
         }
         #[tracing::instrument(name="87702::bit_packed::GameSSessionSyncInfo::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
-            let mut tail = input;
-            let mut m_checksums: Option<Vec<GameTSyncChecksum>> = None;
-            if m_checksums.is_none() {
-                let (new_tail, parsed_m_checksums) = Self::parse_m_checksums(tail)?;
-                tail = new_tail;
-                m_checksums = Some(parsed_m_checksums);
-            }
-            Ok((
-                tail,
-                Self {
-                    m_checksums: ok_or_return_missing_field_err!(m_checksums),
-                },
-            ))
-        }
-    }
-
-    #[derive(Debug, PartialEq, Clone)]
-    pub(crate) struct GameSGameSyncInfo {
-        pub m_checksums: Vec<GameTSyncChecksum>,
-    }
-    impl GameSGameSyncInfo {
-        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse_m_checksums(
-            input: (&[u8], usize),
-        ) -> S2ProtoResult<(&[u8], usize), Vec<GameTSyncChecksum>> {
-            let (mut tail, array_length) = take_n_bits_into_i64(input, 8)?;
-            let array_length = array_length as usize;
-            tracing::debug!("Reading array length: {array_length}");
-            let mut array = vec![];
-            for _ in 0..array_length {
-                let (new_tail, data) = GameTSyncChecksum::parse(tail)?;
-                tail = new_tail;
-                array.push(data);
-            }
-            Ok((tail, array))
-        }
-        #[tracing::instrument(name="87702::bit_packed::GameSGameSyncInfo::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
             let mut tail = input;
             let mut m_checksums: Option<Vec<GameTSyncChecksum>> = None;
