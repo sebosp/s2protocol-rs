@@ -155,12 +155,6 @@ impl From<GameTUnitTag> for game_events::GameTUnitTag {
     }
 }
 
-impl From<GameTControlGroupCount> for game_events::GameTControlGroupCount {
-    fn from(source: GameTControlGroupCount) -> game_events::GameTControlGroupCount {
-        source.value as u8
-    }
-}
-
 impl From<GameSTriggerChatMessageEvent> for game_events::ReplayGameEvent {
     fn from(source: GameSTriggerChatMessageEvent) -> Self {
         ReplayGameEvent::TriggerChatMessage(game_events::GameSTriggerChatMessageEvent {

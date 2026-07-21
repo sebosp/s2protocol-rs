@@ -11,22 +11,22 @@ pub mod bit_packed {
     use crate::game_events::ReplayGameEvent;
     use crate::versions::GameEvent;
 
-    use crate::versions::protocol87702::bit_packed::CCommanderHandle;
+    
 
-    use crate::versions::protocol87702::bit_packed::CHeroHandle;
-    use crate::versions::protocol87702::bit_packed::CMountHandle;
-    use crate::versions::protocol87702::bit_packed::CSkinHandle;
-    use crate::versions::protocol87702::bit_packed::CToonHandle;
+    
+    
+    
+    
 
-    use crate::versions::protocol87702::bit_packed::EObserve;
+    
 
-    use crate::versions::protocol87702::bit_packed::GameCArtifactArray;
+    
 
-    use crate::versions::protocol87702::bit_packed::GameCCommanderMasteryTalentArray;
+    
 
-    use crate::versions::protocol87702::bit_packed::GameCRewardArray;
+    
 
-    use crate::versions::protocol87702::bit_packed::GameCRewardOverrideArray;
+    
 
     pub(crate) use crate::versions::protocol87702::bit_packed::GameEMessageId;
 
@@ -167,30 +167,30 @@ pub mod bit_packed {
     use crate::versions::protocol87702::bit_packed::GameSUserOptionsEvent;
     use crate::versions::protocol87702::bit_packed::GameSaiCommunicateEvent;
 
-    use crate::versions::protocol87702::bit_packed::GameTColorPreference;
+    
 
-    use crate::versions::protocol87702::bit_packed::GameTControlId;
-    use crate::versions::protocol87702::bit_packed::GameTDifficulty;
+    
+    
 
-    use crate::versions::protocol87702::bit_packed::GameTLicense;
+    
 
-    use crate::versions::protocol87702::bit_packed::GameTPlayerLogoIndex;
+    
 
-    use crate::versions::protocol87702::bit_packed::GameTTeamId;
+    
 
     use crate::versions::protocol87702::bit_packed::GameTUnitTag;
-    use crate::versions::protocol87702::bit_packed::GameTaiBuild;
+    
 
     use crate::versions::protocol87702::bit_packed::ReplaySGameUserId;
     pub(crate) use crate::versions::protocol87702::bit_packed::ReplaySInitData;
 
     use crate::versions::protocol87702::bit_packed::SVarUint32;
 
-    use crate::versions::protocol87702::bit_packed::TRacePreference;
+    
 
-    use crate::versions::protocol87702::bit_packed::TUserId;
+    
 
-    use crate::versions::protocol87702::bit_packed::Uint8;
+    
 
     use crate::versions::protocol87702::bit_packed::Uint32;
     use crate::*;

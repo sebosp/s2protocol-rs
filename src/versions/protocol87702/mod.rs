@@ -16522,20 +16522,6 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub(crate) struct GameTControlGroupCount {
-        pub value: i64,
-    }
-    impl GameTControlGroupCount {
-        #[tracing::instrument(name="87702::GameTControlGroupCount::IntType::Parse::MinMaxConstraint", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
-            let offset: i64 = 0;
-            let num_bits: usize = 4;
-            let (tail, value) = parse_packed_int(input, offset, num_bits)?;
-            Ok((tail, Self { value }))
-        }
-    }
-
-    #[derive(Debug, PartialEq, Clone)]
     pub(crate) struct GameTControlGroupIndex {
         pub value: i64,
     }
