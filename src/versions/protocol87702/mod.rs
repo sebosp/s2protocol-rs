@@ -6,7 +6,7 @@ pub mod byte_aligned {
     use nom_mpq::parser::peek_hex;
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum SVarUint32 {
+    pub(crate) enum SVarUint32 {
         MUint6(u8),
         MUint14(u32),
         MUint22(u32),
@@ -48,7 +48,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum EObserve {
+    pub(crate) enum EObserve {
         ENone,
         ESpectator,
         EReferee,
@@ -81,7 +81,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct SVersion {
+    pub(crate) struct SVersion {
         pub m_flags: u8,
         pub m_major: u8,
         pub m_minor: u8,
@@ -244,7 +244,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Smd5 {
+    pub(crate) struct Smd5 {
         pub m_data_deprecated: Option<Vec<u8>>,
         pub m_data: Vec<u8>,
     }
@@ -339,7 +339,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEGameSpeed {
+    pub(crate) enum GameEGameSpeed {
         ESlower,
         ESlow,
         ENormal,
@@ -382,7 +382,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSThumbnail {
+    pub(crate) struct GameSThumbnail {
         pub m_file: Vec<u8>,
     }
     impl GameSThumbnail {
@@ -431,7 +431,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSColor {
+    pub(crate) struct GameSColor {
         pub m_a: u8,
         pub m_r: u8,
         pub m_g: u8,
@@ -546,7 +546,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEResultDetails {
+    pub(crate) enum GameEResultDetails {
         EUndecided,
         EWin,
         ELoss,
@@ -584,7 +584,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSToonNameDetails {
+    pub(crate) struct GameSToonNameDetails {
         pub m_region: u8,
         pub m_program_id: u32,
         pub m_realm: u32,
@@ -724,7 +724,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSPlayerDetails {
+    pub(crate) struct GameSPlayerDetails {
         pub m_name: Vec<u8>,
         pub m_toon: GameSToonNameDetails,
         pub m_race: Vec<u8>,
@@ -1017,7 +1017,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCPlayerDetailsArray {
+    pub(crate) struct GameCPlayerDetailsArray {
         pub value: Vec<GameSPlayerDetails>,
     }
     impl GameCPlayerDetailsArray {
@@ -1042,7 +1042,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSDetails {
+    pub(crate) struct GameSDetails {
         pub m_player_list: Option<Vec<GameSPlayerDetails>>,
         pub m_title: Vec<u8>,
         pub m_difficulty: Vec<u8>,
@@ -1619,7 +1619,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplaySHeader {
+    pub(crate) struct ReplaySHeader {
         pub m_signature: Vec<u8>,
         pub m_version: SVersion,
         pub m_type: u8,
@@ -1900,7 +1900,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum ReplayTrackerEEventId {
+    pub(crate) enum ReplayTrackerEEventId {
         EPlayerStats(ReplayTrackerSPlayerStatsEvent),
         EUnitBorn(ReplayTrackerSUnitBornEvent),
         EUnitDied(ReplayTrackerSUnitDiedEvent),
@@ -1988,7 +1988,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplayTrackerSPlayerStats {
+    pub(crate) struct ReplayTrackerSPlayerStats {
         pub m_score_value_minerals_current: i32,
         pub m_score_value_vespene_current: i32,
         pub m_score_value_minerals_collection_rate: i32,
@@ -3543,7 +3543,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplayTrackerSPlayerStatsEvent {
+    pub(crate) struct ReplayTrackerSPlayerStatsEvent {
         pub m_player_id: u8,
         pub m_stats: ReplayTrackerSPlayerStats,
     }
@@ -3617,7 +3617,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplayTrackerSUnitBornEvent {
+    pub(crate) struct ReplayTrackerSUnitBornEvent {
         pub m_unit_tag_index: u32,
         pub m_unit_tag_recycle: u32,
         pub m_unit_type_name: Vec<u8>,
@@ -3944,7 +3944,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplayTrackerSUnitDiedEvent {
+    pub(crate) struct ReplayTrackerSUnitDiedEvent {
         pub m_unit_tag_index: u32,
         pub m_unit_tag_recycle: u32,
         pub m_killer_player_id: Option<u8>,
@@ -4181,7 +4181,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplayTrackerSUnitOwnerChangeEvent {
+    pub(crate) struct ReplayTrackerSUnitOwnerChangeEvent {
         pub m_unit_tag_index: u32,
         pub m_unit_tag_recycle: u32,
         pub m_control_player_id: u8,
@@ -4320,7 +4320,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplayTrackerSUnitTypeChangeEvent {
+    pub(crate) struct ReplayTrackerSUnitTypeChangeEvent {
         pub m_unit_tag_index: u32,
         pub m_unit_tag_recycle: u32,
         pub m_unit_type_name: Vec<u8>,
@@ -4431,7 +4431,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplayTrackerSUpgradeEvent {
+    pub(crate) struct ReplayTrackerSUpgradeEvent {
         pub m_player_id: u8,
         pub m_upgrade_type_name: Vec<u8>,
         pub m_count: i32,
@@ -4536,7 +4536,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplayTrackerSUnitInitEvent {
+    pub(crate) struct ReplayTrackerSUnitInitEvent {
         pub m_unit_tag_index: u32,
         pub m_unit_tag_recycle: u32,
         pub m_unit_type_name: Vec<u8>,
@@ -4747,7 +4747,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplayTrackerSUnitDoneEvent {
+    pub(crate) struct ReplayTrackerSUnitDoneEvent {
         pub m_unit_tag_index: u32,
         pub m_unit_tag_recycle: u32,
     }
@@ -4830,7 +4830,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplayTrackerSUnitPositionsEvent {
+    pub(crate) struct ReplayTrackerSUnitPositionsEvent {
         pub m_first_unit_index: u32,
         pub m_items: Vec<i32>,
     }
@@ -4918,7 +4918,7 @@ pub mod byte_aligned {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplayTrackerSPlayerSetupEvent {
+    pub(crate) struct ReplayTrackerSPlayerSetupEvent {
         pub m_player_id: u8,
         pub m_type: u32,
         pub m_user_id: Option<u32>,
@@ -5058,7 +5058,7 @@ pub mod bit_packed {
     use crate::*;
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CFilePath {
+    pub(crate) struct CFilePath {
         pub value: Vec<u8>,
     }
     impl CFilePath {
@@ -5073,7 +5073,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct TRaceId {
+    pub(crate) struct TRaceId {
         pub value: i64,
     }
     impl TRaceId {
@@ -5087,7 +5087,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct TRaceCount {
+    pub(crate) struct TRaceCount {
         pub value: i64,
     }
     impl TRaceCount {
@@ -5101,7 +5101,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct TRacePreference {
+    pub(crate) struct TRacePreference {
         pub m_race: Option<TRaceId>,
     }
     impl TRacePreference {
@@ -5138,7 +5138,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CAllowedRaces {
+    pub(crate) struct CAllowedRaces {
         pub value: i64, // Initially Vec<u8> but these are 8 bits and fits in i64 and easy to
                         // compare with blizzard's python implementation
     }
@@ -5154,7 +5154,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Int8 {
+    pub(crate) struct Int8 {
         pub value: i64,
     }
     impl Int8 {
@@ -5168,7 +5168,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Int16 {
+    pub(crate) struct Int16 {
         pub value: i64,
     }
     impl Int16 {
@@ -5182,7 +5182,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Int32 {
+    pub(crate) struct Int32 {
         pub value: i64,
     }
     impl Int32 {
@@ -5196,7 +5196,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Int64 {
+    pub(crate) struct Int64 {
         pub value: i64,
     }
     impl Int64 {
@@ -5210,7 +5210,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Uint8 {
+    pub(crate) struct Uint8 {
         pub value: i64,
     }
     impl Uint8 {
@@ -5224,7 +5224,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Uint16 {
+    pub(crate) struct Uint16 {
         pub value: i64,
     }
     impl Uint16 {
@@ -5238,7 +5238,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Uint32 {
+    pub(crate) struct Uint32 {
         pub value: i64,
     }
     impl Uint32 {
@@ -5252,7 +5252,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Uint64 {
+    pub(crate) struct Uint64 {
         pub value: i64,
     }
     impl Uint64 {
@@ -5266,7 +5266,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Uint6 {
+    pub(crate) struct Uint6 {
         pub value: i64,
     }
     impl Uint6 {
@@ -5280,7 +5280,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Uint14 {
+    pub(crate) struct Uint14 {
         pub value: i64,
     }
     impl Uint14 {
@@ -5294,7 +5294,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Uint22 {
+    pub(crate) struct Uint22 {
         pub value: i64,
     }
     impl Uint22 {
@@ -5308,7 +5308,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum SVarUint32 {
+    pub(crate) enum SVarUint32 {
         MUint6(Uint6),
         MUint14(Uint14),
         MUint22(Uint22),
@@ -5355,7 +5355,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct TUserId {
+    pub(crate) struct TUserId {
         pub value: i64,
     }
     impl TUserId {
@@ -5369,7 +5369,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct TUserCount {
+    pub(crate) struct TUserCount {
         pub value: i64,
     }
     impl TUserCount {
@@ -5383,7 +5383,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CCacheHandle {
+    pub(crate) struct CCacheHandle {
         pub value: Vec<u8>,
     }
     impl CCacheHandle {
@@ -5400,7 +5400,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CUserName {
+    pub(crate) struct CUserName {
         pub value: Vec<u8>,
     }
     impl CUserName {
@@ -5415,7 +5415,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CClanTag {
+    pub(crate) struct CClanTag {
         pub value: Vec<u8>,
     }
     impl CClanTag {
@@ -5430,7 +5430,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CHeroHandle {
+    pub(crate) struct CHeroHandle {
         pub value: Vec<u8>,
     }
     impl CHeroHandle {
@@ -5445,7 +5445,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CSkinHandle {
+    pub(crate) struct CSkinHandle {
         pub value: Vec<u8>,
     }
     impl CSkinHandle {
@@ -5460,7 +5460,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CMountHandle {
+    pub(crate) struct CMountHandle {
         pub value: Vec<u8>,
     }
     impl CMountHandle {
@@ -5475,7 +5475,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CArtifactHandle {
+    pub(crate) struct CArtifactHandle {
         pub value: Vec<u8>,
     }
     impl CArtifactHandle {
@@ -5490,7 +5490,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CToonHandle {
+    pub(crate) struct CToonHandle {
         pub value: Vec<u8>,
     }
     impl CToonHandle {
@@ -5505,7 +5505,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CCommanderHandle {
+    pub(crate) struct CCommanderHandle {
         pub value: Vec<u8>,
     }
     impl CCommanderHandle {
@@ -5520,7 +5520,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum EObserve {
+    pub(crate) enum EObserve {
         ENone,
         ESpectator,
         EReferee,
@@ -5554,7 +5554,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CAllowedObserveTypes {
+    pub(crate) struct CAllowedObserveTypes {
         pub value: i64, // Initially Vec<u8> but these are 8 bits and fits in i64 and easy to
                         // compare with blizzard's python implementation
     }
@@ -5570,7 +5570,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct TTeamPreference {
+    pub(crate) struct TTeamPreference {
         pub m_team: Option<Uint8>,
     }
     impl TTeamPreference {
@@ -5605,7 +5605,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct SUserInitialData {
+    pub(crate) struct SUserInitialData {
         pub m_name: CUserName,
         pub m_clan_tag: Option<CClanTag>,
         pub m_clan_logo: Option<CCacheHandle>,
@@ -5935,7 +5935,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct CUserInitialDataArray {
+    pub(crate) struct CUserInitialDataArray {
         pub value: Vec<SUserInitialData>,
     }
     impl CUserInitialDataArray {
@@ -5959,7 +5959,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum ELeaveReason {
+    pub(crate) enum ELeaveReason {
         EUserLeft,
         EUserDropped,
         EUserBanned,
@@ -6058,7 +6058,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum EReconnectStatus {
+    pub(crate) enum EReconnectStatus {
         EConnected,
         EReconnected,
         EDisconnected,
@@ -6097,7 +6097,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct SVersion {
+    pub(crate) struct SVersion {
         pub m_flags: Uint8,
         pub m_major: Uint8,
         pub m_minor: Uint8,
@@ -6196,7 +6196,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct Smd5 {
+    pub(crate) struct Smd5 {
         pub m_data_deprecated: Option<Vec<Uint8>>,
         pub m_data: Vec<u8>,
     }
@@ -6264,7 +6264,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTColorId {
+    pub(crate) struct GameTColorId {
         pub value: i64,
     }
     impl GameTColorId {
@@ -6278,7 +6278,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTColorCount {
+    pub(crate) struct GameTColorCount {
         pub value: i64,
     }
     impl GameTColorCount {
@@ -6292,7 +6292,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTColorPreference {
+    pub(crate) struct GameTColorPreference {
         pub m_color: Option<GameTColorId>,
     }
     impl GameTColorPreference {
@@ -6329,7 +6329,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCAllowedColors {
+    pub(crate) struct GameCAllowedColors {
         pub value: i64, // Initially Vec<u8> but these are 8 bits and fits in i64 and easy to
                         // compare with blizzard's python implementation
     }
@@ -6345,7 +6345,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameESynchronous {
+    pub(crate) enum GameESynchronous {
         ELocal,
         ESession(GameSSetLobbySlotEvent),
         EGame(GameSBankFileEvent),
@@ -6383,7 +6383,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameESynthesized {
+    pub(crate) enum GameESynthesized {
         ESynthesized(GameSDropOurselvesEvent),
         ENotSynthesized(GameSSetLobbySlotEvent),
     }
@@ -6416,7 +6416,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEDebug {
+    pub(crate) enum GameEDebug {
         EDebug(GameSPickMapTagEvent),
         ENotDebug(GameSSetLobbySlotEvent),
     }
@@ -6449,7 +6449,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEHijackMethod {
+    pub(crate) enum GameEHijackMethod {
         ERecover,
         ETakeCommand,
     }
@@ -6478,7 +6478,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTQueryId {
+    pub(crate) struct GameTQueryId {
         pub value: Uint16,
     }
     impl GameTQueryId {
@@ -6490,7 +6490,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEEventId {
+    pub(crate) enum GameEEventId {
         ESetLobbySlot(GameSSetLobbySlotEvent),
         EDropUser(GameSDropUserEvent),
         EStartGame(GameSStartGameEvent),
@@ -7371,7 +7371,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCmdAbil {
+    pub(crate) struct GameSCmdAbil {
         pub m_abil_link: GameTAbilLink,
         pub m_abil_cmd_index: i64,
         pub m_abil_cmd_data: Option<Uint8>,
@@ -7438,7 +7438,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCmdDataTargetUnit {
+    pub(crate) struct GameSCmdDataTargetUnit {
         pub m_target_unit_flags: Uint16,
         pub m_timer: Uint8,
         pub m_tag: GameTUnitTag,
@@ -7586,7 +7586,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameSCmdData {
+    pub(crate) enum GameSCmdData {
         None(()),
         TargetPoint(GameSMapCoord3D),
         TargetUnit(GameSCmdDataTargetUnit),
@@ -7633,7 +7633,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSetLobbySlotEvent {
+    pub(crate) struct GameSSetLobbySlotEvent {
         pub m_slot_id: GameTLobbySlotId,
         pub m_slot_change: GameSLobbySlotChange,
     }
@@ -7680,7 +7680,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSDropUserEvent {
+    pub(crate) struct GameSDropUserEvent {
         pub m_drop_session_user_id: TUserId,
         pub m_reason: ELeaveReason,
     }
@@ -7728,7 +7728,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSStartGameEvent {}
+    pub(crate) struct GameSStartGameEvent {}
     impl GameSStartGameEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSStartGameEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -7738,7 +7738,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSDropOurselvesEvent {}
+    pub(crate) struct GameSDropOurselvesEvent {}
     impl GameSDropOurselvesEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSDropOurselvesEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -7748,7 +7748,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSBankFileEvent {
+    pub(crate) struct GameSBankFileEvent {
         pub m_name: Vec<u8>,
     }
     impl GameSBankFileEvent {
@@ -7784,7 +7784,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSBankSectionEvent {
+    pub(crate) struct GameSBankSectionEvent {
         pub m_name: Vec<u8>,
     }
     impl GameSBankSectionEvent {
@@ -7820,7 +7820,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSBankKeyEvent {
+    pub(crate) struct GameSBankKeyEvent {
         pub m_name: Vec<u8>,
         pub m_type: Uint32,
         pub m_data: Vec<u8>,
@@ -7891,7 +7891,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSBankValueEvent {
+    pub(crate) struct GameSBankValueEvent {
         pub m_type: Uint32,
         pub m_name: Vec<u8>,
         pub m_data: Vec<u8>,
@@ -7962,7 +7962,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSBankSignatureEvent {
+    pub(crate) struct GameSBankSignatureEvent {
         pub m_signature: Vec<Uint8>,
         pub m_toon_handle: CToonHandle,
     }
@@ -8016,7 +8016,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSUserOptionsEvent {
+    pub(crate) struct GameSUserOptionsEvent {
         pub m_game_fully_downloaded: bool,
         pub m_development_cheats_enabled: bool,
         pub m_test_cheats_enabled: bool,
@@ -8286,7 +8286,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSPickMapTagEvent {
+    pub(crate) struct GameSPickMapTagEvent {
         pub m_picked_map_tag: Uint8,
     }
     impl GameSPickMapTagEvent {
@@ -8317,7 +8317,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSUserFinishedLoadingEvent {}
+    pub(crate) struct GameSUserFinishedLoadingEvent {}
     impl GameSUserFinishedLoadingEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSUserFinishedLoadingEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -8327,7 +8327,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSUserFinishedLoadingSyncEvent {}
+    pub(crate) struct GameSUserFinishedLoadingSyncEvent {}
     impl GameSUserFinishedLoadingSyncEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSUserFinishedLoadingSyncEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -8337,7 +8337,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSetGameDurationEvent {
+    pub(crate) struct GameSSetGameDurationEvent {
         pub m_game_duration: Uint32,
     }
     impl GameSSetGameDurationEvent {
@@ -8368,7 +8368,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTurnEvent {}
+    pub(crate) struct GameSTurnEvent {}
     impl GameSTurnEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTurnEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -8378,7 +8378,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCameraSaveEvent {
+    pub(crate) struct GameSCameraSaveEvent {
         pub m_which: i64,
         pub m_target: GameSPointMini,
     }
@@ -8423,7 +8423,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSPauseGameEvent {
+    pub(crate) struct GameSPauseGameEvent {
         pub m_pause_type_index: Uint8,
     }
     impl GameSPauseGameEvent {
@@ -8454,7 +8454,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSUnpauseGameEvent {
+    pub(crate) struct GameSUnpauseGameEvent {
         pub m_pause_type_index: Uint8,
     }
     impl GameSUnpauseGameEvent {
@@ -8485,7 +8485,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSingleStepGameEvent {}
+    pub(crate) struct GameSSingleStepGameEvent {}
     impl GameSSingleStepGameEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSSingleStepGameEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -8495,7 +8495,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSetGameSpeedEvent {
+    pub(crate) struct GameSSetGameSpeedEvent {
         pub m_speed: GameEGameSpeed,
     }
     impl GameSSetGameSpeedEvent {
@@ -8526,7 +8526,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSAddGameSpeedEvent {
+    pub(crate) struct GameSAddGameSpeedEvent {
         pub m_delta: Int8,
     }
     impl GameSAddGameSpeedEvent {
@@ -8555,7 +8555,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSReplayJumpEvent {
+    pub(crate) struct GameSReplayJumpEvent {
         pub m_replay_jump_game_loop: Option<Uint32>,
     }
     impl GameSReplayJumpEvent {
@@ -8595,7 +8595,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSaveGameEvent {
+    pub(crate) struct GameSSaveGameEvent {
         pub m_file_name: CFilePath,
         pub m_automatic: bool,
         pub m_overwrite: bool,
@@ -8698,7 +8698,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSaveGameDoneEvent {}
+    pub(crate) struct GameSSaveGameDoneEvent {}
     impl GameSSaveGameDoneEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSSaveGameDoneEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -8708,7 +8708,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSLoadGameDoneEvent {}
+    pub(crate) struct GameSLoadGameDoneEvent {}
     impl GameSLoadGameDoneEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSLoadGameDoneEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -8718,7 +8718,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCheatEventData {
+    pub(crate) struct GameSCheatEventData {
         pub m_point: GameSPoint,
         pub m_time: Int32,
         pub m_verb: GameCCheatString,
@@ -8793,7 +8793,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSessionCheatEvent {
+    pub(crate) struct GameSSessionCheatEvent {
         pub m_data: GameSCheatEventData,
     }
     impl GameSSessionCheatEvent {
@@ -8824,7 +8824,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCommandManagerResetEvent {
+    pub(crate) struct GameSCommandManagerResetEvent {
         pub m_sequence: Uint32,
     }
     impl GameSCommandManagerResetEvent {
@@ -8853,7 +8853,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSGameCheatEvent {
+    pub(crate) struct GameSGameCheatEvent {
         pub m_data: GameSCheatEventData,
     }
     impl GameSGameCheatEvent {
@@ -8884,7 +8884,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCmdEvent {
+    pub(crate) struct GameSCmdEvent {
         pub m_cmd_flags: i64,
         pub m_abil: Option<GameSCmdAbil>,
         pub m_data: GameSCmdData,
@@ -9007,7 +9007,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSelectionDeltaEvent {
+    pub(crate) struct GameSSelectionDeltaEvent {
         pub m_control_group_id: GameTControlGroupId,
         pub m_delta: GameSSelectionDelta,
     }
@@ -9054,7 +9054,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSControlGroupUpdateEvent {
+    pub(crate) struct GameSControlGroupUpdateEvent {
         pub m_control_group_index: GameTControlGroupIndex,
         pub m_control_group_update: GameEControlGroupUpdate,
         pub m_mask: GameSSelectionMask,
@@ -9119,7 +9119,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSelectionSyncCheckEvent {
+    pub(crate) struct GameSSelectionSyncCheckEvent {
         pub m_control_group_id: GameTControlGroupId,
         pub m_selection_sync_data: GameSSelectionSyncData,
     }
@@ -9167,7 +9167,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSResourceTradeEvent {
+    pub(crate) struct GameSResourceTradeEvent {
         pub m_recipient_id: GameTPlayerId,
         pub m_resources: Vec<Int32>,
     }
@@ -9221,7 +9221,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerChatMessageEvent {
+    pub(crate) struct GameSTriggerChatMessageEvent {
         pub m_chat_message: GameCTriggerChatMessageString,
     }
     impl GameSTriggerChatMessageEvent {
@@ -9252,7 +9252,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSaiCommunicateEvent {
+    pub(crate) struct GameSaiCommunicateEvent {
         pub m_beacon: Int8,
         pub m_ally: Int8,
         pub m_flags: Int8,
@@ -9423,7 +9423,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSetAbsoluteGameSpeedEvent {
+    pub(crate) struct GameSSetAbsoluteGameSpeedEvent {
         pub m_speed: GameEGameSpeed,
     }
     impl GameSSetAbsoluteGameSpeedEvent {
@@ -9454,7 +9454,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSAddAbsoluteGameSpeedEvent {
+    pub(crate) struct GameSAddAbsoluteGameSpeedEvent {
         pub m_delta: Int8,
     }
     impl GameSAddAbsoluteGameSpeedEvent {
@@ -9483,7 +9483,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPingEvent {
+    pub(crate) struct GameSTriggerPingEvent {
         pub m_point: GameSPoint,
         pub m_unit: GameTUnitTag,
         pub m_unit_link: GameTUnitLink,
@@ -9660,7 +9660,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSBroadcastCheatEvent {
+    pub(crate) struct GameSBroadcastCheatEvent {
         pub m_verb: GameCCheatString,
         pub m_arguments: GameCCheatString,
     }
@@ -9707,7 +9707,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSAllianceEvent {
+    pub(crate) struct GameSAllianceEvent {
         pub m_alliance: Uint32,
         pub m_control: Uint32,
     }
@@ -9750,7 +9750,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSUnitClickEvent {
+    pub(crate) struct GameSUnitClickEvent {
         pub m_unit_tag: GameTUnitTag,
     }
     impl GameSUnitClickEvent {
@@ -9781,7 +9781,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSUnitHighlightEvent {
+    pub(crate) struct GameSUnitHighlightEvent {
         pub m_unit_tag: GameTUnitTag,
         pub m_flags: Uint8,
     }
@@ -9826,7 +9826,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerReplySelectedEvent {
+    pub(crate) struct GameSTriggerReplySelectedEvent {
         pub m_conversation_id: Int32,
         pub m_reply_id: Int32,
     }
@@ -9871,7 +9871,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSHijackReplaySessionUserInfo {
+    pub(crate) struct GameSHijackReplaySessionUserInfo {
         pub m_session_user_id: TUserId,
         pub m_add_new_game_user: bool,
         pub m_game_user_id: TUserId,
@@ -9934,7 +9934,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSHijackReplaySessionEvent {
+    pub(crate) struct GameSHijackReplaySessionEvent {
         pub m_user_infos: Vec<GameSHijackReplaySessionUserInfo>,
         pub m_method: GameEHijackMethod,
     }
@@ -9988,7 +9988,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSHijackReplayGameUserInfo {
+    pub(crate) struct GameSHijackReplayGameUserInfo {
         pub m_game_user_id: TUserId,
         pub m_observe: EObserve,
         pub m_name: CUserName,
@@ -10113,7 +10113,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSHijackReplayGameEvent {
+    pub(crate) struct GameSHijackReplayGameEvent {
         pub m_user_infos: Vec<GameSHijackReplayGameUserInfo>,
         pub m_method: GameEHijackMethod,
     }
@@ -10167,7 +10167,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerAbortMissionEvent {}
+    pub(crate) struct GameSTriggerAbortMissionEvent {}
     impl GameSTriggerAbortMissionEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerAbortMissionEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -10177,7 +10177,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPurchaseMadeEvent {
+    pub(crate) struct GameSTriggerPurchaseMadeEvent {
         pub m_purchase_item_id: Int32,
     }
     impl GameSTriggerPurchaseMadeEvent {
@@ -10208,7 +10208,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPurchaseExitEvent {}
+    pub(crate) struct GameSTriggerPurchaseExitEvent {}
     impl GameSTriggerPurchaseExitEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerPurchaseExitEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -10218,7 +10218,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPlanetMissionLaunchedEvent {
+    pub(crate) struct GameSTriggerPlanetMissionLaunchedEvent {
         pub m_difficulty_level: Int32,
     }
     impl GameSTriggerPlanetMissionLaunchedEvent {
@@ -10249,7 +10249,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPlanetPanelCanceledEvent {}
+    pub(crate) struct GameSTriggerPlanetPanelCanceledEvent {}
     impl GameSTriggerPlanetPanelCanceledEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelCanceledEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -10259,7 +10259,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerDialogControlEvent {
+    pub(crate) struct GameSTriggerDialogControlEvent {
         pub m_control_id: Int32,
         pub m_event_type: Int32,
         pub m_event_data: MEventData,
@@ -10318,7 +10318,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum MEventData {
+    pub(crate) enum MEventData {
         None(()),
         Checked(bool),
         ValueChanged(Uint32),
@@ -10377,7 +10377,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerSkippedEvent {}
+    pub(crate) struct GameSTriggerSkippedEvent {}
     impl GameSTriggerSkippedEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerSkippedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -10387,7 +10387,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerSoundLengthQueryEvent {
+    pub(crate) struct GameSTriggerSoundLengthQueryEvent {
         pub m_sound_hash: Uint32,
         pub m_length: Uint32,
     }
@@ -10430,7 +10430,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerSoundLengthSyncEvent {
+    pub(crate) struct GameSTriggerSoundLengthSyncEvent {
         pub m_sync_info: GameSSyncSoundLength,
     }
     impl GameSTriggerSoundLengthSyncEvent {
@@ -10461,7 +10461,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerAnimLengthQueryByNameEvent {
+    pub(crate) struct GameSTriggerAnimLengthQueryByNameEvent {
         pub m_query_id: GameTQueryId,
         pub m_length_ms: Uint32,
         pub m_finish_game_loop: Uint32,
@@ -10522,7 +10522,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerAnimLengthQueryByPropsEvent {
+    pub(crate) struct GameSTriggerAnimLengthQueryByPropsEvent {
         pub m_query_id: GameTQueryId,
         pub m_length_ms: Uint32,
     }
@@ -10567,7 +10567,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerAnimOffsetEvent {
+    pub(crate) struct GameSTriggerAnimOffsetEvent {
         pub m_anim_wait_query_id: GameTQueryId,
     }
     impl GameSTriggerAnimOffsetEvent {
@@ -10599,7 +10599,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerSoundOffsetEvent {
+    pub(crate) struct GameSTriggerSoundOffsetEvent {
         pub m_sound: GameTTriggerSoundTag,
     }
     impl GameSTriggerSoundOffsetEvent {
@@ -10630,7 +10630,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerTransmissionOffsetEvent {
+    pub(crate) struct GameSTriggerTransmissionOffsetEvent {
         pub m_transmission_id: Int32,
         pub m_thread: GameTTriggerThreadTag,
     }
@@ -10677,7 +10677,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerTransmissionCompleteEvent {
+    pub(crate) struct GameSTriggerTransmissionCompleteEvent {
         pub m_transmission_id: Int32,
     }
     impl GameSTriggerTransmissionCompleteEvent {
@@ -10708,7 +10708,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCameraUpdateEvent {
+    pub(crate) struct GameSCameraUpdateEvent {
         pub m_target: Option<GameSPointMini>,
         pub m_distance: Option<GameTFixedMiniBitsUnsigned>,
         pub m_pitch: Option<GameTFixedMiniBitsUnsigned>,
@@ -10847,7 +10847,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerConversationSkippedEvent {
+    pub(crate) struct GameSTriggerConversationSkippedEvent {
         pub m_skip_type: GameEConversationSkip,
     }
     impl GameSTriggerConversationSkippedEvent {
@@ -10878,7 +10878,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerMouseClickedEvent {
+    pub(crate) struct GameSTriggerMouseClickedEvent {
         pub m_button: Uint32,
         pub m_down: bool,
         pub m_pos_ui: GameSuiCoord,
@@ -10967,7 +10967,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerMouseMovedEvent {
+    pub(crate) struct GameSTriggerMouseMovedEvent {
         pub m_pos_ui: GameSuiCoord,
         pub m_pos_world: GameSMapCoord3D,
         pub m_flags: Int8,
@@ -11028,7 +11028,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSAchievementAwardedEvent {
+    pub(crate) struct GameSAchievementAwardedEvent {
         pub m_achievement_link: GameTAchievementLink,
     }
     impl GameSAchievementAwardedEvent {
@@ -11059,7 +11059,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerHotkeyPressedEvent {
+    pub(crate) struct GameSTriggerHotkeyPressedEvent {
         pub m_hotkey: Uint32,
         pub m_down: bool,
     }
@@ -11102,7 +11102,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerTargetModeUpdateEvent {
+    pub(crate) struct GameSTriggerTargetModeUpdateEvent {
         pub m_abil_link: GameTAbilLink,
         pub m_abil_cmd_index: i64,
         pub m_state: Int8,
@@ -11161,7 +11161,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPlanetPanelReplayEvent {}
+    pub(crate) struct GameSTriggerPlanetPanelReplayEvent {}
     impl GameSTriggerPlanetPanelReplayEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelReplayEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -11171,7 +11171,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerSoundtrackDoneEvent {
+    pub(crate) struct GameSTriggerSoundtrackDoneEvent {
         pub m_soundtrack: Uint32,
     }
     impl GameSTriggerSoundtrackDoneEvent {
@@ -11200,7 +11200,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPlanetMissionSelectedEvent {
+    pub(crate) struct GameSTriggerPlanetMissionSelectedEvent {
         pub m_planet_id: Int32,
     }
     impl GameSTriggerPlanetMissionSelectedEvent {
@@ -11229,7 +11229,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerKeyPressedEvent {
+    pub(crate) struct GameSTriggerKeyPressedEvent {
         pub m_key: Int8,
         pub m_flags: Int8,
     }
@@ -11272,7 +11272,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPlanetPanelBirthCompleteEvent {}
+    pub(crate) struct GameSTriggerPlanetPanelBirthCompleteEvent {}
     impl GameSTriggerPlanetPanelBirthCompleteEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelBirthCompleteEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -11282,7 +11282,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPlanetPanelDeathCompleteEvent {}
+    pub(crate) struct GameSTriggerPlanetPanelDeathCompleteEvent {}
     impl GameSTriggerPlanetPanelDeathCompleteEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerPlanetPanelDeathCompleteEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -11292,7 +11292,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSResourceRequestEvent {
+    pub(crate) struct GameSResourceRequestEvent {
         pub m_resources: Vec<Int32>,
     }
     impl GameSResourceRequestEvent {
@@ -11330,7 +11330,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSResourceRequestFulfillEvent {
+    pub(crate) struct GameSResourceRequestFulfillEvent {
         pub m_fulfill_request_id: Int32,
     }
     impl GameSResourceRequestFulfillEvent {
@@ -11362,7 +11362,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSResourceRequestCancelEvent {
+    pub(crate) struct GameSResourceRequestCancelEvent {
         pub m_cancel_request_id: Int32,
     }
     impl GameSResourceRequestCancelEvent {
@@ -11393,7 +11393,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerResearchPanelExitEvent {}
+    pub(crate) struct GameSTriggerResearchPanelExitEvent {}
     impl GameSTriggerResearchPanelExitEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerResearchPanelExitEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -11403,7 +11403,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerResearchPanelPurchaseEvent {}
+    pub(crate) struct GameSTriggerResearchPanelPurchaseEvent {}
     impl GameSTriggerResearchPanelPurchaseEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerResearchPanelPurchaseEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -11413,7 +11413,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerCommandErrorEvent {
+    pub(crate) struct GameSTriggerCommandErrorEvent {
         pub m_error: Int32,
         pub m_abil: Option<GameSCmdAbil>,
     }
@@ -11464,7 +11464,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerResearchPanelSelectionChangedEvent {
+    pub(crate) struct GameSTriggerResearchPanelSelectionChangedEvent {
         pub m_research_item_id: Int32,
     }
     impl GameSTriggerResearchPanelSelectionChangedEvent {
@@ -11495,7 +11495,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerMercenaryPanelExitEvent {}
+    pub(crate) struct GameSTriggerMercenaryPanelExitEvent {}
     impl GameSTriggerMercenaryPanelExitEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerMercenaryPanelExitEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -11505,7 +11505,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerMercenaryPanelPurchaseEvent {}
+    pub(crate) struct GameSTriggerMercenaryPanelPurchaseEvent {}
     impl GameSTriggerMercenaryPanelPurchaseEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerMercenaryPanelPurchaseEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -11515,7 +11515,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerMercenaryPanelSelectionChangedEvent {
+    pub(crate) struct GameSTriggerMercenaryPanelSelectionChangedEvent {
         pub m_mercenary_id: Int32,
     }
     impl GameSTriggerMercenaryPanelSelectionChangedEvent {
@@ -11544,7 +11544,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerVictoryPanelExitEvent {}
+    pub(crate) struct GameSTriggerVictoryPanelExitEvent {}
     impl GameSTriggerVictoryPanelExitEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerVictoryPanelExitEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -11554,7 +11554,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerBattleReportPanelExitEvent {}
+    pub(crate) struct GameSTriggerBattleReportPanelExitEvent {}
     impl GameSTriggerBattleReportPanelExitEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerBattleReportPanelExitEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -11564,7 +11564,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerBattleReportPanelPlayMissionEvent {
+    pub(crate) struct GameSTriggerBattleReportPanelPlayMissionEvent {
         pub m_battle_report_id: Int32,
         pub m_difficulty_level: Int32,
     }
@@ -11611,7 +11611,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerBattleReportPanelPlaySceneEvent {
+    pub(crate) struct GameSTriggerBattleReportPanelPlaySceneEvent {
         pub m_battle_report_id: Int32,
     }
     impl GameSTriggerBattleReportPanelPlaySceneEvent {
@@ -11642,7 +11642,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerBattleReportPanelSelectionChangedEvent {
+    pub(crate) struct GameSTriggerBattleReportPanelSelectionChangedEvent {
         pub m_battle_report_id: Int32,
     }
     impl GameSTriggerBattleReportPanelSelectionChangedEvent {
@@ -11673,7 +11673,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerVictoryPanelPlayMissionAgainEvent {
+    pub(crate) struct GameSTriggerVictoryPanelPlayMissionAgainEvent {
         pub m_difficulty_level: Int32,
     }
     impl GameSTriggerVictoryPanelPlayMissionAgainEvent {
@@ -11704,7 +11704,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerMovieStartedEvent {}
+    pub(crate) struct GameSTriggerMovieStartedEvent {}
     impl GameSTriggerMovieStartedEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerMovieStartedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -11714,7 +11714,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerMovieFinishedEvent {}
+    pub(crate) struct GameSTriggerMovieFinishedEvent {}
     impl GameSTriggerMovieFinishedEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerMovieFinishedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -11724,7 +11724,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSDecrementGameTimeRemainingEvent {
+    pub(crate) struct GameSDecrementGameTimeRemainingEvent {
         pub m_decrement_seconds: Int32,
     }
     impl GameSDecrementGameTimeRemainingEvent {
@@ -11755,7 +11755,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPortraitLoadedEvent {
+    pub(crate) struct GameSTriggerPortraitLoadedEvent {
         pub m_portrait_id: Int32,
     }
     impl GameSTriggerPortraitLoadedEvent {
@@ -11784,7 +11784,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerMovieFunctionEvent {
+    pub(crate) struct GameSTriggerMovieFunctionEvent {
         pub m_function_name: Vec<u8>,
     }
     impl GameSTriggerMovieFunctionEvent {
@@ -11822,7 +11822,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerCustomDialogDismissedEvent {
+    pub(crate) struct GameSTriggerCustomDialogDismissedEvent {
         pub m_result: Int32,
     }
     impl GameSTriggerCustomDialogDismissedEvent {
@@ -11851,7 +11851,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerGameMenuItemSelectedEvent {
+    pub(crate) struct GameSTriggerGameMenuItemSelectedEvent {
         pub m_game_menu_item_index: Int32,
     }
     impl GameSTriggerGameMenuItemSelectedEvent {
@@ -11883,7 +11883,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerMouseWheelEvent {
+    pub(crate) struct GameSTriggerMouseWheelEvent {
         pub m_wheel_spin: GameTFixedMiniBitsSigned,
         pub m_flags: Int8,
     }
@@ -11928,7 +11928,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPurchasePanelSelectedPurchaseItemChangedEvent {
+    pub(crate) struct GameSTriggerPurchasePanelSelectedPurchaseItemChangedEvent {
         pub m_purchase_item_id: Int32,
     }
     impl GameSTriggerPurchasePanelSelectedPurchaseItemChangedEvent {
@@ -11959,7 +11959,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent {
+    pub(crate) struct GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent {
         pub m_purchase_category_id: Int32,
     }
     impl GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent {
@@ -11991,7 +11991,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerButtonPressedEvent {
+    pub(crate) struct GameSTriggerButtonPressedEvent {
         pub m_button: GameTButtonLink,
     }
     impl GameSTriggerButtonPressedEvent {
@@ -12022,7 +12022,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerGameCreditsFinishedEvent {}
+    pub(crate) struct GameSTriggerGameCreditsFinishedEvent {}
     impl GameSTriggerGameCreditsFinishedEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerGameCreditsFinishedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -12032,7 +12032,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerCutsceneBookmarkFiredEvent {
+    pub(crate) struct GameSTriggerCutsceneBookmarkFiredEvent {
         pub m_cutscene_id: Int32,
         pub m_bookmark_name: Vec<u8>,
     }
@@ -12084,7 +12084,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerCutsceneEndSceneFiredEvent {
+    pub(crate) struct GameSTriggerCutsceneEndSceneFiredEvent {
         pub m_cutscene_id: Int32,
     }
     impl GameSTriggerCutsceneEndSceneFiredEvent {
@@ -12113,7 +12113,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerCutsceneConversationLineEvent {
+    pub(crate) struct GameSTriggerCutsceneConversationLineEvent {
         pub m_cutscene_id: Int32,
         pub m_conversation_line: Vec<u8>,
         pub m_alt_conversation_line: Vec<u8>,
@@ -12191,7 +12191,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerCutsceneConversationLineMissingEvent {
+    pub(crate) struct GameSTriggerCutsceneConversationLineMissingEvent {
         pub m_cutscene_id: Int32,
         pub m_conversation_line: Vec<u8>,
     }
@@ -12243,7 +12243,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSGameUserLeaveEvent {
+    pub(crate) struct GameSGameUserLeaveEvent {
         pub m_leave_reason: ELeaveReason,
     }
     impl GameSGameUserLeaveEvent {
@@ -12274,7 +12274,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSGameUserJoinEvent {
+    pub(crate) struct GameSGameUserJoinEvent {
         pub m_observe: EObserve,
         pub m_name: CUserName,
         pub m_toon_handle: Option<CToonHandle>,
@@ -12425,7 +12425,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameECommandManagerState {
+    pub(crate) enum GameECommandManagerState {
         EFireDone,
         EFireOnce,
         EFireMany,
@@ -12459,7 +12459,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCommandManagerStateEvent {
+    pub(crate) struct GameSCommandManagerStateEvent {
         pub m_state: GameECommandManagerState,
         pub m_sequence: Option<i64>,
     }
@@ -12512,7 +12512,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCmdUpdateTargetPointEvent {
+    pub(crate) struct GameSCmdUpdateTargetPointEvent {
         pub m_target: GameSMapCoord3D,
     }
     impl GameSCmdUpdateTargetPointEvent {
@@ -12543,7 +12543,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCmdUpdateTargetUnitEvent {
+    pub(crate) struct GameSCmdUpdateTargetUnitEvent {
         pub m_target: GameSCmdDataTargetUnit,
     }
     impl GameSCmdUpdateTargetUnitEvent {
@@ -12574,7 +12574,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSCatalogModifyEvent {
+    pub(crate) struct GameSCatalogModifyEvent {
         pub m_catalog: Uint8,
         pub m_entry: Uint16,
         pub m_field: Vec<u8>,
@@ -12659,7 +12659,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSHeroTalentTreeSelectedEvent {
+    pub(crate) struct GameSHeroTalentTreeSelectedEvent {
         pub m_index: Uint32,
     }
     impl GameSHeroTalentTreeSelectedEvent {
@@ -12688,7 +12688,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSTriggerProfilerLoggingFinishedEvent {}
+    pub(crate) struct GameSTriggerProfilerLoggingFinishedEvent {}
     impl GameSTriggerProfilerLoggingFinishedEvent {
         #[tracing::instrument(name="87702::bit_packed::GameSTriggerProfilerLoggingFinishedEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -12698,7 +12698,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSHeroTalentTreeSelectionPanelToggledEvent {
+    pub(crate) struct GameSHeroTalentTreeSelectionPanelToggledEvent {
         pub m_shown: bool,
     }
     impl GameSHeroTalentTreeSelectionPanelToggledEvent {
@@ -12727,7 +12727,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSMuteChatEvent {
+    pub(crate) struct GameSMuteChatEvent {
         pub m_target_user_id: TUserId,
         pub m_muted: bool,
     }
@@ -12772,7 +12772,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSConvertToReplaySessionEvent {
+    pub(crate) struct GameSConvertToReplaySessionEvent {
         pub m_replay_jump_game_loop: Option<Int32>,
     }
     impl GameSConvertToReplaySessionEvent {
@@ -12812,7 +12812,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSetSyncLoadingTimeEvent {
+    pub(crate) struct GameSSetSyncLoadingTimeEvent {
         pub m_sync_time: Uint32,
     }
     impl GameSSetSyncLoadingTimeEvent {
@@ -12841,7 +12841,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSetSyncPlayingTimeEvent {
+    pub(crate) struct GameSSetSyncPlayingTimeEvent {
         pub m_sync_time: Uint32,
     }
     impl GameSSetSyncPlayingTimeEvent {
@@ -12870,7 +12870,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSPeerSetSyncLoadingTimeEvent {
+    pub(crate) struct GameSPeerSetSyncLoadingTimeEvent {
         pub m_sync_time: Uint32,
     }
     impl GameSPeerSetSyncLoadingTimeEvent {
@@ -12899,7 +12899,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSPeerSetSyncPlayingTimeEvent {
+    pub(crate) struct GameSPeerSetSyncPlayingTimeEvent {
         pub m_sync_time: Uint32,
     }
     impl GameSPeerSetSyncPlayingTimeEvent {
@@ -12928,7 +12928,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEGameSpeed {
+    pub(crate) enum GameEGameSpeed {
         ESlower,
         ESlow,
         ENormal,
@@ -12972,7 +12972,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEPhase {
+    pub(crate) enum GameEPhase {
         EInitializing,
         ELobby,
         EClosed,
@@ -13021,7 +13021,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEConversationSkip {
+    pub(crate) enum GameEConversationSkip {
         ESkipOneLine,
         ESkipAllLines,
     }
@@ -13050,7 +13050,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCCheatString {
+    pub(crate) struct GameCCheatString {
         pub value: Vec<u8>,
     }
     impl GameCCheatString {
@@ -13065,7 +13065,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCTriggerChatMessageString {
+    pub(crate) struct GameCTriggerChatMessageString {
         pub value: Vec<u8>,
     }
     impl GameCTriggerChatMessageString {
@@ -13080,7 +13080,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTAchievementLink {
+    pub(crate) struct GameTAchievementLink {
         pub value: Uint16,
     }
     impl GameTAchievementLink {
@@ -13092,7 +13092,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTAchievementTermLink {
+    pub(crate) struct GameTAchievementTermLink {
         pub value: Uint16,
     }
     impl GameTAchievementTermLink {
@@ -13104,7 +13104,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTButtonLink {
+    pub(crate) struct GameTButtonLink {
         pub value: Uint16,
     }
     impl GameTButtonLink {
@@ -13116,7 +13116,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTUnitLink {
+    pub(crate) struct GameTUnitLink {
         pub value: Uint16,
     }
     impl GameTUnitLink {
@@ -13128,7 +13128,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTUnitTag {
+    pub(crate) struct GameTUnitTag {
         pub value: Uint32,
     }
     impl GameTUnitTag {
@@ -13140,7 +13140,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTTriggerThreadTag {
+    pub(crate) struct GameTTriggerThreadTag {
         pub value: Uint32,
     }
     impl GameTTriggerThreadTag {
@@ -13152,7 +13152,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTTriggerSoundTag {
+    pub(crate) struct GameTTriggerSoundTag {
         pub value: Uint32,
     }
     impl GameTTriggerSoundTag {
@@ -13164,7 +13164,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTAbilLink {
+    pub(crate) struct GameTAbilLink {
         pub value: Uint16,
     }
     impl GameTAbilLink {
@@ -13176,7 +13176,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTFixedBits {
+    pub(crate) struct GameTFixedBits {
         pub value: Int32,
     }
     impl GameTFixedBits {
@@ -13188,7 +13188,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTFixedMiniBitsUnsigned {
+    pub(crate) struct GameTFixedMiniBitsUnsigned {
         pub value: Uint16,
     }
     impl GameTFixedMiniBitsUnsigned {
@@ -13200,7 +13200,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTFixedMiniBitsSigned {
+    pub(crate) struct GameTFixedMiniBitsSigned {
         pub value: Int16,
     }
     impl GameTFixedMiniBitsSigned {
@@ -13212,7 +13212,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTPlayerLogoIndex {
+    pub(crate) struct GameTPlayerLogoIndex {
         pub value: Uint32,
     }
     impl GameTPlayerLogoIndex {
@@ -13224,7 +13224,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTFixedInt {
+    pub(crate) struct GameTFixedInt {
         pub value: i64,
     }
     impl GameTFixedInt {
@@ -13238,7 +13238,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTFixedUInt {
+    pub(crate) struct GameTFixedUInt {
         pub value: i64,
     }
     impl GameTFixedUInt {
@@ -13252,7 +13252,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTMapCoordFixedBits {
+    pub(crate) struct GameTMapCoordFixedBits {
         pub value: i64,
     }
     impl GameTMapCoordFixedBits {
@@ -13266,7 +13266,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTuiCoordX {
+    pub(crate) struct GameTuiCoordX {
         pub value: i64,
     }
     impl GameTuiCoordX {
@@ -13280,7 +13280,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTuiCoordY {
+    pub(crate) struct GameTuiCoordY {
         pub value: i64,
     }
     impl GameTuiCoordY {
@@ -13294,7 +13294,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTHeroLink {
+    pub(crate) struct GameTHeroLink {
         pub value: Uint16,
     }
     impl GameTHeroLink {
@@ -13306,7 +13306,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSPoint {
+    pub(crate) struct GameSPoint {
         pub x: GameTFixedBits,
         pub y: GameTFixedBits,
     }
@@ -13349,7 +13349,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSPoint3 {
+    pub(crate) struct GameSPoint3 {
         pub x: GameTFixedBits,
         pub y: GameTFixedBits,
         pub z: GameTFixedBits,
@@ -13406,7 +13406,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSPointMini {
+    pub(crate) struct GameSPointMini {
         pub x: GameTFixedMiniBitsUnsigned,
         pub y: GameTFixedMiniBitsUnsigned,
     }
@@ -13453,7 +13453,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSMapCoord {
+    pub(crate) struct GameSMapCoord {
         pub x: GameTMapCoordFixedBits,
         pub y: GameTMapCoordFixedBits,
     }
@@ -13500,7 +13500,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSMapCoord3D {
+    pub(crate) struct GameSMapCoord3D {
         pub x: GameTMapCoordFixedBits,
         pub y: GameTMapCoordFixedBits,
         pub z: GameTFixedBits,
@@ -13561,7 +13561,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSuiCoord {
+    pub(crate) struct GameSuiCoord {
         pub x: GameTuiCoordX,
         pub y: GameTuiCoordY,
     }
@@ -13604,7 +13604,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTHandicap {
+    pub(crate) struct GameTHandicap {
         pub value: Uint32,
     }
     impl GameTHandicap {
@@ -13616,7 +13616,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTDifficulty {
+    pub(crate) struct GameTDifficulty {
         pub value: i64,
     }
     impl GameTDifficulty {
@@ -13630,7 +13630,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCAllowedDifficulty {
+    pub(crate) struct GameCAllowedDifficulty {
         pub value: i64, // Initially Vec<u8> but these are 8 bits and fits in i64 and easy to
                         // compare with blizzard's python implementation
     }
@@ -13646,7 +13646,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTaiBuild {
+    pub(crate) struct GameTaiBuild {
         pub value: i64,
     }
     impl GameTaiBuild {
@@ -13660,7 +13660,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCAllowedAiBuild {
+    pub(crate) struct GameCAllowedAiBuild {
         pub value: Vec<u8>,
     }
     impl GameCAllowedAiBuild {
@@ -13675,7 +13675,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSyncSoundLength {
+    pub(crate) struct GameSSyncSoundLength {
         pub m_sound_hash: Vec<Uint32>,
         pub m_length: Vec<Uint32>,
     }
@@ -13734,7 +13734,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSThumbnail {
+    pub(crate) struct GameSThumbnail {
         pub m_file: Vec<u8>,
     }
     impl GameSThumbnail {
@@ -13770,7 +13770,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSColor {
+    pub(crate) struct GameSColor {
         pub m_a: Uint8,
         pub m_r: Uint8,
         pub m_g: Uint8,
@@ -13841,7 +13841,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEResultDetails {
+    pub(crate) enum GameEResultDetails {
         EUndecided,
         EWin,
         ELoss,
@@ -13880,7 +13880,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSToonNameDetails {
+    pub(crate) struct GameSToonNameDetails {
         pub m_region: Uint8,
         pub m_program_id: Vec<u8>,
         pub m_realm: Uint32,
@@ -13972,7 +13972,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSPlayerDetails {
+    pub(crate) struct GameSPlayerDetails {
         pub m_name: CUserName,
         pub m_toon: GameSToonNameDetails,
         pub m_race: Vec<u8>,
@@ -14176,7 +14176,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCPlayerDetailsArray {
+    pub(crate) struct GameCPlayerDetailsArray {
         pub value: Vec<GameSPlayerDetails>,
     }
     impl GameCPlayerDetailsArray {
@@ -14200,7 +14200,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCModPaths {
+    pub(crate) struct GameCModPaths {
         pub value: Vec<CFilePath>,
     }
     impl GameCModPaths {
@@ -14224,7 +14224,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSDetails {
+    pub(crate) struct GameSDetails {
         pub m_player_list: Option<GameCPlayerDetailsArray>,
         pub m_title: Vec<u8>,
         pub m_difficulty: Vec<u8>,
@@ -14575,7 +14575,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEOptionFog {
+    pub(crate) enum GameEOptionFog {
         EDefault,
         EHideTerrain,
         EMapExplored,
@@ -14614,7 +14614,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEOptionObservers {
+    pub(crate) enum GameEOptionObservers {
         ENone,
         EOnJoin,
         EOnJoinAndDefeat,
@@ -14653,7 +14653,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEOptionUserDifficulty {
+    pub(crate) enum GameEOptionUserDifficulty {
         ENone,
         EGlobal,
         EIndividual,
@@ -14687,7 +14687,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEGameLaunch {
+    pub(crate) enum GameEGameLaunch {
         EInvalid,
         EMap,
         EReplay,
@@ -14736,7 +14736,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameEClientDebugFlags {
+    pub(crate) struct GameEClientDebugFlags {
         pub value: i64,
     }
     impl GameEClientDebugFlags {
@@ -14750,7 +14750,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSGameOptions {
+    pub(crate) struct GameSGameOptions {
         pub m_lock_teams: bool,
         pub m_teams_together: bool,
         pub m_advanced_shared_control: bool,
@@ -15014,7 +15014,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEGameType {
+    pub(crate) enum GameEGameType {
         EMelee,
         EFreeForAll,
         EUseSettings,
@@ -15068,7 +15068,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEControl {
+    pub(crate) enum GameEControl {
         EOpen,
         EClosed,
         EUser,
@@ -15107,7 +15107,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTControlId {
+    pub(crate) struct GameTControlId {
         pub value: i64,
     }
     impl GameTControlId {
@@ -15121,7 +15121,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTControlCount {
+    pub(crate) struct GameTControlCount {
         pub value: i64,
     }
     impl GameTControlCount {
@@ -15135,7 +15135,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCAllowedControls {
+    pub(crate) struct GameCAllowedControls {
         pub value: Vec<u8>,
     }
     impl GameCAllowedControls {
@@ -15150,7 +15150,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSlotDescription {
+    pub(crate) struct GameSSlotDescription {
         pub m_allowed_colors: GameCAllowedColors,
         pub m_allowed_races: CAllowedRaces,
         pub m_allowed_difficulty: GameCAllowedDifficulty,
@@ -15265,7 +15265,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCCacheHandle {
+    pub(crate) struct GameCCacheHandle {
         pub value: Vec<u8>,
     }
     impl GameCCacheHandle {
@@ -15282,7 +15282,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCCacheHandles {
+    pub(crate) struct GameCCacheHandles {
         pub value: Vec<GameCCacheHandle>,
     }
     impl GameCCacheHandles {
@@ -15306,7 +15306,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCGameCacheName {
+    pub(crate) struct GameCGameCacheName {
         pub value: Vec<u8>,
     }
     impl GameCGameCacheName {
@@ -15321,7 +15321,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCAuthorName {
+    pub(crate) struct GameCAuthorName {
         pub value: Vec<u8>,
     }
     impl GameCAuthorName {
@@ -15336,7 +15336,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSlotDescriptions {
+    pub(crate) struct GameSSlotDescriptions {
         pub value: Vec<GameSSlotDescription>,
     }
     impl GameSSlotDescriptions {
@@ -15360,7 +15360,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSGameDescription {
+    pub(crate) struct GameSGameDescription {
         pub m_random_value: Uint32,
         pub m_game_cache_name: GameCGameCacheName,
         pub m_game_options: GameSGameOptions,
@@ -15839,7 +15839,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTLobbySlotCount {
+    pub(crate) struct GameTLobbySlotCount {
         pub value: i64,
     }
     impl GameTLobbySlotCount {
@@ -15853,7 +15853,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTLobbySlotId {
+    pub(crate) struct GameTLobbySlotId {
         pub value: i64,
     }
     impl GameTLobbySlotId {
@@ -15867,7 +15867,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCArtifactArray {
+    pub(crate) struct GameCArtifactArray {
         pub value: Vec<CArtifactHandle>,
     }
     impl GameCArtifactArray {
@@ -15891,7 +15891,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCCommanderMasteryTalentArray {
+    pub(crate) struct GameCCommanderMasteryTalentArray {
         pub value: Vec<Uint32>,
     }
     impl GameCCommanderMasteryTalentArray {
@@ -15915,7 +15915,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCRetryMutationIndexArray {
+    pub(crate) struct GameCRetryMutationIndexArray {
         pub value: Vec<Uint32>,
     }
     impl GameCRetryMutationIndexArray {
@@ -15939,7 +15939,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTReward {
+    pub(crate) struct GameTReward {
         pub value: Uint32,
     }
     impl GameTReward {
@@ -15951,7 +15951,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCRewardArray {
+    pub(crate) struct GameCRewardArray {
         pub value: Vec<GameTReward>,
     }
     impl GameCRewardArray {
@@ -15975,7 +15975,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCRewardOverride {
+    pub(crate) struct GameCRewardOverride {
         pub m_key: Uint32,
         pub m_rewards: GameCRewardArray,
     }
@@ -16020,7 +16020,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCRewardOverrideArray {
+    pub(crate) struct GameCRewardOverrideArray {
         pub value: Vec<GameCRewardOverride>,
     }
     impl GameCRewardOverrideArray {
@@ -16044,7 +16044,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTLicense {
+    pub(crate) struct GameTLicense {
         pub value: Uint32,
     }
     impl GameTLicense {
@@ -16056,7 +16056,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCLicenseArray {
+    pub(crate) struct GameCLicenseArray {
         pub value: Vec<GameTLicense>,
     }
     impl GameCLicenseArray {
@@ -16080,7 +16080,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTFlexLicenseName {
+    pub(crate) struct GameTFlexLicenseName {
         pub value: Vec<u8>,
     }
     impl GameTFlexLicenseName {
@@ -16095,7 +16095,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTFlexLicenseAttributeName {
+    pub(crate) struct GameTFlexLicenseAttributeName {
         pub value: Vec<u8>,
     }
     impl GameTFlexLicenseAttributeName {
@@ -16110,7 +16110,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTFlexLicenseAttributeValue {
+    pub(crate) struct GameTFlexLicenseAttributeValue {
         pub value: Vec<u8>,
     }
     impl GameTFlexLicenseAttributeValue {
@@ -16125,7 +16125,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSLobbySlot {
+    pub(crate) struct GameSLobbySlot {
         pub m_control: GameTControlId,
         pub m_user_id: Option<TUserId>,
         pub m_team_id: GameTTeamId,
@@ -16691,7 +16691,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCLobbySlotArray {
+    pub(crate) struct GameCLobbySlotArray {
         pub value: Vec<GameSLobbySlot>,
     }
     impl GameCLobbySlotArray {
@@ -16715,7 +16715,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameSLobbySlotChange {
+    pub(crate) enum GameSLobbySlotChange {
         MControl(GameTControlId),
         MUserId(Option<TUserId>),
         MTeamId(GameTTeamId),
@@ -16903,7 +16903,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSLobbyState {
+    pub(crate) struct GameSLobbyState {
         pub m_phase: GameEPhase,
         pub m_max_users: TUserCount,
         pub m_max_observers: TUserCount,
@@ -17097,7 +17097,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSLobbySyncState {
+    pub(crate) struct GameSLobbySyncState {
         pub m_user_initial_data: CUserInitialDataArray,
         pub m_game_description: GameSGameDescription,
         pub m_lobby_state: GameSLobbyState,
@@ -17160,7 +17160,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEMessageRecipient {
+    pub(crate) enum GameEMessageRecipient {
         EAll,
         EAllies,
         EIndividual,
@@ -17204,7 +17204,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameCChatString {
+    pub(crate) struct GameCChatString {
         pub value: Vec<u8>,
     }
     impl GameCChatString {
@@ -17219,7 +17219,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEMessageId {
+    pub(crate) enum GameEMessageId {
         EChat(GameSChatMessage),
         EPing(GameSPingMessage),
         ELoadingProgress(GameSLoadingProgressMessage),
@@ -17273,7 +17273,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSChatMessage {
+    pub(crate) struct GameSChatMessage {
         pub m_recipient: GameEMessageRecipient,
         pub m_string: GameCChatString,
     }
@@ -17320,7 +17320,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSPingMessage {
+    pub(crate) struct GameSPingMessage {
         pub m_recipient: GameEMessageRecipient,
         pub m_point: GameSPoint,
     }
@@ -17365,7 +17365,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSLoadingProgressMessage {
+    pub(crate) struct GameSLoadingProgressMessage {
         pub m_progress: Int32,
     }
     impl GameSLoadingProgressMessage {
@@ -17394,7 +17394,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSServerPingMessage {}
+    pub(crate) struct GameSServerPingMessage {}
     impl GameSServerPingMessage {
         #[tracing::instrument(name="87702::bit_packed::GameSServerPingMessage::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
         pub fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
@@ -17404,7 +17404,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSReconnectNotifyMessage {
+    pub(crate) struct GameSReconnectNotifyMessage {
         pub m_status: EReconnectStatus,
     }
     impl GameSReconnectNotifyMessage {
@@ -17435,7 +17435,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTPlayerId {
+    pub(crate) struct GameTPlayerId {
         pub value: i64,
     }
     impl GameTPlayerId {
@@ -17449,7 +17449,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTPlayerCount {
+    pub(crate) struct GameTPlayerCount {
         pub value: i64,
     }
     impl GameTPlayerCount {
@@ -17463,7 +17463,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEResultCode {
+    pub(crate) enum GameEResultCode {
         EUndecided,
         ELoss,
         ETie,
@@ -17502,7 +17502,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameEControlGroupUpdate {
+    pub(crate) enum GameEControlGroupUpdate {
         ESet,
         EAppend,
         ERecall,
@@ -17551,7 +17551,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTSelectionCount {
+    pub(crate) struct GameTSelectionCount {
         pub value: i64,
     }
     impl GameTSelectionCount {
@@ -17565,7 +17565,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTSelectionIndex {
+    pub(crate) struct GameTSelectionIndex {
         pub value: i64,
     }
     impl GameTSelectionIndex {
@@ -17579,7 +17579,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTSubgroupPriority {
+    pub(crate) struct GameTSubgroupPriority {
         pub value: i64,
     }
     impl GameTSubgroupPriority {
@@ -17593,7 +17593,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTSubgroupCount {
+    pub(crate) struct GameTSubgroupCount {
         pub value: i64,
     }
     impl GameTSubgroupCount {
@@ -17607,7 +17607,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTSubgroupIndex {
+    pub(crate) struct GameTSubgroupIndex {
         pub value: i64,
     }
     impl GameTSubgroupIndex {
@@ -17621,7 +17621,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTControlGroupCount {
+    pub(crate) struct GameTControlGroupCount {
         pub value: i64,
     }
     impl GameTControlGroupCount {
@@ -17635,7 +17635,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTControlGroupIndex {
+    pub(crate) struct GameTControlGroupIndex {
         pub value: i64,
     }
     impl GameTControlGroupIndex {
@@ -17649,7 +17649,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTControlGroupId {
+    pub(crate) struct GameTControlGroupId {
         pub value: i64,
     }
     impl GameTControlGroupId {
@@ -17663,7 +17663,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSelectionDeltaSubgroup {
+    pub(crate) struct GameSSelectionDeltaSubgroup {
         pub m_unit_link: GameTUnitLink,
         pub m_subgroup_priority: GameTSubgroupPriority,
         pub m_intra_subgroup_priority: GameTSubgroupPriority,
@@ -17745,7 +17745,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSelectionIndexArrayType {
+    pub(crate) struct GameSelectionIndexArrayType {
         pub value: Vec<GameTSelectionIndex>,
     }
     impl GameSelectionIndexArrayType {
@@ -17769,7 +17769,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSelectionMaskType {
+    pub(crate) struct GameSelectionMaskType {
         pub value: Vec<u8>,
     }
     impl GameSelectionMaskType {
@@ -17784,7 +17784,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub enum GameSSelectionMask {
+    pub(crate) enum GameSSelectionMask {
         None(()),
         Mask(GameSelectionMaskType),
         OneIndices(GameSelectionIndexArrayType),
@@ -17831,7 +17831,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSelectionDelta {
+    pub(crate) struct GameSSelectionDelta {
         pub m_subgroup_index: GameTSubgroupIndex,
         pub m_remove_mask: GameSSelectionMask,
         pub m_add_subgroups: Vec<GameSSelectionDeltaSubgroup>,
@@ -17924,7 +17924,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSelectionSyncData {
+    pub(crate) struct GameSSelectionSyncData {
         pub m_count: GameTSelectionCount,
         pub m_subgroup_count: GameTSubgroupCount,
         pub m_active_subgroup_index: GameTSubgroupIndex,
@@ -18046,7 +18046,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTSyncChecksum {
+    pub(crate) struct GameTSyncChecksum {
         pub value: Uint32,
     }
     impl GameTSyncChecksum {
@@ -18058,7 +18058,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTSyncValue {
+    pub(crate) struct GameTSyncValue {
         pub value: Uint16,
     }
     impl GameTSyncValue {
@@ -18070,7 +18070,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSSessionSyncInfo {
+    pub(crate) struct GameSSessionSyncInfo {
         pub m_checksums: Vec<GameTSyncChecksum>,
     }
     impl GameSSessionSyncInfo {
@@ -18108,7 +18108,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameSGameSyncInfo {
+    pub(crate) struct GameSGameSyncInfo {
         pub m_checksums: Vec<GameTSyncChecksum>,
     }
     impl GameSGameSyncInfo {
@@ -18146,7 +18146,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTTeamId {
+    pub(crate) struct GameTTeamId {
         pub value: i64,
     }
     impl GameTTeamId {
@@ -18160,7 +18160,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct GameTTeamCount {
+    pub(crate) struct GameTTeamCount {
         pub value: i64,
     }
     impl GameTTeamCount {
@@ -18174,7 +18174,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplaySInitData {
+    pub(crate) struct ReplaySInitData {
         pub m_sync_lobby_state: GameSLobbySyncState,
     }
     impl ReplaySInitData {
@@ -18205,7 +18205,7 @@ pub mod bit_packed {
     }
 
     #[derive(Debug, PartialEq, Clone)]
-    pub struct ReplaySGameUserId {
+    pub(crate) struct ReplaySGameUserId {
         pub m_user_id: i64,
     }
     impl ReplaySGameUserId {

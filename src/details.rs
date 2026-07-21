@@ -56,7 +56,10 @@ pub struct PlayerLobbyDetailsFlatRow {
     pub player_result: String,
     pub player_working_set_slot_id: Option<u8>,
     pub player_hero: String,
+    /// The map name/title
     pub title: String,
+    /// Map Info sha256 digest.
+    pub map_info_sha256: String,
     pub is_blizzard_map: bool,
     pub time_utc: i64,
     pub time_local_offset: i64,
@@ -119,6 +122,7 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
             player_working_set_slot_id: source.player_details.working_set_slot_id,
             player_hero: source.player_details.hero,
             title: source.title,
+            map_info_sha256: source.map_info_sha256,
             is_blizzard_map: source.game_description.is_blizzard_map,
             time_utc: source.time_utc,
             time_local_offset: source.time_local_offset,
@@ -165,6 +169,7 @@ pub struct PlayerLobbyDetails {
     pub lobby_slot: LobbySlot,
     /// The name of the map
     pub title: String,
+    pub map_info_sha256: String,
     pub game_description: GameDescription,
     pub time_utc: i64,
     pub time_local_offset: i64,
@@ -203,6 +208,7 @@ impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
                 let slot_idx = slot_idx?;
                 Some(PlayerLobbyDetails {
                     title: details.title.clone(),
+                    map_info_sha256: String::from(""),
                     game_description: init.sync_lobby_state.game_description.clone(),
                     lobby_slot: init.sync_lobby_state.lobby_state.slots[slot_idx].clone(),
                     player_details: player.clone(),
