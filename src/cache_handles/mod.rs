@@ -141,7 +141,7 @@ impl CacheCollectionBuilder {
 /// The caches are needed to identify a unique map version.
 /// There's a version to a map, but I haven't identified it yet from the decoded data.
 #[instrument]
-pub async fn download_init_data_cache_handles(
+pub async fn populate_map_info_digest_from_caches(
     sources: &[InitData],
     destination: String,
 ) -> HashMap<String, String> {
@@ -151,10 +151,21 @@ pub async fn download_init_data_cache_handles(
             if let Some(_) = cache_handle_ids.get(cache_handle_str) {
                 continue;
             }
-            match download_cache(cache_handle_str, &destination).await {
+            match download_cache(
+                cache_handle_str,
+                &source.sync_lobby_state.game_description.cache_handle_region,
+                &source
+                    .sync_lobby_state
+                    .game_description
+                    .cache_handle_extension,
+                &destination,
+            )
+            .await
+            {
                 Ok(handle) => handle,
                 Err(err) => {
                     tracing::error!("Unable to download cache: {:?}, skipping.", err);
+                    cache_handle_ids.insert(cache_handle_str.to_owned(), String::from(""));
                     continue;
                 }
             };
@@ -183,7 +194,12 @@ pub async fn download_init_data_cache_handles(
 
 /// Attempts to download the replay cache from the
 #[instrument]
-pub async fn download_cache(handle: &str, destination: &str) -> Result<(), S2ProtocolError> {
+pub async fn download_cache(
+    handle: &str,
+    region: &str,
+    ext: &str,
+    destination: &str,
+) -> Result<(), S2ProtocolError> {
     let destination = Path::new(destination);
     tracing::info!("Downloading cache with handle: {}", handle);
     let cache_download_target =
@@ -196,11 +212,12 @@ pub async fn download_cache(handle: &str, destination: &str) -> Result<(), S2Pro
         return Ok(());
     }
 
-    let response = reqwest::get(format!(
-        "https://eu-s2-depot.classic.blizzard.com/{}.s2ma",
-        handle
-    ))
-    .await?;
+    let url = format!(
+        "https://{}-s2-depot.classic.blizzard.com/{}.{}",
+        region, handle, ext
+    );
+    panic!("download_cache: URL: {}", url);
+    let response = reqwest::get(url).await?;
     if !response.status().is_success() {
         return Err(S2ProtocolError::CacheResource(format!(
             "Failed to download cache {}, status code: {}",

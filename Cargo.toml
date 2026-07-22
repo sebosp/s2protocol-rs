@@ -48,6 +48,14 @@ tracing_info_level = [
   "tracing/release_max_level_info",
   "nom-mpq/tracing_info_level",
 ]
+tracing_warn_level = [
+  "tracing/max_level_warn",
+  "tracing/release_max_level_warn",
+]
+tracing_error_level = [
+  "tracing/max_level_error",
+  "tracing/release_max_level_error",
+]
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }

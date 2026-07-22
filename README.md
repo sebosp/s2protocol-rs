@@ -148,7 +148,7 @@ For 17K replays (2.3 GBs) it takes 120 seconds to parse/transform/split them. YM
 
 ```bash
 $ mkdir -p ipcs/
-$ cargo run -r --no-default-features --features=dep_arrow,tracing_off -- -v error --timing --source $HOME/SCReplaysOnNVMe --json-balance-data-dir $PWD/assets/BalanceData/ --output $HOME/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 1000000
+$ cargo run --example full -r --no-default-features --features=dep_arrow,tracing_off -- -v error --timing --source $HOME/SCReplaysOnNVMe --output $HOME/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 1000000
 36752 files have valid init data, processing...
 Total time: 396.363965713s
 $ du -sh ipcs

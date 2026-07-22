@@ -305,7 +305,7 @@ async fn cli_command_handler(cli: &Cli) -> Result<(), Box<dyn std::error::Error>
                 &cmd.to_owned().into(),
                 &versioned_abilities,
                 cli.disable_paralellism,
-                cli.cache_path,
+                cli.cache_path.clone(),
             )
             .await?;
         }
@@ -341,7 +341,8 @@ fn cmd_cache_handle(
     let (mpq, cache_contents) = s2protocol::read_mpq(source)?;
     match cache_params {
         CacheUtils::MapInfo => {
-            let map_info = MapInfo::from_mpq(&mpq, &cache_contents)?;
+            let map_info =
+                MapInfo::from_mpq(String::from("fake_cache_handle_id"), &mpq, &cache_contents)?;
             if color {
                 tracing::info!("----- MapInfo: ");
                 syntect_json_print(
@@ -355,8 +356,14 @@ fn cmd_cache_handle(
         }
         CacheUtils::T3HeightMap => {
             tracing::info!("T3HeightMap validation requires MapInfo as dependency. Parsing...");
-            let map_info = MapInfo::from_mpq(&mpq, &cache_contents)?;
-            let t3_height_map = T3HeightMap::from_mpq(&mpq, &cache_contents, &map_info)?;
+            let map_info =
+                MapInfo::from_mpq(String::from("fake_cache_handle_id"), &mpq, &cache_contents)?;
+            let t3_height_map = T3HeightMap::from_mpq(
+                String::from("fake_cache_handle_id"),
+                &mpq,
+                &cache_contents,
+                &map_info,
+            )?;
             if color {
                 tracing::info!("----- T3HeightMap: ");
                 syntect_json_print(
@@ -369,7 +376,11 @@ fn cmd_cache_handle(
             }
         }
         CacheUtils::DocumentHeader => {
-            let document_header = DocumentHeader::from_mpq(&mpq, &cache_contents)?;
+            let document_header = DocumentHeader::from_mpq(
+                String::from("fake_cache_handle_id"),
+                &mpq,
+                &cache_contents,
+            )?;
             if color {
                 tracing::info!("----- DocumentHeader: ");
                 syntect_json_print(
@@ -382,7 +393,8 @@ fn cmd_cache_handle(
             }
         }
         CacheUtils::T3TerrainXml => {
-            let t3_terrain_xml = T3Terrain::from_mpq(&mpq, &cache_contents)?;
+            let t3_terrain_xml =
+                T3Terrain::from_mpq(String::from("fake_cache_handle_id"), &mpq, &cache_contents)?;
             if color {
                 tracing::info!("----- t3Terrain.xml: ");
                 syntect_json_print(

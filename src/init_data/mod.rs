@@ -150,6 +150,8 @@ pub struct GameDescription {
     pub default_difficulty: i64,
     pub default_ai_build: i64,
     pub cache_handles: Vec<String>,
+    pub cache_handle_region: String,
+    pub cache_handle_extension: String,
     pub has_extension_mod: bool,
     pub has_non_blizzard_extension_mod: bool,
     pub is_blizzard_map: bool,

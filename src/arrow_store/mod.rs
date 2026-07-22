@@ -11,7 +11,7 @@ use init_data::InitData;
 #[cfg(feature = "dep_arrow")]
 use rayon::prelude::*;
 
-use crate::cache_handles::download_init_data_cache_handles;
+use crate::cache_handles::populate_map_info_digest_from_caches;
 use crate::get_matching_files;
 
 use crate::details::{PlayerLobbyDetails, PlayerLobbyDetailsFlatRow};
@@ -144,11 +144,12 @@ impl ArrowIpcTypes {
     /// Add a snashopt generation timestamp and when reads are done, they are checked for
     /// very basic timestamp write consistency.
     #[tracing::instrument(level = "debug")]
-    pub fn handle_write_snapshot(
+    pub async fn handle_write_snapshot(
         sources: Vec<InitData>,
         output: PathBuf,
         unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
         disable_parallel_scans: bool,
+        cache_path: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if !output.is_dir() {
             panic!("Output must be a directory for types 'all'");
@@ -160,7 +161,9 @@ impl ArrowIpcTypes {
         // unit_born.arrow
         // unit_cmd_target_point.arrow
         // unit_cmd_target_unit.arrow
-        Self::Details.handle_details_ipc_cmd(sources.clone(), output.join("details.arrow"))?;
+        Self::Details
+            .handle_details_ipc_cmd(sources.clone(), output.join("details.arrow"), cache_path)
+            .await?;
         Self::Stats.handle_tracker_events(
             sources.clone(),
             output.join("stats.arrow"),
@@ -375,24 +378,38 @@ impl ArrowIpcTypes {
     }
     /// Creates a new Arrow IPC file with the details data
     #[tracing::instrument(level = "debug")]
-    pub fn handle_details_ipc_cmd(
+    pub async fn handle_details_ipc_cmd(
         &self,
         sources: Vec<InitData>,
         output: PathBuf,
+        cache_path: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing Details IPC write request");
-        // process the sources in parallel consuming into the batch variable
 
+        // Identify from the cache handle bundles where the map info is located and get its sha256 digest for uniqueness.
+        let cache_handle_to_map_info_digest =
+            populate_map_info_digest_from_caches(&sources, cache_path.to_string()).await;
         let details_flaw_rows: Vec<PlayerLobbyDetailsFlatRow> = sources
             .iter()
             .flat_map(|source| {
-                let res: Vec<PlayerLobbyDetails> = match source.try_into() {
+                let mut res: Vec<PlayerLobbyDetails> = match source.try_into() {
                     Ok(details) => details,
                     Err(err) => {
                         tracing::error!("Error reading details: {:?}", err);
                         return vec![];
                     }
                 };
+                tracing::error!("Pre map digest");
+                for detail in res.iter_mut() {
+                    for cache_id in &detail.cache_handles {
+                        if let Some(map_info_digest) = cache_handle_to_map_info_digest.get(cache_id)
+                        {
+                            detail.map_info_sha256 = map_info_digest.to_owned();
+                            break;
+                        }
+                    }
+                }
+                tracing::error!("post map digest");
                 res.into_iter()
                     .map(|d| d.into())
                     .collect::<Vec<PlayerLobbyDetailsFlatRow>>()
@@ -448,9 +465,6 @@ impl ArrowIpcTypes {
                 })
                 .collect::<Vec<InitData>>()
         };
-        // Identify from the cache handle bundles where the map info is located and get its sha256 digest for uniqueness.
-        let _cache_handle_to_map_info_digest =
-            download_init_data_cache_handles(&sources, cache_path).await;
         let sources: Vec<InitData> = sources
             .into_iter()
             .filter(|source| {
@@ -476,6 +490,13 @@ impl ArrowIpcTypes {
                 sources.len()
             );
         }
-        Self::handle_write_snapshot(sources, output, unit_abilities, disable_parallel_scans)
+        Self::handle_write_snapshot(
+            sources,
+            output,
+            unit_abilities,
+            disable_parallel_scans,
+            &cache_path,
+        )
+        .await
     }
 }
