@@ -9,7 +9,7 @@ use s2protocol::cache_handles::map_info::MapInfo;
 use s2protocol::cache_handles::t3_height_map::T3HeightMap;
 use s2protocol::cache_handles::t3_terrain::T3Terrain;
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use syntect::easy::HighlightLines;
 use syntect::highlighting::{Color, Style, ThemeSet};
 use syntect::parsing::SyntaxSet;
@@ -192,7 +192,7 @@ pub struct Cli {
     pub tui: bool,
 
     /// The Cache Handle path, to be downloaded from blizzard depots.
-    #[arg(long, default_value = "false")]
+    #[arg(long)]
     pub cache_path: String,
 }
 

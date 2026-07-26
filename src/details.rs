@@ -165,6 +165,9 @@ impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
                 let slot_idx = slot_idx?;
                 Some(PlayerLobbyDetails {
                     title: details.title.clone(),
+                    // This field is unavailable until the caches are downloaded,
+                    // once this happens, we can get the digest of the MapInfo sector
+                    // from the downlaoded MPQs.
                     map_info_sha256: String::from(""),
                     game_description: init.sync_lobby_state.game_description.clone(),
                     lobby_slot: init.sync_lobby_state.lobby_state.slots[slot_idx].clone(),

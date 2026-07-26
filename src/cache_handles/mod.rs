@@ -97,6 +97,7 @@ impl CacheCollectionBuilder {
             let Ok(Some((mpq, cache_contents))) =
                 self.try_get_target_file_from_mpq(&cache_handle_fname, target_file_name)
             else {
+                // This is normal, some s2ma files are ascii content such as: "Standard Data: Liberty.SC2Mod"
                 continue;
             };
             return Ok((cache_handle_id.to_owned(), mpq, cache_contents));
@@ -144,8 +145,8 @@ impl CacheCollectionBuilder {
 pub async fn populate_map_info_digest_from_caches(
     sources: &[InitData],
     destination: String,
-) -> HashMap<String, String> {
-    let mut cache_handle_ids: HashMap<String, String> = HashMap::new();
+) -> HashMap<String, Option<String>> {
+    let mut cache_handle_ids: HashMap<String, Option<String>> = HashMap::new();
     for source in sources.iter() {
         for cache_handle_str in &source.sync_lobby_state.game_description.cache_handles {
             if let Some(_) = cache_handle_ids.get(cache_handle_str) {
@@ -165,12 +166,12 @@ pub async fn populate_map_info_digest_from_caches(
                 Ok(handle) => handle,
                 Err(err) => {
                     tracing::error!("Unable to download cache: {:?}, skipping.", err);
-                    cache_handle_ids.insert(cache_handle_str.to_owned(), String::from(""));
+                    cache_handle_ids.insert(cache_handle_str.to_owned(), None);
                     continue;
                 }
             };
 
-            cache_handle_ids.insert(cache_handle_str.to_owned(), String::from(""));
+            cache_handle_ids.insert(cache_handle_str.to_owned(), None);
         }
         let cache_builder = CacheCollectionBuilder::new(
             destination.clone(),
@@ -183,7 +184,7 @@ pub async fn populate_map_info_digest_from_caches(
         if let Ok(cache_collecion) = cache_builder.build() {
             cache_handle_ids.insert(
                 cache_collecion.map_info.cache_handle_id,
-                cache_collecion.map_info.sector_sha256_sum,
+                Some(cache_collecion.map_info.sector_sha256_sum),
             );
         } else {
             continue;
@@ -216,8 +217,7 @@ pub async fn download_cache(
         "https://{}-s2-depot.classic.blizzard.com/{}.{}",
         region, handle, ext
     );
-    panic!("download_cache: URL: {}", url);
-    let response = reqwest::get(url).await?;
+    let response = reqwest::get(&url).await?;
     if !response.status().is_success() {
         return Err(S2ProtocolError::CacheResource(format!(
             "Failed to download cache {}, status code: {}",

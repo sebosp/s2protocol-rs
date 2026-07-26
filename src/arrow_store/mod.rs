@@ -389,6 +389,10 @@ impl ArrowIpcTypes {
         // Identify from the cache handle bundles where the map info is located and get its sha256 digest for uniqueness.
         let cache_handle_to_map_info_digest =
             populate_map_info_digest_from_caches(&sources, cache_path.to_string()).await;
+        tracing::error!(
+            "cache_handle_to_map_info_digest: {:?}",
+            cache_handle_to_map_info_digest
+        );
         let details_flaw_rows: Vec<PlayerLobbyDetailsFlatRow> = sources
             .iter()
             .flat_map(|source| {
@@ -399,17 +403,16 @@ impl ArrowIpcTypes {
                         return vec![];
                     }
                 };
-                tracing::error!("Pre map digest");
                 for detail in res.iter_mut() {
                     for cache_id in &detail.cache_handles {
-                        if let Some(map_info_digest) = cache_handle_to_map_info_digest.get(cache_id)
+                        if let Some(Some(map_info_digest)) =
+                            cache_handle_to_map_info_digest.get(cache_id)
                         {
                             detail.map_info_sha256 = map_info_digest.to_owned();
                             break;
                         }
                     }
                 }
-                tracing::error!("post map digest");
                 res.into_iter()
                     .map(|d| d.into())
                     .collect::<Vec<PlayerLobbyDetailsFlatRow>>()
