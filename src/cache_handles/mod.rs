@@ -15,6 +15,7 @@ pub mod t3_terrain;
 use cache_objects::PlacedObjects;
 use document_header::DocumentHeader;
 use map_info::MapInfo;
+use rayon::prelude::*;
 use std::{collections::HashMap, path::Path};
 use t3_height_map::T3HeightMap;
 use t3_terrain::T3Terrain;
@@ -86,46 +87,80 @@ impl CacheCollectionBuilder {
         &self,
         target_file_name: &str,
     ) -> Result<(String, MPQ, Vec<u8>), S2ProtocolError> {
-        for cache_handle_id in &self.cache_ids {
-            if cache_handle_id.is_empty() {
-                continue;
-            }
-            let cache_handle_fname = format!(
-                "{}/{}.{}",
-                self.cache_path, cache_handle_id, CACHE_MPQ_ARCHIVE_EXTENSION
-            );
-            let Ok(Some((mpq, cache_contents))) =
-                self.try_get_target_file_from_mpq(&cache_handle_fname, target_file_name)
-            else {
-                // This is normal, some s2ma files are ascii content such as: "Standard Data: Liberty.SC2Mod"
-                continue;
-            };
-            return Ok((cache_handle_id.to_owned(), mpq, cache_contents));
+        let mut res: Vec<(String, MPQ, Vec<u8>)> = self
+            .cache_ids
+            .par_iter()
+            .filter_map(|cache_handle_id| {
+                if cache_handle_id.is_empty() {
+                    return None;
+                }
+                let cache_handle_fname = format!(
+                    "{}/{}.{}",
+                    self.cache_path, cache_handle_id, CACHE_MPQ_ARCHIVE_EXTENSION
+                );
+                let Ok(Some((mpq, cache_contents))) =
+                    self.try_get_target_file_from_mpq(&cache_handle_fname, target_file_name)
+                else {
+                    // This is normal, some s2ma files are ascii content such as: "Standard Data: Liberty.SC2Mod"
+                    return None;
+                };
+                Some((cache_handle_id.to_owned(), mpq, cache_contents))
+            })
+            .collect();
+        if res.len() == 0 {
+            return Err(S2ProtocolError::CacheResource(format!(
+                "Unable to locate {} in path {} with cache_ids {:?}",
+                target_file_name, self.cache_path, self.cache_ids
+            )));
         }
-        Err(S2ProtocolError::CacheResource(format!(
-            "Unable to locate {} in path {} with cache_ids {:?}",
-            target_file_name, self.cache_path, self.cache_ids
-        )))
+        // This should contain only one element.
+        Ok(res.remove(0))
     }
 
     #[instrument(level = "debug", skip(self))]
     pub fn build(self) -> Result<CacheCollection, S2ProtocolError> {
+        let init_time_4 = std::time::Instant::now();
+        let init_time_5 = std::time::Instant::now();
         let (cache_handle_id, mpq, cache_contents) =
             self.try_get_file_from_mpq_list(MAP_INFO_FILE_NAME)?;
+        println!(
+            "----- init_5: MAP_INFO_FILE_NAME {:?}",
+            init_time_5.elapsed(),
+        );
         let map_info = MapInfo::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
         let (cache_handle_id, mpq, cache_contents) =
             self.try_get_file_from_mpq_list(DOCUMENT_HEADER_FILE_NAME)?;
+        println!(
+            "----- init_5: DOCUMENT_HEADER_FILE_NAME {:?}",
+            init_time_5.elapsed(),
+        );
         let document_header = DocumentHeader::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
         let (cache_handle_id, mpq, cache_contents) =
             self.try_get_file_from_mpq_list(T3_HEIGHT_MAP_FILE_NAME)?;
+        println!(
+            "----- init_5: T3_HEIGHT_MAP_FILE_NAME {:?}",
+            init_time_5.elapsed(),
+        );
         let t3_height_map =
             T3HeightMap::from_mpq(cache_handle_id, &mpq, &cache_contents, &map_info)?;
         let (cache_handle_id, mpq, cache_contents) =
             self.try_get_file_from_mpq_list(T3_TERRAIN_MAP_FILE_NAME)?;
+        println!(
+            "----- init_5: T3_TERRAIN_MAP_FILE_NAME {:?}",
+            init_time_5.elapsed(),
+        );
         let t3_terrain = T3Terrain::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
         let (cache_handle_id, mpq, cache_contents) =
             self.try_get_file_from_mpq_list(PLACED_OBJECTS_FILE_NAME)?;
         let placed_objects = PlacedObjects::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
+        println!(
+            "----- init_5: PLACED_OBJECTS_FILE_NAME {:?}",
+            init_time_5.elapsed(),
+        );
+        println!(
+            "---- init_4: CacheCollectionBuilder::build : {:?}",
+            init_time_4.elapsed(),
+        );
         Ok(CacheCollection {
             cache_path: self.cache_path,
             cache_ids: self.cache_ids,
@@ -146,49 +181,109 @@ pub async fn populate_map_info_digest_from_caches(
     sources: &[InitData],
     destination: String,
 ) -> HashMap<String, Option<String>> {
+    let init_time = std::time::Instant::now();
     let mut cache_handle_ids: HashMap<String, Option<String>> = HashMap::new();
-    for source in sources.iter() {
-        for cache_handle_str in &source.sync_lobby_state.game_description.cache_handles {
-            if let Some(_) = cache_handle_ids.get(cache_handle_str) {
-                continue;
-            }
-            match download_cache(
-                cache_handle_str,
-                &source.sync_lobby_state.game_description.cache_handle_region,
-                &source
-                    .sync_lobby_state
-                    .game_description
-                    .cache_handle_extension,
-                &destination,
-            )
-            .await
-            {
-                Ok(handle) => handle,
-                Err(err) => {
-                    tracing::error!("Unable to download cache: {:?}, skipping.", err);
-                    cache_handle_ids.insert(cache_handle_str.to_owned(), None);
-                    continue;
-                }
-            };
-
-            cache_handle_ids.insert(cache_handle_str.to_owned(), None);
-        }
-        let cache_builder = CacheCollectionBuilder::new(
-            destination.clone(),
+    let downloaded_cache_count: usize = sources
+        .iter()
+        .map(|source| {
             source
                 .sync_lobby_state
                 .game_description
                 .cache_handles
-                .clone(),
-        );
-        if let Ok(cache_collecion) = cache_builder.build() {
-            cache_handle_ids.insert(
-                cache_collecion.map_info.cache_handle_id,
-                Some(cache_collecion.map_info.sector_sha256_sum),
-            );
-        } else {
-            continue;
+                .iter()
+                .map(|x| {
+                    (
+                        source
+                            .sync_lobby_state
+                            .game_description
+                            .cache_handle_region
+                            .as_str(),
+                        source
+                            .sync_lobby_state
+                            .game_description
+                            .cache_handle_extension
+                            .as_str(),
+                        x.as_str(),
+                    )
+                })
+        })
+        .flatten()
+        .map(
+            async |(cache_handle_region, cache_handle_extension, cache_handle_str)| {
+                match download_cache(
+                    cache_handle_str,
+                    cache_handle_region,
+                    cache_handle_extension,
+                    &destination,
+                )
+                .await
+                {
+                    Ok(()) => 1,
+                    Err(err) => {
+                        tracing::error!("Unable to download cache: {:?}, skipping.", err);
+                        0
+                    }
+                }
+            },
+        )
+        .count();
+    println!(
+        "- init_1 After ({}) downloads: {:?}",
+        downloaded_cache_count,
+        init_time.elapsed(),
+    );
+
+    for source in sources.iter() {
+        let mut has_known_map_sha_digest = false;
+        for cache_handle_str in source
+            .sync_lobby_state
+            .game_description
+            .cache_handles
+            .iter()
+        {
+            // Try to find, from the cache_handle list, if any is a recognized MapInfo.
+            if cache_handle_ids.contains_key(cache_handle_str) {
+                has_known_map_sha_digest = true;
+            } else {
+                cache_handle_ids.insert(cache_handle_str.to_string(), None);
+            }
         }
+        if !has_known_map_sha_digest {
+            // We need to traverse the cache_handles on the current replay and locate the Mapinfo
+            // from them:
+            let cache_builder = CacheCollectionBuilder::new(
+                destination.clone(),
+                source
+                    .sync_lobby_state
+                    .game_description
+                    .cache_handles
+                    .clone(),
+            );
+            let init_time_3 = std::time::Instant::now();
+            if let Ok(cache_collecion) = cache_builder.build() {
+                let _ = cache_handle_ids.insert(
+                    cache_collecion.map_info.cache_handle_id,
+                    Some(cache_collecion.map_info.sector_sha256_sum),
+                );
+            }
+            println!(
+                "--- init_3: cache_builder.build(): {:?}",
+                init_time_3.elapsed(),
+            );
+        }
+    }
+    println!(
+        "populate_map_info_digest_from_caches: init_1 Total time: {:?}",
+        init_time.elapsed()
+    );
+    let owned_cache_handle_ids: Vec<(String, Option<String>)> = cache_handle_ids
+        .into_iter()
+        .map(|(key, val)| (key.to_owned(), val.map(|x| x.to_owned())))
+        .collect();
+
+    let mut cache_handle_ids: HashMap<String, Option<String>> = HashMap::new();
+    for (handle_key, handle_val) in owned_cache_handle_ids {
+        cache_handle_ids.insert(handle_key, handle_val);
     }
     cache_handle_ids
 }
