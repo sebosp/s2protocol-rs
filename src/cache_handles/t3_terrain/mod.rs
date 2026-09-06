@@ -25,7 +25,7 @@
 //▏   ▏   ▏   />
 //▏   ▏   <ramp dir=
 
-use crate::{error::S2ProtocolError, read_mpq};
+use crate::error::S2ProtocolError;
 use nom_mpq::MPQ;
 use serde::{Deserialize, Serialize};
 use tracing::instrument;
@@ -89,22 +89,6 @@ pub struct Ramp {
     pub right_hi_var: u32,
 }
 
-#[instrument]
-pub fn probably_delete_me_try_get_t3_height_map_from_mpq(
-    cache_handle_id: String,
-    cache_handle_fname: &str,
-) -> Result<T3Terrain, S2ProtocolError> {
-    let (mpq, cache_contents) = read_mpq(cache_handle_fname)?;
-    // based on sc2-map-analyzer/analyser/read.cpp
-    for (file, _file_size) in mpq.get_files(&cache_contents)? {
-        if file == "t3Terrain.xml" {
-            let mut res = serde_xml_rs::from_str::<T3Terrain>(&file)?;
-            res.cache_handle_id = cache_handle_id;
-            return Ok(res);
-        }
-    }
-    Ok(T3Terrain::default())
-}
 impl T3Terrain {
     #[instrument(level = "debug", skip(file_contents))]
     pub fn parse(cache_handle_id: String, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
@@ -122,7 +106,7 @@ impl T3Terrain {
         file_contents: &[u8],
     ) -> Result<Self, S2ProtocolError> {
         let (_, t3_terrain_sector) =
-            mpq.read_mpq_file_sector("t3Terrain.xml", false, file_contents)?;
+            mpq.read_mpq_file_sector(super::T3_TERRAIN_MAP_FILE_NAME, false, file_contents)?;
         let t3_terrain = Self::parse(cache_handle_id, &t3_terrain_sector)?;
         Ok(t3_terrain)
     }

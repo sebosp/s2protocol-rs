@@ -4,6 +4,7 @@
 //! these are ignored.
 //!
 
+use super::DOCUMENT_HEADER_FILE_NAME;
 use crate::{S2ProtoResult, S2ProtocolError, dbg_peek_hex};
 use nom::bytes::complete::*;
 use nom::number::complete::*;
@@ -81,7 +82,7 @@ impl DocumentHeader {
         file_contents: &[u8],
     ) -> Result<Self, S2ProtocolError> {
         let (_, document_header_sector) =
-            mpq.read_mpq_file_sector("DocumentHeader", false, file_contents)?;
+            mpq.read_mpq_file_sector(DOCUMENT_HEADER_FILE_NAME, false, file_contents)?;
         let (_, document_header) = Self::parse(cache_handle_id, &document_header_sector)?;
         Ok(document_header)
     }

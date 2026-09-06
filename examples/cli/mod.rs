@@ -8,7 +8,6 @@ use s2protocol::cache_handles::document_header::DocumentHeader;
 use s2protocol::cache_handles::map_info::MapInfo;
 use s2protocol::cache_handles::t3_height_map::T3HeightMap;
 use s2protocol::cache_handles::t3_terrain::T3Terrain;
-use std::collections::HashMap;
 use std::path::PathBuf;
 use syntect::easy::HighlightLines;
 use syntect::highlighting::{Color, Style, ThemeSet};
@@ -17,7 +16,7 @@ use syntect::util::{LinesWithEndings, as_24_bit_terminal_escaped};
 
 use s2protocol::dir_stats::{SC2ReplaysDirStats, scan_path};
 use s2protocol::filters::SC2ReplayFilters;
-use s2protocol::game_events::VersionedBalanceUnit;
+use s2protocol::game_events::MultiVersionedBalanceUnits;
 use s2protocol::game_events::ability::balance_data::json_handler::*;
 use s2protocol::game_events::ability::traverse_versioned_balance_abilities;
 use s2protocol::generator::proto_morphist::ProtoMorphist;
@@ -267,12 +266,11 @@ pub async fn process_cli_request() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn cli_command_handler(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
-    let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
-        if cli.json_balance_data_dir.is_empty() {
-            read_balance_data_from_included_assets()?
-        } else {
-            read_balance_data_from_json_dir(PathBuf::from(&cli.json_balance_data_dir))?
-        };
+    let versioned_abilities: MultiVersionedBalanceUnits = if cli.json_balance_data_dir.is_empty() {
+        read_balance_data_from_included_assets()?
+    } else {
+        read_balance_data_from_json_dir(PathBuf::from(&cli.json_balance_data_dir))?
+    };
     let syntect_syntax_set = SyntaxSet::load_defaults_newlines();
     let mut syntect_theme_set = ThemeSet::load_defaults();
     {
@@ -428,7 +426,7 @@ fn cmd_balance_data_to_json_export(cli: &Cli) -> Result<(), Box<dyn std::error::
 
 pub fn handle_scan_cli_cmd(
     cli: &Cli,
-    unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+    unit_abilities: &MultiVersionedBalanceUnits,
 ) -> Result<SC2ReplaysDirStats, Box<dyn std::error::Error>> {
     scan_path(&cli.source, unit_abilities, false)
 }

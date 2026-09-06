@@ -13,10 +13,17 @@
 use std::path::PathBuf;
 
 #[cfg(feature = "dep_arrow")]
+use arrow::datatypes::{DataType::Struct, Schema};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::field::ArrowField;
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 use nom_mpq::MPQ;
 
-use crate::{GameDescription, InitData, LobbySlot, error::S2ProtocolError};
+use crate::{
+    GameDescription, InitData, LobbySlot, basic_replay_data::SC2ReplayBasicData,
+    error::S2ProtocolError,
+};
 use serde::{Deserialize, Serialize};
 
 /* Removed fields:
@@ -115,6 +122,16 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
     }
 }
 
+impl PlayerLobbyDetailsFlatRow {
+    pub fn schema() -> Schema {
+        if let Struct(fields) = PlayerLobbyDetailsFlatRow::data_type() {
+            Schema::new(fields.clone())
+        } else {
+            panic!("Invalid schema, expected struct");
+        }
+    }
+}
+
 /// A joined version of the PlayerLobbySlot contained within the InitData sector and the Details
 /// sector
 /// The working_set_slot_id joins the initData with the details.
@@ -142,17 +159,21 @@ pub struct PlayerLobbyDetails {
     pub ext_datetime: chrono::NaiveDateTime,
 }
 
-impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
-    type Error = S2ProtocolError;
-
-    fn try_from(init: &InitData) -> Result<Self, Self::Error> {
-        let details: Details = init.try_into()?;
-        let res = details
+impl From<&SC2ReplayBasicData> for Vec<PlayerLobbyDetails> {
+    fn from(basic_data: &SC2ReplayBasicData) -> Self {
+        let res = basic_data
+            .details
             .player_list
-            .into_iter()
+            .iter()
             .filter_map(|player| {
                 let mut slot_idx = None;
-                for (idx, lobby_slot) in init.sync_lobby_state.lobby_state.slots.iter().enumerate()
+                for (idx, lobby_slot) in basic_data
+                    .init_data
+                    .sync_lobby_state
+                    .lobby_state
+                    .slots
+                    .iter()
+                    .enumerate()
                 {
                     if let (Some(init_slot_id), Some(details_slot_id)) =
                         (lobby_slot.working_set_slot_id, player.working_set_slot_id)
@@ -164,47 +185,61 @@ impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
                 }
                 let slot_idx = slot_idx?;
                 Some(PlayerLobbyDetails {
-                    title: details.title.clone(),
+                    title: basic_data.details.title.clone(),
                     // This field is unavailable until the caches are downloaded,
                     // once this happens, we can get the digest of the MapInfo sector
                     // from the downlaoded MPQs.
-                    map_info_sha256: String::from(""),
-                    game_description: init.sync_lobby_state.game_description.clone(),
-                    lobby_slot: init.sync_lobby_state.lobby_state.slots[slot_idx].clone(),
+                    map_info_sha256: String::with_capacity(64),
+                    game_description: basic_data
+                        .init_data
+                        .sync_lobby_state
+                        .game_description
+                        .clone(),
+                    lobby_slot: basic_data.init_data.sync_lobby_state.lobby_state.slots[slot_idx]
+                        .clone(),
                     player_details: player.clone(),
-                    time_utc: details.time_utc,
-                    time_local_offset: details.time_local_offset,
-                    user_init_data_name: init
+                    time_utc: basic_data.details.time_utc,
+                    time_local_offset: basic_data.details.time_local_offset,
+                    user_init_data_name: basic_data
+                        .init_data
                         .sync_lobby_state
                         .user_initial_data
                         .get(slot_idx)
                         .map_or("".to_string(), |u| u.name.clone()),
-                    user_init_data_clan_tag: init
+                    user_init_data_clan_tag: basic_data
+                        .init_data
                         .sync_lobby_state
                         .user_initial_data
                         .get(slot_idx)
                         .map_or("".to_string(), |u| u.clan_tag.clone().unwrap_or_default()),
                     tracker_setup_player_id: None,
                     tracker_setup_slot_id: None,
-                    cache_handles: init.sync_lobby_state.game_description.cache_handles.clone(),
-                    cache_handle_region: init
+                    cache_handles: basic_data
+                        .init_data
+                        .sync_lobby_state
+                        .game_description
+                        .cache_handles
+                        .clone(),
+                    cache_handle_region: basic_data
+                        .init_data
                         .sync_lobby_state
                         .game_description
                         .cache_handle_region
                         .clone(),
-                    cache_handle_extension: init
+                    cache_handle_extension: basic_data
+                        .init_data
                         .sync_lobby_state
                         .game_description
                         .cache_handle_extension
                         .clone(),
-                    ext_fs_id: details.ext_fs_id,
-                    ext_fs_sha256: init.ext_fs_sha256.clone(),
-                    ext_fs_file_name: init.ext_fs_file_name.clone(),
-                    ext_datetime: details.ext_datetime,
+                    ext_fs_id: basic_data.details.ext_fs_id,
+                    ext_fs_sha256: basic_data.init_data.ext_fs_sha256.clone(),
+                    ext_fs_file_name: basic_data.init_data.ext_fs_file_name.clone(),
+                    ext_datetime: basic_data.details.ext_datetime,
                 })
             })
             .collect();
-        Ok(res)
+        res
     }
 }
 

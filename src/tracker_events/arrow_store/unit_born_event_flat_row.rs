@@ -1,6 +1,10 @@
 //! Unit Born Event Flat Row
 
 #[cfg(feature = "dep_arrow")]
+use arrow::datatypes::{DataType::Struct, Schema};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::field::ArrowField;
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::state::UnitChangeHint;
@@ -41,7 +45,7 @@ impl UnitBornEventFlatRow {
     pub fn from_unit_born(
         event: UnitBornEvent,
         ext_replay_loop: i64,
-        details: &crate::details::Details,
+        ext_fs_id: u64,
         change_hint: UnitChangeHint,
     ) -> Option<Self> {
         let (unit, creator) = match change_hint {
@@ -67,7 +71,7 @@ impl UnitBornEventFlatRow {
             creator_unit_type_name,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_id: details.ext_fs_id,
+            ext_fs_id,
             player_name: unit.player_name,
         })
     }
@@ -79,7 +83,7 @@ impl UnitBornEventFlatRow {
     pub fn from_unit_done(
         event: UnitDoneEvent,
         ext_replay_loop: i64,
-        details: &crate::details::Details,
+        ext_fs_id: u64,
         change_hint: UnitChangeHint,
     ) -> Option<Self> {
         // NOTE: It seems this can be "None" but our code (state) may not be able to handle this.
@@ -106,7 +110,7 @@ impl UnitBornEventFlatRow {
             creator_unit_type_name,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_id: details.ext_fs_id,
+            ext_fs_id,
             player_name: unit.player_name,
         })
     }
@@ -117,7 +121,7 @@ impl UnitBornEventFlatRow {
     pub fn from_unit_type_change(
         event: UnitTypeChangeEvent,
         ext_replay_loop: i64,
-        details: &crate::details::Details,
+        ext_fs_id: u64,
         change_hint: UnitChangeHint,
     ) -> Option<Self> {
         let (unit, creator) = match change_hint {
@@ -143,8 +147,16 @@ impl UnitBornEventFlatRow {
             creator_ability_name: unit.creator_ability_name,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_id: details.ext_fs_id,
+            ext_fs_id,
             player_name: unit.player_name,
         })
+    }
+
+    pub fn schema() -> Schema {
+        if let Struct(fields) = UnitBornEventFlatRow::data_type() {
+            Schema::new(fields.clone())
+        } else {
+            panic!("Invalid schema, expected struct");
+        }
     }
 }

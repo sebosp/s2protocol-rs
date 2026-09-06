@@ -1,27 +1,36 @@
 //! Arrow Specific handling of data.
 
 #[cfg(feature = "dep_arrow")]
-use arrow::{
-    array::Array, array::ArrayRef, datatypes::DataType, datatypes::Schema,
-    record_batch::RecordBatch,
-};
+use arrow::{array::Array, array::ArrayRef, datatypes::Schema, record_batch::RecordBatch};
 #[cfg(feature = "dep_arrow")]
-use arrow_convert::{field::ArrowField, serialize::TryIntoArrow};
-use init_data::InitData;
+use arrow_convert::serialize::TryIntoArrow;
 #[cfg(feature = "dep_arrow")]
 use rayon::prelude::*;
 
+use crate::basic_replay_data::SC2ReplayBasicData;
 use crate::cache_handles::populate_map_info_digest_from_caches;
 use crate::get_matching_files;
 
 use crate::details::{PlayerLobbyDetails, PlayerLobbyDetailsFlatRow};
-use crate::game_events::VersionedBalanceUnit;
-use crate::tracker_events;
+use crate::game_events::{
+    CmdTargetPointEventFlatRow, CmdTargetUnitEventFlatRow, MultiVersionedBalanceUnits,
+};
+use crate::tracker_events::{
+    PlayerStatsFlatRow, UnitBornEventFlatRow, UnitDiedEventFlatRow, UpgradeEventFlatRow,
+};
 use crate::*;
 
 use std::path::PathBuf;
 pub mod ipc_writer;
 use ipc_writer::*;
+
+pub const DETAILS_ARROW_FNAME: &'static str = "details.arrow";
+pub const STATS_ARROW_FNAME: &'static str = "stats.arrow";
+pub const UPGRADES_ARROW_FNAME: &'static str = "upgrades.arrow";
+pub const UNIT_BORN_ARROW_FNAME: &'static str = "unit_born.arrow";
+pub const UNIT_DIED_ARROW_FNAME: &'static str = "unit_died.arrow";
+pub const CMD_TARGET_POINT_ARROW_FNAME: &'static str = "cmd_target_point.arrow";
+pub const CMD_TARGET_UNIT_ARROW_FNAME: &'static str = "cmd_target_unit.arrow";
 
 ///  Create a subcommand that handles the max depth and max files to process
 #[derive(Debug, Clone)]
@@ -67,68 +76,14 @@ impl ArrowIpcTypes {
     /// Returns the schema for the chosen output type
     pub fn schema(&self) -> Schema {
         match self {
-            Self::UserInitData => {
-                if let DataType::Struct(fields) = init_data::UserInitDataFlatRow::data_type() {
-                    Schema::new(fields.clone())
-                } else {
-                    panic!("Invalid schema, expected struct");
-                }
-            }
-            Self::Details => {
-                if let DataType::Struct(fields) = details::PlayerLobbyDetailsFlatRow::data_type() {
-                    Schema::new(fields.clone())
-                } else {
-                    panic!("Invalid schema, expected struct");
-                }
-            }
-            Self::Stats => {
-                if let DataType::Struct(fields) = tracker_events::PlayerStatsFlatRow::data_type() {
-                    Schema::new(fields.clone())
-                } else {
-                    panic!("Invalid schema, expected struct");
-                }
-            }
-            Self::Upgrades => {
-                if let DataType::Struct(fields) = tracker_events::UpgradeEventFlatRow::data_type() {
-                    Schema::new(fields.clone())
-                } else {
-                    panic!("Invalid schema, expected struct");
-                }
-            }
-            Self::UnitBorn => {
-                if let DataType::Struct(fields) = tracker_events::UnitBornEventFlatRow::data_type()
-                {
-                    Schema::new(fields.clone())
-                } else {
-                    panic!("Invalid schema, expected struct");
-                }
-            }
-            Self::UnitDied => {
-                if let DataType::Struct(fields) = tracker_events::UnitDiedEventFlatRow::data_type()
-                {
-                    Schema::new(fields.clone())
-                } else {
-                    panic!("Invalid schema, expected struct");
-                }
-            }
-            Self::CmdTargetPoint => {
-                if let DataType::Struct(fields) =
-                    game_events::CmdTargetPointEventFlatRow::data_type()
-                {
-                    Schema::new(fields.clone())
-                } else {
-                    panic!("Invalid schema, expected struct");
-                }
-            }
-            Self::CmdTargetUnit => {
-                if let DataType::Struct(fields) =
-                    game_events::CmdTargetUnitEventFlatRow::data_type()
-                {
-                    Schema::new(fields.clone())
-                } else {
-                    panic!("Invalid schema, expected struct");
-                }
-            }
+            Self::UserInitData => UserInitDataFlatRow::schema(),
+            Self::Details => PlayerLobbyDetailsFlatRow::schema(),
+            Self::Stats => PlayerStatsFlatRow::schema(),
+            Self::Upgrades => UpgradeEventFlatRow::schema(),
+            Self::UnitBorn => UnitBornEventFlatRow::schema(),
+            Self::UnitDied => UnitDiedEventFlatRow::schema(),
+            Self::CmdTargetPoint => CmdTargetPointEventFlatRow::schema(),
+            Self::CmdTargetUnit => CmdTargetUnitEventFlatRow::schema(),
             _ => unimplemented!(),
         }
     }
@@ -145,12 +100,13 @@ impl ArrowIpcTypes {
     /// very basic timestamp write consistency.
     #[tracing::instrument(level = "debug")]
     pub async fn handle_write_snapshot(
-        sources: Vec<InitData>,
+        sources: &[SC2ReplayBasicData],
         output: PathBuf,
-        unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+        unit_abilities: &MultiVersionedBalanceUnits,
         disable_parallel_scans: bool,
         cache_path: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        let init_time = std::time::Instant::now();
         if !output.is_dir() {
             panic!("Output must be a directory for types 'all'");
         }
@@ -159,47 +115,83 @@ impl ArrowIpcTypes {
         // stats.arrow
         // upgrades.arrow
         // unit_born.arrow
-        // unit_cmd_target_point.arrow
-        // unit_cmd_target_unit.arrow
+        // unit_died.arrow
+        // cmd_target_point.arrow
+        // cmd_target_unit.arrow
         Self::Details
-            .handle_details_ipc_cmd(sources.clone(), output.join("details.arrow"), cache_path)
+            .handle_details_ipc_cmd(sources, output.join(DETAILS_ARROW_FNAME), cache_path)
             .await?;
+        println!(
+            "handle_write_snapshot {}: Total time: {:?}",
+            DETAILS_ARROW_FNAME,
+            init_time.elapsed()
+        );
         Self::Stats.handle_tracker_events(
-            sources.clone(),
-            output.join("stats.arrow"),
+            sources,
+            output.join(STATS_ARROW_FNAME),
             unit_abilities,
             disable_parallel_scans,
         )?;
+        println!(
+            "handle_write_snapshot {}: Total time: {:?}",
+            STATS_ARROW_FNAME,
+            init_time.elapsed()
+        );
         Self::Upgrades.handle_tracker_events(
-            sources.clone(),
-            output.join("upgrades.arrow"),
+            sources,
+            output.join(UPGRADES_ARROW_FNAME),
             unit_abilities,
             disable_parallel_scans,
         )?;
+        println!(
+            "handle_write_snapshot {}: Total time: {:?}",
+            UPGRADES_ARROW_FNAME,
+            init_time.elapsed()
+        );
         Self::UnitBorn.handle_tracker_events(
-            sources.clone(),
-            output.join("unit_born.arrow"),
+            sources,
+            output.join(UNIT_BORN_ARROW_FNAME),
             unit_abilities,
             disable_parallel_scans,
         )?;
+        println!(
+            "handle_write_snapshot {}: Total time: {:?}",
+            UNIT_BORN_ARROW_FNAME,
+            init_time.elapsed()
+        );
         Self::UnitDied.handle_tracker_events(
-            sources.clone(),
-            output.join("unit_died.arrow"),
+            sources,
+            output.join(UNIT_DIED_ARROW_FNAME),
             unit_abilities,
             disable_parallel_scans,
         )?;
+        println!(
+            "handle_write_snapshot {}: Total time: {:?}",
+            UNIT_DIED_ARROW_FNAME,
+            init_time.elapsed()
+        );
         Self::CmdTargetPoint.handle_game_events(
-            sources.clone(),
-            output.join("cmd_target_point.arrow"),
+            sources,
+            output.join(CMD_TARGET_POINT_ARROW_FNAME),
             unit_abilities,
             disable_parallel_scans,
         )?;
+        println!(
+            "handle_write_snapshot {}: Total time: {:?}",
+            CMD_TARGET_POINT_ARROW_FNAME,
+            init_time.elapsed()
+        );
         Self::CmdTargetUnit.handle_game_events(
-            sources.clone(),
+            sources,
             output.join("cmd_target_unit.arrow"),
             unit_abilities,
             disable_parallel_scans,
         )?;
+        println!(
+            "handle_write_snapshot: {}: Total time: {:?}",
+            CMD_TARGET_UNIT_ARROW_FNAME,
+            init_time.elapsed()
+        );
         Ok(())
     }
 
@@ -209,41 +201,49 @@ impl ArrowIpcTypes {
     #[tracing::instrument(level = "debug")]
     pub fn handle_tracker_events(
         &self,
-        sources: Vec<InitData>,
+        sources: &[SC2ReplayBasicData],
         output: PathBuf,
-        versioned_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+        versioned_abilities: &MultiVersionedBalanceUnits,
         disable_parallel_scans: bool,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        let init_time = std::time::Instant::now();
         tracing::info!("Processing TrackerEvents IPC write request: {:?}", self);
         let writer = open_arrow_mutex_writer(output, self.schema())?;
 
-        // XXX: Ok this is really very ugly/embarrasing, gotta find a way to switch between serial and parallel processing
         let total_records = if disable_parallel_scans {
             sources
                 .iter()
                 .filter_map(|source| {
                     let event_iterator =
-                        SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
-                    let (res, batch_len): (ArrayRef, usize) = match self {
+                        SC2EventIterator::new(&source, versioned_abilities).ok()?;
+                    match self {
                         Self::Stats => {
                             let batch = event_iterator.collect_into_player_stats_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
                         Self::Upgrades => {
                             let batch = event_iterator.collect_into_upgrades_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
                         Self::UnitBorn => {
                             let batch = event_iterator.collect_into_unit_born_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
                         Self::UnitDied => {
                             let batch = event_iterator.collect_into_unit_died_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
                         _ => unimplemented!(),
-                    };
-                    write_to_arrow_mutex_writer(&writer, res, batch_len)
+                    }
+                })
+                .collect::<Vec<ArrayRef>>()
+                .into_iter()
+                .filter_map(|array_ref| {
+                    if array_ref.len() == 0 {
+                        None
+                    } else {
+                        write_to_arrow_mutex_writer(&writer, array_ref)
+                    }
                 })
                 .sum::<usize>()
         } else {
@@ -251,32 +251,287 @@ impl ArrowIpcTypes {
                 .par_iter()
                 .filter_map(|source| {
                     let event_iterator =
-                        SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
-                    let (res, batch_len): (ArrayRef, usize) = match self {
+                        SC2EventIterator::new(&source, versioned_abilities).ok()?;
+                    match self {
                         Self::Stats => {
                             let batch = event_iterator.collect_into_player_stats_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
                         Self::Upgrades => {
                             let batch = event_iterator.collect_into_upgrades_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
                         Self::UnitBorn => {
                             let batch = event_iterator.collect_into_unit_born_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
                         Self::UnitDied => {
                             let batch = event_iterator.collect_into_unit_died_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
-                        _ => unimplemented!(),
-                    };
-                    write_to_arrow_mutex_writer(&writer, res, batch_len)
+                        _ => unreachable!(),
+                    }
+                })
+                .collect::<Vec<ArrayRef>>()
+                .into_iter()
+                .filter_map(|array_ref| {
+                    if array_ref.len() == 0 {
+                        None
+                    } else {
+                        write_to_arrow_mutex_writer(&writer, array_ref)
+                    }
                 })
                 .sum::<usize>()
         };
         tracing::info!("Loaded {} records", total_records);
-        close_arrow_mutex_writer(writer)
+        println!(
+            "handle_tracker_events: {}. records Total time: {:?}",
+            total_records,
+            init_time.elapsed(),
+        );
+        let res = close_arrow_mutex_writer(writer);
+        println!(
+            "handle_tracker_events: {}. records Total time: {:?}. after close mutex",
+            total_records,
+            init_time.elapsed(),
+        );
+        res
+    }
+
+    /// Creates a new Arrow IPC file with the tracker events data
+    /// This seems to be small enough to not need to be chunked and is done in parallel
+    /// This requires 1.5GB of RAM for 3600 files, so maybe not good for real players.
+    #[tracing::instrument(level = "debug")]
+    pub async fn write_all_tracker_events(
+        sources: &[SC2ReplayBasicData],
+        output: PathBuf,
+        versioned_abilities: &MultiVersionedBalanceUnits,
+        disable_parallel_scans: bool,
+        cache_path: &str,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let init_time = std::time::Instant::now();
+        if !output.is_dir() {
+            panic!("Output must be a directory for types 'all'");
+        }
+        tracing::info!("Processing TrackerEvents IPC write all request");
+        Self::Details
+            .handle_details_ipc_cmd(sources, output.join(DETAILS_ARROW_FNAME), cache_path)
+            .await?;
+        println!(
+            "handle_write_snapshot {}: Total time: {:?}",
+            DETAILS_ARROW_FNAME,
+            init_time.elapsed()
+        );
+        let stat_writer =
+            open_arrow_mutex_writer(output.join(STATS_ARROW_FNAME), PlayerStatsFlatRow::schema())?;
+        let upgrades_writer = open_arrow_mutex_writer(
+            output.join(UPGRADES_ARROW_FNAME),
+            PlayerStatsFlatRow::schema(),
+        )?;
+        let unit_born_writer = open_arrow_mutex_writer(
+            output.join(UNIT_BORN_ARROW_FNAME),
+            PlayerStatsFlatRow::schema(),
+        )?;
+        let unit_died_writer = open_arrow_mutex_writer(
+            output.join(UNIT_DIED_ARROW_FNAME),
+            PlayerStatsFlatRow::schema(),
+        )?;
+        let target_point_writer = open_arrow_mutex_writer(
+            output.join(CMD_TARGET_POINT_ARROW_FNAME),
+            PlayerStatsFlatRow::schema(),
+        )?;
+        let target_unit_writer = open_arrow_mutex_writer(
+            output.join(CMD_TARGET_UNIT_ARROW_FNAME),
+            PlayerStatsFlatRow::schema(),
+        )?;
+
+        let total_records = sources
+            .par_iter()
+            .filter_map(|source| {
+                let event_iterator = SC2EventIterator::new(&source, versioned_abilities).ok()?;
+
+                let ext_fs_id = event_iterator.sc2_state.details.ext_fs_id;
+                let (
+                    stat_rows,
+                    upgrade_rows,
+                    unit_born_rows,
+                    unit_died_rows,
+                    target_point_rows,
+                    target_unit_rows,
+                ) = event_iterator.into_iter().fold(
+                    (vec![], vec![], vec![], vec![], vec![], vec![]),
+                    |(
+                        mut stat_rows,
+                        mut upgrade_rows,
+                        mut unit_born_rows,
+                        mut unit_died_rows,
+                        mut target_point_rows,
+                        mut target_unit_rows,
+                    ),
+                     event_item| {
+                        match event_item.event_type {
+                            SC2EventType::Tracker {
+                                tracker_loop,
+                                event,
+                            } => match event {
+                                ReplayTrackerEvent::PlayerStats(event) => {
+                                    stat_rows.push(PlayerStatsFlatRow::new(
+                                        event,
+                                        tracker_loop,
+                                        ext_fs_id,
+                                    ));
+                                }
+                                ReplayTrackerEvent::UnitBorn(event) => {
+                                    if let Some(new_row) = UnitBornEventFlatRow::from_unit_born(
+                                        event,
+                                        tracker_loop,
+                                        ext_fs_id,
+                                        event_item.change_hint,
+                                    ) {
+                                        unit_born_rows.push(new_row);
+                                    }
+                                }
+                                ReplayTrackerEvent::UnitDone(event) => {
+                                    if let Some(new_row) = UnitBornEventFlatRow::from_unit_done(
+                                        event,
+                                        tracker_loop,
+                                        ext_fs_id,
+                                        event_item.change_hint,
+                                    ) {
+                                        unit_born_rows.push(new_row);
+                                    }
+                                }
+                                ReplayTrackerEvent::UnitTypeChange(event) => {
+                                    match event_item.change_hint {
+                                        UnitChangeHint::None => {}
+                                        change_hint => {
+                                            if let Some(new_row) =
+                                                UnitBornEventFlatRow::from_unit_type_change(
+                                                    event,
+                                                    tracker_loop,
+                                                    ext_fs_id,
+                                                    change_hint,
+                                                )
+                                            {
+                                                unit_born_rows.push(new_row);
+                                            }
+                                        }
+                                    }
+                                }
+                                ReplayTrackerEvent::UnitDied(event) => {
+                                    if let Some(new_row) = UnitDiedEventFlatRow::new(
+                                        ext_fs_id,
+                                        event,
+                                        tracker_loop,
+                                        event_item.change_hint,
+                                    ) {
+                                        unit_died_rows.push(new_row);
+                                    }
+                                }
+                                ReplayTrackerEvent::Upgrade(event) => {
+                                    upgrade_rows.push(UpgradeEventFlatRow::new(
+                                        event,
+                                        tracker_loop,
+                                        ext_fs_id,
+                                    ));
+                                }
+                                _ => {}
+                            },
+                            SC2EventType::Game {
+                                event: game_events::ReplayGameEvent::Cmd(event),
+                                game_loop,
+                                user_id,
+                                player_name,
+                            } => match event.m_data {
+                                game_events::GameSCmdData::TargetPoint(_) => {
+                                    target_point_rows.append(
+                                        &mut game_events::CmdTargetPointEventFlatRow::new(
+                                            ext_fs_id,
+                                            event,
+                                            game_loop,
+                                            user_id,
+                                            player_name,
+                                            event_item.change_hint,
+                                        ),
+                                    );
+                                }
+                                game_events::GameSCmdData::TargetUnit(_) => {
+                                    target_unit_rows.append(
+                                        &mut game_events::CmdTargetUnitEventFlatRow::new(
+                                            ext_fs_id,
+                                            event,
+                                            game_loop,
+                                            user_id,
+                                            player_name,
+                                            event_item.change_hint,
+                                        ),
+                                    );
+                                }
+                                _ => {}
+                            },
+                            _ => {}
+                        };
+                        (
+                            stat_rows,
+                            upgrade_rows,
+                            unit_born_rows,
+                            unit_died_rows,
+                            target_point_rows,
+                            target_unit_rows,
+                        )
+                    },
+                );
+                let stat_count =
+                    write_to_arrow_mutex_writer(&stat_writer, stat_rows.try_into_arrow().unwrap())
+                        .unwrap_or(0usize);
+                let upgrade_count = write_to_arrow_mutex_writer(
+                    &upgrades_writer,
+                    upgrade_rows.try_into_arrow().unwrap(),
+                )
+                .unwrap_or(0usize);
+                let unit_born_count = write_to_arrow_mutex_writer(
+                    &unit_born_writer,
+                    unit_born_rows.try_into_arrow().unwrap(),
+                )
+                .unwrap_or(0usize);
+                let unit_died_rows = write_to_arrow_mutex_writer(
+                    &unit_died_writer,
+                    unit_died_rows.try_into_arrow().unwrap(),
+                )
+                .unwrap_or(0usize);
+                let target_point_count = write_to_arrow_mutex_writer(
+                    &target_point_writer,
+                    target_point_rows.try_into_arrow().unwrap(),
+                )
+                .unwrap_or(0usize);
+                let target_unit_count = write_to_arrow_mutex_writer(
+                    &target_unit_writer,
+                    target_unit_rows.try_into_arrow().unwrap(),
+                )
+                .unwrap_or(0usize);
+                Some(
+                    stat_count
+                        + upgrade_count
+                        + unit_born_count
+                        + unit_died_rows
+                        + target_point_count
+                        + target_unit_count,
+                )
+            })
+            .sum::<usize>();
+        close_arrow_mutex_writer(stat_writer)?;
+        close_arrow_mutex_writer(upgrades_writer)?;
+        close_arrow_mutex_writer(unit_born_writer)?;
+        close_arrow_mutex_writer(unit_died_writer)?;
+        close_arrow_mutex_writer(target_point_writer)?;
+        close_arrow_mutex_writer(target_unit_writer)?;
+
+        println!(
+            "write_all_tracker_events completed after {:?} Total records: {}",
+            init_time.elapsed(),
+            total_records
+        );
+        Ok(())
     }
 
     /// Creates a new Arrow IPC file with the game events data
@@ -284,11 +539,12 @@ impl ArrowIpcTypes {
     #[tracing::instrument(level = "debug")]
     pub fn handle_game_events(
         &self,
-        sources: Vec<InitData>,
+        sources: &[SC2ReplayBasicData],
         output: PathBuf,
-        versioned_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+        versioned_abilities: &MultiVersionedBalanceUnits,
         disable_parallel_scans: bool,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        let init_time = std::time::Instant::now();
         tracing::info!("Processing GameEvents IPC write request: {:?}", self);
         let writer = open_arrow_mutex_writer(output, self.schema())?;
 
@@ -297,21 +553,29 @@ impl ArrowIpcTypes {
                 .iter()
                 .filter_map(|source| {
                     let event_iterator =
-                        SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
-                    let (res, batch_len): (ArrayRef, usize) = match self {
+                        SC2EventIterator::new(&source, versioned_abilities).ok()?;
+                    match self {
                         Self::CmdTargetPoint => {
                             let batch =
                                 event_iterator.collect_into_game_cmd_target_points_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
                         Self::CmdTargetUnit => {
                             let batch =
                                 event_iterator.collect_into_game_cmd_target_units_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
                         e => unimplemented!("{:?}", e),
-                    };
-                    write_to_arrow_mutex_writer(&writer, res, batch_len)
+                    }
+                })
+                .collect::<Vec<ArrayRef>>()
+                .into_iter()
+                .filter_map(|array_ref| {
+                    if array_ref.len() == 0 {
+                        None
+                    } else {
+                        write_to_arrow_mutex_writer(&writer, array_ref)
+                    }
                 })
                 .sum::<usize>()
         } else {
@@ -319,25 +583,34 @@ impl ArrowIpcTypes {
                 .par_iter()
                 .filter_map(|source| {
                     let event_iterator =
-                        SC2EventIterator::new(source, versioned_abilities.clone()).ok()?;
-                    let (res, batch_len): (ArrayRef, usize) = match self {
+                        SC2EventIterator::new(&source, versioned_abilities).ok()?;
+                    match self {
                         Self::CmdTargetPoint => {
                             let batch =
                                 event_iterator.collect_into_game_cmd_target_points_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
                         Self::CmdTargetUnit => {
                             let batch =
                                 event_iterator.collect_into_game_cmd_target_units_flat_rows();
-                            (batch.try_into_arrow().ok()?, batch.len())
+                            batch.try_into_arrow().ok()
                         }
                         e => unimplemented!("{:?}", e),
-                    };
-                    write_to_arrow_mutex_writer(&writer, res, batch_len)
+                    }
+                })
+                .collect::<Vec<ArrayRef>>()
+                .into_iter()
+                .filter_map(|array_ref| {
+                    if array_ref.len() == 0 {
+                        None
+                    } else {
+                        write_to_arrow_mutex_writer(&writer, array_ref)
+                    }
                 })
                 .sum::<usize>()
         };
         tracing::info!("Loaded {} records", total_records);
+        println!("handle_game_events: Total time: {:?}", init_time.elapsed());
         close_arrow_mutex_writer(writer)
     }
 
@@ -345,7 +618,7 @@ impl ArrowIpcTypes {
     #[tracing::instrument(level = "debug")]
     pub fn handle_read_once_write_all(
         &self,
-        sources: Vec<InitData>,
+        sources: &[SC2ReplayBasicData],
         output: PathBuf,
     ) -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("Processing Read Once Write All IPC request");
@@ -354,14 +627,8 @@ impl ArrowIpcTypes {
         let details_flaw_rows: Vec<PlayerLobbyDetailsFlatRow> = sources
             .iter()
             .flat_map(|source| {
-                let res: Vec<PlayerLobbyDetails> = match source.try_into() {
-                    Ok(details) => details,
-                    Err(err) => {
-                        tracing::error!("Error reading details: {:?}", err);
-                        return vec![];
-                    }
-                };
-                res.into_iter()
+                std::convert::Into::<Vec<PlayerLobbyDetails>>::into(source)
+                    .into_iter()
                     .map(|d| d.into())
                     .collect::<Vec<PlayerLobbyDetailsFlatRow>>()
             })
@@ -380,7 +647,7 @@ impl ArrowIpcTypes {
     #[tracing::instrument(level = "debug")]
     pub async fn handle_details_ipc_cmd(
         &self,
-        sources: Vec<InitData>,
+        sources: &[SC2ReplayBasicData],
         output: PathBuf,
         cache_path: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
@@ -389,35 +656,24 @@ impl ArrowIpcTypes {
         // Identify from the cache handle bundles where the map info is located and get its sha256 digest for uniqueness.
         let cache_handle_to_map_info_digest =
             populate_map_info_digest_from_caches(&sources, cache_path.to_string()).await;
-        tracing::error!(
-            "cache_handle_to_map_info_digest: {:?}",
-            cache_handle_to_map_info_digest
-        );
+
         let details_flaw_rows: Vec<PlayerLobbyDetailsFlatRow> = sources
-            .iter()
-            .flat_map(|source| {
-                let mut res: Vec<PlayerLobbyDetails> = match source.try_into() {
-                    Ok(details) => details,
-                    Err(err) => {
-                        tracing::error!("Error reading details: {:?}", err);
-                        return vec![];
-                    }
-                };
-                for detail in res.iter_mut() {
-                    for cache_id in &detail.cache_handles {
-                        if let Some(Some(map_info_digest)) =
-                            cache_handle_to_map_info_digest.get(cache_id)
-                        {
-                            detail.map_info_sha256 = map_info_digest.to_owned();
-                            break;
-                        }
+            .par_iter()
+            .map(|source| std::convert::Into::<Vec<PlayerLobbyDetails>>::into(source))
+            .flatten()
+            .map(|mut detail| {
+                for cache_id in &detail.cache_handles {
+                    if let Some(Some(map_info_digest)) =
+                        cache_handle_to_map_info_digest.get(cache_id)
+                    {
+                        detail.map_info_sha256 = map_info_digest.to_owned();
+                        break;
                     }
                 }
-                res.into_iter()
-                    .map(|d| d.into())
-                    .collect::<Vec<PlayerLobbyDetailsFlatRow>>()
+                detail
             })
-            .collect();
+            .map(|d| d.into())
+            .collect::<Vec<PlayerLobbyDetailsFlatRow>>();
         let res: ArrayRef = details_flaw_rows.try_into_arrow()?;
         let chunk: RecordBatch = res
             .as_any()
@@ -435,7 +691,7 @@ impl ArrowIpcTypes {
         source: PathBuf,
         output: PathBuf,
         cmd: &WriteArrowIpcProps,
-        unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+        unit_abilities: &MultiVersionedBalanceUnits,
         disable_parallel_scans: bool,
         cache_path: String,
     ) -> Result<(), Box<dyn std::error::Error>> {
@@ -449,35 +705,35 @@ impl ArrowIpcTypes {
         );
         let sources = get_matching_files(source, cmd.scan_max_files, cmd.traverse_max_depth)?;
         println!("Located {} matching files by extension", sources.len());
-        let sources: Vec<InitData> = if disable_parallel_scans {
+        let sources: Vec<SC2ReplayBasicData> = if disable_parallel_scans {
             tracing::debug!("Working serially");
             sources
                 .iter()
                 .enumerate()
                 .filter_map(|(idx, source)| {
-                    InitData::try_from((source.clone(), u64::try_from(idx).unwrap())).ok()
+                    SC2ReplayBasicData::new(source, u64::try_from(idx).unwrap()).ok()
                 })
-                .collect::<Vec<InitData>>()
+                .collect::<Vec<SC2ReplayBasicData>>()
         } else {
             tracing::debug!("Working in parallel");
             sources
                 .par_iter()
                 .enumerate()
                 .filter_map(|(idx, source)| {
-                    InitData::try_from((source.clone(), u64::try_from(idx).unwrap())).ok()
+                    SC2ReplayBasicData::new(source, u64::try_from(idx).unwrap()).ok()
                 })
-                .collect::<Vec<InitData>>()
+                .collect::<Vec<SC2ReplayBasicData>>()
         };
-        let sources: Vec<InitData> = sources
+        let sources: Vec<SC2ReplayBasicData> = sources
             .into_iter()
             .filter(|source| {
                 if let Some(min_version) = cmd.min_version
-                    && source.version < min_version
+                    && source.init_data.version < min_version
                 {
                     return false;
                 }
                 if let Some(max_version) = cmd.max_version
-                    && source.version > max_version
+                    && source.init_data.version > max_version
                 {
                     return false;
                 }
@@ -493,8 +749,8 @@ impl ArrowIpcTypes {
                 sources.len()
             );
         }
-        Self::handle_write_snapshot(
-            sources,
+        Self::write_all_tracker_events(
+            &sources,
             output,
             unit_abilities,
             disable_parallel_scans,

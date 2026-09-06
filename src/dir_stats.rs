@@ -1,6 +1,6 @@
 use super::*;
 use crate::details::Details;
-use crate::game_events::VersionedBalanceUnit;
+use crate::game_events::MultiVersionedBalanceUnits;
 use crate::game_events::ability::balance_data::json_handler::read_balance_data_from_included_assets;
 
 use crate::get_matching_files;
@@ -29,8 +29,7 @@ impl SC2ReplaysDirStats {
         dir_path: &str,
         serial: bool,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let unit_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
-            read_balance_data_from_included_assets()?;
+        let unit_abilities: MultiVersionedBalanceUnits = read_balance_data_from_included_assets()?;
         scan_path(dir_path, &unit_abilities, serial)
     }
 }
@@ -38,7 +37,7 @@ impl SC2ReplaysDirStats {
 #[tracing::instrument(level = "debug", skip(unit_abilities))]
 pub fn scan_path(
     path: &str,
-    unit_abilities: &HashMap<(u32, String), VersionedBalanceUnit>,
+    unit_abilities: &MultiVersionedBalanceUnits,
     serially: bool,
 ) -> Result<SC2ReplaysDirStats, Box<dyn std::error::Error>> {
     let dir_path = PathBuf::from(path);
@@ -55,8 +54,7 @@ pub fn scan_path(
 
     let mut user_freq: HashMap<String, usize> = HashMap::new();
     let mut map_freq: HashMap<String, usize> = HashMap::new();
-    let versions_with_abilities: Vec<u32> =
-        unit_abilities.keys().map(|(version, _)| *version).collect();
+    let versions_with_abilities: Vec<u32> = unit_abilities.keys().copied().collect();
 
     let init_data_files: Vec<InitData> = if serially {
         sources

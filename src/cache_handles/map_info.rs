@@ -51,7 +51,8 @@ impl MapInfo {
         mpq: &MPQ,
         file_contents: &[u8],
     ) -> Result<Self, S2ProtocolError> {
-        let (_, map_info_sector) = mpq.read_mpq_file_sector("MapInfo", false, file_contents)?;
+        let (_, map_info_sector) =
+            mpq.read_mpq_file_sector(MAP_INFO_FILE_NAME, false, file_contents)?;
         let (_, map_info) = Self::parse(cache_handle_id, &map_info_sector)?;
         Ok(map_info)
     }

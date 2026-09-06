@@ -5,6 +5,7 @@ pub mod arrow_store;
 pub mod bit_packed_decoder;
 pub mod cache_handles;
 
+pub mod basic_replay_data;
 pub mod common;
 pub mod details;
 pub mod dir_stats;

@@ -9,12 +9,12 @@
 //! This means 10 max events types are supported.
 
 use super::*;
+use crate::basic_replay_data::SC2ReplayBasicData;
 use crate::details::Details;
 use crate::details::PlayerLobbyDetails;
 use crate::filters::SC2ReplayFilters;
-use crate::game_events::{
-    GameEventIteratorState, VersionedBalanceUnit, VersionedBalanceUnits, handle_game_event,
-};
+use crate::game_events::MultiVersionedBalanceUnits;
+use crate::game_events::{GameEventIteratorState, VersionedBalanceUnits, handle_game_event};
 use crate::tracker_events::{TrackertEventIteratorState, handle_tracker_event};
 use crate::{common::*, game_events::GameSPointMini};
 use game_events::GameSCmdEvent;
@@ -242,31 +242,28 @@ pub struct SC2ReplayState {
     pub balance_units: VersionedBalanceUnits,
 }
 
-impl TryFrom<&InitData> for SC2ReplayState {
-    type Error = S2ProtocolError;
-    fn try_from(init_data: &InitData) -> Result<Self, Self::Error> {
+impl From<SC2ReplayBasicData> for SC2ReplayState {
+    fn from(basic_data: SC2ReplayBasicData) -> Self {
         let mut user_state: HashMap<i64, SC2UserState> = HashMap::new();
-        let details = Details::try_from(init_data)?;
-        let player_lobby_slots: Vec<PlayerLobbyDetails> = init_data.try_into()?;
-        for player in player_lobby_slots.iter() {
-            if let Some(user_id) = player.lobby_slot.user_id {
-                user_state.insert(user_id, SC2UserState::new(player.clone()));
-            }
-        }
-        Ok(Self {
-            init_data: init_data.clone(),
-            details,
+        let _ = std::convert::Into::<Vec<PlayerLobbyDetails>>::into(&basic_data)
+            .iter()
+            .map(|player| {
+                if let Some(user_id) = player.lobby_slot.user_id {
+                    user_state.insert(user_id, SC2UserState::new(player.clone()));
+                }
+            })
+            .collect::<()>();
+        Self {
+            init_data: basic_data.init_data,
+            details: basic_data.details,
             user_state,
             ..Default::default()
-        })
+        }
     }
 }
 
 impl SC2ReplayState {
-    pub fn with_balance_units(
-        mut self,
-        balance_units: HashMap<String, VersionedBalanceUnit>,
-    ) -> Self {
+    pub fn with_balance_units(mut self, balance_units: VersionedBalanceUnits) -> Self {
         self.balance_units = balance_units;
         self
     }
@@ -331,10 +328,10 @@ impl SC2EventIterator {
     /// Creates a new SC2EventIterator from a PathBuf
     #[tracing::instrument(level = "debug")]
     pub fn new(
-        init_data: &InitData,
-        multi_version_abilities: HashMap<(u32, String), VersionedBalanceUnit>,
+        basic_data: &SC2ReplayBasicData,
+        multi_version_abilities: &MultiVersionedBalanceUnits,
     ) -> Result<Self, S2ProtocolError> {
-        let source = PathBuf::from(init_data.ext_fs_file_name.clone());
+        let source = PathBuf::from(basic_data.init_data.ext_fs_file_name.clone());
         let total_initial_abilities = multi_version_abilities.len();
         let file_contents = crate::read_file(&source)?;
         let (_input, mpq) = crate::parser::parse(&file_contents)?;
@@ -342,24 +339,19 @@ impl SC2EventIterator {
             mpq.read_mpq_file_sector("replay.tracker.events", false, &file_contents)?;
         let (_event_tail, game_events) =
             mpq.read_mpq_file_sector("replay.game.events", false, &file_contents)?;
-        let balance_units: HashMap<String, VersionedBalanceUnit> = multi_version_abilities
-            .into_iter()
-            .filter_map(|((version, name), unit)| {
-                if version == init_data.version {
-                    Some((name, unit))
-                } else {
-                    None
-                }
-            })
-            .collect();
+        let balance_units: VersionedBalanceUnits =
+            match multi_version_abilities.get(&basic_data.init_data.version) {
+                Some(val) => val.to_owned(),
+                None => HashMap::new(),
+            };
         tracing::info!(
             "Collected {} unit definitions for protocol version {} out of {} total definitions",
             balance_units.len(),
-            init_data.version,
+            basic_data.init_data.version,
             total_initial_abilities
         );
 
-        let sc2_state = SC2ReplayState::try_from(init_data)?.with_balance_units(balance_units);
+        let sc2_state = SC2ReplayState::from(basic_data.clone()).with_balance_units(balance_units);
         Ok(Self {
             sc2_state,
             tracker_iterator_state: tracker_events.into(),
@@ -410,7 +402,7 @@ impl SC2EventIterator {
                     && let game_events::GameSCmdData::TargetPoint(_) = event.m_data
                 {
                     return game_events::CmdTargetPointEventFlatRow::new(
-                        &details,
+                        details.ext_fs_id,
                         event,
                         game_loop,
                         user_id,
@@ -443,7 +435,7 @@ impl SC2EventIterator {
                     && let game_events::GameSCmdData::TargetUnit(_) = event.m_data
                 {
                     return game_events::CmdTargetUnitEventFlatRow::new(
-                        &details,
+                        details.ext_fs_id,
                         event,
                         game_loop,
                         user_id,
@@ -472,7 +464,7 @@ impl SC2EventIterator {
                         Some(tracker_events::PlayerStatsFlatRow::new(
                             event,
                             tracker_loop,
-                            details.clone(),
+                            details.ext_fs_id,
                         ))
                     } else {
                         None
@@ -497,7 +489,7 @@ impl SC2EventIterator {
                         Some(tracker_events::UpgradeEventFlatRow::new(
                             event,
                             tracker_loop,
-                            details.clone(),
+                            details.ext_fs_id,
                         ))
                     } else {
                         None
@@ -522,7 +514,7 @@ impl SC2EventIterator {
                         tracker_events::UnitBornEventFlatRow::from_unit_born(
                             event,
                             tracker_loop,
-                            &details,
+                            details.ext_fs_id,
                             event_item.change_hint,
                         )
                     }
@@ -530,7 +522,7 @@ impl SC2EventIterator {
                         tracker_events::UnitBornEventFlatRow::from_unit_done(
                             event,
                             tracker_loop,
-                            &details,
+                            details.ext_fs_id,
                             event_item.change_hint,
                         )
                     }
@@ -541,7 +533,7 @@ impl SC2EventIterator {
                                 tracker_events::UnitBornEventFlatRow::from_unit_type_change(
                                     event,
                                     tracker_loop,
-                                    &details,
+                                    details.ext_fs_id,
                                     change_hint,
                                 )
                             }
@@ -549,6 +541,32 @@ impl SC2EventIterator {
                     }
                     _ => None,
                 },
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// Consumes the Iterator collecting only the UnitDied events into a vector of UnitBornEventFlatRow
+    #[cfg(feature = "dep_arrow")]
+    pub fn write_to_flat_rows(self) -> Vec<tracker_events::UnitDiedEventFlatRow> {
+        let details = self.sc2_state.details.clone();
+        self.into_iter()
+            .filter_map(|event_item| match event_item.event_type {
+                SC2EventType::Tracker {
+                    tracker_loop,
+                    event,
+                } => {
+                    if let tracker_events::ReplayTrackerEvent::UnitDied(event) = event {
+                        tracker_events::UnitDiedEventFlatRow::new(
+                            details.ext_fs_id,
+                            event,
+                            tracker_loop,
+                            event_item.change_hint,
+                        )
+                    } else {
+                        None
+                    }
+                }
                 _ => None,
             })
             .collect()
@@ -566,7 +584,7 @@ impl SC2EventIterator {
                 } => {
                     if let tracker_events::ReplayTrackerEvent::UnitDied(event) = event {
                         tracker_events::UnitDiedEventFlatRow::new(
-                            &details,
+                            details.ext_fs_id,
                             event,
                             tracker_loop,
                             event_item.change_hint,

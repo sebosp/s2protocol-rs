@@ -3,7 +3,7 @@
 //! containing map resources, mod information, visual resources such
 //! as images used in overlays for tournament, organizers, etc.
 
-use crate::{InitData, S2ProtocolError};
+use crate::{S2ProtocolError, basic_replay_data::SC2ReplayBasicData};
 
 pub mod cache_objects;
 pub mod document_header;
@@ -15,13 +15,11 @@ pub mod t3_terrain;
 use cache_objects::PlacedObjects;
 use document_header::DocumentHeader;
 use map_info::MapInfo;
-use rayon::prelude::*;
 use std::{collections::HashMap, path::Path};
 use t3_height_map::T3HeightMap;
 use t3_terrain::T3Terrain;
 
 pub use map::*;
-use nom_mpq::MPQ;
 use tracing::{self, instrument};
 
 pub const CACHE_MPQ_ARCHIVE_EXTENSION: &'static str = "s2ma";
@@ -31,14 +29,9 @@ pub const T3_HEIGHT_MAP_FILE_NAME: &'static str = "t3HeightMap";
 pub const T3_TERRAIN_MAP_FILE_NAME: &'static str = "t3Terrain.xml";
 pub const PLACED_OBJECTS_FILE_NAME: &'static str = "Objects";
 
-/// The SC2Replay has a list of cache files, these caches must be downloaded from the blizzard depots.
-/// This struct helps loading caches from this list.
-/// For now. the first entry found from the list is returned.
-/// Not sure there is some logic overwritting files.
+/// The MapCaches are specific to one SC2Replay File
 #[derive(Debug)]
-pub struct CacheCollection {
-    pub cache_path: String,
-    pub cache_ids: Vec<String>,
+pub struct MapCache {
     pub map_info: MapInfo,
     pub document_header: DocumentHeader,
     pub t3_height_map: T3HeightMap,
@@ -46,124 +39,117 @@ pub struct CacheCollection {
     pub placed_objects: PlacedObjects,
 }
 
-// A helper build to attempt to locate the different resources from the CacheCollection.
-#[derive(Debug)]
-pub struct CacheCollectionBuilder {
-    pub cache_path: String,
-    pub cache_ids: Vec<String>,
+#[derive(Debug, PartialEq)]
+pub struct MPQNamedSector {
+    pub name: String,
+    pub content: Vec<u8>,
 }
 
-impl CacheCollectionBuilder {
-    pub fn new(cache_path: String, cache_ids: Vec<String>) -> Self {
+/// The SC2Replay has a list of cache files, these caches must be downloaded from the blizzard depots.
+/// This struct helps loading caches from this list.
+/// For now. the first entry found from the list is returned.
+/// Not sure there is some logic overwritting files.
+#[derive(Debug)]
+pub struct CacheCollection {
+    pub cache_path: String,
+    // A cache_fs of sorts, one cache_id contains the MPQ files names.
+    pub cache_fs: HashMap<String, Vec<MPQNamedSector>>,
+}
+
+fn try_read_embedded_sectors_with_contents(
+    cache_handle_fname: &str,
+) -> Result<Vec<MPQNamedSector>, S2ProtocolError> {
+    let (_, cache_contents) = crate::read_mpq(cache_handle_fname)?;
+    let (_contents, mpq) = nom_mpq::parser::parse(&cache_contents)?;
+    let mut embedded_files: Vec<MPQNamedSector> = vec![];
+    if let Ok(mpq_embedded_files) = mpq.get_files(&cache_contents) {
+        for (mpq_embedded_file_name, _file_size) in mpq_embedded_files {
+            let (_, sector_content) =
+                mpq.read_mpq_file_sector(&mpq_embedded_file_name, false, &cache_contents)?;
+            embedded_files.push(MPQNamedSector {
+                name: mpq_embedded_file_name,
+                content: sector_content,
+            });
+        }
+    }
+    Ok(embedded_files)
+}
+impl CacheCollection {
+    pub fn new(cache_path: String) -> Self {
         Self {
             cache_path,
-            cache_ids,
+            cache_fs: HashMap::new(),
         }
     }
 
-    /// Tries to get a file from an MPQ archive
-    /// name.
-    #[instrument(level = "debug", skip(self))]
-    pub fn try_get_target_file_from_mpq(
-        &self,
-        cache_handle_fname: &str,
-        target_file_name: &str,
-    ) -> Result<Option<(MPQ, Vec<u8>)>, S2ProtocolError> {
-        tracing::info!("Checking cache_handle_fname: {}", cache_handle_fname);
-        let (_, cache_contents) = crate::read_mpq(&cache_handle_fname)?;
-        let (_contents, mpq) = nom_mpq::parser::parse(&cache_contents)?;
-        for (embedded_file_name, _file_size) in mpq.get_files(&cache_contents)? {
-            if embedded_file_name == target_file_name {
-                return Ok(Some((mpq, cache_contents)));
+    /// Adds a list of caches to the collection.
+    pub fn add_cache_ids(&mut self, cache_ids: &[String]) {
+        for cache_id in cache_ids {
+            if self.cache_fs.contains_key(cache_id) {
+                continue;
+            }
+            let cache_handle_fname = format!(
+                "{}/{}.{}",
+                self.cache_path, cache_id, CACHE_MPQ_ARCHIVE_EXTENSION
+            );
+            if let Ok(named_sector) = try_read_embedded_sectors_with_contents(&cache_handle_fname) {
+                self.cache_fs.insert(cache_id.to_string(), named_sector);
+            } else {
+                self.cache_fs.insert(cache_id.to_string(), vec![]);
             }
         }
-        Ok(None)
     }
 
-    /// Iterates over the [`cache_ids`] stored at [`cache_path`] and tries to locate the MPQ by
-    /// name.
+    /// Iterates over the [`cache_ids`] stored at [`cache_path`] and returns the byte content if any.
     #[instrument(level = "debug", skip(self))]
-    pub fn try_get_file_from_mpq_list(
+    pub fn try_get_sector_content_from_collection(
         &self,
+        cache_ids: &[String],
         target_file_name: &str,
-    ) -> Result<(String, MPQ, Vec<u8>), S2ProtocolError> {
-        let mut res: Vec<(String, MPQ, Vec<u8>)> = self
-            .cache_ids
-            .par_iter()
-            .filter_map(|cache_handle_id| {
-                if cache_handle_id.is_empty() {
-                    return None;
+    ) -> Result<(String, Vec<u8>), S2ProtocolError> {
+        for cache_id in cache_ids {
+            if let Some(cache_contents) = self.cache_fs.get(cache_id) {
+                for mpq_file_with_digest in cache_contents {
+                    if mpq_file_with_digest.name == target_file_name {
+                        return Ok((cache_id.clone(), mpq_file_with_digest.content.clone()));
+                    }
                 }
-                let cache_handle_fname = format!(
-                    "{}/{}.{}",
-                    self.cache_path, cache_handle_id, CACHE_MPQ_ARCHIVE_EXTENSION
-                );
-                let Ok(Some((mpq, cache_contents))) =
-                    self.try_get_target_file_from_mpq(&cache_handle_fname, target_file_name)
-                else {
-                    // This is normal, some s2ma files are ascii content such as: "Standard Data: Liberty.SC2Mod"
-                    return None;
-                };
-                Some((cache_handle_id.to_owned(), mpq, cache_contents))
-            })
-            .collect();
-        if res.len() == 0 {
-            return Err(S2ProtocolError::CacheResource(format!(
-                "Unable to locate {} in path {} with cache_ids {:?}",
-                target_file_name, self.cache_path, self.cache_ids
-            )));
+            }
         }
-        // This should contain only one element.
-        Ok(res.remove(0))
+        Err(S2ProtocolError::CacheResource(format!(
+            "{} Not found in CacheCollection",
+            target_file_name
+        )))
     }
 
     #[instrument(level = "debug", skip(self))]
-    pub fn build(self) -> Result<CacheCollection, S2ProtocolError> {
+    pub fn build_map_cache(&self, cache_ids: &[String]) -> Result<MapCache, S2ProtocolError> {
         let init_time_4 = std::time::Instant::now();
-        let init_time_5 = std::time::Instant::now();
-        let (cache_handle_id, mpq, cache_contents) =
-            self.try_get_file_from_mpq_list(MAP_INFO_FILE_NAME)?;
-        println!(
-            "----- init_5: MAP_INFO_FILE_NAME {:?}",
-            init_time_5.elapsed(),
-        );
-        let map_info = MapInfo::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
-        let (cache_handle_id, mpq, cache_contents) =
-            self.try_get_file_from_mpq_list(DOCUMENT_HEADER_FILE_NAME)?;
-        println!(
-            "----- init_5: DOCUMENT_HEADER_FILE_NAME {:?}",
-            init_time_5.elapsed(),
-        );
-        let document_header = DocumentHeader::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
-        let (cache_handle_id, mpq, cache_contents) =
-            self.try_get_file_from_mpq_list(T3_HEIGHT_MAP_FILE_NAME)?;
-        println!(
-            "----- init_5: T3_HEIGHT_MAP_FILE_NAME {:?}",
-            init_time_5.elapsed(),
-        );
-        let t3_height_map =
-            T3HeightMap::from_mpq(cache_handle_id, &mpq, &cache_contents, &map_info)?;
-        let (cache_handle_id, mpq, cache_contents) =
-            self.try_get_file_from_mpq_list(T3_TERRAIN_MAP_FILE_NAME)?;
-        println!(
-            "----- init_5: T3_TERRAIN_MAP_FILE_NAME {:?}",
-            init_time_5.elapsed(),
-        );
-        let t3_terrain = T3Terrain::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
-        let (cache_handle_id, mpq, cache_contents) =
-            self.try_get_file_from_mpq_list(PLACED_OBJECTS_FILE_NAME)?;
-        let placed_objects = PlacedObjects::from_mpq(cache_handle_id, &mpq, &cache_contents)?;
-        println!(
-            "----- init_5: PLACED_OBJECTS_FILE_NAME {:?}",
-            init_time_5.elapsed(),
-        );
+
+        let (cache_handle_id, cache_contents) =
+            self.try_get_sector_content_from_collection(cache_ids, MAP_INFO_FILE_NAME)?;
+        let (_, map_info) = MapInfo::parse(cache_handle_id, &cache_contents)?;
+
+        let (cache_handle_id, cache_contents) =
+            self.try_get_sector_content_from_collection(cache_ids, DOCUMENT_HEADER_FILE_NAME)?;
+        let (_, document_header) = DocumentHeader::parse(cache_handle_id, &cache_contents)?;
+
+        let (cache_handle_id, cache_contents) =
+            self.try_get_sector_content_from_collection(cache_ids, T3_HEIGHT_MAP_FILE_NAME)?;
+        let (_, t3_height_map) = T3HeightMap::parse(cache_handle_id, &cache_contents, &map_info)?;
+
+        let (cache_handle_id, cache_contents) =
+            self.try_get_sector_content_from_collection(cache_ids, T3_TERRAIN_MAP_FILE_NAME)?;
+        let t3_terrain = T3Terrain::parse(cache_handle_id, &cache_contents)?;
+
+        let (cache_handle_id, cache_contents) =
+            self.try_get_sector_content_from_collection(cache_ids, PLACED_OBJECTS_FILE_NAME)?;
+        let placed_objects = PlacedObjects::parse(cache_handle_id, &cache_contents)?;
         println!(
             "---- init_4: CacheCollectionBuilder::build : {:?}",
             init_time_4.elapsed(),
         );
-        Ok(CacheCollection {
-            cache_path: self.cache_path,
-            cache_ids: self.cache_ids,
+        Ok(MapCache {
             map_info,
             document_header,
             t3_height_map,
@@ -178,7 +164,7 @@ impl CacheCollectionBuilder {
 /// There's a version to a map, but I haven't identified it yet from the decoded data.
 #[instrument]
 pub async fn populate_map_info_digest_from_caches(
-    sources: &[InitData],
+    sources: &[SC2ReplayBasicData],
     destination: String,
 ) -> HashMap<String, Option<String>> {
     let init_time = std::time::Instant::now();
@@ -187,6 +173,7 @@ pub async fn populate_map_info_digest_from_caches(
         .iter()
         .map(|source| {
             source
+                .init_data
                 .sync_lobby_state
                 .game_description
                 .cache_handles
@@ -194,11 +181,13 @@ pub async fn populate_map_info_digest_from_caches(
                 .map(|x| {
                     (
                         source
+                            .init_data
                             .sync_lobby_state
                             .game_description
                             .cache_handle_region
                             .as_str(),
                         source
+                            .init_data
                             .sync_lobby_state
                             .game_description
                             .cache_handle_extension
@@ -228,14 +217,19 @@ pub async fn populate_map_info_digest_from_caches(
         )
         .count();
     println!(
-        "- init_1 After ({}) downloads: {:?}",
+        "- init_1 After {} downloads/checks: {:?}",
         downloaded_cache_count,
         init_time.elapsed(),
     );
+    let mut cache_builder = CacheCollection::new(destination.clone());
+    for source in sources.iter() {
+        cache_builder.add_cache_ids(&source.details.cache_handles)
+    }
 
     for source in sources.iter() {
         let mut has_known_map_sha_digest = false;
         for cache_handle_str in source
+            .init_data
             .sync_lobby_state
             .game_description
             .cache_handles
@@ -251,29 +245,16 @@ pub async fn populate_map_info_digest_from_caches(
         if !has_known_map_sha_digest {
             // We need to traverse the cache_handles on the current replay and locate the Mapinfo
             // from them:
-            let cache_builder = CacheCollectionBuilder::new(
-                destination.clone(),
-                source
-                    .sync_lobby_state
-                    .game_description
-                    .cache_handles
-                    .clone(),
-            );
-            let init_time_3 = std::time::Instant::now();
-            if let Ok(cache_collecion) = cache_builder.build() {
+            if let Ok(map_cache) = cache_builder.build_map_cache(&source.details.cache_handles) {
                 let _ = cache_handle_ids.insert(
-                    cache_collecion.map_info.cache_handle_id,
-                    Some(cache_collecion.map_info.sector_sha256_sum),
+                    map_cache.map_info.cache_handle_id,
+                    Some(map_cache.map_info.sector_sha256_sum),
                 );
             }
-            println!(
-                "--- init_3: cache_builder.build(): {:?}",
-                init_time_3.elapsed(),
-            );
         }
     }
     println!(
-        "populate_map_info_digest_from_caches: init_1 Total time: {:?}",
+        "populate_map_info_digest_from_caches: Total time: {:?}",
         init_time.elapsed()
     );
     let owned_cache_handle_ids: Vec<(String, Option<String>)> = cache_handle_ids

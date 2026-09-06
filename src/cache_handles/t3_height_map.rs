@@ -1,3 +1,4 @@
+use super::T3_HEIGHT_MAP_FILE_NAME;
 use super::map::MapError;
 use super::map::coords::*;
 use super::map_info::MapInfo;
@@ -27,7 +28,7 @@ impl T3HeightMap {
         map_info: &MapInfo,
     ) -> Result<Self, S2ProtocolError> {
         let (_, t3_height_sector) =
-            mpq.read_mpq_file_sector("t3HeightMap", false, file_contents)?;
+            mpq.read_mpq_file_sector(T3_HEIGHT_MAP_FILE_NAME, false, file_contents)?;
         let (_, t3_height_map) = Self::parse(cache_handle_id, &t3_height_sector, map_info)?;
         Ok(t3_height_map)
     }

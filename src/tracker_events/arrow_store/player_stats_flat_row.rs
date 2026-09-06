@@ -1,6 +1,10 @@
 //! Player stats flat row
 
 #[cfg(feature = "dep_arrow")]
+use arrow::datatypes::{DataType::Struct, Schema};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::field::ArrowField;
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::tracker_events::PlayerStatsEvent;
@@ -62,11 +66,7 @@ pub struct PlayerStatsFlatRow {
 
 impl PlayerStatsFlatRow {
     /// Create a new PlayerStatsFlatRow from a PlayerStats and the fields from the Details MPQ sector
-    pub fn new(
-        event: PlayerStatsEvent,
-        ext_replay_loop: i64,
-        details: crate::details::Details,
-    ) -> Self {
+    pub fn new(event: PlayerStatsEvent, ext_replay_loop: i64, ext_fs_id: u64) -> Self {
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
         let stats = event.stats;
         Self {
@@ -112,7 +112,15 @@ impl PlayerStatsFlatRow {
             vespene_friendly_fire_technology: stats.vespene_friendly_fire_technology,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_id: details.ext_fs_id,
+            ext_fs_id,
+        }
+    }
+
+    pub fn schema() -> Schema {
+        if let Struct(fields) = PlayerStatsFlatRow::data_type() {
+            Schema::new(fields.clone())
+        } else {
+            panic!("Invalid schema, expected struct");
         }
     }
 }
