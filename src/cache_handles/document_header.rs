@@ -63,6 +63,7 @@ impl DocumentHeader {
             | "DocInfo/Screenshot01"
             | "DocInfo/Screenshot02"
             | "DocInfo/Screenshot03"
+            | "DocInfo/Screenshot04"
             | "DocInfo/HowToPlayBasic00"
             | "DocInfo/HowToPlayBasic01"
             | "DocInfo/HowToPlayBasic02"
@@ -150,11 +151,13 @@ impl DocumentHeader {
 
         let (tail, string_bytes) = dbg_peek_hex(take_while(|x| x != 0u8), "read mod string")(tail)?;
         res.mod_info = String::from_utf8_lossy(string_bytes).to_string();
+        /*
+        * Commenting for now, Mothership map has mod_info 'bnet:Swarm (Mod)/0.0/999,file:Mods/Swarm.SC2Mod"))'
         if res.mod_info != "bnet:Void (Mod)/0.0/999,file:Mods/Void.SC2Mod" {
             return Err(S2ProtocolError::Map(crate::cache_handles::MapError::Other(
-                "Only parsed Void typed.".to_string(),
+                format!("Only parsed Void typed. But found {}", res.mod_info),
             )));
-        }
+        }*/
 
         tracing::debug!("Got mod_info: {}", res.mod_info);
 

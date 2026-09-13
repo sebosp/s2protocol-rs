@@ -252,6 +252,7 @@ pub struct Details {
     pub ext_fs_id: u64,
     pub ext_datetime: chrono::NaiveDateTime,
     pub player_list: Vec<PlayerDetails>,
+    /// The name of the map
     pub title: String,
     pub difficulty: String,
     pub thumbnail: Thumbnail,

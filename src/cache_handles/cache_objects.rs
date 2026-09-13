@@ -51,9 +51,9 @@ pub struct ObjectPoint {
     #[serde(rename = "@Color")]
     pub color: String,
     #[serde(default, rename = "@PathingRadiusSoft")]
-    pub pathing_radius_soft: u32,
+    pub pathing_radius_soft: f32,
     #[serde(default, rename = "@PathingRadiusHard")]
-    pub pathing_radius_hard: u32,
+    pub pathing_radius_hard: f32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -74,7 +74,13 @@ impl PlacedObjects {
     #[instrument(level = "debug", skip(file_contents))]
     pub fn parse(cache_handle_id: String, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
         let str_content = str::from_utf8(file_contents)?;
-        let mut res = serde_xml_rs::from_str::<PlacedObjects>(str_content)?;
+        let mut res = match serde_xml_rs::from_str::<PlacedObjects>(str_content) {
+            Ok(val) => val,
+            Err(err) => {
+                println!("PlacedObjects::parse error parsing: {}", cache_handle_id);
+                return Err(S2ProtocolError::SerdeXML(err));
+            }
+        };
         res.cache_handle_id = cache_handle_id;
         Ok(res)
     }

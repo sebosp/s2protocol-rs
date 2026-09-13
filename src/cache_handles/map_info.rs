@@ -116,12 +116,17 @@ impl MapInfo {
         let (tail, _unknown_bytes) =
             dbg_peek_hex(take(5usize), "read 5 unknown bytes after second string")(tail)?;
 
+        let (tail, _) = dbg_peek_hex(
+            take_while(|x| x == 0u8),
+            "padding zeros fill before fourth string",
+        )(tail)?;
+
         let (tail, string_bytes) =
             dbg_peek_hex(take_while(|x| x != 0u8), "collect third string")(tail)?;
         let third_string = String::from_utf8_lossy(string_bytes).to_string();
         let (tail, _unknown_byte) = dbg_peek_hex(
             take(1usize),
-            "advance past termination character second string",
+            "advance past termination character third string",
         )(tail)?;
 
         let (tail, string_bytes) =
@@ -129,7 +134,7 @@ impl MapInfo {
         let fourth_string = String::from_utf8_lossy(string_bytes).to_string();
         let (tail, _unknown_byte) = dbg_peek_hex(
             take(1usize),
-            "advance past termination character second string",
+            "advance past termination character fourth string",
         )(tail)?;
 
         let (tail, cell_left_bytes) =
@@ -138,7 +143,7 @@ impl MapInfo {
         let cell_left: usize = cell_left.try_into()?;
 
         let (tail, cell_bottom_bytes) =
-            dbg_peek_hex(take(4usize), "read map cell_bottom, 4 bytes")(tail)?;
+            dbg_peek_hex(take(4usize), "read map cell_bottom, 2 bytes")(tail)?;
         let (_, cell_bottom) = i32(nom::number::Endianness::Little)(cell_bottom_bytes)?;
         let cell_bottom: usize = cell_bottom.try_into()?;
 

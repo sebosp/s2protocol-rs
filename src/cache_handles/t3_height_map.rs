@@ -88,7 +88,7 @@ impl T3HeightMap {
                 dbg_peek_hex(take(6usize), "read 6 bytes of terrain unit data")(tail)?;
             // The 5th byte is the height.
             let height_byte = terrain_unit_bytes[4];
-            if height_byte > 4 {
+            if height_byte > 5 {
                 return Err(S2ProtocolError::Map(MapError::T3HeightUnitOutOfBounds(
                     height_byte as i32,
                 )));

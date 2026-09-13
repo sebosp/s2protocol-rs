@@ -657,6 +657,10 @@ impl ArrowIpcTypes {
         let cache_handle_to_map_info_digest =
             populate_map_info_digest_from_caches(&sources, cache_path.to_string()).await;
 
+        for (k, v) in cache_handle_to_map_info_digest.iter() {
+            println!("k: {k}, v: {v:?}");
+        }
+
         let details_flaw_rows: Vec<PlayerLobbyDetailsFlatRow> = sources
             .par_iter()
             .map(|source| std::convert::Into::<Vec<PlayerLobbyDetails>>::into(source))
