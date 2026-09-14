@@ -158,8 +158,6 @@ impl CacheCollection {
 
     #[instrument(level = "debug", skip(self))]
     pub fn build_map_cache(&self, cache_ids: &[String]) -> Result<MapCache, S2ProtocolError> {
-        let init_time_1 = std::time::Instant::now();
-
         let cache_ids = cache_ids.iter().map(|x| x.as_str()).collect::<Vec<&str>>();
         // Each MPQ seems to potentially contain a DocumentHeader. Maybe the MapInfo/T3HeightMap/DocumentHeader
         // are must be in the same MPQ.
@@ -193,7 +191,6 @@ impl CacheCollection {
             PLACED_OBJECTS_FILE_NAME,
         )?;
         let placed_objects = PlacedObjects::parse(map_cache_handle_id, &cache_contents)?;
-        println!("---- build_map_cache: {:?}", init_time_1.elapsed(),);
         Ok(MapCache {
             map_info,
             document_header,
