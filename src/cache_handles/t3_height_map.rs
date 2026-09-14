@@ -88,7 +88,9 @@ impl T3HeightMap {
                 dbg_peek_hex(take(6usize), "read 6 bytes of terrain unit data")(tail)?;
             // The 5th byte is the height.
             let height_byte = terrain_unit_bytes[4];
-            if height_byte > 5 {
+            // From the docs, it seems it's only up to level 4... But there are maps that have even
+            // 6 "height levels"????
+            if height_byte > 6 {
                 return Err(S2ProtocolError::Map(MapError::T3HeightUnitOutOfBounds(
                     height_byte as i32,
                 )));

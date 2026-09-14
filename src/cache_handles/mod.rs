@@ -59,6 +59,17 @@ pub struct CacheCollection {
     pub cache_fs: HashMap<String, Vec<MPQNamedSector>>,
 }
 
+fn is_file_known(fname: &str) -> bool {
+    match fname.as_ref() {
+        MAP_INFO_FILE_NAME
+        | DOCUMENT_HEADER_FILE_NAME
+        | T3_HEIGHT_MAP_FILE_NAME
+        | T3_TERRAIN_MAP_FILE_NAME
+        | PLACED_OBJECTS_FILE_NAME => true,
+        _ => false,
+    }
+}
+
 fn try_read_embedded_sectors_with_contents(
     cache_handle_fname: &str,
 ) -> Result<Vec<MPQNamedSector>, S2ProtocolError> {
@@ -67,6 +78,9 @@ fn try_read_embedded_sectors_with_contents(
     let mut embedded_files: Vec<MPQNamedSector> = vec![];
     if let Ok(mpq_embedded_files) = mpq.get_files(&cache_contents) {
         for (mpq_embedded_file_name, _file_size) in mpq_embedded_files {
+            if !is_file_known(&mpq_embedded_file_name) {
+                continue;
+            }
             let (_, sector_content) =
                 mpq.read_mpq_file_sector(&mpq_embedded_file_name, false, &cache_contents)?;
             embedded_files.push(MPQNamedSector {
@@ -86,6 +100,7 @@ impl CacheCollection {
     }
 
     /// Adds a list of caches to the collection.
+    #[instrument(level = "debug", skip(self, cache_ids))]
     pub fn add_cache_ids(&mut self, cache_ids: &[String]) {
         let cache_ids = cache_ids.to_owned();
         let cache_id_with_named_sectors = cache_ids
@@ -100,8 +115,17 @@ impl CacheCollection {
                 );
                 (
                     cache_id.to_string(),
-                    try_read_embedded_sectors_with_contents(&cache_handle_fname)
-                        .unwrap_or_default(),
+                    match try_read_embedded_sectors_with_contents(&cache_handle_fname) {
+                        Ok(val) => val,
+                        Err(err) => {
+                            tracing::error!(
+                                "failed to read mpq contents on {} {:32?}",
+                                cache_id,
+                                err
+                            );
+                            vec![]
+                        }
+                    },
                 )
             })
             .collect::<Vec<(String, Vec<MPQNamedSector>)>>();
@@ -114,14 +138,14 @@ impl CacheCollection {
     #[instrument(level = "debug", skip(self))]
     pub fn try_get_sector_content_from_collection(
         &self,
-        cache_ids: &[String],
+        cache_ids: &[&str],
         target_file_name: &str,
     ) -> Result<(String, Vec<u8>), S2ProtocolError> {
         for cache_id in cache_ids {
-            if let Some(cache_contents) = self.cache_fs.get(cache_id) {
+            if let Some(cache_contents) = self.cache_fs.get(*cache_id) {
                 for mpq_file_with_digest in cache_contents {
                     if mpq_file_with_digest.name == target_file_name {
-                        return Ok((cache_id.clone(), mpq_file_with_digest.content.clone()));
+                        return Ok((cache_id.to_string(), mpq_file_with_digest.content.clone()));
                     }
                 }
             }
@@ -134,31 +158,42 @@ impl CacheCollection {
 
     #[instrument(level = "debug", skip(self))]
     pub fn build_map_cache(&self, cache_ids: &[String]) -> Result<MapCache, S2ProtocolError> {
-        let init_time_4 = std::time::Instant::now();
+        let init_time_1 = std::time::Instant::now();
 
-        let (cache_handle_id, cache_contents) =
-            self.try_get_sector_content_from_collection(cache_ids, MAP_INFO_FILE_NAME)?;
-        let (_, map_info) = MapInfo::parse(cache_handle_id, &cache_contents)?;
+        let cache_ids = cache_ids.iter().map(|x| x.as_str()).collect::<Vec<&str>>();
+        // Each MPQ seems to potentially contain a DocumentHeader. Maybe the MapInfo/T3HeightMap/DocumentHeader
+        // are must be in the same MPQ.
+        let (map_cache_handle_id, cache_contents) =
+            self.try_get_sector_content_from_collection(&cache_ids, MAP_INFO_FILE_NAME)?;
+        let (_, map_info) = MapInfo::parse(map_cache_handle_id.clone(), &cache_contents)?;
 
-        let (cache_handle_id, cache_contents) =
-            self.try_get_sector_content_from_collection(cache_ids, DOCUMENT_HEADER_FILE_NAME)?;
-        let (_, document_header) = DocumentHeader::parse(cache_handle_id, &cache_contents)?;
+        let map_info_only_cache_id = vec![map_cache_handle_id.as_str()];
+        let (_, cache_contents) = self.try_get_sector_content_from_collection(
+            &map_info_only_cache_id,
+            DOCUMENT_HEADER_FILE_NAME,
+        )?;
+        let (_, document_header) =
+            DocumentHeader::parse(map_cache_handle_id.clone(), &cache_contents)?;
 
-        let (cache_handle_id, cache_contents) =
-            self.try_get_sector_content_from_collection(cache_ids, T3_HEIGHT_MAP_FILE_NAME)?;
-        let (_, t3_height_map) = T3HeightMap::parse(cache_handle_id, &cache_contents, &map_info)?;
+        let (_, cache_contents) = self.try_get_sector_content_from_collection(
+            &map_info_only_cache_id,
+            T3_HEIGHT_MAP_FILE_NAME,
+        )?;
+        let (_, t3_height_map) =
+            T3HeightMap::parse(map_cache_handle_id.clone(), &cache_contents, &map_info)?;
 
-        let (cache_handle_id, cache_contents) =
-            self.try_get_sector_content_from_collection(cache_ids, T3_TERRAIN_MAP_FILE_NAME)?;
-        let t3_terrain = T3Terrain::parse(cache_handle_id, &cache_contents)?;
+        let (_, cache_contents) = self.try_get_sector_content_from_collection(
+            &map_info_only_cache_id,
+            T3_TERRAIN_MAP_FILE_NAME,
+        )?;
+        let t3_terrain = T3Terrain::parse(map_cache_handle_id.clone(), &cache_contents)?;
 
-        let (cache_handle_id, cache_contents) =
-            self.try_get_sector_content_from_collection(cache_ids, PLACED_OBJECTS_FILE_NAME)?;
-        let placed_objects = PlacedObjects::parse(cache_handle_id, &cache_contents)?;
-        println!(
-            "---- init_4: CacheCollectionBuilder::build : {:?}",
-            init_time_4.elapsed(),
-        );
+        let (_, cache_contents) = self.try_get_sector_content_from_collection(
+            &map_info_only_cache_id,
+            PLACED_OBJECTS_FILE_NAME,
+        )?;
+        let placed_objects = PlacedObjects::parse(map_cache_handle_id, &cache_contents)?;
+        println!("---- build_map_cache: {:?}", init_time_1.elapsed(),);
         Ok(MapCache {
             map_info,
             document_header,
