@@ -14,6 +14,7 @@ pub mod t3_terrain;
 
 use cache_objects::PlacedObjects;
 use document_header::DocumentHeader;
+use futures::future::join_all;
 use map_info::MapInfo;
 use rayon::prelude::*;
 use std::{collections::HashMap, path::Path};
@@ -23,12 +24,12 @@ use t3_terrain::T3Terrain;
 pub use map::*;
 use tracing::{self, instrument};
 
-pub const CACHE_MPQ_ARCHIVE_EXTENSION: &'static str = "s2ma";
-pub const MAP_INFO_FILE_NAME: &'static str = "MapInfo";
-pub const DOCUMENT_HEADER_FILE_NAME: &'static str = "DocumentHeader";
-pub const T3_HEIGHT_MAP_FILE_NAME: &'static str = "t3HeightMap";
-pub const T3_TERRAIN_MAP_FILE_NAME: &'static str = "t3Terrain.xml";
-pub const PLACED_OBJECTS_FILE_NAME: &'static str = "Objects";
+pub const CACHE_MPQ_ARCHIVE_EXTENSION: &str = "s2ma";
+pub const MAP_INFO_FILE_NAME: &str = "MapInfo";
+pub const DOCUMENT_HEADER_FILE_NAME: &str = "DocumentHeader";
+pub const T3_HEIGHT_MAP_FILE_NAME: &str = "t3HeightMap";
+pub const T3_TERRAIN_MAP_FILE_NAME: &str = "t3Terrain.xml";
+pub const PLACED_OBJECTS_FILE_NAME: &str = "Objects";
 
 pub type CacheIdWithMapInfoSha = HashMap<String, Option<String>>;
 
@@ -120,7 +121,7 @@ impl CacheCollection {
                         Err(err) => {
                             tracing::error!(
                                 "failed to read mpq contents on {} {:32?}",
-                                cache_id,
+                                cache_handle_fname,
                                 err
                             );
                             vec![]
@@ -211,9 +212,9 @@ pub async fn populate_map_info_digest_from_caches(
 ) -> CacheIdWithMapInfoSha {
     let init_time = std::time::Instant::now();
     let mut cache_handle_ids: CacheIdWithMapInfoSha = HashMap::new();
-    let downloaded_cache_count: usize = sources
+    let mut unique_cache_handles = sources
         .iter()
-        .map(|source| {
+        .flat_map(|source| {
             source
                 .init_data
                 .sync_lobby_state
@@ -238,26 +239,31 @@ pub async fn populate_map_info_digest_from_caches(
                     )
                 })
         })
-        .flatten()
-        .map(
-            async |(cache_handle_region, cache_handle_extension, cache_handle_str)| {
-                match download_cache(
-                    cache_handle_str,
-                    cache_handle_region,
-                    cache_handle_extension,
-                    &destination,
-                )
-                .await
-                {
-                    Ok(()) => 1,
-                    Err(err) => {
-                        tracing::error!("Unable to download cache: {:?}, skipping.", err);
-                        0
-                    }
-                }
-            },
-        )
-        .count();
+        .collect::<Vec<_>>();
+    unique_cache_handles.sort_unstable();
+    unique_cache_handles.dedup();
+    let downloaded_cache_count: usize = join_all(unique_cache_handles.iter().map(
+        |(cache_handle_region, cache_handle_extension, cache_handle_str)| {
+            download_cache(
+                cache_handle_str,
+                cache_handle_region,
+                cache_handle_extension,
+                &destination,
+            )
+        },
+    ))
+    .await
+    .iter()
+    .map(|status| match status {
+        Ok(()) => 1,
+        Err(err) => {
+            println!("{}", err);
+            0
+        }
+    })
+    .collect::<Vec<usize>>()
+    .iter()
+    .sum();
     let mut cache_builder = CacheCollection::new(destination.clone());
     for source in sources.iter() {
         cache_builder.add_cache_ids(
@@ -268,7 +274,7 @@ pub async fn populate_map_info_digest_from_caches(
                 .cache_handles,
         );
     }
-    println!(
+    tracing::info!(
         "- init_1 After {} downloads/checks: {:?}",
         downloaded_cache_count,
         init_time.elapsed(),
@@ -317,7 +323,7 @@ pub async fn download_cache(
     destination: &str,
 ) -> Result<(), S2ProtocolError> {
     let destination = Path::new(destination);
-    tracing::info!("Downloading cache with handle: {}", handle);
+    println!("Downloading cache with handle: {}", handle);
     let cache_download_target =
         destination.join(format!("{}.{}", handle, CACHE_MPQ_ARCHIVE_EXTENSION));
     println!(
