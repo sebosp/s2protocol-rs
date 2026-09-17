@@ -43,7 +43,11 @@ impl DocumentHeader {
             "DocInfo/Name" => self.name = value,
             "DocInfo/DescLong" => self.description_long = value,
             "DocInfo/DescShort" => self.description_short = value,
-            "MapInfo/Player00/Name"
+            "DocInfo/PatchNote001"
+            |"DocInfo/PatchNote002"
+            |"DocInfo/PatchNote003"
+            |"DocInfo/PatchNote004"
+            |"MapInfo/Player00/Name"
             | "MapInfo/Player01/Name"
             | "MapInfo/Player02/Name"
             | "MapInfo/Player03/Name"

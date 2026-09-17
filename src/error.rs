@@ -2,8 +2,10 @@
 
 use std::num::TryFromIntError;
 
+use nom::AsBytes;
 use nom::error::ErrorKind;
 use nom::error::ParseError;
+use nom_mpq::parser::peek_hex;
 
 /// Holds the result of parsing progress and the possibly failures
 pub type S2ProtoResult<I, O> = Result<(I, O), S2ProtocolError>;
@@ -56,9 +58,14 @@ pub enum S2ProtocolError {
     /// An XML serde error when reading replay caches
     #[error("SerdeXml: {0}")]
     SerdeXML(#[from] serde_xml_rs::Error),
-    /// A CacheResource error
-    #[error("CacheResource: {0}")]
-    CacheResource(String),
+    /// A file wasn't found in the cache collection.
+    #[error("CacheResource: {name:?}, {cache_handles:?}")]
+    CacheResource {
+        name: String,
+        cache_handles: Vec<String>,
+    },
+    #[error("CacheHandleDownload: {0}")]
+    CacheHandleDownload(String),
 
     /// Reqwest error, used for downloading replay caches from blizzard depots.
     #[error("Reqwest Error: {0}")]
@@ -80,18 +87,30 @@ where
             nom::Err::Incomplete(_) => {
                 unreachable!("This library is compatible with only complete parsers, not streaming")
             }
-            nom::Err::Error(e) => S2ProtocolError::ByteAligned(format!("{e:?}")),
-            nom::Err::Failure(e) => S2ProtocolError::ByteAligned(format!("{e:?}")),
+            nom::Err::Error(e) => S2ProtocolError::ByteAligned(format!(
+                "{:.64}: {}",
+                format!("{:?}", e.input),
+                e.code.description()
+            )),
+            nom::Err::Failure(e) => S2ProtocolError::ByteAligned(format!(
+                "{:.64}: {}",
+                format!("{:?}", e.input),
+                e.code.description()
+            )),
         }
     }
 }
 
 impl<I> ParseError<I> for S2ProtocolError
 where
-    I: Clone,
+    I: Clone + AsBytes,
 {
-    fn from_error_kind(_input: I, kind: ErrorKind) -> Self {
-        S2ProtocolError::ByteAligned(format!("{kind:?}"))
+    fn from_error_kind(input: I, kind: ErrorKind) -> Self {
+        S2ProtocolError::ByteAligned(format!(
+            "{}: {}",
+            peek_hex(&input.as_bytes()[..64]),
+            kind.description()
+        ))
     }
 
     fn append(_input: I, _kind: ErrorKind, other: Self) -> Self {

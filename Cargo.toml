@@ -11,7 +11,7 @@ keywords = ["sc2replay", "polars", "arrow", "starcraft2", "mpq"]
 categories = ["games", "parsing"]
 
 [dependencies]
-nom-mpq = "2.0.8"
+nom-mpq = "2.0.9"
 nom = "8.0"
 thiserror = "2"
 tracing = "0.1"
@@ -35,27 +35,27 @@ default = ["dep_arrow", "tracing_info_level"]
 # A feature that allows extra tracing, disabled by default because of performance
 dep_arrow = ["arrow", "arrow_convert", "tokio", "reqwest"]
 tracing_off = [
-  "tracing/max_level_off",
-  "tracing/release_max_level_off",
-  "nom-mpq/tracing_off",
+	"tracing/max_level_off",
+	"tracing/release_max_level_off",
+	"nom-mpq/tracing_off",
 ]
 tracing_debug_level = [
-  "tracing/max_level_debug",
-  "tracing/release_max_level_debug",
-  "nom-mpq/tracing_debug_level",
+	"tracing/max_level_debug",
+	"tracing/release_max_level_debug",
+	"nom-mpq/tracing_debug_level",
 ]
 tracing_info_level = [
-  "tracing/max_level_info",
-  "tracing/release_max_level_info",
-  "nom-mpq/tracing_info_level",
+	"tracing/max_level_info",
+	"tracing/release_max_level_info",
+	"nom-mpq/tracing_info_level",
 ]
 tracing_warn_level = [
-  "tracing/max_level_warn",
-  "tracing/release_max_level_warn",
+	"tracing/max_level_warn",
+	"tracing/release_max_level_warn",
 ]
 tracing_error_level = [
-  "tracing/max_level_error",
-  "tracing/release_max_level_error",
+	"tracing/max_level_error",
+	"tracing/release_max_level_error",
 ]
 
 [dev-dependencies]

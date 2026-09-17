@@ -45,7 +45,7 @@ pub struct T3Terrain {
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct HeightMap {
     #[serde(rename = "rampList")]
-    pub ramp_list: RampListTag,
+    pub ramp_list: Option<RampListTag>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]
@@ -92,8 +92,12 @@ pub struct Ramp {
 impl T3Terrain {
     #[instrument(level = "debug", skip(file_contents))]
     pub fn parse(cache_handle_id: String, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
-        let str_content = str::from_utf8(file_contents)?;
-        let mut res = serde_xml_rs::from_str::<T3Terrain>(str_content)?;
+        // Seems like the end of this XML may end ni <cliffCellList> rather than </cliffCellList>
+        let str_content = str::from_utf8(file_contents)?.replace(
+            "        <cliffCellList>\r\n    </heightMap>\r\n</terrain>",
+            "        </cliffCellList>\r\n    </heightMap>\r\n</terrain>",
+        );
+        let mut res = serde_xml_rs::from_str::<T3Terrain>(&str_content)?;
         res.cache_handle_id = cache_handle_id;
         Ok(res)
     }

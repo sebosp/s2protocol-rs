@@ -151,10 +151,13 @@ impl CacheCollection {
                 }
             }
         }
-        Err(S2ProtocolError::CacheResource(format!(
-            "{} Not found in CacheCollection[{:?}]",
-            target_file_name, cache_ids,
-        )))
+        Err(S2ProtocolError::CacheResource {
+            name: target_file_name.to_string(),
+            cache_handles: cache_ids
+                .into_iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<String>>(),
+        })
     }
 
     #[instrument(level = "debug", skip(self))]
@@ -281,23 +284,18 @@ pub async fn populate_map_info_digest_from_caches(
     );
 
     for source in sources.iter() {
-        let has_map_info: bool = source
+        let cache_handles = &source
             .init_data
             .sync_lobby_state
             .game_description
-            .cache_handles
+            .cache_handles;
+        let has_map_info: bool = cache_handles
             .iter()
             .any(|cache_id| cache_handle_ids.contains_key(cache_id));
         if has_map_info {
             continue;
         }
-        match cache_builder.build_map_cache(
-            &source
-                .init_data
-                .sync_lobby_state
-                .game_description
-                .cache_handles,
-        ) {
+        match cache_builder.build_map_cache(cache_handles) {
             Ok(map_cache) => {
                 let _ = cache_handle_ids.insert(
                     map_cache.map_info.cache_handle_id,
@@ -337,6 +335,11 @@ pub async fn download_cache(
         );
         return Ok(());
     }
+    let mut region = region.to_string();
+    if region.to_lowercase() == "cn" {
+        // I can't resolve  cn-s2-depot.classic.blizzard.com
+        region = String::from("eu");
+    }
 
     let url = format!(
         "https://{}-s2-depot.classic.blizzard.com/{}.{}",
@@ -344,7 +347,7 @@ pub async fn download_cache(
     );
     let response = reqwest::get(&url).await?;
     if !response.status().is_success() {
-        return Err(S2ProtocolError::CacheResource(format!(
+        return Err(S2ProtocolError::CacheHandleDownload(format!(
             "Failed to download cache {}, status code: {}",
             handle,
             response.status()
