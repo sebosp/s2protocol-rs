@@ -3,7 +3,7 @@
 //! containing map resources, mod information, visual resources such
 //! as images used in overlays for tournament, organizers, etc.
 
-use crate::{S2ProtocolError, basic_replay_data::SC2ReplayBasicData};
+use crate::{MAX_ERROR_CONTEXT_CHARS, S2ProtocolError, basic_replay_data::SC2ReplayBasicData};
 
 pub mod cache_objects;
 pub mod document_header;
@@ -120,9 +120,10 @@ impl CacheCollection {
                         Ok(val) => val,
                         Err(err) => {
                             tracing::error!(
-                                "failed to read mpq contents on {} {:32?}",
+                                "failed to read mpq contents on {1} {2:.0$}",
+                                MAX_ERROR_CONTEXT_CHARS,
                                 cache_handle_fname,
-                                err
+                                format!("{:?}", err)
                             );
                             vec![]
                         }

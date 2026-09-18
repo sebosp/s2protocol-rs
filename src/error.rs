@@ -10,6 +10,8 @@ use nom_mpq::parser::peek_hex;
 /// Holds the result of parsing progress and the possibly failures
 pub type S2ProtoResult<I, O> = Result<(I, O), S2ProtocolError>;
 
+pub const MAX_ERROR_CONTEXT_CHARS: usize = 128;
+
 #[derive(thiserror::Error, Debug)]
 pub enum S2ProtocolError {
     /// Unable to parse the MPQ file, could be corrupted or not a replay file
@@ -88,12 +90,14 @@ where
                 unreachable!("This library is compatible with only complete parsers, not streaming")
             }
             nom::Err::Error(e) => S2ProtocolError::ByteAligned(format!(
-                "{:.64}: {}",
+                "{1:.0$}: {2}",
+                MAX_ERROR_CONTEXT_CHARS,
                 format!("{:?}", e.input),
                 e.code.description()
             )),
             nom::Err::Failure(e) => S2ProtocolError::ByteAligned(format!(
-                "{:.64}: {}",
+                "{1:.0$}: {2}",
+                MAX_ERROR_CONTEXT_CHARS,
                 format!("{:?}", e.input),
                 e.code.description()
             )),
@@ -108,7 +112,7 @@ where
     fn from_error_kind(input: I, kind: ErrorKind) -> Self {
         S2ProtocolError::ByteAligned(format!(
             "{}: {}",
-            peek_hex(&input.as_bytes()[..64]),
+            peek_hex(&input.as_bytes()[..MAX_ERROR_CONTEXT_CHARS]),
             kind.description()
         ))
     }

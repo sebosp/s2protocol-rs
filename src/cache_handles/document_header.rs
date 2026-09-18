@@ -6,8 +6,8 @@
 
 use super::DOCUMENT_HEADER_FILE_NAME;
 use crate::{S2ProtoResult, S2ProtocolError, dbg_peek_hex};
-use nom::bytes::complete::*;
 use nom::number::complete::*;
+use nom::{HexDisplay, bytes::complete::*};
 use nom_mpq::MPQ;
 use nom_mpq::parser::peek_hex;
 use serde::{Deserialize, Serialize};
@@ -94,18 +94,22 @@ impl DocumentHeader {
 
     #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
     pub fn parse(cache_handle_id: String, input: &[u8]) -> S2ProtoResult<&[u8], Self> {
+        tracing::info!("Parsing {}", cache_handle_id);
+        tracing::info!("{} Parsing {}]", peek_hex(input), cache_handle_id);
         let mut res = Self::default();
-        let (tail, _) = dbg_peek_hex(tag(&b"H2CS"[..]), "read file magic, H2CS bytes")(input)?;
+        let (tail, file_magic) =
+            dbg_peek_hex(tag(&b"H2CS"[..]), "read file magic, H2CS bytes")(input)?;
+        tracing::info!("{} file magic {file_magic:?}", peek_hex(tail),);
 
         let (tail, maybe_file_version_bytes) =
             dbg_peek_hex(take(4usize), "read maybe_file_version, 4 bytes")(tail)?;
         let (_, maybe_file_version) =
             i32(nom::number::Endianness::Little)(maybe_file_version_bytes)?;
 
-        tracing::debug!(
-            "maybe_file_version '{maybe_file_version_bytes:?}' '{:?}' tail is {}",
+        tracing::info!(
+            "{} maybe_file_version '{maybe_file_version_bytes:?}' '{:?}'",
+            peek_hex(tail),
             maybe_file_version,
-            peek_hex(tail)
         );
 
         let (tail, maybe_map_compatibility_bytes) =
@@ -113,10 +117,10 @@ impl DocumentHeader {
         let maybe_compatibility =
             String::from_utf8_lossy(maybe_map_compatibility_bytes).to_string();
 
-        tracing::debug!(
-            "maybe_compatibility '{maybe_map_compatibility_bytes:?}' '{}', tail is {}",
+        tracing::info!(
+            "{} maybe_compatibility '{maybe_map_compatibility_bytes:?}' '{}'",
+            peek_hex(tail),
             maybe_compatibility,
-            peek_hex(tail)
         );
 
         let (tail, _unknown_bytes) =
@@ -147,14 +151,42 @@ impl DocumentHeader {
         let (_, some_epoch_2) = i32(nom::number::Endianness::Little)(maybe_i32_bytes)?;
         res.some_epoch_2 = some_epoch_2;
 
-        // 0200 0000 0000 0000 0100 0000 follows, no idea what these are...
-        let (tail, _padding_bytes) = dbg_peek_hex(
-            take(12usize),
+        // 0200 0000 0000 0000 follows, maybe these are struct field headers.
+        // 0a00 0000 0000 0000 is also observed in other files.
+        let (tail, padding_bytes) = dbg_peek_hex(
+            take(8usize),
             "read _padding_bytes after maybe dimensions2, 12 bytes: ",
         )(tail)?;
 
-        let (tail, string_bytes) = dbg_peek_hex(take_while(|x| x != 0u8), "read mod string")(tail)?;
-        res.mod_info = String::from_utf8_lossy(string_bytes).to_string();
+        tracing::info!(
+            "{} padding_bytes {}",
+            peek_hex(tail),
+            peek_hex(padding_bytes),
+        );
+
+        let (tail, mod_info_str_count_bytes) =
+            dbg_peek_hex(take(4usize), "read doc_info field count, 2 bytes")(tail)?;
+        let (_, mod_info_str_count) =
+            u16(nom::number::Endianness::Little)(mod_info_str_count_bytes)?;
+        tracing::debug!(
+            "{} mod_info_str_count: {:?} tail is {}",
+            peek_hex(tail),
+            mod_info_str_count_bytes,
+            mod_info_str_count,
+        );
+
+        let mut new_tail = tail;
+        tracing::debug!("Expect to read {} mod_info strings", mod_info_str_count);
+        for _ in 0..mod_info_str_count {
+            let (tail, string_bytes) =
+                dbg_peek_hex(take_while(|x| x != 0u8), "read mod string")(new_tail)?;
+            dbg_peek_hex(take(1usize), "Walk past str delim")(tail)?;
+            res.mod_info.push_str(&format!("\n"));
+            res.mod_info
+                .push_str(&String::from_utf8_lossy(string_bytes));
+            new_tail = tail;
+        }
+        let tail = new_tail;
         /*
         * Commenting for now, Mothership map has mod_info 'bnet:Swarm (Mod)/0.0/999,file:Mods/Swarm.SC2Mod"))'
         if res.mod_info != "bnet:Void (Mod)/0.0/999,file:Mods/Void.SC2Mod" {
@@ -163,25 +195,31 @@ impl DocumentHeader {
             )));
         }*/
 
-        tracing::debug!("Got mod_info: {}", res.mod_info);
+        tracing::info!("{} Got mod_info: {}", peek_hex(tail), res.mod_info);
 
-        let (tail, _past_the_zero_delim) = dbg_peek_hex(
+        let (tail, past_the_zero_delim) = dbg_peek_hex(
             take(1usize),
             "read _past_the_zero_delim on mod_info, 1 bytes",
         )(tail)?;
+        tracing::info!(
+            "{} Got zero delim: {}",
+            peek_hex(tail),
+            peek_hex(past_the_zero_delim),
+        );
 
         let (tail, docinfo_field_count_bytes) =
             dbg_peek_hex(take(2usize), "read doc_info field count, 2 bytes")(tail)?;
         let (_, docinfo_field_count) =
             u16(nom::number::Endianness::Little)(docinfo_field_count_bytes)?;
         tracing::debug!(
-            "field count field count bytes: {:?} tail is {}",
+            "{} field count field count bytes: {:?} tail is {}",
+            peek_hex(tail),
             docinfo_field_count_bytes,
-            peek_hex(tail)
+            docinfo_field_count,
         );
 
         let (mut new_tail, _) =
-            dbg_peek_hex(tag(&[0, 0][..]), "doc_info element count delimiter.")(tail)?;
+            dbg_peek_hex(tag(&[0, 0][..]), "doc_info element count delimiter.")(&tail[0..64])?;
 
         tracing::debug!("Expect to read {} fields", docinfo_field_count);
         for field_num in 0..docinfo_field_count {
