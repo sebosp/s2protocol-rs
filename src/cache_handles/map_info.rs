@@ -3,6 +3,8 @@
 use super::coords::*;
 use super::*;
 use crate::*;
+#[cfg(feature = "nom_color_debug")]
+use console::style;
 use nom::bytes::complete::*;
 use nom::number::complete::*;
 use nom_mpq::MPQ;
@@ -15,6 +17,11 @@ pub const IMAGE_DIMENSIONS_PER_TERRAIN_UNIT: i32 = 8;
 
 /// There are 6x6 pixels per terrain unit.
 pub const IMAGE_DIMENSIONS_PER_CELL_UNIT: i32 = 6;
+
+/// For column format width on the variable being printed
+pub const DBG_CONTEXT_WIDTH: usize = 42;
+/// For column format width. on the hex representation of the value.
+pub const DBG_HEX_VALUE_WIDTH: usize = 36;
 
 /// The MapInfo coordinates's purpose is to translate "cell"coordinates to "terrain" coordinates,
 /// Showing the playable terrain.
@@ -44,6 +51,79 @@ pub struct MapInfo {
     pub cell_top: usize,
 }
 
+#[macro_export]
+macro_rules! dbg_displayable_and_tail {
+    ( $i:ident) => {
+        let peek_value = $i.to_string();
+        #[cfg(feature = "nom_color_debug")]
+        tracing::info!(
+            "->{0:<DBG_CONTEXT_WIDTH$.DBG_CONTEXT_WIDTH$}|{1:<16}",
+            stringify!($i),
+            &style(format!("{}", peek_value))
+                .magenta()
+                .force_styling(true),
+        );
+        #[cfg(not(feature = "nom_color_debug"))]
+        tracing::info!("+{0}:{1}", stringify!($i), peek_value,);
+    };
+}
+
+#[macro_export]
+macro_rules! dbg_bytes_and_tail {
+    ( $i:ident, $b:ident, $t:ident) => {
+        let peek_bytes = peek_hex($i);
+        let peek_tail = peek_hex($t);
+        let element_offset = ($i.as_ptr().addr() - $b);
+        #[cfg(feature = "nom_color_debug")]
+        let mut mem_addr = style(format!("0x{:0>8?}", element_offset))
+            .cyan()
+            .dim()
+            .force_styling(true)
+            .to_string();
+        #[cfg(not(feature = "nom_color_debug"))]
+        let mut mem_addr = format!("0x{:<8?}", element_offset);
+        if $i.len() > 8usize {
+            // Sshow the length displayed is incomplete.
+            mem_addr.push_str("[...");
+        } else {
+            mem_addr.push_str("[   ");
+        }
+        #[cfg(feature = "nom_color_debug")]
+        if $i.len() > 8usize {
+            mem_addr.push_str(
+                &style(&format!("{:0>3}", $i.len()))
+                    .yellow()
+                    .bright()
+                    .force_styling(true)
+                    .to_string(),
+            );
+        } else {
+            mem_addr.push_str(
+                &style(&format!("{:0>3}", $i.len()))
+                    .yellow()
+                    .dim()
+                    .force_styling(true)
+                    .to_string(),
+            );
+        }
+        #[cfg(not(feature = "nom_color_debug"))]
+        mem_addr.push_str(&format!("{:0<3.3}", $i.len()));
+        mem_addr.push_str("]");
+        tracing::info!(
+            "|{0:<DBG_CONTEXT_WIDTH$.DBG_CONTEXT_WIDTH$} | {1}{2}{6:<3$.3$} | next {4}{6:>5$.5$} ",
+            stringify!($i),
+            mem_addr,
+            peek_bytes,
+            DBG_HEX_VALUE_WIDTH
+                - console::measure_text_width(&peek_bytes).min(DBG_HEX_VALUE_WIDTH - 2),
+            peek_tail,
+            DBG_HEX_VALUE_WIDTH
+                - console::measure_text_width(&peek_tail).min(DBG_HEX_VALUE_WIDTH - 2),
+            " ",
+        );
+    };
+}
+
 impl MapInfo {
     #[instrument(skip(mpq, file_contents))]
     pub fn from_mpq(
@@ -59,26 +139,39 @@ impl MapInfo {
 
     #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
     pub fn parse(cache_handle_id: String, input: &[u8]) -> S2ProtoResult<&[u8], Self> {
-        let (tail, _) = dbg_peek_hex(tag(&b"IpaM"[..]), "read file magic, IpaM bytes")(input)?;
+        let input_base_addr = input.as_ptr().addr();
+        tracing::info!("--> {} Parsing {}", peek_hex(input), cache_handle_id);
+        let (tail, file_magic) =
+            dbg_peek_hex(tag(&b"IpaM"[..]), "read file magic, IpaM bytes")(input)?;
+
+        dbg_bytes_and_tail!(file_magic, input_base_addr, tail);
 
         let (mut tail, file_version_bytes) =
             dbg_peek_hex(take(4usize), "read file_version, 4 bytes")(tail)?;
         let (_, file_version) = i32(nom::number::Endianness::Little)(file_version_bytes)?;
+
+        dbg_displayable_and_tail!(file_version);
+
         if file_version > 24 {
             // If file_version is more than 24 it seems to need 8 more bytes to read
-            let (extra_tail, _) =
+            let (extra_tail, extra_bytes) =
                 dbg_peek_hex(take(8usize), "file_version >= 24 needs 8 more extra bytes")(tail)?;
             tail = extra_tail;
+            dbg_bytes_and_tail!(extra_bytes, input_base_addr, tail);
         }
         let (tail, cell_width_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_width, 4 bytes")(tail)?;
         let (_, cell_width) = i32(nom::number::Endianness::Little)(cell_width_bytes)?;
+        dbg_bytes_and_tail!(cell_width_bytes, input_base_addr, tail);
         let cell_width: usize = cell_width.try_into()?;
+        dbg_displayable_and_tail!(cell_width);
 
         let (tail, cell_height_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_height, 4 bytes")(tail)?;
+        dbg_bytes_and_tail!(cell_height_bytes, input_base_addr, tail);
         let (_, cell_height) = i32(nom::number::Endianness::Little)(cell_height_bytes)?;
         let cell_height: usize = cell_height.try_into()?;
+        dbg_displayable_and_tail!(cell_height);
 
         if cell_width > 256 || cell_height > 256 {
             tracing::warn!(
@@ -90,49 +183,56 @@ impl MapInfo {
                 cell_width.max(cell_height),
             )));
         }
-        let (tail, _unknown_bytes) =
-            dbg_peek_hex(take(8usize), "read 8 unknown bytes after cell_height")(tail)?;
-        let (tail, _) = dbg_peek_hex(
-            take_while(|x| x == 0u8),
-            "padding zeros fill before Strings after cell_height+unknown",
-        )(tail)?;
+        let (tail, unknown_bytes_1) =
+            dbg_peek_hex(take(8usize), "read 8 unknown_bytes after cell_height")(tail)?;
+        dbg_bytes_and_tail!(unknown_bytes_1, input_base_addr, tail);
 
-        let (tail, string_bytes) =
+        let (tail, first_string_bytes) =
             dbg_peek_hex(take_while(|x| x != 0u8), "walk past the first string")(tail)?;
-        let first_string = String::from_utf8_lossy(string_bytes).to_string();
-        let (tail, _unknown_byte) = dbg_peek_hex(
+        let first_string = String::from_utf8_lossy(first_string_bytes).to_string();
+        dbg_bytes_and_tail!(first_string_bytes, input_base_addr, tail);
+
+        let (tail, _null_terminator) = dbg_peek_hex(
             take(1usize),
             "advance past termination character first string",
         )(tail)?;
 
-        let (tail, string_bytes) =
+        let (tail, second_string_bytes) =
             dbg_peek_hex(take_while(|x| x != 0u8), "walk past the second string")(tail)?;
-        let second_string = String::from_utf8_lossy(string_bytes).to_string();
-        let (tail, _unknown_byte) = dbg_peek_hex(
+        let second_string = String::from_utf8_lossy(second_string_bytes).to_string();
+        dbg_bytes_and_tail!(second_string_bytes, input_base_addr, tail);
+
+        let (tail, _null_terminator) = dbg_peek_hex(
             take(1usize),
             "advance past termination character second string",
         )(tail)?;
 
-        let (tail, _unknown_bytes) =
-            dbg_peek_hex(take(5usize), "read 5 unknown bytes after second string")(tail)?;
+        let (tail, unknown_bytes_2) =
+            dbg_peek_hex(take(8usize), "read 8 unknown bytes after second string")(tail)?;
+        dbg_bytes_and_tail!(unknown_bytes_2, input_base_addr, tail);
 
-        let (tail, _) = dbg_peek_hex(
+        let (tail, padding_zeros) = dbg_peek_hex(
             take_while(|x| x == 0u8),
-            "padding zeros fill before fourth string",
+            "padding zeros before third string",
         )(tail)?;
+        dbg_bytes_and_tail!(padding_zeros, input_base_addr, tail);
 
-        let (tail, string_bytes) =
+        let (tail, third_string_bytes) =
             dbg_peek_hex(take_while(|x| x != 0u8), "collect third string")(tail)?;
-        let third_string = String::from_utf8_lossy(string_bytes).to_string();
-        let (tail, _unknown_byte) = dbg_peek_hex(
+        let third_string = String::from_utf8_lossy(third_string_bytes).to_string();
+        dbg_bytes_and_tail!(third_string_bytes, input_base_addr, tail);
+
+        let (tail, _null_terminator) = dbg_peek_hex(
             take(1usize),
             "advance past termination character third string",
         )(tail)?;
 
-        let (tail, string_bytes) =
+        let (tail, fourth_string_bytes) =
             dbg_peek_hex(take_while(|x| x != 0u8), "collect fourth string")(tail)?;
-        let fourth_string = String::from_utf8_lossy(string_bytes).to_string();
-        let (tail, _unknown_byte) = dbg_peek_hex(
+        let fourth_string = String::from_utf8_lossy(fourth_string_bytes).to_string();
+        dbg_bytes_and_tail!(fourth_string_bytes, input_base_addr, tail);
+
+        let (tail, _null_terminator) = dbg_peek_hex(
             take(1usize),
             "advance past termination character fourth string",
         )(tail)?;
@@ -141,55 +241,63 @@ impl MapInfo {
             dbg_peek_hex(take(4usize), "read map cell_left, 4 bytes")(tail)?;
         let (_, cell_left) = i32(nom::number::Endianness::Little)(cell_left_bytes)?;
         let cell_left: usize = cell_left.try_into()?;
+        dbg_displayable_and_tail!(cell_left);
 
         let (tail, cell_bottom_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_bottom, 2 bytes")(tail)?;
         let (_, cell_bottom) = i32(nom::number::Endianness::Little)(cell_bottom_bytes)?;
         let cell_bottom: usize = cell_bottom.try_into()?;
+        dbg_displayable_and_tail!(cell_bottom);
 
         let (tail, cell_right_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_right, 4 bytes")(tail)?;
         let (_, cell_right) = i32(nom::number::Endianness::Little)(cell_right_bytes)?;
         let cell_right: usize = cell_right.try_into()?;
+        dbg_displayable_and_tail!(cell_right);
 
         let (tail, cell_top_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_top, 4 bytes")(tail)?;
         let (_, cell_top) = i32(nom::number::Endianness::Little)(cell_top_bytes)?;
         let cell_top: usize = cell_top.try_into()?;
+        dbg_displayable_and_tail!(cell_top);
 
         if cell_left >= cell_right {
-            return Err(S2ProtocolError::Map(MapError::InvalidCoordinateBounds(
-                "MapInfoCellLeft".to_string(),
-                cell_left,
-                "MapInfoCellRight".to_string(),
-                cell_right,
-            )));
+            return Err(S2ProtocolError::Map(MapError::InvalidCoordinateBounds {
+                cache_id: cache_handle_id,
+                ref_value_1: "MapInfoCellLeft".to_string(),
+                value_1: cell_left,
+                ref_value_2: "MapInfoCellRight".to_string(),
+                value_2: cell_right,
+            }));
         }
         if cell_bottom >= cell_top {
-            return Err(S2ProtocolError::Map(MapError::InvalidCoordinateBounds(
-                "MapInfoCellBottom".to_string(),
-                cell_bottom,
-                "MapInfoCellTop".to_string(),
-                cell_top,
-            )));
+            return Err(S2ProtocolError::Map(MapError::InvalidCoordinateBounds {
+                cache_id: cache_handle_id,
+                ref_value_1: "MapInfoCellBottom".to_string(),
+                value_1: cell_bottom,
+                ref_value_2: "MapInfoCellTop".to_string(),
+                value_2: cell_top,
+            }));
         }
 
         if cell_right > cell_width {
-            return Err(S2ProtocolError::Map(MapError::InvalidCoordinateBounds(
-                "MapInfoCellRight".to_string(),
-                cell_right,
-                "MapInfoCellWidth".to_string(),
-                cell_width,
-            )));
+            return Err(S2ProtocolError::Map(MapError::InvalidCoordinateBounds {
+                cache_id: cache_handle_id,
+                ref_value_1: "MapInfoCellRight".to_string(),
+                value_1: cell_right,
+                ref_value_2: "MapInfoCellWidth".to_string(),
+                value_2: cell_width,
+            }));
         }
 
         if cell_top > cell_height {
-            return Err(S2ProtocolError::Map(MapError::InvalidCoordinateBounds(
-                "MapInfoCellTop".to_string(),
-                cell_top,
-                "MapInfoCellHeight".to_string(),
-                cell_height,
-            )));
+            return Err(S2ProtocolError::Map(MapError::InvalidCoordinateBounds {
+                cache_id: cache_handle_id,
+                ref_value_1: "MapInfoCellTop".to_string(),
+                value_1: cell_top,
+                ref_value_2: "MapInfoCellHeight".to_string(),
+                value_2: cell_height,
+            }));
         }
 
         Ok((

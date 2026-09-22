@@ -11,7 +11,7 @@ keywords = ["sc2replay", "polars", "arrow", "starcraft2", "mpq"]
 categories = ["games", "parsing"]
 
 [dependencies]
-nom-mpq = "2.0.9"
+nom-mpq = { version = "2.0.9", path = "../nom-mpq/" }
 nom = "8.0"
 thiserror = "2"
 tracing = "0.1"
@@ -29,11 +29,12 @@ include_dir = { version = "0.7.4", features = ["glob"] }
 tokio = { version = "1", features = ["full"], optional = true }
 futures = "0.3.34"
 reqwest = { version = "0.13", optional = true }
+console = { version = "0.16.6", optional = true }
 
 [features]
-default = ["dep_arrow", "tracing_info_level"]
-# A feature that allows extra tracing, disabled by default because of performance
+default = ["dep_arrow", "tracing_info_level", "nom_color_debug"]
 dep_arrow = ["arrow", "arrow_convert", "tokio", "reqwest"]
+# A feature that allows extra tracing, disabled by default because of performance
 tracing_off = [
 	"tracing/max_level_off",
 	"tracing/release_max_level_off",
@@ -52,11 +53,14 @@ tracing_info_level = [
 tracing_warn_level = [
 	"tracing/max_level_warn",
 	"tracing/release_max_level_warn",
+	"nom-mpq/tracing_warn_level",
 ]
 tracing_error_level = [
 	"tracing/max_level_error",
 	"tracing/release_max_level_error",
+	"nom-mpq/tracing_error_level",
 ]
+nom_color_debug = ["nom-mpq/nom_color_debug", "console"]
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }
