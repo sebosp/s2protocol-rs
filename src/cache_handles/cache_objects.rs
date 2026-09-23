@@ -27,7 +27,7 @@ pub struct ObjectDoodad {
     #[serde(default, rename = "@Variation")]
     pub variation: String,
     #[serde(rename = "@Position")]
-    pub position: String,
+    pub position: Option<String>,
     #[serde(default, rename = "@Rotation")]
     pub rotation: String,
     #[serde(rename = "@Scale")]
@@ -41,7 +41,7 @@ pub struct ObjectPoint {
     #[serde(rename = "@Id")]
     pub id: String,
     #[serde(rename = "@Position")]
-    pub position: String,
+    pub position: Option<String>,
     #[serde(rename = "@Scale")]
     pub scale: String,
     #[serde(rename = "@Type")]
@@ -49,7 +49,7 @@ pub struct ObjectPoint {
     #[serde(rename = "@Name")]
     pub name: String,
     #[serde(rename = "@Color")]
-    pub color: String,
+    pub color: Option<String>,
     #[serde(default, rename = "@PathingRadiusSoft")]
     pub pathing_radius_soft: f32,
     #[serde(default, rename = "@PathingRadiusHard")]
@@ -63,7 +63,7 @@ pub struct ObjectUnit {
     #[serde(default, rename = "@Variation")]
     pub variation: String,
     #[serde(rename = "@Position")]
-    pub position: String,
+    pub position: Option<String>,
     #[serde(rename = "@Scale")]
     pub scale: String,
     #[serde(rename = "@UnitType")]
