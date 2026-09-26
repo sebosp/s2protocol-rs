@@ -38,13 +38,13 @@ pub struct MapInfo {
     pub cell_width: usize,
     pub cell_height: usize,
     /// Mostly seen empty?
-    pub first_string: String,
+    pub first_string: Option<String>,
     /// Also empty?
-    pub second_string: String,
+    pub second_string: Option<String>,
     // Maybe a mode, light Dark/Light?
-    pub third_string: String,
+    pub theme: String,
     // Some name, "Zerus" in the test case, maybe map maker?
-    pub fourth_string: String,
+    pub tile_set: String,
     pub cell_left: usize,
     pub cell_bottom: usize,
     pub cell_right: usize,
@@ -109,6 +109,7 @@ macro_rules! dbg_bytes_and_tail {
         #[cfg(not(feature = "nom_color_debug"))]
         mem_addr.push_str(&format!("{:0<3.3}", $i.len()));
         mem_addr.push_str("]");
+        #[cfg(feature = "nom_color_debug")]
         tracing::info!(
             "|{0:<DBG_CONTEXT_WIDTH$.DBG_CONTEXT_WIDTH$} | {1}{2}{6:<3$.3$} | next {4}{6:>5$.5$} ",
             stringify!($i),
@@ -119,6 +120,17 @@ macro_rules! dbg_bytes_and_tail {
             peek_tail,
             DBG_HEX_VALUE_WIDTH
                 - console::measure_text_width(&peek_tail).min(DBG_HEX_VALUE_WIDTH - 2),
+            " ",
+        );
+        #[cfg(not(feature = "nom_color_debug"))]
+        tracing::info!(
+            "|{0:<DBG_CONTEXT_WIDTH$.DBG_CONTEXT_WIDTH$} | {1}{2}{6:<3$.3$} | next {4}{6:>5$.5$} ",
+            stringify!($i),
+            mem_addr,
+            peek_bytes,
+            DBG_HEX_VALUE_WIDTH - peek_bytes.len().min(DBG_HEX_VALUE_WIDTH - 2),
+            peek_tail,
+            DBG_HEX_VALUE_WIDTH - peek_tail.len().min(DBG_HEX_VALUE_WIDTH - 2),
             " ",
         );
     };
@@ -138,6 +150,49 @@ impl MapInfo {
     }
 
     #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
+    pub fn parse_null_terminated_string<'a>(
+        input_base_addr: usize,
+        input: &'a [u8],
+    ) -> S2ProtoResult<&'a [u8], String> {
+        let (tail, string_bytes) =
+            dbg_peek_hex(take_while(|x| x >= 0x20), "collect string")(input)?;
+        dbg_bytes_and_tail!(string_bytes, input_base_addr, tail);
+        let (tail, _null_terminator) = dbg_peek_hex(
+            take_while_m_n(0, 1, |x| x == 0u8),
+            "collect possible null terminator",
+        )(tail)?;
+        Ok((tail, String::from_utf8_lossy(string_bytes).to_string()))
+    }
+    #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
+    pub fn parse_optional_string<'a>(
+        input_base_addr: usize,
+        input: &'a [u8],
+    ) -> S2ProtoResult<&'a [u8], Option<String>> {
+        let (post_padding_zeros_tail, _padding_zeros_before_string) = dbg_peek_hex(
+            take_while(|x| x == 0u8),
+            "Padding zeros before first string",
+        )(input)?;
+
+        let (tail, string_header) =
+            dbg_peek_hex(take(4usize), "string header, 4 bytes")(post_padding_zeros_tail)?;
+        dbg_bytes_and_tail!(string_header, input_base_addr, tail);
+
+        if string_header == &[0x02, 0x00, 0x00, 0x00] {
+            let (tail, string_content) = Self::parse_null_terminated_string(input_base_addr, tail)?;
+            Ok((tail, Some(string_content)))
+        } else if string_header == &[0x01, 0x00, 0x00, 0x00]
+            || string_header == &[0x04, 0x00, 0x00, 0x00]
+        {
+            tracing::debug!("Empty string header (None)");
+            Ok((tail, None))
+        } else {
+            // In this case, we do not advance through the data, we return the initial input.
+            tracing::error!("Unknown string header");
+            Ok((post_padding_zeros_tail, None))
+        }
+    }
+
+    #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
     pub fn parse(cache_handle_id: String, input: &[u8]) -> S2ProtoResult<&[u8], Self> {
         let input_base_addr = input.as_ptr().addr();
         tracing::info!("--> {} Parsing {}", peek_hex(input), cache_handle_id);
@@ -149,7 +204,6 @@ impl MapInfo {
         let (mut tail, file_version_bytes) =
             dbg_peek_hex(take(4usize), "read file_version, 4 bytes")(tail)?;
         let (_, file_version) = i32(nom::number::Endianness::Little)(file_version_bytes)?;
-
         dbg_displayable_and_tail!(file_version);
 
         if file_version > 24 {
@@ -162,16 +216,14 @@ impl MapInfo {
         let (tail, cell_width_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_width, 4 bytes")(tail)?;
         let (_, cell_width) = i32(nom::number::Endianness::Little)(cell_width_bytes)?;
-        dbg_bytes_and_tail!(cell_width_bytes, input_base_addr, tail);
         let cell_width: usize = cell_width.try_into()?;
-        dbg_displayable_and_tail!(cell_width);
+        //dbg_displayable_and_tail!(cell_width);
 
         let (tail, cell_height_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_height, 4 bytes")(tail)?;
-        dbg_bytes_and_tail!(cell_height_bytes, input_base_addr, tail);
         let (_, cell_height) = i32(nom::number::Endianness::Little)(cell_height_bytes)?;
         let cell_height: usize = cell_height.try_into()?;
-        dbg_displayable_and_tail!(cell_height);
+        //dbg_displayable_and_tail!(cell_height);
 
         if cell_width > 256 || cell_height > 256 {
             tracing::warn!(
@@ -183,62 +235,59 @@ impl MapInfo {
                 cell_width.max(cell_height),
             )));
         }
-        let (tail, unknown_bytes_1) =
-            dbg_peek_hex(take(8usize), "read 8 unknown_bytes after cell_height")(tail)?;
-        dbg_bytes_and_tail!(unknown_bytes_1, input_base_addr, tail);
 
-        let (tail, first_string_bytes) =
-            dbg_peek_hex(take_while(|x| x != 0u8), "walk past the first string")(tail)?;
-        let first_string = String::from_utf8_lossy(first_string_bytes).to_string();
-        dbg_bytes_and_tail!(first_string_bytes, input_base_addr, tail);
+        let (tail, first_string) = Self::parse_optional_string(input_base_addr, tail)?;
+        if let Some(ref first_string) = first_string {
+            dbg_displayable_and_tail!(first_string);
+        }
+        let (mut tail, mut second_string) = Self::parse_optional_string(input_base_addr, tail)?;
+        if let Some(ref second_string) = second_string {
+            dbg_displayable_and_tail!(second_string);
+        } else {
+            // Try to exhaust to find at least one String...
+            // This happens for some reason only on the Mothership MapInfo
+            // with cache_handle e854e11f57f133675385ea8ff4183724faf320c8ad1dc9a179b3f4bc959ea360
+            let (new_tail, str_content) =
+                Self::parse_null_terminated_string(input_base_addr, tail)?;
+            tail = new_tail;
+            second_string = Some(str_content);
+        }
 
-        let (tail, _null_terminator) = dbg_peek_hex(
-            take(1usize),
-            "advance past termination character first string",
-        )(tail)?;
+        let (tail, third_string) = Self::parse_optional_string(input_base_addr, tail)?;
+        if let Some(ref third_string) = third_string {
+            dbg_displayable_and_tail!(third_string);
+        }
 
-        let (tail, second_string_bytes) =
-            dbg_peek_hex(take_while(|x| x != 0u8), "walk past the second string")(tail)?;
-        let second_string = String::from_utf8_lossy(second_string_bytes).to_string();
-        dbg_bytes_and_tail!(second_string_bytes, input_base_addr, tail);
+        let (tail, fourth_string) = Self::parse_optional_string(input_base_addr, tail)?;
+        if let Some(ref fourth_string) = fourth_string {
+            dbg_displayable_and_tail!(fourth_string);
+        }
 
-        let (tail, _null_terminator) = dbg_peek_hex(
-            take(1usize),
-            "advance past termination character second string",
-        )(tail)?;
-
-        let (tail, unknown_bytes_2) =
-            dbg_peek_hex(take(8usize), "read 8 unknown bytes after second string")(tail)?;
-        dbg_bytes_and_tail!(unknown_bytes_2, input_base_addr, tail);
-
-        let (tail, padding_zeros) = dbg_peek_hex(
+        let (tail, _padding_zeros_before_string) = dbg_peek_hex(
             take_while(|x| x == 0u8),
-            "padding zeros before third string",
-        )(tail)?;
-        dbg_bytes_and_tail!(padding_zeros, input_base_addr, tail);
-
-        let (tail, third_string_bytes) =
-            dbg_peek_hex(take_while(|x| x != 0u8), "collect third string")(tail)?;
-        let third_string = String::from_utf8_lossy(third_string_bytes).to_string();
-        dbg_bytes_and_tail!(third_string_bytes, input_base_addr, tail);
-
-        let (tail, _null_terminator) = dbg_peek_hex(
-            take(1usize),
-            "advance past termination character third string",
+            "Possible padding zeros before theme string",
         )(tail)?;
 
-        let (tail, fourth_string_bytes) =
-            dbg_peek_hex(take_while(|x| x != 0u8), "collect fourth string")(tail)?;
-        let fourth_string = String::from_utf8_lossy(fourth_string_bytes).to_string();
-        dbg_bytes_and_tail!(fourth_string_bytes, input_base_addr, tail);
+        let (tail, theme_bytes) = dbg_peek_hex(take_while(|x| x != 0u8), "collect string")(tail)?;
+        dbg_bytes_and_tail!(theme_bytes, input_base_addr, tail);
+        let theme = String::from_utf8_lossy(theme_bytes).to_string();
+        dbg_displayable_and_tail!(theme);
 
-        let (tail, _null_terminator) = dbg_peek_hex(
-            take(1usize),
-            "advance past termination character fourth string",
-        )(tail)?;
+        let (tail, _null_terminator) =
+            dbg_peek_hex(take(1usize), "advance null character terminator")(tail)?;
+
+        let (tail, tile_set_bytes) =
+            dbg_peek_hex(take_while(|x| x != 0u8), "collect string")(tail)?;
+        dbg_bytes_and_tail!(tile_set_bytes, input_base_addr, tail);
+        let tile_set = String::from_utf8_lossy(tile_set_bytes).to_string();
+        dbg_displayable_and_tail!(tile_set);
+
+        let (tail, _null_terminator) =
+            dbg_peek_hex(take(1usize), "advance null character terminator")(tail)?;
 
         let (tail, cell_left_bytes) =
             dbg_peek_hex(take(4usize), "read map cell_left, 4 bytes")(tail)?;
+        dbg_bytes_and_tail!(cell_left_bytes, input_base_addr, tail);
         let (_, cell_left) = i32(nom::number::Endianness::Little)(cell_left_bytes)?;
         let cell_left: usize = cell_left.try_into()?;
         dbg_displayable_and_tail!(cell_left);
@@ -310,8 +359,8 @@ impl MapInfo {
                 cell_height,
                 first_string,
                 second_string,
-                third_string,
-                fourth_string,
+                theme,
+                tile_set,
                 cell_left,
                 cell_bottom,
                 cell_right,
@@ -423,7 +472,7 @@ pub mod map_info_tests {
         let (_, map_info) = MapInfo::parse(String::from("test"), &cache_contents).unwrap();
         assert_eq!(map_info.cell_width, 168);
         assert_eq!(map_info.cell_height, 168);
-        assert_eq!(map_info.third_string, "Dark".to_string());
-        assert_eq!(map_info.fourth_string, "Zerus".to_string());
+        assert_eq!(map_info.theme, "Dark".to_string());
+        assert_eq!(map_info.tile_set, "Zerus".to_string());
     }
 }
