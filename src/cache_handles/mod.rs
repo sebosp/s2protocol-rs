@@ -341,15 +341,23 @@ pub async fn download_cache(
         "https://{}-s2-depot.classic.blizzard.com/{}.{}",
         region, handle, ext
     );
-    let response = reqwest::get(&url).await?;
-    if !response.status().is_success() {
-        return Err(S2ProtocolError::CacheHandleDownload(format!(
-            "Failed to download cache {}, status code: {}",
-            handle,
-            response.status()
-        )));
+    #[cfg(not(feature = "dep_reqwest"))]
+    return Err(S2ProtocolError::CacheHandleDownload(format!(
+        "Will not download {} because feature dep_reqwest of s2protocol-rs is not enabled.",
+        url
+    )));
+    #[cfg(feature = "dep_reqwest")]
+    {
+        let response = reqwest::get(&url).await?;
+        if !response.status().is_success() {
+            return Err(S2ProtocolError::CacheHandleDownload(format!(
+                "Failed to download cache {}, status code: {}",
+                handle,
+                response.status()
+            )));
+        }
+        let response_bytes = response.bytes().await?;
+        std::fs::write(&cache_download_target, response_bytes)?;
+        Ok(())
     }
-    let response_bytes = response.bytes().await?;
-    std::fs::write(&cache_download_target, response_bytes)?;
-    Ok(())
 }

@@ -70,6 +70,7 @@ pub enum S2ProtocolError {
     CacheHandleDownload(String),
 
     /// Reqwest error, used for downloading replay caches from blizzard depots.
+    #[cfg(feature = "dep_reqwest")]
     #[error("Reqwest Error: {0}")]
     Reqwest(#[from] reqwest::Error),
 

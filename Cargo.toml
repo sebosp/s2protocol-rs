@@ -28,12 +28,12 @@ serde-xml-rs = "0.8"
 include_dir = { version = "0.7.4", features = ["glob"] }
 tokio = { version = "1", features = ["full"], optional = true }
 futures = "0.3.34"
-reqwest = "0.13"
+reqwest = { version = "0.13", optional = true }
 console = { version = "0.16.6", optional = true }
 
 [features]
 default = ["tracing_off"]
-dep_arrow = ["arrow", "arrow_convert", "tokio"]
+dep_arrow = ["arrow", "arrow_convert", "tokio", "dep_reqwest"]
 # A feature that allows extra tracing, disabled by default because of performance
 tracing_off = [
 	"tracing/max_level_off",
@@ -61,6 +61,7 @@ tracing_error_level = [
 	"nom-mpq/tracing_error_level",
 ]
 nom_color_debug = ["nom-mpq/nom_color_debug", "console"]
+dep_reqwest = ["reqwest"]
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }
