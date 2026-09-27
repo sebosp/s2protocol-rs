@@ -2,6 +2,6 @@
 linker = "clang"
 rustflags = [
   "-C",
-  "link-arg=-fuse-ld=/usr/bin/mold",
+  "link-arg=-fuse-ld=/usr/local/bin/mold",
   "-Clink-arg=-Wl,--no-rosegment",
 ]
