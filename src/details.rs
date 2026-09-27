@@ -123,6 +123,7 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
 }
 
 impl PlayerLobbyDetailsFlatRow {
+    #[cfg(feature = "dep_arrow")]
     pub fn schema() -> Schema {
         if let Struct(fields) = PlayerLobbyDetailsFlatRow::data_type() {
             Schema::new(fields.clone())
