@@ -1,6 +1,10 @@
 //! Provides  the flat row versions of the InitData.
 
 #[cfg(feature = "dep_arrow")]
+use arrow::datatypes::{DataType::Struct, Schema};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::field::ArrowField;
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use super::InitData;
@@ -42,5 +46,15 @@ impl From<&InitData> for Vec<UserInitDataFlatRow> {
                 scaled_rating: user.scaled_rating,
             })
             .collect()
+    }
+}
+
+impl UserInitDataFlatRow {
+    pub fn schema() -> Schema {
+        if let Struct(fields) = UserInitDataFlatRow::data_type() {
+            Schema::new(fields.clone())
+        } else {
+            panic!("Invalid schema, expected struct");
+        }
     }
 }

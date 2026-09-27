@@ -1,6 +1,10 @@
 //! Upgrade Events in a flat row for Arrow usage
 
 #[cfg(feature = "dep_arrow")]
+use arrow::datatypes::{DataType::Struct, Schema};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::field::ArrowField;
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::tracker_events::UpgradeEvent;
@@ -24,11 +28,7 @@ pub struct UpgradeEventFlatRow {
 
 impl UpgradeEventFlatRow {
     /// Create a new UpgradeEventFlatRow from a UpgradeEvent and the fields from the Details MPQ sector
-    pub fn new(
-        event: UpgradeEvent,
-        ext_replay_loop: i64,
-        details: crate::details::Details,
-    ) -> Self {
+    pub fn new(event: UpgradeEvent, ext_replay_loop: i64, ext_fs_id: u64) -> Self {
         let ext_replay_seconds = crate::convert_tracker_loop_to_seconds(ext_replay_loop);
         Self {
             player_id: event.player_id,
@@ -36,7 +36,15 @@ impl UpgradeEventFlatRow {
             count: event.count,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_id: details.ext_fs_id,
+            ext_fs_id,
+        }
+    }
+
+    pub fn schema() -> Schema {
+        if let Struct(fields) = UpgradeEventFlatRow::data_type() {
+            Schema::new(fields.clone())
+        } else {
+            panic!("Invalid schema, expected struct");
         }
     }
 }

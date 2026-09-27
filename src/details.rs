@@ -13,10 +13,17 @@
 use std::path::PathBuf;
 
 #[cfg(feature = "dep_arrow")]
+use arrow::datatypes::{DataType::Struct, Schema};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::field::ArrowField;
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 use nom_mpq::MPQ;
 
-use crate::{GameDescription, InitData, LobbySlot, error::S2ProtocolError};
+use crate::{
+    GameDescription, InitData, LobbySlot, basic_replay_data::SC2ReplayBasicData,
+    error::S2ProtocolError,
+};
 use serde::{Deserialize, Serialize};
 
 /* Removed fields:
@@ -56,7 +63,10 @@ pub struct PlayerLobbyDetailsFlatRow {
     pub player_result: String,
     pub player_working_set_slot_id: Option<u8>,
     pub player_hero: String,
+    /// The map name/title
     pub title: String,
+    /// Map Info sha256 digest.
+    pub map_info_sha256: String,
     pub is_blizzard_map: bool,
     pub time_utc: i64,
     pub time_local_offset: i64,
@@ -64,8 +74,8 @@ pub struct PlayerLobbyDetailsFlatRow {
     pub lobby_slot_observe: u8,
     pub lobby_slot_map_size_x: u8,
     pub lobby_slot_map_size_y: u8,
-    pub cache_handle_region: Option<String>,
-    pub cache_handle_extension: Option<String>,
+    pub cache_handle_region: String,
+    pub cache_handle_extension: String,
     pub cache_handles: String,
     pub ext_fs_sha256: String,
     pub ext_fs_file_name: String,
@@ -75,32 +85,6 @@ pub struct PlayerLobbyDetailsFlatRow {
 
 impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
     fn from(source: PlayerLobbyDetails) -> PlayerLobbyDetailsFlatRow {
-        // transform the cache handles into their utf 8 representation
-        // take 2 characters at a time from the hex string and convert to bytes
-        let mut cache_handles = String::new();
-        let mut cache_handle_region = None;
-        let mut cache_handle_extension = None;
-        for cache_handle in &source.cache_handles {
-            // 8 characters for the extension
-            let (ext_str, remaining) = cache_handle.split_at(8);
-            let extension = make_string_from_hex_chars(ext_str);
-            if cache_handle_extension.is_none() {
-                cache_handle_extension = Some(extension.to_string());
-            }
-            // skip the "0000" delimiter.
-            let remaining = &remaining[4..];
-
-            // 4 characters for the region
-            let (region_str, cache_handle_hash) = remaining.split_at(4);
-            let region = make_string_from_hex_chars(region_str);
-
-            if cache_handle_region.is_none() {
-                cache_handle_region = Some(region.to_string());
-            }
-            cache_handles.push_str(cache_handle_hash);
-            cache_handles.push(',');
-        }
-        cache_handles.pop(); // remove last comma
         PlayerLobbyDetailsFlatRow {
             player_name: source.player_details.name,
             player_toon_region: source.player_details.toon.region,
@@ -119,6 +103,7 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
             player_working_set_slot_id: source.player_details.working_set_slot_id,
             player_hero: source.player_details.hero,
             title: source.title,
+            map_info_sha256: source.map_info_sha256,
             is_blizzard_map: source.game_description.is_blizzard_map,
             time_utc: source.time_utc,
             time_local_offset: source.time_local_offset,
@@ -126,9 +111,9 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
             lobby_slot_observe: source.lobby_slot.observe,
             lobby_slot_map_size_x: source.game_description.map_size_x,
             lobby_slot_map_size_y: source.game_description.map_size_y,
-            cache_handle_region,
-            cache_handle_extension,
-            cache_handles,
+            cache_handle_region: source.cache_handle_region,
+            cache_handle_extension: source.cache_handle_extension,
+            cache_handles: source.cache_handles.join(","),
             ext_fs_id: source.ext_fs_id,
             ext_fs_sha256: source.ext_fs_sha256,
             ext_fs_file_name: source.ext_fs_file_name,
@@ -137,23 +122,14 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
     }
 }
 
-/// Transforms a string containing hex characters into a string
-/// These are contained in the cache_handles
-fn make_string_from_hex_chars(input_str: &str) -> String {
-    input_str
-        .chars()
-        .collect::<Vec<char>>()
-        .chunks(2)
-        .map(parse_hex_chars_to_u8_char)
-        .collect()
-}
-
-/// Transforms two characters that are hex into u8 then char
-/// i.e. String("73") -> u8 value 115 (ascii) -> char 's'
-fn parse_hex_chars_to_u8_char(chars: &[char]) -> char {
-    let string_chunk: String = chars.iter().collect();
-    let byte_chunk = u8::from_str_radix(&string_chunk, 16).unwrap();
-    byte_chunk as char
+impl PlayerLobbyDetailsFlatRow {
+    pub fn schema() -> Schema {
+        if let Struct(fields) = PlayerLobbyDetailsFlatRow::data_type() {
+            Schema::new(fields.clone())
+        } else {
+            panic!("Invalid schema, expected struct");
+        }
+    }
 }
 
 /// A joined version of the PlayerLobbySlot contained within the InitData sector and the Details
@@ -165,6 +141,7 @@ pub struct PlayerLobbyDetails {
     pub lobby_slot: LobbySlot,
     /// The name of the map
     pub title: String,
+    pub map_info_sha256: String,
     pub game_description: GameDescription,
     pub time_utc: i64,
     pub time_local_offset: i64,
@@ -173,6 +150,8 @@ pub struct PlayerLobbyDetails {
     // Attempt a join from the PlayerSetupEvent at the start of ReplayTrackerEvents
     pub tracker_setup_player_id: Option<u8>,
     pub tracker_setup_slot_id: Option<u32>, // Is this u32 or?
+    pub cache_handle_region: String,
+    pub cache_handle_extension: String,
     pub cache_handles: Vec<String>,
     pub ext_fs_sha256: String,
     pub ext_fs_file_name: String,
@@ -180,17 +159,21 @@ pub struct PlayerLobbyDetails {
     pub ext_datetime: chrono::NaiveDateTime,
 }
 
-impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
-    type Error = S2ProtocolError;
-
-    fn try_from(init: &InitData) -> Result<Self, Self::Error> {
-        let details: Details = init.try_into()?;
-        let res = details
+impl From<&SC2ReplayBasicData> for Vec<PlayerLobbyDetails> {
+    fn from(basic_data: &SC2ReplayBasicData) -> Self {
+        let res = basic_data
+            .details
             .player_list
-            .into_iter()
+            .iter()
             .filter_map(|player| {
                 let mut slot_idx = None;
-                for (idx, lobby_slot) in init.sync_lobby_state.lobby_state.slots.iter().enumerate()
+                for (idx, lobby_slot) in basic_data
+                    .init_data
+                    .sync_lobby_state
+                    .lobby_state
+                    .slots
+                    .iter()
+                    .enumerate()
                 {
                     if let (Some(init_slot_id), Some(details_slot_id)) =
                         (lobby_slot.working_set_slot_id, player.working_set_slot_id)
@@ -202,33 +185,61 @@ impl TryFrom<&InitData> for Vec<PlayerLobbyDetails> {
                 }
                 let slot_idx = slot_idx?;
                 Some(PlayerLobbyDetails {
-                    title: details.title.clone(),
-                    game_description: init.sync_lobby_state.game_description.clone(),
-                    lobby_slot: init.sync_lobby_state.lobby_state.slots[slot_idx].clone(),
+                    title: basic_data.details.title.clone(),
+                    // This field is unavailable until the caches are downloaded,
+                    // once this happens, we can get the digest of the MapInfo sector
+                    // from the downlaoded MPQs.
+                    map_info_sha256: String::with_capacity(64),
+                    game_description: basic_data
+                        .init_data
+                        .sync_lobby_state
+                        .game_description
+                        .clone(),
+                    lobby_slot: basic_data.init_data.sync_lobby_state.lobby_state.slots[slot_idx]
+                        .clone(),
                     player_details: player.clone(),
-                    time_utc: details.time_utc,
-                    time_local_offset: details.time_local_offset,
-                    user_init_data_name: init
+                    time_utc: basic_data.details.time_utc,
+                    time_local_offset: basic_data.details.time_local_offset,
+                    user_init_data_name: basic_data
+                        .init_data
                         .sync_lobby_state
                         .user_initial_data
                         .get(slot_idx)
                         .map_or("".to_string(), |u| u.name.clone()),
-                    user_init_data_clan_tag: init
+                    user_init_data_clan_tag: basic_data
+                        .init_data
                         .sync_lobby_state
                         .user_initial_data
                         .get(slot_idx)
                         .map_or("".to_string(), |u| u.clan_tag.clone().unwrap_or_default()),
                     tracker_setup_player_id: None,
                     tracker_setup_slot_id: None,
-                    cache_handles: details.cache_handles.clone(),
-                    ext_fs_id: details.ext_fs_id,
-                    ext_fs_sha256: init.ext_fs_sha256.clone(),
-                    ext_fs_file_name: init.ext_fs_file_name.clone(),
-                    ext_datetime: details.ext_datetime,
+                    cache_handles: basic_data
+                        .init_data
+                        .sync_lobby_state
+                        .game_description
+                        .cache_handles
+                        .clone(),
+                    cache_handle_region: basic_data
+                        .init_data
+                        .sync_lobby_state
+                        .game_description
+                        .cache_handle_region
+                        .clone(),
+                    cache_handle_extension: basic_data
+                        .init_data
+                        .sync_lobby_state
+                        .game_description
+                        .cache_handle_extension
+                        .clone(),
+                    ext_fs_id: basic_data.details.ext_fs_id,
+                    ext_fs_sha256: basic_data.init_data.ext_fs_sha256.clone(),
+                    ext_fs_file_name: basic_data.init_data.ext_fs_file_name.clone(),
+                    ext_datetime: basic_data.details.ext_datetime,
                 })
             })
             .collect();
-        Ok(res)
+        res
     }
 }
 
@@ -241,6 +252,7 @@ pub struct Details {
     pub ext_fs_id: u64,
     pub ext_datetime: chrono::NaiveDateTime,
     pub player_list: Vec<PlayerDetails>,
+    /// The name of the map
     pub title: String,
     pub difficulty: String,
     pub thumbnail: Thumbnail,

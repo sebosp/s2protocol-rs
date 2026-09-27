@@ -1,5 +1,5 @@
 use super::*;
-use s2protocol::game_events::VersionedBalanceUnit;
+use s2protocol::game_events::MultiVersionedBalanceUnits;
 use s2protocol::game_events::ability::balance_data::json_handler::*;
 use s2protocol::read_details;
 use s2protocol::read_message_events;
@@ -32,12 +32,11 @@ pub fn handle_get_cmd(
     syntect_syntax_set: SyntaxSet,
     syntect_theme_set: ThemeSet,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let versioned_abilities: HashMap<(u32, String), VersionedBalanceUnit> =
-        if cli.json_balance_data_dir.is_empty() {
-            read_balance_data_from_included_assets()?
-        } else {
-            read_balance_data_from_json_dir(PathBuf::from(&cli.json_balance_data_dir))?
-        };
+    let versioned_abilities: MultiVersionedBalanceUnits = if cli.json_balance_data_dir.is_empty() {
+        read_balance_data_from_included_assets()?
+    } else {
+        read_balance_data_from_json_dir(PathBuf::from(&cli.json_balance_data_dir))?
+    };
     let sources: Vec<PathBuf> = if PathBuf::from(&cli.source).is_dir() {
         let mut sources = Vec::new();
         for entry in std::fs::read_dir(&cli.source)? {
@@ -73,10 +72,10 @@ pub fn handle_get_cmd(
             .to_string();
         // NOTE: A fake "ext_fs_id" is created because the current impl is thought
         // of mainly for writing arrow ipc files... Maybe this is not a good idea.
-        let init_data = s2protocol::InitData::new(&source_path, 0u64, &mpq, &file_contents)?;
+        let basic_data = s2protocol::basic_replay_data::SC2ReplayBasicData::new(&source, 0u64)?;
         match read_type {
             ReadTypes::TrackerEvents => {
-                let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
+                let res = SC2EventIterator::new(&basic_data, &versioned_abilities)?;
                 println!("[");
                 for evt in res.into_iter().filter(|e| e.is_tracker_event()) {
                     syntect_json_print(
@@ -89,7 +88,7 @@ pub fn handle_get_cmd(
             }
 
             ReadTypes::GameEvents => {
-                let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
+                let res = SC2EventIterator::new(&basic_data, &versioned_abilities)?;
                 println!("[");
                 for evt in res.into_iter().filter(|e| e.is_game_event()) {
                     syntect_json_print(
@@ -122,14 +121,14 @@ pub fn handle_get_cmd(
             }
             ReadTypes::InitData => {
                 syntect_json_print(
-                    serde_json::to_string_pretty(&init_data).unwrap(),
+                    serde_json::to_string_pretty(&basic_data.init_data).unwrap(),
                     &syntect_syntax_set,
                     &syntect_theme_set,
                 );
             }
             ReadTypes::TransistEvents => {
                 tracing::info!("Transducing through both Game and Tracker Events");
-                let res = SC2EventIterator::new(&init_data, versioned_abilities.clone())?;
+                let res = SC2EventIterator::new(&basic_data, &versioned_abilities)?;
                 let filters = s2protocol::filters::SC2ReplayFilters::from(cli.clone());
                 let res = res.with_filters(filters);
                 if cli.tui {
@@ -137,7 +136,7 @@ pub fn handle_get_cmd(
                     return Ok(tui::ratatui_main(
                         res,
                         details,
-                        init_data,
+                        basic_data.init_data,
                         syntect_syntax_set,
                         syntect_theme_set,
                     )?);

@@ -34,7 +34,6 @@ pub type GameTSubgroupPriority = u8;
 pub type GameTSelectionCount = u16;
 pub type GameTSubgroupCount = u16;
 pub type GameTControlGroupIndex = u8;
-pub type GameTControlGroupCount = u8;
 pub type GameTSyncChecksum = u32;
 pub type GameTButtonLink = u16;
 

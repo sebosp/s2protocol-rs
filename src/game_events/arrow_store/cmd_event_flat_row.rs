@@ -1,6 +1,10 @@
 //! Cmd Events in a flat row for Arrow usage
 
 #[cfg(feature = "dep_arrow")]
+use arrow::datatypes::{DataType::Struct, Schema};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::field::ArrowField;
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::game_events::GameSCmdData;
@@ -34,7 +38,7 @@ pub struct CmdTargetPointEventFlatRow {
 impl CmdTargetPointEventFlatRow {
     /// Create a new CmdEventFlatRow from a GameSCmdEvent and the fields from the Details MPQ sector
     pub fn new(
-        details: &crate::details::Details,
+        ext_fs_id: u64,
         event: GameSCmdEvent,
         game_loop: i64,
         user_id: i64,
@@ -70,11 +74,19 @@ impl CmdTargetPointEventFlatRow {
                     unit_name,
                     ext_replay_loop: game_loop,
                     ext_replay_seconds,
-                    ext_fs_id: details.ext_fs_id,
+                    ext_fs_id,
                 });
             }
         }
         res
+    }
+
+    pub fn schema() -> Schema {
+        if let Struct(fields) = CmdTargetPointEventFlatRow::data_type() {
+            Schema::new(fields.clone())
+        } else {
+            panic!("Invalid schema, expected struct");
+        }
     }
 }
 
@@ -110,7 +122,7 @@ pub struct CmdTargetUnitEventFlatRow {
 impl CmdTargetUnitEventFlatRow {
     /// Create a new CmdEventFlatRow from a GameSCmdEvent and the fields from the Details MPQ sector
     pub fn new(
-        details: &crate::details::Details,
+        ext_fs_id: u64,
         event: GameSCmdEvent,
         game_loop: i64,
         user_id: i64,
@@ -159,10 +171,18 @@ impl CmdTargetUnitEventFlatRow {
                     target_unit_name,
                     ext_replay_loop: game_loop,
                     ext_replay_seconds,
-                    ext_fs_id: details.ext_fs_id,
+                    ext_fs_id,
                 });
             }
         }
         res
+    }
+
+    pub fn schema() -> Schema {
+        if let Struct(fields) = CmdTargetUnitEventFlatRow::data_type() {
+            Schema::new(fields.clone())
+        } else {
+            panic!("Invalid schema, expected struct");
+        }
     }
 }

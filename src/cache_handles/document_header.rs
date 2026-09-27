@@ -4,15 +4,21 @@
 //! these are ignored.
 //!
 
+use std::collections::BTreeMap;
+
+use super::DOCUMENT_HEADER_FILE_NAME;
 use crate::{S2ProtoResult, S2ProtocolError, dbg_peek_hex};
 use nom::bytes::complete::*;
 use nom::number::complete::*;
 use nom_mpq::MPQ;
 use nom_mpq::parser::peek_hex;
+use serde::{Deserialize, Serialize};
 use tracing::instrument;
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct DocumentHeader {
+    /// The cache_handle_id where the Document Header was found.
+    pub cache_handle_id: String,
     pub maybe_dimension_x1: i32,
     pub maybe_dimension_y1: i32,
     // TODO: these are not epochs, probably more like units that are 1000th the value of the
@@ -26,6 +32,7 @@ pub struct DocumentHeader {
     pub description_long: String,
     /// A short description of the map, in the few files I've checked it's empty.
     pub description_short: String,
+    pub notes: BTreeMap<String, String>,
 }
 
 impl DocumentHeader {
@@ -39,7 +46,11 @@ impl DocumentHeader {
             "DocInfo/Name" => self.name = value,
             "DocInfo/DescLong" => self.description_long = value,
             "DocInfo/DescShort" => self.description_short = value,
-            "MapInfo/Player00/Name"
+            "DocInfo/PatchNote001"
+            |"DocInfo/PatchNote002"
+            |"DocInfo/PatchNote003"
+            |"DocInfo/PatchNote004"
+            |"MapInfo/Player00/Name"
             | "MapInfo/Player01/Name"
             | "MapInfo/Player02/Name"
             | "MapInfo/Player03/Name"
@@ -59,6 +70,7 @@ impl DocumentHeader {
             | "DocInfo/Screenshot01"
             | "DocInfo/Screenshot02"
             | "DocInfo/Screenshot03"
+            | "DocInfo/Screenshot04"
             | "DocInfo/HowToPlayBasic00"
             | "DocInfo/HowToPlayBasic01"
             | "DocInfo/HowToPlayBasic02"
@@ -66,23 +78,30 @@ impl DocumentHeader {
             | "DocInfo/HowToPlayAdvanced01"
             | "DocInfo/HowToPlayAdvanced02" => tracing::debug!("Ignoring {name}"),
             _ => {
-                tracing::warn!("Unknown field name {name}")
+                self.notes.insert(name.to_string(), value);
             }
         }
     }
 
     #[instrument(level = "debug", skip(mpq, file_contents))]
-    pub fn from_mpq(mpq: &MPQ, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
+    pub fn from_mpq(
+        cache_handle_id: String,
+        mpq: &MPQ,
+        file_contents: &[u8],
+    ) -> Result<Self, S2ProtocolError> {
         let (_, document_header_sector) =
-            mpq.read_mpq_file_sector("DocumentHeader", false, file_contents)?;
-        let (_, document_header) = Self::parse(&document_header_sector)?;
+            mpq.read_mpq_file_sector(DOCUMENT_HEADER_FILE_NAME, false, file_contents)?;
+        let (_, document_header) = Self::parse(cache_handle_id, &document_header_sector)?;
         Ok(document_header)
     }
 
     #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
-    pub fn parse(input: &[u8]) -> S2ProtoResult<&[u8], Self> {
+    pub fn parse(cache_handle_id: String, input: &[u8]) -> S2ProtoResult<&[u8], Self> {
+        tracing::debug!("{} Parsing {}]", peek_hex(input), cache_handle_id);
         let mut res = Self::default();
-        let (tail, _) = dbg_peek_hex(tag(&b"H2CS"[..]), "read file magic, H2CS bytes")(input)?;
+        let (tail, file_magic) =
+            dbg_peek_hex(tag(&b"H2CS"[..]), "read file magic, H2CS bytes")(input)?;
+        tracing::debug!("{} file magic {file_magic:?}", peek_hex(tail),);
 
         let (tail, maybe_file_version_bytes) =
             dbg_peek_hex(take(4usize), "read maybe_file_version, 4 bytes")(tail)?;
@@ -90,9 +109,9 @@ impl DocumentHeader {
             i32(nom::number::Endianness::Little)(maybe_file_version_bytes)?;
 
         tracing::debug!(
-            "maybe_file_version '{maybe_file_version_bytes:?}' '{:?}' tail is {}",
+            "{} maybe_file_version '{maybe_file_version_bytes:?}' '{:?}'",
+            peek_hex(tail),
             maybe_file_version,
-            peek_hex(tail)
         );
 
         let (tail, maybe_map_compatibility_bytes) =
@@ -101,9 +120,9 @@ impl DocumentHeader {
             String::from_utf8_lossy(maybe_map_compatibility_bytes).to_string();
 
         tracing::debug!(
-            "maybe_compatibility '{maybe_map_compatibility_bytes:?}' '{}', tail is {}",
+            "{} maybe_compatibility '{maybe_map_compatibility_bytes:?}' '{}'",
+            peek_hex(tail),
             maybe_compatibility,
-            peek_hex(tail)
         );
 
         let (tail, _unknown_bytes) =
@@ -134,35 +153,60 @@ impl DocumentHeader {
         let (_, some_epoch_2) = i32(nom::number::Endianness::Little)(maybe_i32_bytes)?;
         res.some_epoch_2 = some_epoch_2;
 
-        // 0200 0000 0000 0000 0100 0000 follows, no idea what these are...
-        let (tail, _padding_bytes) = dbg_peek_hex(
-            take(12usize),
+        // 0200 0000 0000 0000 follows, maybe these are struct field headers.
+        // 0a00 0000 0000 0000 is also observed in other files.
+        let (tail, padding_bytes) = dbg_peek_hex(
+            take(8usize),
             "read _padding_bytes after maybe dimensions2, 12 bytes: ",
         )(tail)?;
 
-        let (tail, string_bytes) = dbg_peek_hex(take_while(|x| x != 0u8), "read mod string")(tail)?;
-        res.mod_info = String::from_utf8_lossy(string_bytes).to_string();
+        tracing::debug!(
+            "{} padding_bytes {}",
+            peek_hex(tail),
+            peek_hex(padding_bytes),
+        );
+
+        let (tail, mod_info_str_count_bytes) =
+            dbg_peek_hex(take(4usize), "read od_info_str_count field count, 4 bytes")(tail)?;
+        let (_, mod_info_str_count) =
+            u16(nom::number::Endianness::Little)(mod_info_str_count_bytes)?;
+        tracing::debug!(
+            "{} mod_info_str_count: {:?} mod_info_str_count is {}",
+            peek_hex(tail),
+            mod_info_str_count_bytes,
+            mod_info_str_count,
+        );
+
+        let mut new_tail = tail;
+        tracing::debug!("Expect to read {} mod_info strings", mod_info_str_count);
+        for _ in 0..mod_info_str_count {
+            let (tail, string_bytes) =
+                dbg_peek_hex(take_while(|x| x != 0u8), "read mod string")(new_tail)?;
+            let (tail, _) = dbg_peek_hex(take(1usize), "Walk past str delim")(tail)?;
+            res.mod_info.push_str(&format!("\n"));
+            res.mod_info
+                .push_str(&String::from_utf8_lossy(string_bytes));
+            new_tail = tail;
+        }
+        let tail = new_tail;
+        tracing::debug!("{} mod_info is {}", peek_hex(tail), res.mod_info,);
+        /*
+        * Commenting for now, Mothership map has mod_info 'bnet:Swarm (Mod)/0.0/999,file:Mods/Swarm.SC2Mod"))'
         if res.mod_info != "bnet:Void (Mod)/0.0/999,file:Mods/Void.SC2Mod" {
             return Err(S2ProtocolError::Map(crate::cache_handles::MapError::Other(
-                "Only parsed Void typed.".to_string(),
+                format!("Only parsed Void typed. But found {}", res.mod_info),
             )));
-        }
-
-        tracing::debug!("Got mod_info: {}", res.mod_info);
-
-        let (tail, _past_the_zero_delim) = dbg_peek_hex(
-            take(1usize),
-            "read _past_the_zero_delim on mod_info, 1 bytes",
-        )(tail)?;
+        }*/
 
         let (tail, docinfo_field_count_bytes) =
             dbg_peek_hex(take(2usize), "read doc_info field count, 2 bytes")(tail)?;
         let (_, docinfo_field_count) =
             u16(nom::number::Endianness::Little)(docinfo_field_count_bytes)?;
         tracing::debug!(
-            "field count field count bytes: {:?} tail is {}",
+            "{} field count field count bytes: {:?} docinfo_field_count is {}",
+            peek_hex(tail),
             docinfo_field_count_bytes,
-            peek_hex(tail)
+            docinfo_field_count,
         );
 
         let (mut new_tail, _) =
@@ -175,18 +219,18 @@ impl DocumentHeader {
             let (_, next_str_size) = u16(nom::number::Endianness::Little)(next_str_size_bytes)?;
 
             tracing::debug!(
-                "{field_num}: field NAME string size {}, tail is {}",
+                "{}[{field_num}]: field NAME string size {}",
+                peek_hex(tail),
                 next_str_size,
-                peek_hex(new_tail)
             );
 
             let (tail, docinfo_field_name_bytes) =
                 dbg_peek_hex(take(next_str_size), "read docinfo_field_name, n bytes")(tail)?;
             let docinfo_field_name = String::from_utf8_lossy(docinfo_field_name_bytes).to_string();
             tracing::debug!(
-                "{field_num} field NAME: '{}' {}",
+                "{}[{field_num}] field NAME: '{}'",
+                peek_hex(tail),
                 docinfo_field_name,
-                peek_hex(tail)
             );
 
             // Internationalization str, 4 bytes
@@ -194,9 +238,9 @@ impl DocumentHeader {
             let i18n_str_rev = String::from_utf8_lossy(i18n_bytes).to_string();
             let i18n_str: String = i18n_str_rev.chars().rev().collect();
             tracing::debug!(
-                "{field_num} field language/i8n: '{}' {}",
+                "[{}][{field_num}] field language/i8n: '{}'",
+                peek_hex(tail),
                 i18n_str,
-                peek_hex(tail)
             );
 
             let (tail, next_str_size_bytes) =
@@ -204,9 +248,9 @@ impl DocumentHeader {
             let (_, next_str_size) = u16(nom::number::Endianness::Little)(next_str_size_bytes)?;
 
             tracing::debug!(
-                "{field_num}: field VALUE string size {}, tail is {}",
+                "{} [{field_num}]: field VALUE string size {}",
+                peek_hex(tail),
                 next_str_size,
-                peek_hex(new_tail)
             );
 
             let (tail, docinfo_field_value_bytes) =
@@ -300,11 +344,12 @@ pub mod document_header_tests {
     #[test_log::test]
     fn test_parse_document_header() {
         let cache_contents: Vec<u8> = document_header_cache_content();
-        let (_, document_header) = DocumentHeader::parse(&cache_contents).unwrap();
+        let (_, document_header) =
+            DocumentHeader::parse(String::from("test"), &cache_contents).unwrap();
         assert_eq!(document_header.name, "Tokamak LE");
         assert_eq!(
             document_header.mod_info,
-            "bnet:Void (Mod)/0.0/999,file:Mods/Void.SC2Mod"
+            "\nbnet:Void (Mod)/0.0/999,file:Mods/Void.SC2Mod"
         );
     }
 }

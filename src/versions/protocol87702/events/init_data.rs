@@ -152,13 +152,26 @@ impl TryFrom<super::bit_packed::GameSGameDescription> for crate::init_data::Game
             .collect();
         let default_difficulty = source.m_default_difficulty.value;
         let default_ai_build = source.m_default_ai_build.value;
+        let mut cache_handle_region = String::from("");
+        let mut cache_handle_extension = String::from("");
         let cache_handles = source
             .m_cache_handles
             .value
             .into_iter()
             .map(|cache_handle| {
                 let mut res = String::new();
-                for val in cache_handle.value.iter() {
+                // 4 characters for the extension
+                cache_handle_extension = str::from_utf8(&cache_handle.value[0..4])
+                    .unwrap_or_default()
+                    .to_string();
+                // skip the 2-bytes delimited containing value 0.
+                // let _sep = cache_handle[4..6];
+                // 2 characters for the region
+                cache_handle_region = str::from_utf8(&cache_handle.value[6..8])
+                    .unwrap_or_default()
+                    .to_string();
+
+                for val in &cache_handle.value[8..] {
                     res.push_str(&format!("{val:02x}"));
                 }
                 res
@@ -194,6 +207,8 @@ impl TryFrom<super::bit_packed::GameSGameDescription> for crate::init_data::Game
             default_difficulty,
             default_ai_build,
             cache_handles,
+            cache_handle_region,
+            cache_handle_extension,
             has_extension_mod,
             has_non_blizzard_extension_mod,
             is_blizzard_map,

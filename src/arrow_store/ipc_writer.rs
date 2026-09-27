@@ -42,11 +42,7 @@ pub fn open_arrow_mutex_writer(
 pub fn write_to_arrow_mutex_writer(
     writer: &std::sync::Mutex<FileWriter<std::fs::File>>,
     res: ArrayRef,
-    batch_length: usize,
 ) -> Option<usize> {
-    if batch_length == 0 {
-        return None;
-    }
     let mut file_lock = match writer.lock() {
         Ok(lock) => lock,
         Err(err) => {
@@ -54,6 +50,7 @@ pub fn write_to_arrow_mutex_writer(
             return None;
         }
     };
+    let batch_length = res.len();
     let chunk: RecordBatch = res
         .as_any()
         .downcast_ref::<arrow::array::StructArray>()

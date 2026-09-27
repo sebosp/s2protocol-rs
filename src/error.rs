@@ -2,25 +2,29 @@
 
 use std::num::TryFromIntError;
 
+use nom::AsBytes;
 use nom::error::ErrorKind;
 use nom::error::ParseError;
+use nom_mpq::parser::peek_hex;
 
 /// Holds the result of parsing progress and the possibly failures
 pub type S2ProtoResult<I, O> = Result<(I, O), S2ProtocolError>;
 
+pub const MAX_ERROR_CONTEXT_CHARS: usize = 128;
+
 #[derive(thiserror::Error, Debug)]
 pub enum S2ProtocolError {
     /// Unable to parse the MPQ file, could be corrupted or not a replay file
-    #[error("MPQ Error")]
+    #[error("MPQ")]
     MPQ(#[from] nom_mpq::MPQParserError),
     /// The protocol version is not yet supported.
     #[error("Unsupported Protocol Version: {0}")]
     UnsupportedProtocolVersion(u32),
     /// Unable to parse the byte aligned data types
-    #[error("Nom ByteAligned Error {0}")]
+    #[error("Nom ByteAligned {0}")]
     ByteAligned(String),
     /// Unable to parse the bit packed data types
-    #[error("Nom BitPacked Error {0}")]
+    #[error("Nom BitPacked {0}")]
     BitPacked(String),
     /// The data structure tag is not recognized
     #[error("Unexpected Tag: {0}")]
@@ -32,10 +36,10 @@ pub enum S2ProtocolError {
     #[error("Missing field {0}")]
     MissingField(String),
     /// Unable to parse a value that should have been an integer
-    #[error("TryFromIntError")]
+    #[error("TryFromInt")]
     ValueError(#[from] TryFromIntError),
     /// An I/O Error
-    #[error("IO Error")]
+    #[error("IO")]
     IoError(#[from] std::io::Error),
     /// The path provided was not a file
     #[error("Expected a file, but got a directory")]
@@ -45,7 +49,7 @@ pub enum S2ProtocolError {
     #[error("Unsupported Event Type")]
     UnsupportedEventType,
     /// Conversion to UTF-8 failed, from the `Vec<u8>` "name" fields in the proto fields
-    #[error("Utf8 conversion error")]
+    #[error("Utf8 conversion")]
     Utf8Error(#[from] std::str::Utf8Error),
     /// The data structure tag is not recognized
     #[error("BitPackedTooLarge: {0}")]
@@ -53,8 +57,26 @@ pub enum S2ProtocolError {
     /// The MapParserError
     #[error("cache_handles Map {0}")]
     Map(#[from] crate::cache_handles::map::MapError),
-    #[error("SerdeXml Error : {0}")]
+    /// An XML serde error when reading replay caches
+    #[error("SerdeXml: {0}")]
     SerdeXML(#[from] serde_xml_rs::Error),
+    /// A file wasn't found in the cache collection.
+    #[error("CacheResource: {name:?}, {cache_handles:?}")]
+    CacheResource {
+        name: String,
+        cache_handles: Vec<String>,
+    },
+    #[error("CacheHandleDownload: {0}")]
+    CacheHandleDownload(String),
+
+    /// Reqwest error, used for downloading replay caches from blizzard depots.
+    #[error("Reqwest Error: {0}")]
+    Reqwest(#[from] reqwest::Error),
+
+    /// A serde_json error, used when parsing per-protocol ability parsing
+    /// included in the binary with include_assets.
+    #[error("serde_json")]
+    SerdeJson(#[from] serde_json::Error),
 }
 
 /// Conversion of errors from byte aligned parser
@@ -67,18 +89,32 @@ where
             nom::Err::Incomplete(_) => {
                 unreachable!("This library is compatible with only complete parsers, not streaming")
             }
-            nom::Err::Error(e) => S2ProtocolError::ByteAligned(format!("{e:?}")),
-            nom::Err::Failure(e) => S2ProtocolError::ByteAligned(format!("{e:?}")),
+            nom::Err::Error(e) => S2ProtocolError::ByteAligned(format!(
+                "{1:.0$}: {2}",
+                MAX_ERROR_CONTEXT_CHARS,
+                format!("{:?}", e.input),
+                e.code.description()
+            )),
+            nom::Err::Failure(e) => S2ProtocolError::ByteAligned(format!(
+                "{1:.0$}: {2}",
+                MAX_ERROR_CONTEXT_CHARS,
+                format!("{:?}", e.input),
+                e.code.description()
+            )),
         }
     }
 }
 
 impl<I> ParseError<I> for S2ProtocolError
 where
-    I: Clone,
+    I: Clone + AsBytes,
 {
-    fn from_error_kind(_input: I, kind: ErrorKind) -> Self {
-        S2ProtocolError::ByteAligned(format!("{kind:?}"))
+    fn from_error_kind(input: I, kind: ErrorKind) -> Self {
+        S2ProtocolError::ByteAligned(format!(
+            "{}: {}",
+            peek_hex(&input.as_bytes()[..MAX_ERROR_CONTEXT_CHARS]),
+            kind.description()
+        ))
     }
 
     fn append(_input: I, _kind: ErrorKind, other: Self) -> Self {

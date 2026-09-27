@@ -9,8 +9,16 @@ pub enum MapError {
     #[error("Expected max 256 for map size, got {0}")]
     InvalidMapSize(usize),
     // /The map coordinates bounds are invalid
-    #[error("Expected coordinate {0} to be less than {1}")]
-    InvalidCoordinateBounds(String, usize, String, usize),
+    #[error(
+        "cache_id {cache_id} {ref_value_1} value {value_1} should be less than {ref_value_2} with value {value_2}"
+    )]
+    InvalidCoordinateBounds {
+        cache_id: String,
+        ref_value_1: String,
+        value_1: usize,
+        ref_value_2: String,
+        value_2: usize,
+    },
     /// The MapInfo and t3HeightMay dimensions do not match
     #[error("T3 Height Map Terrain Dimensions {0:?} do not match Map Info Map Dimensions {1:?}")]
     T3HeightDimDoNotMatchMapInfoDim(MapTerrainCoord, MapTerrainCoord),

@@ -1,3 +1,4 @@
+use super::T3_HEIGHT_MAP_FILE_NAME;
 use super::map::MapError;
 use super::map::coords::*;
 use super::map_info::MapInfo;
@@ -7,10 +8,12 @@ use nom::bytes::complete::*;
 use nom::number::complete::*;
 use nom_mpq::MPQ;
 use nom_mpq::parser::peek_hex;
+use serde::{Deserialize, Serialize};
 use tracing::instrument;
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct T3HeightMap {
+    pub cache_handle_id: String,
     pub width: usize,
     pub height: usize,
     pub data: Vec<u8>,
@@ -19,18 +22,23 @@ pub struct T3HeightMap {
 impl T3HeightMap {
     #[instrument(skip(mpq, file_contents))]
     pub fn from_mpq(
+        cache_handle_id: String,
         mpq: &MPQ,
         file_contents: &[u8],
         map_info: &MapInfo,
     ) -> Result<Self, S2ProtocolError> {
         let (_, t3_height_sector) =
-            mpq.read_mpq_file_sector("t3HeightMap", false, file_contents)?;
-        let (_, t3_height_map) = Self::parse(&t3_height_sector, map_info)?;
+            mpq.read_mpq_file_sector(T3_HEIGHT_MAP_FILE_NAME, false, file_contents)?;
+        let (_, t3_height_map) = Self::parse(cache_handle_id, &t3_height_sector, map_info)?;
         Ok(t3_height_map)
     }
 
     #[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
-    pub fn parse<'a>(input: &'a [u8], map_info: &MapInfo) -> S2ProtoResult<&'a [u8], Self> {
+    pub fn parse<'a>(
+        cache_handle_id: String,
+        input: &'a [u8],
+        map_info: &MapInfo,
+    ) -> S2ProtoResult<&'a [u8], Self> {
         let (tail, _) = dbg_peek_hex(tag(&b"HMAP"[..]), "read file magic, HMAP bytes")(input)?;
         let (tail, _) = dbg_peek_hex(
             tag(&[0x65, 0x00, 0x00, 0x00][..]),
@@ -80,7 +88,9 @@ impl T3HeightMap {
                 dbg_peek_hex(take(6usize), "read 6 bytes of terrain unit data")(tail)?;
             // The 5th byte is the height.
             let height_byte = terrain_unit_bytes[4];
-            if height_byte > 4 {
+            // From the docs, it seems it's only up to level 4... But there are maps that have even
+            // 6 "height levels"????
+            if height_byte > 6 {
                 return Err(S2ProtocolError::Map(MapError::T3HeightUnitOutOfBounds(
                     height_byte as i32,
                 )));
@@ -92,6 +102,7 @@ impl T3HeightMap {
         Ok((
             tail,
             Self {
+                cache_handle_id,
                 width,
                 height,
                 data,
@@ -150,8 +161,9 @@ mod tests {
             0xc5, 0xf1, 0xe6, 0xb8, 0x03, 0x00,
             // This would need 117366 (169*169*6) bytes to be complete, so let's expect the err.
         ];
-        let (_, map_info) = MapInfo::parse(&map_info_cache_content()).unwrap();
-        let t3_height_map = T3HeightMap::parse(&cache_contents, &map_info);
+        let (_, map_info) =
+            MapInfo::parse(String::from("test"), &map_info_cache_content()).unwrap();
+        let t3_height_map = T3HeightMap::parse(String::from("test"), &cache_contents, &map_info);
         if let Err(S2ProtocolError::Map(MapError::T3HeightNotEnoughBytes(171366, 168))) =
             t3_height_map
         {

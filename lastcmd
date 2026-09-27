@@ -1,2 +1,2 @@
-cargo watch -x clippy -x 'run -r --no-default-features --features=dep_arrow,tracing_off -- -v error --timing --source /home/seb/SCReplaysOnNVMe/ --output /home/seb/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 1000000'
+cargo watch -x "run --example full -r --no-default-features --features=dep_arrow,tracing_off -- -v error --timing --source $HOME/SCReplaysOnNVMe/PRO/ --output $HOME/git/s2protocol-rs/ipcs/ --cache-path $HOME/SC2Replays/swarmy/ write-arrow-ipc --process-max-files 1000000"
 cargo run --example full -r -- -v info --source $HOME/SC2Replays/BalanceData/ --json-balance-data-dir $PWD/assets/BalanceData/ --output $PWD/assets/BalanceData/ balance-data-to-json

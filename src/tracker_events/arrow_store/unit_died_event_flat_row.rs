@@ -1,10 +1,13 @@
 //! Unit Died Event Flat Row
 //!
 #[cfg(feature = "dep_arrow")]
+use arrow::datatypes::{DataType::Struct, Schema};
+#[cfg(feature = "dep_arrow")]
+use arrow_convert::field::ArrowField;
+#[cfg(feature = "dep_arrow")]
 use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use crate::UnitChangeHint;
-use crate::details::Details;
 use crate::tracker_events::UnitDiedEvent;
 use serde::{Deserialize, Serialize};
 
@@ -34,7 +37,7 @@ pub struct UnitDiedEventFlatRow {
 impl UnitDiedEventFlatRow {
     /// Create a new UpgradeEventFlatRow from a UpgradeEvent and the fields from the Details MPQ sector
     pub fn new(
-        details: &Details,
+        ext_fs_id: u64,
         event: UnitDiedEvent,
         ext_replay_loop: i64,
         change_hint: UnitChangeHint,
@@ -62,7 +65,15 @@ impl UnitDiedEventFlatRow {
             killer_unit_tag_recycle: event.killer_unit_tag_recycle,
             ext_replay_loop,
             ext_replay_seconds,
-            ext_fs_id: details.ext_fs_id,
+            ext_fs_id,
         })
+    }
+
+    pub fn schema() -> Schema {
+        if let Struct(fields) = UnitDiedEventFlatRow::data_type() {
+            Schema::new(fields.clone())
+        } else {
+            panic!("Invalid schema, expected struct");
+        }
     }
 }

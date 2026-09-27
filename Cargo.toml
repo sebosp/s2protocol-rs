@@ -11,41 +11,56 @@ keywords = ["sc2replay", "polars", "arrow", "starcraft2", "mpq"]
 categories = ["games", "parsing"]
 
 [dependencies]
-nom-mpq = "2.0.8"
+nom-mpq = "2.0.11"
 nom = "8.0"
 thiserror = "2"
 tracing = "0.1"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-convert_case = "0.11"
-arrow = { version = "57", optional = true }
-arrow_convert = { version = "0.11.0", optional = true }
+convert_case = "0.12"
+arrow = { version = "59", optional = true }
+arrow_convert = { version = "0.12", optional = true }
 sha256 = { version = "1.6", default-features = false }
 rayon = "1.12"
 chrono = { version = "0.4", features = ["serde"] }
 colored = "3.1"
 serde-xml-rs = "0.8"
-include_assets = "1.0.0"
+include_dir = { version = "0.7.4", features = ["glob"] }
+tokio = { version = "1", features = ["full"], optional = true }
+futures = "0.3.34"
+reqwest = { version = "0.13", optional = true }
+console = { version = "0.16.6", optional = true }
 
 [features]
 default = ["dep_arrow", "tracing_info_level"]
+dep_arrow = ["arrow", "arrow_convert", "tokio", "reqwest"]
 # A feature that allows extra tracing, disabled by default because of performance
-dep_arrow = ["arrow", "arrow_convert"]
 tracing_off = [
-  "tracing/max_level_off",
-  "tracing/release_max_level_off",
-  "nom-mpq/tracing_off",
+	"tracing/max_level_off",
+	"tracing/release_max_level_off",
+	"nom-mpq/tracing_off",
 ]
 tracing_debug_level = [
-  "tracing/max_level_debug",
-  "tracing/release_max_level_debug",
-  "nom-mpq/tracing_debug_level",
+	"tracing/max_level_debug",
+	"tracing/release_max_level_debug",
+	"nom-mpq/tracing_debug_level",
 ]
 tracing_info_level = [
-  "tracing/max_level_info",
-  "tracing/release_max_level_info",
-  "nom-mpq/tracing_info_level",
+	"tracing/max_level_info",
+	"tracing/release_max_level_info",
+	"nom-mpq/tracing_info_level",
 ]
+tracing_warn_level = [
+	"tracing/max_level_warn",
+	"tracing/release_max_level_warn",
+	"nom-mpq/tracing_warn_level",
+]
+tracing_error_level = [
+	"tracing/max_level_error",
+	"tracing/release_max_level_error",
+	"nom-mpq/tracing_error_level",
+]
+nom_color_debug = ["nom-mpq/nom_color_debug", "console"]
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }

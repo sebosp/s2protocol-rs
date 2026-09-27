@@ -11,8 +11,8 @@ pub use json_handler::*;
 
 pub fn traverse_versioned_balance_abilities(
     root_dir: impl Into<PathBuf>,
-) -> std::io::Result<HashMap<(u32, String), VersionedBalanceUnit>> {
-    let mut res: HashMap<(u32, String), VersionedBalanceUnit> = HashMap::new();
+) -> std::io::Result<MultiVersionedBalanceUnits> {
+    let mut res: MultiVersionedBalanceUnits = HashMap::new();
     let root_dir: PathBuf = root_dir.into();
     tracing::debug!(
         "Traversing versioned balance abilities in {}",
@@ -67,7 +67,13 @@ pub fn traverse_versioned_balance_abilities(
                         continue;
                     }
                 };
-                res.insert((protocol_version, unit.id.clone()), unit);
+                if let Some(v) = res.get_mut(&protocol_version) {
+                    v.insert(unit.id.clone(), unit);
+                } else {
+                    let mut single_proto: VersionedBalanceUnits = VersionedBalanceUnits::new();
+                    single_proto.insert(unit.id.clone(), unit);
+                    res.insert(protocol_version, single_proto);
+                }
             }
         }
     }
@@ -523,8 +529,14 @@ pub struct VersionedBalanceUnit {
     pub upgrades: UpgradesTag,
 }
 
-pub type MultiVersionedBalanceUnits = HashMap<(u32, String), VersionedBalanceUnit>;
+// NOTE:
+// We should use lazy_static to construct these hashmaps statically.
+// We could also use a build.rs to construct a static hashmap...
+
+///  The abilities related to one specific protocol version.
 pub type VersionedBalanceUnits = HashMap<String, VersionedBalanceUnit>;
+/// The abilities for all collected protocol versions.
+pub type MultiVersionedBalanceUnits = HashMap<u32, VersionedBalanceUnits>;
 
 pub fn get_indexed_ability_command_name(
     balance_data_units: &VersionedBalanceUnits,
