@@ -32,7 +32,7 @@ reqwest = { version = "0.13", optional = true }
 console = { version = "0.16.6", optional = true }
 
 [features]
-default = ["dep_arrow", "tracing_info_level", "nom_color_debug"]
+default = ["dep_arrow", "tracing_info_level"]
 dep_arrow = ["arrow", "arrow_convert", "tokio", "reqwest"]
 # A feature that allows extra tracing, disabled by default because of performance
 tracing_off = [

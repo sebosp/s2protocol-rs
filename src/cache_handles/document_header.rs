@@ -349,7 +349,7 @@ pub mod document_header_tests {
         assert_eq!(document_header.name, "Tokamak LE");
         assert_eq!(
             document_header.mod_info,
-            "bnet:Void (Mod)/0.0/999,file:Mods/Void.SC2Mod"
+            "\nbnet:Void (Mod)/0.0/999,file:Mods/Void.SC2Mod"
         );
     }
 }

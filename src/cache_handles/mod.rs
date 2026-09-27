@@ -322,13 +322,8 @@ pub async fn download_cache(
     destination: &str,
 ) -> Result<(), S2ProtocolError> {
     let destination = Path::new(destination);
-    println!("Downloading cache with handle: {}", handle);
     let cache_download_target =
         destination.join(format!("{}.{}", handle, CACHE_MPQ_ARCHIVE_EXTENSION));
-    println!(
-        "Downloading cache to destination: {:?}",
-        cache_download_target
-    );
     if cache_download_target.exists() {
         tracing::info!(
             "Cache {} already exists, skipping download.",
