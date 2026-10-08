@@ -1,0 +1,289 @@
+{
+  "@id": "Hatchery",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "BuildInProgress",
+        "@index": 129,
+        "command": [
+          {
+            "@id": "Cancel",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "72",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "71",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "73",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "que5CancelToSelection",
+        "@index": 126,
+        "command": [
+          {
+            "@id": "CancelLast",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "212",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "213",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "UpgradeToLair",
+        "@index": 188,
+        "command": [
+          {
+            "@id": "Execute",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "929",
+              "@icon": "btn-building-zerg-lair",
+              "@index": null,
+              "@name": "928",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "930",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Cancel",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "119",
+              "@icon": "btn-command-cancel",
+              "@index": null,
+              "@name": "932",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "933",
+              "@type": "command"
+            }
+          }
+        ]
+      },
+      {
+        "@id": "RallyHatchery",
+        "@index": 108,
+        "command": [
+          {
+            "@id": "Rally1",
+            "@index": 0,
+            "meta": {
+              "@hotkey": "935",
+              "@icon": "btn-ability-terran-setrallypoint",
+              "@index": null,
+              "@name": "934",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "936",
+              "@type": "command"
+            }
+          },
+          {
+            "@id": "Rally2",
+            "@index": 1,
+            "meta": {
+              "@hotkey": "938",
+              "@icon": "btn-ability-zerg-setworkerrallypoint",
+              "@index": null,
+              "@name": "937",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "939",
+              "@type": "command"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 1,
+    "@start": 1
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Armored"
+      },
+      {
+        "@type": "Biological"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 275,
+    "@supply": null,
+    "@time": 100.0,
+    "@vespene": null
+  },
+  "life": {
+    "@max": 1500,
+    "@regenRate": 0.2734000086784363,
+    "@start": 1500
+  },
+  "meta": {
+    "@hotkey": "926",
+    "@icon": "btn-building-zerg-hatchery",
+    "@index": 109,
+    "@name": "925",
+    "@race": "Zerg",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "927",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": "Footprint6x5DropOffCreepSourceContour",
+    "@radius": 2.0,
+    "@range": null,
+    "@sightRadius": 12.0,
+    "@speed": null,
+    "@supply": 6.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "Drone",
+    "@name": "437"
+  },
+  "requires": {
+    "unit": []
+  },
+  "researches": {
+    "upgrade": [
+      {
+        "@ability": 191,
+        "@id": "overlordspeed",
+        "@index": 1,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 60.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "941",
+          "@icon": "btn-upgrade-zerg-pneumatizedcarapace",
+          "@index": null,
+          "@name": "940",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "942",
+          "@type": "command"
+        }
+      },
+      {
+        "@ability": 191,
+        "@id": "Burrow",
+        "@index": 3,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 100,
+          "@supply": null,
+          "@time": 100.0,
+          "@vespene": 100
+        },
+        "meta": {
+          "@hotkey": "112",
+          "@icon": "btn-ability-zerg-burrow-color",
+          "@index": null,
+          "@name": "943",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "113",
+          "@type": "command"
+        }
+      }
+    ]
+  },
+  "score": {
+    "@build": 275,
+    "@kill": 275
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": [
+      {
+        "@ability": 245,
+        "@id": "Queen",
+        "@index": 0,
+        "@name": null,
+        "cost": {
+          "@cooldown": null,
+          "@energy": null,
+          "@life": null,
+          "@minerals": 175,
+          "@supply": 2.0,
+          "@time": 50.0,
+          "@vespene": null
+        },
+        "meta": {
+          "@hotkey": "945",
+          "@icon": "btn-unit-zerg-queen",
+          "@index": null,
+          "@name": "944",
+          "@race": null,
+          "@source": null,
+          "@tooltip": "946",
+          "@type": "command"
+        },
+        "requires": {
+          "unit": [
+            {
+              "@id": "SpawningPool",
+              "@name": "931"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}

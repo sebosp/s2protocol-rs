@@ -62,6 +62,7 @@ tracing_error_level = [
 ]
 nom_color_debug = ["nom-mpq/nom_color_debug", "console"]
 dep_reqwest = ["reqwest"]
+dep_tokio = ["tokio"]
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }

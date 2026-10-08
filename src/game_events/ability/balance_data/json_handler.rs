@@ -103,6 +103,7 @@ pub fn read_balance_data_from_json_dir<P: AsRef<Path>>(
 }
 
 static ARCHIVE_DIR: Dir = include_dir!("assets/BalanceData");
+#[tracing::instrument(level = "info")]
 pub fn read_balance_data_from_included_assets()
 -> Result<MultiVersionedBalanceUnits, S2ProtocolError> {
     tracing::info!("Reading balance data from included assets");
@@ -148,7 +149,7 @@ pub fn read_balance_data_from_included_assets()
         }
     }
     tracing::info!(
-        "Read {} versioned balance units from included assets",
+        "Read {} patch versions of balance data from included assets",
         balance_data.len()
     );
     Ok(balance_data)

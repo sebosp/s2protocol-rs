@@ -2,7 +2,10 @@
 pub mod cmd_get;
 pub use cmd_get::*;
 
-use clap::{Args, Parser, Subcommand};
+#[cfg(feature = "dep_arrow")]
+use clap::Args;
+use clap::{Parser, Subcommand};
+#[cfg(feature = "dep_arrow")]
 use s2protocol::WriteArrowIpcProps;
 use s2protocol::cache_handles::document_header::DocumentHeader;
 use s2protocol::cache_handles::map_info::MapInfo;
@@ -41,6 +44,7 @@ pub enum CacheUtils {
 }
 
 ///  Create a subcommand that handles the max depth and max files to process
+#[cfg(feature = "dep_arrow")]
 #[derive(Args, Debug, Clone)]
 pub struct WriteArrowIpcPropsArgs {
     /// Reads these many  files recursing, these files may or may not be valid.
@@ -60,6 +64,7 @@ pub struct WriteArrowIpcPropsArgs {
     pub max_version: Option<u32>,
 }
 
+#[cfg(feature = "dep_arrow")]
 impl From<WriteArrowIpcPropsArgs> for s2protocol::WriteArrowIpcProps {
     fn from(src: WriteArrowIpcPropsArgs) -> WriteArrowIpcProps {
         let WriteArrowIpcPropsArgs {
@@ -95,6 +100,7 @@ pub enum Commands {
     #[command(subcommand)]
     Get(ReadTypes),
 
+    #[cfg(feature = "dep_arrow")]
     /// Writes Arrow IPC files for a specific event type from the SC2Replay MPQ Archive
     WriteArrowIpc(WriteArrowIpcPropsArgs),
 
@@ -191,7 +197,7 @@ pub struct Cli {
     pub tui: bool,
 
     /// The Cache Handle path, to be downloaded from blizzard depots.
-    #[arg(long)]
+    #[arg(long, default_value = "")]
     pub cache_path: String,
 }
 
@@ -296,7 +302,9 @@ async fn cli_command_handler(cli: &Cli) -> Result<(), Box<dyn std::error::Error>
         Commands::Get(read_type) => {
             cmd_get::handle_get_cmd(&cli, read_type, syntect_syntax_set, syntect_theme_set)?;
         }
+        #[cfg(feature = "dep_arrow")]
         Commands::WriteArrowIpc(cmd) => {
+            #[cfg(feature = "dep_arrow")]
             s2protocol::ArrowIpcTypes::handle_arrow_ipc_cmd(
                 PathBuf::from(&cli.source),
                 PathBuf::from(&cli.output.clone().expect("Requires --output")),

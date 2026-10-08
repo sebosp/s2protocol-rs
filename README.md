@@ -80,7 +80,7 @@ where `94137` is the version of the exported XMLs.
 
 To transform the --xml-data into an local-jsonified-version (stored in assets directory for now):
 ```
-❯ cargo run --example full -r -- -v info --source $HOME/SC2Replays/BalanceData/ --json-balance-data-dir $PWD/assets/BalanceData/ --output $PWD/assets/BalanceData/ balance-data-to-json
+❯ cargo run --no-default-features --features dep_tokio --features tracing_debug_level --example full -r -- -v debug --source $HOME/SC2Replays/BalanceData/ --json-balance-data-dir $PWD/assets/BalanceData/ --output $PWD/assets/BalanceData/ balance-data-to-json
     Finished `release` profile [optimized] target(s) in 29.23s
      Running `target/release/examples/full -v info --source /home/seb/SC2Replays/BalanceData/ --json-balance-data-dir /home/seb/git/s2protocol-rs/assets/BalanceData/ --output /home/seb/git/s2protocol-rs/assets/BalanceData/ balance-data-to-json`
 2026-06-23T18:03:56.284789Z  INFO s2protocol::game_events::ability::balance_data::json_handler: Reading balance data from JSON files in /home/seb/git/s2protocol-rs/assets/BalanceData/
