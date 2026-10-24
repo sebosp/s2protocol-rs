@@ -15,12 +15,14 @@ use crate::details::{PlayerLobbyDetails, PlayerLobbyDetailsFlatRow};
 use crate::game_events::{
     CmdTargetPointEventFlatRow, CmdTargetUnitEventFlatRow, MultiVersionedBalanceUnits,
 };
+use crate::snapshot::*;
 use crate::tracker_events::{
     PlayerStatsFlatRow, UnitBornEventFlatRow, UnitDiedEventFlatRow, UpgradeEventFlatRow,
 };
 use crate::*;
 
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicUsize, Ordering};
 pub mod ipc_writer;
 use ipc_writer::*;
 
@@ -31,6 +33,20 @@ pub const UNIT_BORN_ARROW_FNAME: &'static str = "unit_born.arrow";
 pub const UNIT_DIED_ARROW_FNAME: &'static str = "unit_died.arrow";
 pub const CMD_TARGET_POINT_ARROW_FNAME: &'static str = "cmd_target_point.arrow";
 pub const CMD_TARGET_UNIT_ARROW_FNAME: &'static str = "cmd_target_unit.arrow";
+
+/// The steps of [`ArrowIpcTypes::handle_arrow_ipc_cmd_with_progress`].
+const SNAPSHOT_STEPS: usize = 5;
+
+/// The size and records of a file written to the snapshot directory.
+fn snapshot_file(output: &std::path::Path, name: &str, records: usize) -> SnapshotFile {
+    SnapshotFile {
+        name: name.to_string(),
+        bytes: std::fs::metadata(output.join(name))
+            .map(|meta| meta.len())
+            .unwrap_or_default(),
+        records,
+    }
+}
 
 ///  Create a subcommand that handles the max depth and max files to process
 #[derive(Debug, Clone)]
@@ -309,19 +325,65 @@ impl ArrowIpcTypes {
         disable_parallel_scans: bool,
         cache_path: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        Self::write_all_tracker_events_with_progress(
+            sources,
+            output,
+            versioned_abilities,
+            disable_parallel_scans,
+            cache_path,
+            None,
+        )
+        .await?;
+        Ok(())
+    }
+
+    /// Same as [`Self::write_all_tracker_events`], sending the progress to `progress`.
+    /// Returns the files written with their sizes and records.
+    #[tracing::instrument(level = "debug", skip(progress))]
+    pub async fn write_all_tracker_events_with_progress(
+        sources: &[SC2ReplayBasicData],
+        output: PathBuf,
+        versioned_abilities: &MultiVersionedBalanceUnits,
+        disable_parallel_scans: bool,
+        cache_path: &str,
+        progress: Option<&SnapshotProgressSender>,
+    ) -> Result<Vec<SnapshotFile>, Box<dyn std::error::Error>> {
         let init_time = std::time::Instant::now();
         if !output.is_dir() {
-            panic!("Output must be a directory for types 'all'");
+            return Err(format!("Output {} must be a directory", output.display()).into());
         }
         tracing::info!("Processing TrackerEvents IPC write all request");
-        Self::Details
-            .handle_details_ipc_cmd(sources, output.join(DETAILS_ARROW_FNAME), cache_path)
+        send_progress(
+            progress,
+            SnapshotProgress::Step {
+                index: 3,
+                total: SNAPSHOT_STEPS,
+                name: format!("Reading the map caches and writing {DETAILS_ARROW_FNAME}"),
+            },
+        );
+        let details_records = Self::Details
+            .write_details_ipc(sources, output.join(DETAILS_ARROW_FNAME), cache_path)
             .await?;
+        let mut files = vec![snapshot_file(&output, DETAILS_ARROW_FNAME, details_records)];
+        send_progress(progress, SnapshotProgress::FileWritten(files[0].clone()));
         println!(
             "handle_write_snapshot {}: Total time: {:?}",
             DETAILS_ARROW_FNAME,
             init_time.elapsed()
         );
+        send_progress(
+            progress,
+            SnapshotProgress::Step {
+                index: 4,
+                total: SNAPSHOT_STEPS,
+                name: "Reading the replay events and writing the event files".to_string(),
+            },
+        );
+        let processed = AtomicUsize::new(0);
+        let total_sources = sources.len();
+        // Send an update for every percent of the replays processed.
+        let progress_every = (total_sources / 100).max(1);
+        let counts: [AtomicUsize; 6] = Default::default();
         let stat_writer =
             open_arrow_mutex_writer(output.join(STATS_ARROW_FNAME), PlayerStatsFlatRow::schema())?;
         let upgrades_writer = open_arrow_mutex_writer(
@@ -348,6 +410,16 @@ impl ArrowIpcTypes {
         let total_records = sources
             .par_iter()
             .filter_map(|source| {
+                let done = processed.fetch_add(1, Ordering::Relaxed) + 1;
+                if done % progress_every == 0 || done == total_sources {
+                    send_progress(
+                        progress,
+                        SnapshotProgress::ReplaysProcessed {
+                            done,
+                            total: total_sources,
+                        },
+                    );
+                }
                 let event_iterator = SC2EventIterator::new(&source, versioned_abilities).ok()?;
 
                 let ext_fs_id = event_iterator.sc2_state.details.ext_fs_id;
@@ -509,29 +581,41 @@ impl ArrowIpcTypes {
                     target_unit_rows.try_into_arrow().unwrap(),
                 )
                 .unwrap_or(0usize);
-                Some(
-                    stat_count
-                        + upgrade_count
-                        + unit_born_count
-                        + unit_died_rows
-                        + target_point_count
-                        + target_unit_count,
-                )
+                let file_counts = [
+                    stat_count,
+                    upgrade_count,
+                    unit_born_count,
+                    unit_died_rows,
+                    target_point_count,
+                    target_unit_count,
+                ];
+                for (count, file_count) in counts.iter().zip(file_counts) {
+                    count.fetch_add(file_count, Ordering::Relaxed);
+                }
+                Some(file_counts.iter().sum::<usize>())
             })
             .sum::<usize>();
-        close_arrow_mutex_writer(stat_writer)?;
-        close_arrow_mutex_writer(upgrades_writer)?;
-        close_arrow_mutex_writer(unit_born_writer)?;
-        close_arrow_mutex_writer(unit_died_writer)?;
-        close_arrow_mutex_writer(target_point_writer)?;
-        close_arrow_mutex_writer(target_unit_writer)?;
+        let writers = [
+            (STATS_ARROW_FNAME, stat_writer),
+            (UPGRADES_ARROW_FNAME, upgrades_writer),
+            (UNIT_BORN_ARROW_FNAME, unit_born_writer),
+            (UNIT_DIED_ARROW_FNAME, unit_died_writer),
+            (CMD_TARGET_POINT_ARROW_FNAME, target_point_writer),
+            (CMD_TARGET_UNIT_ARROW_FNAME, target_unit_writer),
+        ];
+        for ((name, writer), count) in writers.into_iter().zip(&counts) {
+            close_arrow_mutex_writer(writer)?;
+            let file = snapshot_file(&output, name, count.load(Ordering::Relaxed));
+            send_progress(progress, SnapshotProgress::FileWritten(file.clone()));
+            files.push(file);
+        }
 
         println!(
             "write_all_tracker_events completed after {:?} Total records: {}",
             init_time.elapsed(),
             total_records
         );
-        Ok(())
+        Ok(files)
     }
 
     /// Creates a new Arrow IPC file with the game events data
@@ -651,6 +735,17 @@ impl ArrowIpcTypes {
         output: PathBuf,
         cache_path: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        self.write_details_ipc(sources, output, cache_path).await?;
+        Ok(())
+    }
+
+    /// Writes the details Arrow IPC file, returns the records written.
+    async fn write_details_ipc(
+        &self,
+        sources: &[SC2ReplayBasicData],
+        output: PathBuf,
+        cache_path: &str,
+    ) -> Result<usize, Box<dyn std::error::Error>> {
         tracing::info!("Processing Details IPC write request");
 
         // Identify from the cache handle bundles where the map info is located and get its sha256 digest for uniqueness.
@@ -674,6 +769,7 @@ impl ArrowIpcTypes {
             })
             .map(|d| d.into())
             .collect::<Vec<PlayerLobbyDetailsFlatRow>>();
+        let records = details_flaw_rows.len();
         let res: ArrayRef = details_flaw_rows.try_into_arrow()?;
         let chunk: RecordBatch = res
             .as_any()
@@ -682,7 +778,7 @@ impl ArrowIpcTypes {
             .into();
 
         write_batches(output, Self::Details.schema(), chunk)?;
-        Ok(())
+        Ok(records)
     }
 
     /// Handles the Arrow IPC command variants
@@ -695,6 +791,33 @@ impl ArrowIpcTypes {
         disable_parallel_scans: bool,
         cache_path: String,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        Self::handle_arrow_ipc_cmd_with_progress(
+            source,
+            output,
+            cmd,
+            unit_abilities,
+            disable_parallel_scans,
+            cache_path,
+            None,
+        )
+        .await?;
+        Ok(())
+    }
+
+    /// Same as [`Self::handle_arrow_ipc_cmd`], sending the progress of the snapshot generation
+    /// to `progress`. Writes the [`SnapshotMetadata`] next to the snapshot files and returns it.
+    #[tracing::instrument(level = "debug", skip(progress))]
+    pub async fn handle_arrow_ipc_cmd_with_progress(
+        source: PathBuf,
+        output: PathBuf,
+        cmd: &WriteArrowIpcProps,
+        unit_abilities: &MultiVersionedBalanceUnits,
+        disable_parallel_scans: bool,
+        cache_path: String,
+        progress: Option<SnapshotProgressSender>,
+    ) -> Result<SnapshotMetadata, Box<dyn std::error::Error>> {
+        let init_time = std::time::Instant::now();
+        let progress = progress.as_ref();
         println!(
             "Processing Arrow write request with scan_max_files: {}, traverse_max_depth: {}, process_max_files: {}, min_version: {:?}, max_version: {:?}",
             cmd.scan_max_files,
@@ -703,8 +826,30 @@ impl ArrowIpcTypes {
             cmd.min_version,
             cmd.max_version
         );
+        send_progress(
+            progress,
+            SnapshotProgress::Step {
+                index: 1,
+                total: SNAPSHOT_STEPS,
+                name: format!("Locating the replays in {}", source.display()),
+            },
+        );
         let sources = get_matching_files(source, cmd.scan_max_files, cmd.traverse_max_depth)?;
         println!("Located {} matching files by extension", sources.len());
+        send_progress(
+            progress,
+            SnapshotProgress::FilesFound {
+                count: sources.len(),
+            },
+        );
+        send_progress(
+            progress,
+            SnapshotProgress::Step {
+                index: 2,
+                total: SNAPSHOT_STEPS,
+                name: "Reading the replay headers and init data".to_string(),
+            },
+        );
         let sources: Vec<SC2ReplayBasicData> = if disable_parallel_scans {
             tracing::debug!("Working serially");
             sources
@@ -742,20 +887,45 @@ impl ArrowIpcTypes {
             .take(cmd.process_max_files)
             .collect();
         if sources.is_empty() {
-            panic!("No files found");
-        } else {
-            println!(
-                "{} files have valid init data, processing...",
-                sources.len()
-            );
+            return Err("No replays with valid init data found".into());
         }
-        Self::write_all_tracker_events(
+        println!(
+            "{} files have valid init data, processing...",
+            sources.len()
+        );
+        send_progress(
+            progress,
+            SnapshotProgress::ValidReplays {
+                count: sources.len(),
+            },
+        );
+        let files = Self::write_all_tracker_events_with_progress(
             &sources,
-            output,
+            output.clone(),
             unit_abilities,
             disable_parallel_scans,
             &cache_path,
+            progress,
         )
-        .await
+        .await?;
+        send_progress(
+            progress,
+            SnapshotProgress::Step {
+                index: 5,
+                total: SNAPSHOT_STEPS,
+                name: format!("Writing {SNAPSHOT_METADATA_FNAME}"),
+            },
+        );
+        let elapsed_ms = u64::try_from(init_time.elapsed().as_millis()).unwrap_or(u64::MAX);
+        let metadata = SnapshotMetadata {
+            s2protocol_version: S2PROTOCOL_VERSION.to_string(),
+            created_at: chrono::Utc::now(),
+            elapsed_ms,
+            replays: sources.len(),
+            files,
+        };
+        metadata.write_to_dir(&output)?;
+        send_progress(progress, SnapshotProgress::Done { elapsed_ms });
+        Ok(metadata)
     }
 }

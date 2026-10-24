@@ -167,6 +167,38 @@ drwxr-xr-x 12 seb seb       4096 Aug 30 18:14 ..
 -rw-r--r--  1 seb seb  995379658 Aug 30 20:51 cmd_target_unit.ipc
 ```
 
+### Snapshot metadata
+
+Next to the `.arrow` files, a `metadata.json` file records how the snapshot was generated, so that
+consumers can detect a snapshot written by an incompatible version of s2protocol:
+
+```json
+{
+  "s2protocol_version": "3.5.10",
+  "created_at": "2026-10-24T10:15:00Z",
+  "elapsed_ms": 95021,
+  "replays": 1470,
+  "files": [
+    { "name": "details.arrow", "bytes": 1062818, "records": 2940 },
+    { "name": "stats.arrow", "bytes": 171035386, "records": 331000 }
+  ]
+}
+```
+
+`SnapshotMetadata::read_from_dir` reads it and `SnapshotMetadata::is_compatible` checks that the
+major and minor versions match the version of the crate reading it (patch versions do not change
+the snapshot schemas). Snapshots generated before this file existed do not have it and should be
+regenerated.
+
+### Snapshot progress
+
+`ArrowIpcTypes::handle_arrow_ipc_cmd_with_progress` takes an optional
+`tokio::sync::mpsc::UnboundedSender<SnapshotProgress>` and sends the files found, the replays with
+valid init data, each step as it starts, the replays processed (every 1%), and the size and records
+of each file written. `SnapshotProgress` serializes with a `kind` tag, i.e.
+`{"kind":"files_found","count":3}`, and does not need the `dep_arrow` feature, so a frontend can
+deserialize it.
+
 ### Jupyter Notebooks
 
 The jupyter notebook with examples on how to interact with the data are available in [s2-polars-data-analysis](https://github.com/sebosp/s2-polars-data-analysis)

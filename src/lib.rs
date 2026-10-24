@@ -16,6 +16,7 @@ pub mod generator;
 pub mod init_data;
 pub mod message_events;
 pub mod protocol_version_decoder;
+pub mod snapshot;
 pub mod state;
 pub mod tracker_events;
 pub mod versioned_decoder;
