@@ -326,23 +326,23 @@ impl ArrowIpcTypes {
             open_arrow_mutex_writer(output.join(STATS_ARROW_FNAME), PlayerStatsFlatRow::schema())?;
         let upgrades_writer = open_arrow_mutex_writer(
             output.join(UPGRADES_ARROW_FNAME),
-            PlayerStatsFlatRow::schema(),
+            UpgradeEventFlatRow::schema(),
         )?;
         let unit_born_writer = open_arrow_mutex_writer(
             output.join(UNIT_BORN_ARROW_FNAME),
-            PlayerStatsFlatRow::schema(),
+            UnitBornEventFlatRow::schema(),
         )?;
         let unit_died_writer = open_arrow_mutex_writer(
             output.join(UNIT_DIED_ARROW_FNAME),
-            PlayerStatsFlatRow::schema(),
+            UnitDiedEventFlatRow::schema(),
         )?;
         let target_point_writer = open_arrow_mutex_writer(
             output.join(CMD_TARGET_POINT_ARROW_FNAME),
-            PlayerStatsFlatRow::schema(),
+            CmdTargetPointEventFlatRow::schema(),
         )?;
         let target_unit_writer = open_arrow_mutex_writer(
             output.join(CMD_TARGET_UNIT_ARROW_FNAME),
-            PlayerStatsFlatRow::schema(),
+            CmdTargetUnitEventFlatRow::schema(),
         )?;
 
         let total_records = sources

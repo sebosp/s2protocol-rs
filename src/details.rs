@@ -81,6 +81,8 @@ pub struct PlayerLobbyDetailsFlatRow {
     pub ext_fs_file_name: String,
     pub ext_fs_id: u64,
     pub ext_datetime: chrono::NaiveDateTime,
+    /// The protocol version (base build) of the replay.
+    pub ext_protocol_version: u32,
 }
 
 impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
@@ -118,6 +120,7 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
             ext_fs_sha256: source.ext_fs_sha256,
             ext_fs_file_name: source.ext_fs_file_name,
             ext_datetime: source.ext_datetime,
+            ext_protocol_version: source.ext_protocol_version,
         }
     }
 }
@@ -158,6 +161,8 @@ pub struct PlayerLobbyDetails {
     pub ext_fs_file_name: String,
     pub ext_fs_id: u64,
     pub ext_datetime: chrono::NaiveDateTime,
+    /// The protocol version (base build) of the replay.
+    pub ext_protocol_version: u32,
 }
 
 impl From<&SC2ReplayBasicData> for Vec<PlayerLobbyDetails> {
@@ -237,6 +242,7 @@ impl From<&SC2ReplayBasicData> for Vec<PlayerLobbyDetails> {
                     ext_fs_sha256: basic_data.init_data.ext_fs_sha256.clone(),
                     ext_fs_file_name: basic_data.init_data.ext_fs_file_name.clone(),
                     ext_datetime: basic_data.details.ext_datetime,
+                    ext_protocol_version: basic_data.init_data.version,
                 })
             })
             .collect();
