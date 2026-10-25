@@ -888,6 +888,15 @@ impl ArrowIpcTypes {
                 name: "Reading the replay headers of the replays not in the snapshot".to_string(),
             },
         );
+        // The replays parsed by another version of s2protocol are parsed again.
+        let outdated = remove_outdated_partitions(&output)?;
+        if !outdated.is_empty() {
+            println!(
+                "Removed {} days written by another version of s2protocol, their replays are \
+                 parsed again",
+                outdated.len()
+            );
+        }
         let index = SnapshotIndex::read(&output)?;
         let located = sources.len();
         // The file names are compared first, so the known replays are not read at all.

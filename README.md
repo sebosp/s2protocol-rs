@@ -175,6 +175,8 @@ v3.6.0 (2026-10-25), the snapshot format changed, generate the snapshots again
 - `write-arrow-ipc` writes the snapshot partitioned by day, `year=YYYY/month=MM/day=DD`, and only adds the replays that are not in it yet.
   The files are no longer at the root of the output directory, read them with `year=*/month=*/day=*/<file>.arrow`.
   `WriteArrowIpcProps` has a new `recreate` field (`--recreate`) and `SnapshotProgress` a new `AlreadyInSnapshot` variant.
+  The days written by another version of s2protocol are removed and their replays parsed again, the replays of the
+  other days are not parsed again.
 - Not breaking: the `textures` feature embeds the button textures, see [Textures](#textures). The
   players of older replays without `working_set_slot_id` are matched to the lobby slots by order,
   previously they had no details and these replays were added again on every snapshot run.

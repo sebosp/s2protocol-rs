@@ -99,6 +99,27 @@ pub fn remove_snapshot(root: &Path) -> Result<(), std::io::Error> {
     Ok(())
 }
 
+/// Whether the day was written by this version of s2protocol, the days without metadata were not
+/// completed.
+pub fn is_current_partition(day: &Path) -> bool {
+    SnapshotMetadata::read_from_dir(day)
+        .is_ok_and(|metadata| metadata.s2protocol_version == S2PROTOCOL_VERSION)
+}
+
+/// Removes the days written by another version of s2protocol, so that their replays are parsed
+/// again by this version, the replays of the other days are not parsed again. Returns the days
+/// removed.
+pub fn remove_outdated_partitions(root: &Path) -> Result<Vec<PathBuf>, std::io::Error> {
+    let outdated: Vec<PathBuf> = list_partitions(root)?
+        .into_iter()
+        .filter(|day| !is_current_partition(day))
+        .collect();
+    for day in &outdated {
+        std::fs::remove_dir_all(day)?;
+    }
+    Ok(outdated)
+}
+
 /// The replays already in the snapshot.
 #[derive(Debug, Default, Clone)]
 pub struct SnapshotIndex {
@@ -465,6 +486,36 @@ pub fn root_metadata(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn it_removes_the_days_of_other_versions() {
+        let root = std::env::temp_dir().join(format!("s2protocol-outdated-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&root);
+        let metadata = |version: &str| SnapshotMetadata {
+            s2protocol_version: version.to_string(),
+            created_at: chrono::Utc::now(),
+            elapsed_ms: 0,
+            replays: 1,
+            files: vec![],
+            partitions: 0,
+            added: 1,
+        };
+        let day = |date: &str| root.join(partition_dir(date.parse().unwrap()));
+        for (date, version) in [
+            ("2026-01-01", Some(S2PROTOCOL_VERSION)),
+            ("2026-01-02", Some("3.5.10")),
+            ("2026-01-03", None),
+        ] {
+            std::fs::create_dir_all(day(date)).unwrap();
+            if let Some(version) = version {
+                metadata(version).write_to_dir(&day(date)).unwrap();
+            }
+        }
+        let removed = remove_outdated_partitions(&root).unwrap();
+        assert_eq!(removed, vec![day("2026-01-02"), day("2026-01-03")]);
+        assert_eq!(list_partitions(&root).unwrap(), vec![day("2026-01-01")]);
+        std::fs::remove_dir_all(&root).unwrap();
+    }
 
     #[test]
     fn it_names_the_day_partitions() {
