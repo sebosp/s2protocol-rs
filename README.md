@@ -132,6 +132,10 @@ v3
 v3.4
 - There is only one iterator provided now, that goes through both the Tracker and Game events to build the game state.
   Previously two iterators were provided that build partial state only for either track/game and the result was inconsistent, plus lots of duplicated code.
+Unreleased
+- `write-arrow-ipc` writes the snapshot partitioned by day, `year=YYYY/month=MM/day=DD`, and only adds the replays that are not in it yet.
+  The files are no longer at the root of the output directory, read them with `year=*/month=*/day=*/<file>.arrow`.
+  `WriteArrowIpcProps` has a new `recreate` field (`--recreate`) and `SnapshotProgress` a new `AlreadyInSnapshot` variant.
 
 ## Interacting with polars
 
@@ -140,7 +144,8 @@ v3.4
 
 ### Generating the IPC Arrow datasets
 
-In the directory ipcs/ one .ipc file will be created per implemented data type.
+In the directory ipcs/ one .arrow file will be created per implemented data type and day, see
+[Partitioned snapshots](#partitioned-snapshots).
 The `--source` is the directory that contains the replay directory (Or a single file).
 Multiple subdirectories are supported.
 Files are processed using parallel operations.
@@ -167,10 +172,50 @@ drwxr-xr-x 12 seb seb       4096 Aug 30 18:14 ..
 -rw-r--r--  1 seb seb  995379658 Aug 30 20:51 cmd_target_unit.ipc
 ```
 
+### Partitioned snapshots
+
+The snapshot is partitioned by the day the games were played, each day directory has all the
+`.arrow` files and its own `metadata.json`, the root has the `metadata.json` of the whole snapshot:
+
+```
+ipcs/
+├── metadata.json
+└── year=2026/
+    └── month=04/
+        ├── day=07/
+        │   ├── details.arrow
+        │   ├── stats.arrow
+        │   ├── ...
+        │   └── metadata.json
+        └── day=14/
+```
+
+Running `write-arrow-ipc` again only adds the replays that are not in the snapshot yet: the details
+of every day are read first and the replays are skipped by file name (without reading them) and by
+sha256 (a replay copied to another directory). The new replays are added to their days, the
+existing rows of a day are copied into the new files, which replace the previous ones once the day
+is complete. The new replays get the `ext_fs_id`s that follow the highest one in the snapshot.
+
+`--recreate` deletes the snapshot (the `.arrow` files, the `metadata.json` and the `year=*`
+directories, other files are kept) and generates it from scratch. A snapshot written before the
+partitions, with the files at the root, is always regenerated. A day written with a different
+schema fails with an error asking to recreate the snapshot.
+
+The files of all the days can be read with a glob, the partition columns are not needed since
+`ext_datetime` has the date:
+
+```bash
+$ echo "SELECT COUNT(DISTINCT ext_fs_id) FROM read_ipc('ipcs/year=*/month=*/day=*/details.arrow')"|polars
+```
+
+`partitioned::partition_glob(DETAILS_ARROW_FNAME)` returns the glob relative to the snapshot root.
+With polars, disable the hive partitions (`HiveOptions::new_disabled()`) to keep the schemas.
+
 ### Snapshot metadata
 
-Next to the `.arrow` files, a `metadata.json` file records how the snapshot was generated, so that
-consumers can detect a snapshot written by an incompatible version of s2protocol:
+The `metadata.json` files record how the snapshot was generated, so that consumers can detect a
+snapshot written by an incompatible version of s2protocol. At the root, `files` has the totals of
+all the days, `partitions` the number of days and `added` the replays added by the last run:
 
 ```json
 {
@@ -181,7 +226,9 @@ consumers can detect a snapshot written by an incompatible version of s2protocol
   "files": [
     { "name": "details.arrow", "bytes": 1062818, "records": 2940 },
     { "name": "stats.arrow", "bytes": 171035386, "records": 331000 }
-  ]
+  ],
+  "partitions": 212,
+  "added": 15
 }
 ```
 
@@ -193,11 +240,19 @@ regenerated.
 ### Snapshot progress
 
 `ArrowIpcTypes::handle_arrow_ipc_cmd_with_progress` takes an optional
-`tokio::sync::mpsc::UnboundedSender<SnapshotProgress>` and sends the files found, the replays with
-valid init data, each step as it starts, the replays processed (every 1%), and the size and records
+`tokio::sync::mpsc::UnboundedSender<SnapshotProgress>` and sends the files found, the replays
+already in the snapshot, the new replays with valid init data, each step as it starts, the replays processed (every 1%), and the size and records
 of each file written. `SnapshotProgress` serializes with a `kind` tag, i.e.
 `{"kind":"files_found","count":3}`, and does not need the `dep_arrow` feature, so a frontend can
 deserialize it.
+
+### Map caches
+
+`CacheCollection::build_map_cache` reads the MapInfo, DocumentHeader, t3HeightMap, t3Terrain.xml
+(with the ramps) and Objects of the map caches, and the `Minimap.tga` as `MapCache::minimap`, an
+RGBA image. The image is a window of 256x256 cells centered on the playable area,
+`Minimap::crop_to_playable` keeps only the playable area of the MapInfo. The `Resources` of the
+placed mineral fields and geysers is read when the map sets it, `ObjectUnit::resources`.
 
 ### Jupyter Notebooks
 

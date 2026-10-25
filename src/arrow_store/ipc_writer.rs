@@ -25,12 +25,16 @@ pub fn write_batches(
     Ok(())
 }
 
+/// An Arrow IPC file writer shared by parallel iterators.
+#[cfg(feature = "dep_arrow")]
+pub type ArrowMutexWriter = std::sync::Mutex<FileWriter<std::fs::File>>;
+
 /// Opens a mutex protected Arrow IPC file writer
 #[cfg(feature = "dep_arrow")]
 pub fn open_arrow_mutex_writer(
     output: PathBuf,
     schema: Schema,
-) -> Result<std::sync::Mutex<FileWriter<std::fs::File>>, Box<dyn std::error::Error>> {
+) -> Result<ArrowMutexWriter, Box<dyn std::error::Error>> {
     let file = std::fs::File::create(output)?;
 
     let writer = FileWriter::try_new(file, &schema)?;

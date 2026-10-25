@@ -62,6 +62,10 @@ pub struct WriteArrowIpcPropsArgs {
     /// The maximum protocol version
     #[arg(long)]
     pub max_version: Option<u32>,
+    /// Deletes the snapshot in the output directory and generates it from scratch, by default
+    /// only the replays that are not in the snapshot yet are added.
+    #[arg(long)]
+    pub recreate: bool,
 }
 
 #[cfg(feature = "dep_arrow")]
@@ -73,6 +77,7 @@ impl From<WriteArrowIpcPropsArgs> for s2protocol::WriteArrowIpcProps {
             traverse_max_depth,
             min_version,
             max_version,
+            recreate,
         } = src;
         WriteArrowIpcProps {
             scan_max_files,
@@ -80,6 +85,7 @@ impl From<WriteArrowIpcPropsArgs> for s2protocol::WriteArrowIpcProps {
             traverse_max_depth,
             min_version,
             max_version,
+            recreate,
         }
     }
 }

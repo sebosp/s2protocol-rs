@@ -21,6 +21,8 @@ pub enum SnapshotProgress {
     FilesFound { count: usize },
     /// The replays with valid init data, these are the ones processed.
     ValidReplays { count: usize },
+    /// The replays skipped because they are already in the snapshot.
+    AlreadyInSnapshot { count: usize },
     /// A step of the snapshot generation started, `index` starts at 1.
     Step {
         index: usize,
@@ -56,10 +58,17 @@ pub struct SnapshotMetadata {
     pub created_at: DateTime<Utc>,
     /// The time it took to generate the snapshot.
     pub elapsed_ms: u64,
-    /// The replays processed.
+    /// The replays in the snapshot.
     pub replays: usize,
-    /// The files of the snapshot.
+    /// The files of the snapshot, for a partitioned snapshot the totals of all the days.
     pub files: Vec<SnapshotFile>,
+    /// The day partitions, `year=YYYY/month=MM/day=DD`, 0 for the metadata of a day or for a
+    /// snapshot written before the partitions, with the files at its root.
+    #[serde(default)]
+    pub partitions: usize,
+    /// The replays added by the last generation, the others were already in the snapshot.
+    #[serde(default)]
+    pub added: usize,
 }
 
 impl SnapshotMetadata {
@@ -114,6 +123,8 @@ mod tests {
             elapsed_ms: 0,
             replays: 0,
             files: vec![],
+            partitions: 0,
+            added: 0,
         };
         assert!(metadata.is_compatible());
         metadata.s2protocol_version = "0.0.1".to_string();
