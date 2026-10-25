@@ -18,6 +18,8 @@ pub mod message_events;
 pub mod protocol_version_decoder;
 pub mod snapshot;
 pub mod state;
+#[cfg(feature = "textures")]
+pub mod textures;
 pub mod tracker_events;
 pub mod versioned_decoder;
 pub mod versions;

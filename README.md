@@ -74,6 +74,45 @@ Inside the `Overlord.xml` there is:
 </unit>
 ```
 
+### How the balance data was collected
+
+The data in `assets/BalanceData` was exported by opening the StarCraft II Editor after each patch and
+clicking `File` -> `Export Balance Data` for Legacy of the Void (LotV, the melee multiplayer data).
+The export contains the XMLs of the units of the patch and the `Assets/Textures` with their button
+icons.
+
+We only started doing this a few months ago, so the oldest export is for protocol version 94137, the
+replays of older patches use the closest version available. **If you have exported the balance data
+of older patches (or of patches missing here, see `assets/BalanceData`), we would really appreciate
+it if you share it with us**, please open an issue or a pull request at
+https://github.com/sebosp/s2protocol-rs, the exported directory as it is, or a link to it, is enough.
+
+### Textures
+
+The button textures referenced by the `meta.icon` of the units, upgrades and ability commands, i.e.
+`btn-unit-zerg-zergling`, are in `assets/Textures` as DDS files (76x76, DXT5). They were identical in
+all the exported patches, so they are stored once, with lowercase names because the case of the icon
+names in the balance data does not always match the file names. They are about 7MB (2.3MB compressed).
+
+The `textures` feature embeds them, see the `textures` module:
+
+```rust
+let balance_data = s2protocol::game_events::read_balance_data_from_included_assets()?;
+let units = &balance_data[&98310];
+let icon = s2protocol::textures::upgrade_icons(units)["zerglingmovementspeed"].clone();
+let dds: &[u8] = s2protocol::textures::icon_dds(&icon).unwrap();
+```
+
+To add the textures of a new export:
+
+```bash
+for f in $HOME/SC2Replays/BalanceData/<version>/Assets/Textures/*.dds; do
+  cp -n "$f" assets/Textures/$(basename "$f" | tr 'A-Z' 'a-z')
+done
+```
+
+### Using the exported data
+
 To use the exported balance data, data must be exported and stored in per-version directory with the following structure:
 `<somepath>/94137/BalanceData/Overlord.xml`
 where `94137` is the version of the exported XMLs.

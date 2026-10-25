@@ -63,6 +63,8 @@ tracing_error_level = [
 nom_color_debug = ["nom-mpq/nom_color_debug", "console"]
 dep_reqwest = ["reqwest"]
 dep_tokio = ["tokio"]
+# Embeds the button textures of the units, upgrades and abilities, about 7MB.
+textures = []
 
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }
