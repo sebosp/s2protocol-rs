@@ -21,3 +21,5 @@ jobs:
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
+    - name: Run tests with the Arrow snapshot and the textures
+      run: cargo test --verbose --features dep_arrow,textures

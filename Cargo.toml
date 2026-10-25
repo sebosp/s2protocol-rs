@@ -66,6 +66,11 @@ dep_tokio = ["tokio"]
 # Embeds the button textures of the units, upgrades and abilities, about 7MB.
 textures = []
 
+# The example runs on tokio, dep_arrow enables it too.
+[[example]]
+name = "full"
+required-features = ["dep_tokio"]
+
 [dev-dependencies]
 test-log = { version = "0.2", default-features = false, features = ["trace"] }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
