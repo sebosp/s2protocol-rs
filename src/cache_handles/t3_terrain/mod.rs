@@ -56,12 +56,12 @@ pub struct RampListTag {
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct Ramp {
-    #[serde(default)]
+    #[serde(rename = "@dir", default)]
     pub dir: u8,
     /// Looks like cell layer/height
-    #[serde(default)]
+    #[serde(rename = "@hi", default)]
     pub hi: u8,
-    #[serde(default)]
+    #[serde(rename = "@lo", default)]
     pub lo: u8,
     // "u(-1.000000e+00, 0.000000e+00) r(0.000000e+00, 1.000000e+00) c=(1.420000e+02, 4.400000e+01) w=2.000000e+00 h=2.000000e+00"
     // Looks SVG-ish, maybe u=up r=right c=center w=width h=height ?
@@ -73,11 +73,11 @@ pub struct Ramp {
     pub right_lo: String,
     #[serde(rename = "@rightHi", default)]
     pub right_hi: String,
-    #[serde(default)]
+    #[serde(rename = "@base", default)]
     pub base: String,
-    #[serde(default)]
+    #[serde(rename = "@mid", default)]
     pub mid: String,
-    #[serde(default)]
+    #[serde(rename = "@cid", default)]
     pub cid: usize,
     #[serde(rename = "@leftLoVar", default)]
     pub left_lo_var: u32,
@@ -87,6 +87,22 @@ pub struct Ramp {
     pub right_lo_var: u32,
     #[serde(rename = "@rightHiVar", default)]
     pub right_hi_var: u32,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_reads_the_ramp_attributes() {
+        let xml = r#"<terrain version="115"><heightMap tileSet="Lab"><rampList num="1">
+            <ramp dir="6" hi="2" lo="1" leftLo="u(-1.000000e+00, 0.000000e+00) r(0.000000e+00, 1.000000e+00) c=(5.200000e+01, 2.000000e+01) w=2.000000e+00 h=2.000000e+00" cid="1" leftLoVar="0"/>
+        </rampList></heightMap></terrain>"#;
+        let terrain = T3Terrain::parse("id".to_string(), xml.as_bytes()).unwrap();
+        let ramp = &terrain.height_map.ramp_list.unwrap().inner[0];
+        assert_eq!((ramp.dir, ramp.hi, ramp.lo, ramp.cid), (6, 2, 1, 1));
+        assert!(ramp.left_lo.contains("c=(5.200000e+01, 2.000000e+01)"));
+    }
 }
 
 impl T3Terrain {

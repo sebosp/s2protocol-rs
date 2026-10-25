@@ -68,6 +68,9 @@ pub struct ObjectUnit {
     pub scale: String,
     #[serde(rename = "@UnitType")]
     pub unit_kind: String,
+    /// The resources of a mineral field or a geyser when the map changes the default amount.
+    #[serde(default, rename = "@Resources")]
+    pub resources: Option<u32>,
 }
 
 impl PlacedObjects {

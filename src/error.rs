@@ -57,6 +57,9 @@ pub enum S2ProtocolError {
     /// The MapParserError
     #[error("cache_handles Map {0}")]
     Map(#[from] crate::cache_handles::map::MapError),
+    /// The Minimap.tga of the map caches could not be decoded.
+    #[error("Minimap: {0}")]
+    Minimap(String),
     /// An XML serde error when reading replay caches
     #[error("SerdeXml: {0}")]
     SerdeXML(#[from] serde_xml_rs::Error),

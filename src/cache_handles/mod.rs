@@ -9,6 +9,7 @@ pub mod cache_objects;
 pub mod document_header;
 pub mod map;
 pub mod map_info;
+pub mod minimap;
 pub mod t3_height_map;
 pub mod t3_terrain;
 
@@ -16,6 +17,7 @@ use cache_objects::PlacedObjects;
 use document_header::DocumentHeader;
 use futures::future::join_all;
 use map_info::MapInfo;
+use minimap::Minimap;
 use rayon::prelude::*;
 use std::{collections::HashMap, path::Path};
 use t3_height_map::T3HeightMap;
@@ -30,6 +32,7 @@ pub const DOCUMENT_HEADER_FILE_NAME: &str = "DocumentHeader";
 pub const T3_HEIGHT_MAP_FILE_NAME: &str = "t3HeightMap";
 pub const T3_TERRAIN_MAP_FILE_NAME: &str = "t3Terrain.xml";
 pub const PLACED_OBJECTS_FILE_NAME: &str = "Objects";
+pub const MINIMAP_FILE_NAME: &str = "Minimap.tga";
 
 pub type CacheIdWithMapInfoSha = HashMap<String, Option<String>>;
 
@@ -41,6 +44,8 @@ pub struct MapCache {
     pub t3_height_map: T3HeightMap,
     pub t3_terrain: T3Terrain,
     pub placed_objects: PlacedObjects,
+    /// The minimap image, None if the map cache does not have it or it cannot be decoded.
+    pub minimap: Option<Minimap>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -66,7 +71,8 @@ fn is_file_known(fname: &str) -> bool {
         | DOCUMENT_HEADER_FILE_NAME
         | T3_HEIGHT_MAP_FILE_NAME
         | T3_TERRAIN_MAP_FILE_NAME
-        | PLACED_OBJECTS_FILE_NAME => true,
+        | PLACED_OBJECTS_FILE_NAME
+        | MINIMAP_FILE_NAME => true,
         _ => false,
     }
 }
@@ -195,13 +201,20 @@ impl CacheCollection {
             &map_info_only_cache_id,
             PLACED_OBJECTS_FILE_NAME,
         )?;
-        let placed_objects = PlacedObjects::parse(map_cache_handle_id, &cache_contents)?;
+        let placed_objects = PlacedObjects::parse(map_cache_handle_id.clone(), &cache_contents)?;
+
+        let minimap = self
+            .try_get_sector_content_from_collection(&map_info_only_cache_id, MINIMAP_FILE_NAME)
+            .and_then(|(_, cache_contents)| Minimap::parse(map_cache_handle_id, &cache_contents))
+            .inspect_err(|err| tracing::warn!("No minimap: {err:?}"))
+            .ok();
         Ok(MapCache {
             map_info,
             document_header,
             t3_height_map,
             t3_terrain,
             placed_objects,
+            minimap,
         })
     }
 }
