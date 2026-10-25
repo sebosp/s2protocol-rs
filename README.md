@@ -171,7 +171,7 @@ v3
 v3.4
 - There is only one iterator provided now, that goes through both the Tracker and Game events to build the game state.
   Previously two iterators were provided that build partial state only for either track/game and the result was inconsistent, plus lots of duplicated code.
-Unreleased
+v3.6.0 (2026-10-25), the snapshot format changed, generate the snapshots again
 - `write-arrow-ipc` writes the snapshot partitioned by day, `year=YYYY/month=MM/day=DD`, and only adds the replays that are not in it yet.
   The files are no longer at the root of the output directory, read them with `year=*/month=*/day=*/<file>.arrow`.
   `WriteArrowIpcProps` has a new `recreate` field (`--recreate`) and `SnapshotProgress` a new `AlreadyInSnapshot` variant.
