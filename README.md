@@ -175,6 +175,9 @@ Unreleased
 - `write-arrow-ipc` writes the snapshot partitioned by day, `year=YYYY/month=MM/day=DD`, and only adds the replays that are not in it yet.
   The files are no longer at the root of the output directory, read them with `year=*/month=*/day=*/<file>.arrow`.
   `WriteArrowIpcProps` has a new `recreate` field (`--recreate`) and `SnapshotProgress` a new `AlreadyInSnapshot` variant.
+- Not breaking: the `textures` feature embeds the button textures, see [Textures](#textures). The
+  players of older replays without `working_set_slot_id` are matched to the lobby slots by order,
+  previously they had no details and these replays were added again on every snapshot run.
 
 ## Interacting with polars
 
@@ -212,6 +215,8 @@ drwxr-xr-x 12 seb seb       4096 Aug 30 18:14 ..
 ```
 
 ### Partitioned snapshots
+
+The time it takes to generate a snapshot on different versions and machines is in [bench.md](bench.md).
 
 The snapshot is partitioned by the day the games were played, each day directory has all the
 `.arrow` files and its own `metadata.json`, the root has the `metadata.json` of the whole snapshot:
