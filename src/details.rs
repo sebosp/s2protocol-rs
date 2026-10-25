@@ -167,11 +167,30 @@ pub struct PlayerLobbyDetails {
 
 impl From<&SC2ReplayBasicData> for Vec<PlayerLobbyDetails> {
     fn from(basic_data: &SC2ReplayBasicData) -> Self {
+        // Older replays, i.e. from 2021, have no working_set_slot_id in the details, their
+        // players are in the order of the lobby slots taken by a human or a computer (control 2
+        // or 3) that are not observing.
+        let players_without_slot_id = basic_data
+            .details
+            .player_list
+            .iter()
+            .all(|player| player.working_set_slot_id.is_none());
+        let player_slots: Vec<usize> = basic_data
+            .init_data
+            .sync_lobby_state
+            .lobby_state
+            .slots
+            .iter()
+            .enumerate()
+            .filter(|(_, slot)| slot.control >= 2 && slot.observe == 0)
+            .map(|(idx, _)| idx)
+            .collect();
         let res = basic_data
             .details
             .player_list
             .iter()
-            .filter_map(|player| {
+            .enumerate()
+            .filter_map(|(player_idx, player)| {
                 let mut slot_idx = None;
                 for (idx, lobby_slot) in basic_data
                     .init_data
@@ -188,6 +207,12 @@ impl From<&SC2ReplayBasicData> for Vec<PlayerLobbyDetails> {
                         slot_idx = Some(idx);
                         break;
                     }
+                }
+                if slot_idx.is_none()
+                    && players_without_slot_id
+                    && player.observe == crate::common::OBSERVE_NONE
+                {
+                    slot_idx = player_slots.get(player_idx).copied();
                 }
                 let slot_idx = slot_idx?;
                 Some(PlayerLobbyDetails {
