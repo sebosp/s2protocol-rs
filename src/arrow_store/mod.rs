@@ -21,6 +21,7 @@ use crate::tracker_events::{
 };
 use crate::*;
 
+use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
 pub mod ipc_writer;
@@ -894,7 +895,8 @@ impl ArrowIpcTypes {
             .into_iter()
             .filter(|path| !index.file_names.contains(path.to_str().unwrap_or_default()))
             .collect();
-        let mut already_in_snapshot = located - sources.len();
+        let already_in_snapshot = located - sources.len();
+        let to_read = sources.len();
         let first_id = index.next_ext_fs_id();
         let read_header = |(idx, source): (usize, &PathBuf)| {
             SC2ReplayBasicData::new(source, first_id + u64::try_from(idx).unwrap()).ok()
@@ -910,15 +912,16 @@ impl ArrowIpcTypes {
                 .filter_map(read_header)
                 .collect()
         };
-        // A replay copied to another directory is in the snapshot with another file name.
+        let unreadable = to_read - sources.len();
+        // A replay copied to another directory is in the snapshot with another file name, or is
+        // read twice in this run.
         let mut sha256s = index.sha256s;
+        let mut copies = 0;
         let sources: Vec<SC2ReplayBasicData> = sources
             .into_iter()
             .filter(|source| {
                 let is_new = sha256s.insert(source.init_data.ext_fs_sha256.clone());
-                if !is_new {
-                    already_in_snapshot += 1;
-                }
+                copies += usize::from(!is_new);
                 is_new
             })
             .filter(|source| {
@@ -937,9 +940,12 @@ impl ArrowIpcTypes {
             .take(cmd.process_max_files)
             .collect();
         println!(
-            "{already_in_snapshot} replays are already in the snapshot, {} new replays have valid init data, processing...",
+            "{already_in_snapshot} replays are already in the snapshot, {copies} are copies of \
+             another replay, {unreadable} could not be read, {} new replays have valid init data, \
+             processing...",
             sources.len()
         );
+        let already_in_snapshot = already_in_snapshot + copies;
         send_progress(
             progress,
             SnapshotProgress::AlreadyInSnapshot {
@@ -964,6 +970,25 @@ impl ArrowIpcTypes {
             },
         );
         let details = details_rows(&sources, &cache_path).await;
+        // The snapshot knows its replays from the details, a replay without player details would
+        // be added again, with all its events, every time.
+        let with_details: HashSet<u64> = details.iter().map(|row| row.ext_fs_id).collect();
+        let (sources, without_details): (Vec<SC2ReplayBasicData>, Vec<SC2ReplayBasicData>) =
+            sources
+                .into_iter()
+                .partition(|source| with_details.contains(&source.details.ext_fs_id));
+        if !without_details.is_empty() {
+            println!(
+                "{} replays are skipped, their players could not be matched to the lobby slots, i.e. {}",
+                without_details.len(),
+                without_details
+                    .iter()
+                    .take(3)
+                    .map(|source| source.init_data.ext_fs_file_name.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            );
+        }
         send_progress(
             progress,
             SnapshotProgress::Step {

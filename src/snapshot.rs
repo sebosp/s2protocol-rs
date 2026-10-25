@@ -21,7 +21,8 @@ pub enum SnapshotProgress {
     FilesFound { count: usize },
     /// The replays with valid init data, these are the ones processed.
     ValidReplays { count: usize },
-    /// The replays skipped because they are already in the snapshot.
+    /// The replays skipped because they are already in the snapshot, or are copies of another
+    /// replay, i.e. the same replay in two directories.
     AlreadyInSnapshot { count: usize },
     /// A step of the snapshot generation started, `index` starts at 1.
     Step {
