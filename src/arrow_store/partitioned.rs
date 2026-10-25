@@ -14,7 +14,7 @@ use arrow::datatypes::UInt64Type;
 use arrow::ipc::reader::FileReader;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::Path;
-use std::sync::{Mutex, OnceLock};
+use std::sync::{Arc, Mutex};
 
 /// The files of every day partition, the details first, then the [`EVENT_ARROW_FNAMES`].
 pub const PARTITION_ARROW_FNAMES: [&str; 7] = [
@@ -152,6 +152,10 @@ impl SnapshotIndex {
 }
 
 /// The file being written next to the final one, renamed once the day is complete.
+/// The days written at the same time, each open day has 7 files open, the default limit of open
+/// files is 256 on macOS and 1024 on Linux, the replays being read are open files too.
+const MAX_OPEN_DAYS: usize = 24;
+
 fn tmp_path(path: &Path) -> PathBuf {
     let mut name = path.as_os_str().to_owned();
     name.push(".tmp");
@@ -267,30 +271,58 @@ impl DayWriter {
     }
 }
 
+/// The writer of a day, opened by the first replay of the day and closed by the last one.
+enum DayState {
+    Pending(Vec<PlayerLobbyDetailsFlatRow>),
+    Open(Arc<DayWriter>),
+    /// The files are closed, a finished writer still holds them open until it is dropped.
+    Closed,
+    Failed(String),
+}
+
 /// A day with new replays.
 struct DaySlot {
     dir: PathBuf,
-    details: Mutex<Vec<PlayerLobbyDetailsFlatRow>>,
-    writer: OnceLock<Result<DayWriter, String>>,
+    state: Mutex<DayState>,
     new_replays: usize,
     /// The replays of the day not yet written, the last one finishes the day.
     remaining: AtomicUsize,
 }
 
 impl DaySlot {
-    fn writer(&self) -> Result<&DayWriter, String> {
-        self.writer
-            .get_or_init(|| {
-                let details = std::mem::take(&mut *self.details.lock().unwrap());
-                DayWriter::open(self.dir.clone(), details).map_err(|err| {
+    fn writer(&self) -> Result<Arc<DayWriter>, String> {
+        let mut state = self.state.lock().unwrap();
+        if let DayState::Pending(details) = &mut *state {
+            let details = std::mem::take(details);
+            *state = match DayWriter::open(self.dir.clone(), details) {
+                Ok(writer) => DayState::Open(Arc::new(writer)),
+                Err(err) => {
                     for name in PARTITION_ARROW_FNAMES {
                         let _ = std::fs::remove_file(tmp_path(&self.dir.join(name)));
                     }
-                    err.to_string()
-                })
-            })
-            .as_ref()
-            .map_err(|err| format!("{}: {err}", self.dir.display()))
+                    DayState::Failed(err.to_string())
+                }
+            };
+        }
+        match &*state {
+            DayState::Open(writer) => Ok(writer.clone()),
+            DayState::Failed(err) => Err(format!("{}: {err}", self.dir.display())),
+            DayState::Pending(_) | DayState::Closed => {
+                Err(format!("{}: the day is not open", self.dir.display()))
+            }
+        }
+    }
+
+    /// Takes the writer so that its files are closed once it is finished.
+    fn close(&self) -> Option<Arc<DayWriter>> {
+        let mut state = self.state.lock().unwrap();
+        match std::mem::replace(&mut *state, DayState::Closed) {
+            DayState::Open(writer) => Some(writer),
+            other => {
+                *state = other;
+                None
+            }
+        }
     }
 }
 
@@ -325,8 +357,9 @@ pub fn write_partitions(
         .map(|(day, replays)| {
             let slot = DaySlot {
                 dir: root.join(partition_dir(day)),
-                details: Mutex::new(details_per_day.remove(&day).unwrap_or_default()),
-                writer: OnceLock::new(),
+                state: Mutex::new(DayState::Pending(
+                    details_per_day.remove(&day).unwrap_or_default(),
+                )),
                 new_replays: replays,
                 remaining: AtomicUsize::new(replays),
             };
@@ -340,37 +373,52 @@ pub fn write_partitions(
     let progress_every = (total / 100).max(1);
     let written: Mutex<Vec<SnapshotMetadata>> = Mutex::new(vec![]);
     let errors: Mutex<Vec<String>> = Mutex::new(vec![]);
-    sources.par_iter().for_each(|source| {
-        let slot = &days[&day_of(source)];
-        match slot.writer() {
-            Ok(writer) => {
-                if let Some(rows) = ReplayEventRows::collect(source, versioned_abilities) {
-                    writer.write_events(rows);
+    // The days are written a few at a time, every open day has a file open per IPC file.
+    let mut batches: Vec<Vec<&SC2ReplayBasicData>> = vec![];
+    let mut batch_days = 0;
+    for (idx, source) in sources.iter().enumerate() {
+        let new_day = idx == 0 || day_of(sources[idx - 1]) != day_of(source);
+        if batches.is_empty() || (new_day && batch_days == MAX_OPEN_DAYS) {
+            batches.push(vec![]);
+            batch_days = 0;
+        }
+        batch_days += new_day as usize;
+        batches.last_mut().unwrap().push(source);
+    }
+    for batch in batches {
+        batch.par_iter().for_each(|source| {
+            let slot = &days[&day_of(source)];
+            match slot.writer() {
+                Ok(writer) => {
+                    if let Some(rows) = ReplayEventRows::collect(source, versioned_abilities) {
+                        writer.write_events(rows);
+                    }
+                }
+                Err(err) => errors.lock().unwrap().push(err),
+            }
+            if slot.remaining.fetch_sub(1, Ordering::AcqRel) == 1
+                && let Some(writer) = slot.close()
+            {
+                match writer.finish(slot.new_replays) {
+                    Ok(metadata) => written.lock().unwrap().push(metadata),
+                    Err(err) => {
+                        writer.discard();
+                        errors
+                            .lock()
+                            .unwrap()
+                            .push(format!("{}: {err}", slot.dir.display()));
+                    }
                 }
             }
-            Err(err) => errors.lock().unwrap().push(err),
-        }
-        if slot.remaining.fetch_sub(1, Ordering::AcqRel) == 1
-            && let Ok(writer) = slot.writer()
-        {
-            match writer.finish(slot.new_replays) {
-                Ok(metadata) => written.lock().unwrap().push(metadata),
-                Err(err) => {
-                    writer.discard();
-                    errors
-                        .lock()
-                        .unwrap()
-                        .push(format!("{}: {err}", slot.dir.display()));
-                }
+            let done = processed.fetch_add(1, Ordering::Relaxed) + 1;
+            if done.is_multiple_of(progress_every) || done == total {
+                send_progress(progress, SnapshotProgress::ReplaysProcessed { done, total });
             }
-        }
-        let done = processed.fetch_add(1, Ordering::Relaxed) + 1;
-        if done.is_multiple_of(progress_every) || done == total {
-            send_progress(progress, SnapshotProgress::ReplaysProcessed { done, total });
-        }
-    });
+        });
+    }
     let mut errors = errors.into_inner().unwrap();
     if !errors.is_empty() {
+        errors.sort();
         errors.dedup();
         return Err(errors.join(", ").into());
     }
