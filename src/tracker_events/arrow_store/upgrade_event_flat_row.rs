@@ -1,21 +1,13 @@
 //! Upgrade Events in a flat row for Arrow usage
 
 #[cfg(feature = "dep_arrow")]
-use arrow::datatypes::{DataType::Struct, Schema};
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::field::ArrowField;
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use arrow::datatypes::Schema;
 
 use crate::tracker_events::UpgradeEvent;
 use serde::{Deserialize, Serialize};
 
 /// An experiment creating a flat row of PlayerStats for Arrow usage
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct UpgradeEventFlatRow {
     pub player_id: u8,
     pub name: String,
@@ -41,10 +33,9 @@ impl UpgradeEventFlatRow {
     }
 
     pub fn schema() -> Schema {
-        if let Struct(fields) = UpgradeEventFlatRow::data_type() {
-            Schema::new(fields.clone())
-        } else {
-            panic!("Invalid schema, expected struct");
-        }
+        <Self as crate::arrow_store::rows::ArrowRow>::schema()
     }
 }
+
+#[cfg(feature = "dep_arrow")]
+crate::impl_arrow_row!(UpgradeEventFlatRow);

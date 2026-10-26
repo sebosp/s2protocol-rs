@@ -1,11 +1,7 @@
 //! Player stats flat row
 
 #[cfg(feature = "dep_arrow")]
-use arrow::datatypes::{DataType::Struct, Schema};
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::field::ArrowField;
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use arrow::datatypes::Schema;
 
 use crate::tracker_events::PlayerStatsEvent;
 use serde::{Deserialize, Serialize};
@@ -14,10 +10,6 @@ use serde::{Deserialize, Serialize};
 /// Fields that start with ext_ are foreign fields collected from the Details MPQ sector
 /// and the file system (fs) itself.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct PlayerStatsFlatRow {
     pub player_id: u8,
     pub minerals_current: i32,
@@ -117,10 +109,9 @@ impl PlayerStatsFlatRow {
     }
 
     pub fn schema() -> Schema {
-        if let Struct(fields) = PlayerStatsFlatRow::data_type() {
-            Schema::new(fields.clone())
-        } else {
-            panic!("Invalid schema, expected struct");
-        }
+        <Self as crate::arrow_store::rows::ArrowRow>::schema()
     }
 }
+
+#[cfg(feature = "dep_arrow")]
+crate::impl_arrow_row!(PlayerStatsFlatRow);

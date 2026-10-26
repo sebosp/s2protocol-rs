@@ -1,11 +1,7 @@
 //! Unit Died Event Flat Row
 //!
 #[cfg(feature = "dep_arrow")]
-use arrow::datatypes::{DataType::Struct, Schema};
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::field::ArrowField;
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use arrow::datatypes::Schema;
 
 use crate::UnitChangeHint;
 use crate::tracker_events::UnitDiedEvent;
@@ -13,10 +9,6 @@ use serde::{Deserialize, Serialize};
 
 /// A protocol agnostic Unit Died
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct UnitDiedEventFlatRow {
     pub unit_died_name: String,
     pub unit_tag_index: u32,
@@ -70,10 +62,9 @@ impl UnitDiedEventFlatRow {
     }
 
     pub fn schema() -> Schema {
-        if let Struct(fields) = UnitDiedEventFlatRow::data_type() {
-            Schema::new(fields.clone())
-        } else {
-            panic!("Invalid schema, expected struct");
-        }
+        <Self as crate::arrow_store::rows::ArrowRow>::schema()
     }
 }
+
+#[cfg(feature = "dep_arrow")]
+crate::impl_arrow_row!(UnitDiedEventFlatRow);

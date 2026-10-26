@@ -2,8 +2,6 @@
 //! These are stored in an embebdded file in the MPQ file called 'replay.tracker.events'
 
 #[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
-#[cfg(feature = "dep_arrow")]
 pub mod arrow_store;
 #[cfg(feature = "dep_arrow")]
 pub use arrow_store::*;
@@ -38,10 +36,6 @@ pub use unit_type_change::*;
 
 /// A Tracker Event is an event in the gameloop for a specific user id
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct TrackerEvent {
     pub delta: u32,
     pub event: ReplayTrackerEvent,
@@ -52,11 +46,6 @@ pub struct TrackerEvent {
 /// Many of the variants are not supported yet, they will be added as they are considered
 /// relevant  for `swarmy` repo.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-#[cfg_attr(feature = "dep_arrow", arrow_field(type = "sparse"))]
 pub enum ReplayTrackerEvent {
     PlayerStats(PlayerStatsEvent),
     UnitBorn(UnitBornEvent),

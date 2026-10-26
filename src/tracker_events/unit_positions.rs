@@ -1,17 +1,10 @@
 //! A protocol agnostic Unit Done Event
 
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
-
 use crate::filters::SC2ReplayFilters;
 use serde::{Deserialize, Serialize};
 
 /// A single unit position
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct UnitPosition {
     /// The unit "tag" is the "index"?
     pub tag: u32,
@@ -24,10 +17,6 @@ pub struct UnitPosition {
 /// Emitted regularly to report unit positions.
 /// Not all units are reported.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct UnitPositionsEvent {
     pub first_unit_index: u32,
     pub items: Vec<i32>,

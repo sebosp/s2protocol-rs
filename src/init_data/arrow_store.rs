@@ -1,11 +1,7 @@
 //! Provides  the flat row versions of the InitData.
 
 #[cfg(feature = "dep_arrow")]
-use arrow::datatypes::{DataType::Struct, Schema};
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::field::ArrowField;
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use arrow::datatypes::Schema;
 
 use super::InitData;
 
@@ -13,10 +9,6 @@ use serde::{Deserialize, Serialize};
 
 // TODO: So far only the "name" seems interesting, maybe we should drop this struct.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct UserInitDataFlatRow {
     pub ext_fs_id: u64,
     pub ext_fs_sha256: String,
@@ -51,10 +43,9 @@ impl From<&InitData> for Vec<UserInitDataFlatRow> {
 
 impl UserInitDataFlatRow {
     pub fn schema() -> Schema {
-        if let Struct(fields) = UserInitDataFlatRow::data_type() {
-            Schema::new(fields.clone())
-        } else {
-            panic!("Invalid schema, expected struct");
-        }
+        <Self as crate::arrow_store::rows::ArrowRow>::schema()
     }
 }
+
+#[cfg(feature = "dep_arrow")]
+crate::impl_arrow_row!(UserInitDataFlatRow);
