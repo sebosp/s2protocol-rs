@@ -22,10 +22,20 @@ impl SC2ReplayBasicData {
     #[tracing::instrument(level = "debug")]
     pub fn new(path: &PathBuf, ext_fs_id: u64) -> Result<Self, S2ProtocolError> {
         let file_contents = crate::read_file(&path)?;
-        let (_input, mpq) = crate::parser::parse(&file_contents)?;
-        let path_str = path.to_str().unwrap_or_default();
-        let init_data = InitData::new(path_str, ext_fs_id, &mpq, &file_contents)?;
-        let details = Details::new(path_str, ext_fs_id, &mpq, &file_contents)?;
+        Self::from_bytes(path.to_str().unwrap_or_default(), ext_fs_id, &file_contents)
+    }
+
+    /// Reads the InitData and Details from the contents of a replay, i.e. a file dropped in a
+    /// browser, where there is no file system. The file name is kept as metadata.
+    #[tracing::instrument(level = "debug", skip(file_contents))]
+    pub fn from_bytes(
+        file_name: &str,
+        ext_fs_id: u64,
+        file_contents: &[u8],
+    ) -> Result<Self, S2ProtocolError> {
+        let (_input, mpq) = crate::parser::parse(file_contents)?;
+        let init_data = InitData::new(file_name, ext_fs_id, &mpq, file_contents)?;
+        let details = Details::new(file_name, ext_fs_id, &mpq, file_contents)?;
         Ok(Self { init_data, details })
     }
 }
