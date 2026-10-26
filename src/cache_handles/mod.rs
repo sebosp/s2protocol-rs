@@ -222,7 +222,9 @@ impl CacheCollection {
 /// Attempts to download the replay cache from theblizzard depots.
 /// The caches are needed to identify a unique map version.
 /// There's a version to a map, but I haven't identified it yet from the decoded data.
-#[instrument]
+// The sources are counted, their debug output is every replay of the snapshot, repeated in every
+// event of the span.
+#[instrument(skip(sources), fields(sources = sources.len()))]
 pub async fn populate_map_info_digest_from_caches(
     sources: &[SC2ReplayBasicData],
     destination: String,
