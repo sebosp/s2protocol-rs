@@ -1,11 +1,7 @@
 //! Cmd Events in a flat row for Arrow usage
 
 #[cfg(feature = "dep_arrow")]
-use arrow::datatypes::{DataType::Struct, Schema};
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::field::ArrowField;
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use arrow::datatypes::Schema;
 
 use crate::game_events::GameSCmdData;
 use crate::game_events::GameSCmdEvent;
@@ -13,10 +9,6 @@ use serde::{Deserialize, Serialize};
 
 /// Arrow compatible Cmd Event for Target Point
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct CmdTargetPointEventFlatRow {
     pub user_id: i64,
     pub player_name: Option<String>,
@@ -82,20 +74,12 @@ impl CmdTargetPointEventFlatRow {
     }
 
     pub fn schema() -> Schema {
-        if let Struct(fields) = CmdTargetPointEventFlatRow::data_type() {
-            Schema::new(fields.clone())
-        } else {
-            panic!("Invalid schema, expected struct");
-        }
+        <Self as crate::arrow_store::rows::ArrowRow>::schema()
     }
 }
 
 /// Arrow compatible Cmd Event for Target Unit
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct CmdTargetUnitEventFlatRow {
     pub user_id: i64,
     pub player_name: Option<String>,
@@ -179,10 +163,12 @@ impl CmdTargetUnitEventFlatRow {
     }
 
     pub fn schema() -> Schema {
-        if let Struct(fields) = CmdTargetUnitEventFlatRow::data_type() {
-            Schema::new(fields.clone())
-        } else {
-            panic!("Invalid schema, expected struct");
-        }
+        <Self as crate::arrow_store::rows::ArrowRow>::schema()
     }
 }
+
+#[cfg(feature = "dep_arrow")]
+crate::impl_arrow_row!(CmdTargetPointEventFlatRow);
+
+#[cfg(feature = "dep_arrow")]
+crate::impl_arrow_row!(CmdTargetUnitEventFlatRow);

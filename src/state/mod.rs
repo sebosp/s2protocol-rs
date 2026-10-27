@@ -325,20 +325,30 @@ pub struct SC2EventIterator {
 }
 
 impl SC2EventIterator {
-    /// Creates a new SC2EventIterator from a PathBuf
+    /// Creates a new SC2EventIterator, the replay is read from the file name of the basic data.
     #[tracing::instrument(level = "debug")]
     pub fn new(
         basic_data: &SC2ReplayBasicData,
         multi_version_abilities: &MultiVersionedBalanceUnits,
     ) -> Result<Self, S2ProtocolError> {
         let source = PathBuf::from(basic_data.init_data.ext_fs_file_name.clone());
-        let total_initial_abilities = multi_version_abilities.len();
         let file_contents = crate::read_file(&source)?;
-        let (_input, mpq) = crate::parser::parse(&file_contents)?;
+        Self::from_bytes(basic_data, &file_contents, multi_version_abilities)
+    }
+
+    /// Creates a new SC2EventIterator from the contents of the replay, i.e. in a browser.
+    #[tracing::instrument(level = "debug", skip(file_contents))]
+    pub fn from_bytes(
+        basic_data: &SC2ReplayBasicData,
+        file_contents: &[u8],
+        multi_version_abilities: &MultiVersionedBalanceUnits,
+    ) -> Result<Self, S2ProtocolError> {
+        let total_initial_abilities = multi_version_abilities.len();
+        let (_input, mpq) = crate::parser::parse(file_contents)?;
         let (_event_tail, tracker_events) =
-            mpq.read_mpq_file_sector("replay.tracker.events", false, &file_contents)?;
+            mpq.read_mpq_file_sector("replay.tracker.events", false, file_contents)?;
         let (_event_tail, game_events) =
-            mpq.read_mpq_file_sector("replay.game.events", false, &file_contents)?;
+            mpq.read_mpq_file_sector("replay.game.events", false, file_contents)?;
         let balance_units: VersionedBalanceUnits =
             match multi_version_abilities.get(&basic_data.init_data.version) {
                 Some(val) => val.to_owned(),

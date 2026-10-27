@@ -289,8 +289,6 @@ fn main() {
     keys.sort();
     let file_header = String::from(
         r#"
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
 
 use serde::{Deserialize, Serialize};
 "#,
@@ -299,10 +297,6 @@ use serde::{Deserialize, Serialize};
     let enum_header = String::from(
         r#"
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(feature = "dep_arrow",
-  derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-#[cfg_attr(feature = "dep_arrow", arrow_field(type = "sparse"))]
 "#,
     );
     let mut catch_all_mods = String::new();

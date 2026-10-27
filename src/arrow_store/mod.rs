@@ -3,8 +3,6 @@
 #[cfg(feature = "dep_arrow")]
 use arrow::{array::Array, array::ArrayRef, datatypes::Schema, record_batch::RecordBatch};
 #[cfg(feature = "dep_arrow")]
-use arrow_convert::serialize::TryIntoArrow;
-#[cfg(feature = "dep_arrow")]
 use rayon::prelude::*;
 
 use crate::basic_replay_data::SC2ReplayBasicData;
@@ -26,6 +24,8 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
 pub mod ipc_writer;
 use ipc_writer::*;
+pub mod rows;
+pub use rows::TryIntoArrow;
 pub mod partitioned;
 use partitioned::*;
 

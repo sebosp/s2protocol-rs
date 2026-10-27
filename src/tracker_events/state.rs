@@ -249,7 +249,8 @@ pub fn handle_unit_died(
     // Clean up the unit from previous groups where it was selected.
     for (_idx, state) in sc2_state.user_state.iter_mut() {
         for group_idx in 0..11 {
-            state.control_groups[group_idx].retain(|&x| x != unit_dead.unit_tag_index);
+            state.control_groups[group_idx]
+                .retain(|&tag| unit_tag_index(tag as i64) != unit_dead.unit_tag_index);
         }
     }
     match sc2_state.units.remove(&unit_dead.unit_tag_index) {

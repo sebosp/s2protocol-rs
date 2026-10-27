@@ -1,18 +1,11 @@
 //! A protocol agnostic Unit Born Definition
 
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
-
 use crate::filters::SC2ReplayFilters;
 use serde::{Deserialize, Serialize};
 
 /// Unit Borns are unit that are instant, they appear at the start of the game as well when certain
 /// units appear already full, there is no construction time.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct UnitBornEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,

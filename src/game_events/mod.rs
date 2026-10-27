@@ -13,9 +13,6 @@ pub mod arrow_store;
 #[cfg(feature = "dep_arrow")]
 pub use arrow_store::*;
 
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
-
 use crate::SC2ReplayFilters;
 
 pub type TUserId = u8;
@@ -38,10 +35,6 @@ pub type GameTSyncChecksum = u32;
 pub type GameTButtonLink = u16;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameEvent {
     pub delta: i64,
     pub user_id: i64,
@@ -49,11 +42,6 @@ pub struct GameEvent {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-#[cfg_attr(feature = "dep_arrow", arrow_field(type = "sparse"))]
 pub enum ReplayGameEvent {
     DropUser(DropUserEvent),
     CameraSave(CameraSaveEvent),
@@ -90,11 +78,6 @@ impl ReplayGameEvent {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-#[cfg_attr(feature = "dep_arrow", arrow_field(type = "sparse"))]
 pub enum ELeaveReason {
     UserLeft,
     UserDropped,
@@ -115,30 +98,18 @@ pub enum ELeaveReason {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct DropUserEvent {
     pub m_drop_session_user_id: TUserId,
     pub m_reason: ELeaveReason,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct CameraSaveEvent {
     pub m_which: i64,
     pub m_target: GameSPointMini,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct CameraUpdateEvent {
     pub m_target: Option<GameSPointMini>,
     pub m_distance: Option<GameTFixedMiniBitsUnsigned>,
@@ -149,20 +120,12 @@ pub struct CameraUpdateEvent {
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSPointMini {
     pub x: GameTFixedMiniBitsUnsigned,
     pub y: GameTFixedMiniBitsUnsigned,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSCmdEvent {
     pub m_cmd_flags: i64,
     pub m_abil: Option<GameSCmdAbil>,
@@ -173,10 +136,6 @@ pub struct GameSCmdEvent {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSCmdAbil {
     pub m_abil_link: GameTAbilLink,
     pub ability: String,
@@ -185,11 +144,6 @@ pub struct GameSCmdAbil {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-#[cfg_attr(feature = "dep_arrow", arrow_field(type = "sparse"))]
 pub enum GameSCmdData {
     None,
     TargetPoint(GameSMapCoord3D),
@@ -198,10 +152,6 @@ pub enum GameSCmdData {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSMapCoord3D {
     pub x: GameTMapCoordFixedBits,
     pub y: GameTMapCoordFixedBits,
@@ -209,10 +159,6 @@ pub struct GameSMapCoord3D {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSCmdDataTargetUnit {
     pub m_target_unit_flags: u16,
     pub m_timer: u8,
@@ -224,27 +170,15 @@ pub struct GameSCmdDataTargetUnit {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSCmdUpdateTargetPointEvent {
     pub m_target: GameSMapCoord3D,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSCmdUpdateTargetUnitEvent {
     pub m_target: GameSCmdDataTargetUnit,
 }
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSTriggerMouseClickedEvent {
     pub m_button: u32,
     pub m_down: bool,
@@ -253,66 +187,38 @@ pub struct GameSTriggerMouseClickedEvent {
     pub m_flags: i8,
 }
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSTriggerMouseMovedEvent {
     pub m_pos_ui: GameSuiCoord,
     pub m_pos_world: GameSMapCoord3D,
     pub m_flags: i8,
 }
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSuiCoord {
     pub x: u16,
     pub y: u16,
 }
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSTriggerMouseWheelEvent {
     pub m_wheel_spin: GameTFixedMiniBitsSigned,
     pub m_flags: i8,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSUnitClickEvent {
     pub m_unit_tag: GameTUnitTag,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSUnitHighlightEvent {
     pub m_unit_tag: GameTUnitTag,
     pub m_flags: u8,
 }
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSSelectionDeltaEvent {
     pub m_control_group_id: GameTControlGroupId,
     pub m_delta: GameSSelectionDelta,
 }
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSSelectionDelta {
     pub m_subgroup_index: GameTSubgroupIndex,
     pub m_remove_mask: GameSSelectionMask,
@@ -321,10 +227,6 @@ pub struct GameSSelectionDelta {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSSelectionDeltaSubgroup {
     pub m_unit_link: GameTUnitLink,
     pub m_subgroup_priority: GameTSubgroupPriority,
@@ -333,11 +235,6 @@ pub struct GameSSelectionDeltaSubgroup {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-#[cfg_attr(feature = "dep_arrow", arrow_field(type = "sparse"))]
 pub enum GameSSelectionMask {
     None,
     Mask(GameSelectionMaskType),
@@ -346,38 +243,22 @@ pub enum GameSSelectionMask {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSelectionMaskType {
     pub value: Vec<u8>,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSelectionIndexArrayType {
     pub value: Vec<GameTSelectionIndex>,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSSelectionSyncCheckEvent {
     pub m_control_group_id: GameTControlGroupId,
     pub m_selection_sync_data: GameSSelectionSyncData,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSSelectionSyncData {
     pub m_count: GameTSelectionCount,
     pub m_subgroup_count: GameTSubgroupCount,
@@ -388,10 +269,6 @@ pub struct GameSSelectionSyncData {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSControlGroupUpdateEvent {
     pub m_control_group_index: GameTControlGroupIndex,
     pub m_control_group_update: GameEControlGroupUpdate,
@@ -399,11 +276,6 @@ pub struct GameSControlGroupUpdateEvent {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-#[cfg_attr(feature = "dep_arrow", arrow_field(type = "sparse"))]
 pub enum GameEControlGroupUpdate {
     ESet,
     EAppend,
@@ -414,39 +286,23 @@ pub enum GameEControlGroupUpdate {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSTriggerChatMessageEvent {
     pub m_chat_message: String,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSTriggerReplySelectedEvent {
     pub m_conversation_id: i32,
     pub m_reply_id: i32,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSTriggerHotkeyPressedEvent {
     pub m_hotkey: u32,
     pub m_down: bool,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSTriggerTargetModeUpdateEvent {
     pub m_abil_link: GameTAbilLink,
     pub ability: String,
@@ -455,39 +311,22 @@ pub struct GameSTriggerTargetModeUpdateEvent {
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSTriggerKeyPressedEvent {
     pub m_key: i8,
     pub m_flags: i8,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSTriggerButtonPressedEvent {
     pub m_button: GameTButtonLink,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct GameSCommandManagerStateEvent {
     pub m_state: GameECommandManagerState,
     pub m_sequence: Option<i64>,
 }
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
-#[cfg_attr(feature = "dep_arrow", arrow_field(type = "sparse"))]
 pub enum GameECommandManagerState {
     EFireDone,
     EFireOnce,

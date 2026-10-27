@@ -1,18 +1,11 @@
 //! A protocol agnostic Unit Died
 
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
-
 use crate::filters::SC2ReplayFilters;
 use serde::{Deserialize, Serialize};
 
 /// A Unit died event, it does not contain the unit owner player id.
 /// Or the unit name.  For a process of enriching this data see UnitBornEventFlatRow.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct UnitDiedEvent {
     pub unit_tag_index: u32,
     pub unit_tag_recycle: u32,

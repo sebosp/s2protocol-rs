@@ -1,16 +1,9 @@
 //! A version agnostic Player Setup Event
 
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
-
 use crate::filters::SC2ReplayFilters;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct PlayerSetupEvent {
     pub player_id: u8,
     pub m_type: u32,

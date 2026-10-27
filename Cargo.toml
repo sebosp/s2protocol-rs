@@ -1,7 +1,7 @@
 [package]
 name = "s2protocol"
 description = "A parser for Starcraft II - Replay format, exports to different target formats"
-version = "3.6.0"
+version = "4.0.0"
 authors = ["Seb Ospina <kraige@gmail.com>"]
 edition = "2024"
 readme = "README.md"
@@ -19,7 +19,7 @@ serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 convert_case = "0.12"
 arrow = { version = "59", optional = true }
-arrow_convert = { version = "0.12", optional = true }
+serde_arrow = { version = "0.15", features = ["arrow-59"], optional = true }
 sha256 = { version = "1.6", default-features = false }
 rayon = "1.12"
 chrono = { version = "0.4", features = ["serde"] }
@@ -33,7 +33,7 @@ console = { version = "0.16.6", optional = true }
 
 [features]
 default = ["tracing_off"]
-dep_arrow = ["arrow", "arrow_convert", "tokio", "dep_reqwest"]
+dep_arrow = ["arrow", "serde_arrow", "tokio", "dep_reqwest"]
 # A feature that allows extra tracing, disabled by default because of performance
 tracing_off = [
 	"tracing/max_level_off",

@@ -13,11 +13,7 @@
 use std::path::PathBuf;
 
 #[cfg(feature = "dep_arrow")]
-use arrow::datatypes::{DataType::Struct, Schema};
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::field::ArrowField;
-#[cfg(feature = "dep_arrow")]
-use arrow_convert::{ArrowDeserialize, ArrowField, ArrowSerialize};
+use arrow::datatypes::Schema;
 use nom_mpq::MPQ;
 
 use crate::{
@@ -42,10 +38,6 @@ use serde::{Deserialize, Serialize};
 /// without the mod_paths because I haven't seen what it's used for yet.
 ///
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct PlayerLobbyDetailsFlatRow {
     pub player_name: String,
     pub player_toon_region: u8,
@@ -80,6 +72,8 @@ pub struct PlayerLobbyDetailsFlatRow {
     pub ext_fs_sha256: String,
     pub ext_fs_file_name: String,
     pub ext_fs_id: u64,
+    /// Nanoseconds in serde, the Arrow timestamps are, so the rows can be converted to Arrow.
+    #[serde(with = "chrono::naive::serde::ts_nanoseconds")]
     pub ext_datetime: chrono::NaiveDateTime,
     /// The protocol version (base build) of the replay.
     pub ext_protocol_version: u32,
@@ -128,11 +122,7 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
 impl PlayerLobbyDetailsFlatRow {
     #[cfg(feature = "dep_arrow")]
     pub fn schema() -> Schema {
-        if let Struct(fields) = PlayerLobbyDetailsFlatRow::data_type() {
-            Schema::new(fields.clone())
-        } else {
-            panic!("Invalid schema, expected struct");
-        }
+        <Self as crate::arrow_store::rows::ArrowRow>::schema()
     }
 }
 
@@ -276,10 +266,6 @@ impl From<&SC2ReplayBasicData> for Vec<PlayerLobbyDetails> {
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct Details {
     pub ext_fs_id: u64,
     pub ext_datetime: chrono::NaiveDateTime,
@@ -363,10 +349,6 @@ impl TryFrom<&InitData> for Details {
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct PlayerDetails {
     pub name: String,
     pub toon: ToonNameDetails,
@@ -382,10 +364,6 @@ pub struct PlayerDetails {
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct ToonNameDetails {
     pub region: u8,
     pub program_id: u32,
@@ -394,10 +372,6 @@ pub struct ToonNameDetails {
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct Color {
     pub a: u8,
     pub r: u8,
@@ -406,10 +380,9 @@ pub struct Color {
 }
 
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "dep_arrow",
-    derive(ArrowField, ArrowSerialize, ArrowDeserialize)
-)]
 pub struct Thumbnail {
     pub file: String,
 }
+
+#[cfg(feature = "dep_arrow")]
+crate::impl_arrow_row!(PlayerLobbyDetailsFlatRow, ["ext_datetime"]);

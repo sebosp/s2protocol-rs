@@ -135,7 +135,7 @@ pub fn handle_update_target_point(
             registered_unit.last_game_loop = game_loop;
             user_selected_units.push(registered_unit.clone());
         } else {
-            tracing::error!(
+            tracing::debug!(
                 "{} handle_update_target_point Unable to locate selected unit {} for user_id {}",
                 sc2_state.init_data.ext_fs_file_name,
                 selected_unit,
@@ -195,7 +195,7 @@ pub fn handle_update_target_unit(
             registered_unit.last_game_loop = game_loop;
             user_selected_units.push(registered_unit.clone());
         } else {
-            tracing::error!(
+            tracing::debug!(
                 "{} handle_update_target_unit Unable to locate selected unit {} for user_id {}",
                 sc2_state.init_data.ext_fs_file_name,
                 selected_unit,
@@ -304,14 +304,90 @@ pub fn handle_selection_delta(
         updated_units.append(&mut marked_units);
     }
     if let Some(ref mut state) = sc2_state.user_state.get_mut(&user_id) {
-        state.control_groups[selection_delta.m_control_group_id as usize] =
-            selection_delta.m_delta.m_add_unit_tags.clone();
+        let group = &mut state.control_groups[selection_delta.m_control_group_id as usize];
+        *group = apply_selection_delta(group, &selection_delta.m_delta);
     }
     updated_units.sort_unstable();
     updated_units.dedup();
     (
         ReplayGameEvent::SelectionDelta(selection_delta),
         UnitChangeHint::Selection(updated_units),
+    )
+}
+
+/// Whether the unit at the index of a selection of `len` units is removed by the mask. The mask is
+/// read in chunks of 8 bits and the last chunk, with the remaining bits, has the lowest indices, as
+/// sc2reader reads it.
+fn is_masked(mask: &[u8], len: usize, idx: usize) -> bool {
+    let last_bits = match len % 8 {
+        0 => 8,
+        bits => bits,
+    };
+    let mut pos = idx;
+    for (chunk_idx, chunk) in mask.iter().enumerate().rev() {
+        let bits = if chunk_idx + 1 == mask.len() {
+            last_bits
+        } else {
+            8
+        };
+        if pos < bits {
+            return (chunk >> pos) & 1 == 1;
+        }
+        pos -= bits;
+    }
+    false
+}
+
+/// The units of a selection or control group that remain after the remove mask.
+/// The game does not tell when units leave a selection by themselves, i.e. when they are loaded in
+/// a transport, so the mask may not match the units tracked, the mask is then applied to the units
+/// that it covers.
+pub fn remove_from_selection(current: &[u32], mask: &GameSSelectionMask) -> Vec<u32> {
+    let keep_by_index = |keep: &dyn Fn(usize) -> bool| -> Vec<u32> {
+        current
+            .iter()
+            .enumerate()
+            .filter(|(idx, _)| keep(*idx))
+            .map(|(_, unit)| *unit)
+            .collect()
+    };
+    match mask {
+        GameSSelectionMask::None => current.to_vec(),
+        GameSSelectionMask::Mask(mask) => {
+            if mask.value.len() != current.len().div_ceil(8) {
+                tracing::debug!(
+                    "Selection mask of {} bytes for {} units",
+                    mask.value.len(),
+                    current.len()
+                );
+            }
+            keep_by_index(&|idx| !is_masked(&mask.value, current.len(), idx))
+        }
+        GameSSelectionMask::OneIndices(indices) => {
+            keep_by_index(&|idx| !indices.value.contains(&(idx as GameTSelectionIndex)))
+        }
+        GameSSelectionMask::ZeroIndices(indices) => indices
+            .value
+            .iter()
+            .filter_map(|idx| current.get(*idx as usize).copied())
+            .collect(),
+    }
+}
+
+/// Adds units to a selection, the selection is sorted by unit tag, as sc2reader does.
+fn add_to_selection(mut selection: Vec<u32>, units: &[u32]) -> Vec<u32> {
+    selection.extend_from_slice(units);
+    selection.sort_unstable();
+    selection.dedup();
+    selection
+}
+
+/// The units of a selection after a delta: the remove mask is applied to the current units, then
+/// the new units are added.
+pub fn apply_selection_delta(current: &[u32], delta: &GameSSelectionDelta) -> Vec<u32> {
+    add_to_selection(
+        remove_from_selection(current, &delta.m_remove_mask),
+        &delta.m_add_unit_tags,
     )
 }
 
@@ -340,7 +416,7 @@ pub fn update_control_group(
                 // Remove the instances from other groups first
                 let current_selected_units =
                     user_state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
-                for group_idx in 0..9 {
+                for group_idx in 0..ACTIVE_UNITS_GROUP_IDX {
                     for unit in &current_selected_units {
                         user_state.control_groups[group_idx].retain(|&x| x != *unit);
                     }
@@ -357,39 +433,46 @@ pub fn update_control_group(
         }
         GameEControlGroupUpdate::EAppend => {
             if let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id) {
-                let mut current_selected_units =
-                    user_state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
-                user_state.control_groups[ctrl_group_evt.m_control_group_index as usize]
-                    .append(&mut current_selected_units);
-                user_state.control_groups[ctrl_group_evt.m_control_group_index as usize]
-                    .sort_unstable();
-                user_state.control_groups[ctrl_group_evt.m_control_group_index as usize].dedup();
+                let group_idx = ctrl_group_evt.m_control_group_index as usize;
+                let group = remove_from_selection(
+                    &user_state.control_groups[group_idx],
+                    &ctrl_group_evt.m_mask,
+                );
+                user_state.control_groups[group_idx] =
+                    add_to_selection(group, &user_state.control_groups[ACTIVE_UNITS_GROUP_IDX]);
             }
         }
         GameEControlGroupUpdate::EAppendAndSteal => {
             if let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id) {
                 // Remove the instances from other groups first
-                let mut current_selected_units =
+                let current_selected_units =
                     user_state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
-                for group_idx in 0..9 {
+                for group_idx in 0..ACTIVE_UNITS_GROUP_IDX {
                     for unit in &current_selected_units {
                         user_state.control_groups[group_idx].retain(|&x| x != *unit);
                     }
                 }
-                user_state.control_groups[ctrl_group_evt.m_control_group_index as usize]
-                    .append(&mut current_selected_units);
-                user_state.control_groups[ctrl_group_evt.m_control_group_index as usize]
-                    .sort_unstable();
-                user_state.control_groups[ctrl_group_evt.m_control_group_index as usize].dedup();
+                let group_idx = ctrl_group_evt.m_control_group_index as usize;
+                let group = remove_from_selection(
+                    &user_state.control_groups[group_idx],
+                    &ctrl_group_evt.m_mask,
+                );
+                user_state.control_groups[group_idx] =
+                    add_to_selection(group, &current_selected_units);
             }
         }
         GameEControlGroupUpdate::ERecall => {
             let mut current_selected_units: Vec<u32> = vec![];
             if let Some(ref mut user_state) = sc2_state.user_state.get_mut(&user_id) {
-                user_state.control_groups[ACTIVE_UNITS_GROUP_IDX] = user_state.control_groups
-                    [ctrl_group_evt.m_control_group_index as usize]
-                    .clone();
-                current_selected_units = user_state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
+                // The mask removes the units that are no longer in the group, i.e. dead.
+                let group_idx = ctrl_group_evt.m_control_group_index as usize;
+                let group = remove_from_selection(
+                    &user_state.control_groups[group_idx],
+                    &ctrl_group_evt.m_mask,
+                );
+                user_state.control_groups[group_idx] = group.clone();
+                user_state.control_groups[ACTIVE_UNITS_GROUP_IDX] = group.clone();
+                current_selected_units = group;
             }
             let mut curr_units =
                 match mark_selected_units(sc2_state, game_loop, user_id, &current_selected_units) {
@@ -438,5 +521,52 @@ pub fn handle_game_event(
             update_control_group(sc2_state, game_loop, user_id, ctrl_group)
         }
         _ => (evt.clone(), UnitChangeHint::None),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn delta(mask: GameSSelectionMask, add: &[u32]) -> GameSSelectionDelta {
+        GameSSelectionDelta {
+            m_subgroup_index: 0,
+            m_remove_mask: mask,
+            m_add_subgroups: vec![],
+            m_add_unit_tags: add.to_vec(),
+        }
+    }
+
+    #[test]
+    fn it_applies_the_remove_masks_before_adding_units() {
+        let current = [10, 20, 30];
+        // Shift click adds a unit to the selection.
+        let added = apply_selection_delta(&current, &delta(GameSSelectionMask::None, &[25]));
+        assert_eq!(added, vec![10, 20, 25, 30]);
+        let one = GameSSelectionMask::OneIndices(GameSelectionIndexArrayType { value: vec![1] });
+        assert_eq!(
+            apply_selection_delta(&current, &delta(one, &[])),
+            vec![10, 30]
+        );
+        let zero =
+            GameSSelectionMask::ZeroIndices(GameSelectionIndexArrayType { value: vec![0, 2] });
+        assert_eq!(
+            apply_selection_delta(&current, &delta(zero, &[40])),
+            vec![10, 30, 40]
+        );
+        // 0b010: the second unit is removed.
+        let mask = GameSSelectionMask::Mask(GameSelectionMaskType { value: vec![0b010] });
+        assert_eq!(
+            apply_selection_delta(&current, &delta(mask, &[])),
+            vec![10, 30]
+        );
+    }
+
+    #[test]
+    fn it_reads_the_lowest_indices_from_the_last_chunk_of_the_mask() {
+        // 10 units: a chunk of 8 bits, then a chunk of 2 bits with the indices 0 and 1.
+        let mask = [0b1000_0000, 0b01];
+        let masked: Vec<usize> = (0..10).filter(|idx| is_masked(&mask, 10, *idx)).collect();
+        assert_eq!(masked, vec![0, 9]);
     }
 }

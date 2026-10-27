@@ -23,3 +23,8 @@ jobs:
       run: cargo test --verbose
     - name: Run tests with the Arrow snapshot and the textures
       run: cargo test --verbose --features dep_arrow,textures
+    # The replays are read in browsers too, i.e. by cooper, from the dropped file contents.
+    - name: Build for WebAssembly
+      run: |
+        rustup target add wasm32-unknown-unknown
+        cargo build --verbose --target wasm32-unknown-unknown --features textures
