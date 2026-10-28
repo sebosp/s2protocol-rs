@@ -199,6 +199,11 @@ Unreleased, the snapshot format changed, generate the snapshots again
   fields after it were misread until the next byte aligned field: `lobby_slot_map_size_y` was
   wrong for about half of the replays, and in the games where two users share a player (Archon
   mode) the name of the units of that player can be the other user.
+- The move and attack commands of the bots are not in the cmd files: a user that gives more than
+  1,000 commands per minute in a window of 1,000 commands is a bot for the rest of the game, see
+  `arrow_store::bot_filter`. The bots of AI Arena give 1,100 to 16,800 commands per minute, a
+  human a few hundred; their snapshot is about 70% smaller. In 4.10 the abilities have no names,
+  the links 42 (move) and 45 (attack) are dropped.
 
 ## Interacting with polars
 
