@@ -122,7 +122,8 @@ pub fn read_init_data(
     );
     assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     let res = match proto_header.m_version.m_base_build {
-        0..=75689 => protocol75689::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),
+        // The lobby slots of 4.10 are not the ones of 4.11, see protocol75689::init_data.
+        0..=75689 => protocol75689::init_data::read_init_data(mpq, file_contents),
         83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
         | 91115 => protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),
         _ => protocol87702::bit_packed::ReplaySInitData::read_init_data(mpq, file_contents),

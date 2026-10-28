@@ -1,3 +1,5 @@
+pub mod init_data;
+
 pub mod byte_aligned {
     //! Generated code from source: ../s2protocol/json/protocol75689.json
     //! All byte aligned types are compatible with protocol87702
@@ -153,7 +155,6 @@ pub mod bit_packed {
     use crate::versions::protocol87702::bit_packed::GameTUnitTag;
 
     use crate::versions::protocol87702::bit_packed::ReplaySGameUserId;
-    pub(crate) use crate::versions::protocol87702::bit_packed::ReplaySInitData;
 
     use crate::versions::protocol87702::bit_packed::SVarUint32;
 

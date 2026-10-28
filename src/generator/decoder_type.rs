@@ -1247,6 +1247,15 @@ impl DecoderType {
         } else {
             if bounds["max"]["evalue"].as_str().is_some() {
                 num_bits = Self::bounds_max_value_to_bit_size(bounds);
+                // The value is stored minus the offset, i.e. 1 to 16 teams take 4 bits, not 5.
+                let min: i64 = offset.parse().expect(".min.evalue should be an integer");
+                if min > 0 {
+                    let max: i64 = bounds["max"]["evalue"]
+                        .as_str()
+                        .and_then(|max| max.parse().ok())
+                        .expect(".max.evalue should be an integer");
+                    num_bits = (i64::BITS - (max - min).leading_zeros()) as usize;
+                }
             }
             bounds["type"].as_str().unwrap().to_string()
         };

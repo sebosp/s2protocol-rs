@@ -193,6 +193,12 @@ Unreleased, the snapshot format changed, generate the snapshots again
   (`lobby_slot_difficulty`, `lobby_slot_ai_build`, `lobby_slot_handicap`), to tell apart the
   games against the computer, i.e. Cheater 3 (Insane) Economic Focus, and the random seed of the
   game (`lobby_random_seed`).
+- The replays of 4.10 (protocol 75689), i.e. the ones of AI Arena, are read: their lobby slots have
+  a 7 bits handicap, a 13 bits length of the licenses and not the fields added in 4.11.
+- The maximum number of teams of the game description was read with 5 bits instead of 4, the
+  fields after it were misread until the next byte aligned field: `lobby_slot_map_size_y` was
+  wrong for about half of the replays, and in the games where two users share a player (Archon
+  mode) the name of the units of that player can be the other user.
 
 ## Interacting with polars
 
