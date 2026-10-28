@@ -189,6 +189,10 @@ Unreleased, the snapshot format changed, generate the snapshots again
   read them as before, readers built on the `arrow` crate need its `ipc_compression` feature.
   The version of s2protocol must change on release so that the uncompressed days are written
   again.
+- The details have the difficulty, build and handicap of the lobby slot of each player
+  (`lobby_slot_difficulty`, `lobby_slot_ai_build`, `lobby_slot_handicap`), to tell apart the
+  games against the computer, i.e. Cheater 3 (Insane) Economic Focus, and the random seed of the
+  game (`lobby_random_seed`).
 
 ## Interacting with polars
 

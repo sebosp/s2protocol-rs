@@ -24,6 +24,10 @@ lobby_slot_user_id Int64 true
 lobby_slot_observe UInt8 false
 lobby_slot_map_size_x UInt8 false
 lobby_slot_map_size_y UInt8 false
+lobby_slot_difficulty Int64 false
+lobby_slot_ai_build Int64 false
+lobby_slot_handicap UInt32 false
+lobby_random_seed UInt32 false
 cache_handle_region Utf8 false
 cache_handle_extension Utf8 false
 cache_handles Utf8 false
