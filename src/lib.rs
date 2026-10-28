@@ -185,21 +185,19 @@ pub fn transform_to_naivetime(
     Some(DateTime::<Utc>::from_timestamp(secs, nsecs)?.naive_utc())
 }
 
-/// Converts the tracker loop to milliseconds,
-/// First scale the tracker loop to the same unit as the game loops.
-/// We also need to transform the adjusted game loop to seconds.
-/// This was observed in a game with max game_loop = 13735 and a duration of 15:42 = 942 seconds.
-/// 942000 / 13735 = 68.58391 loops in a second
-/// This will only work for the Faster speed.
+/// The game loops per second at the Faster speed, the speed of the ladder and the tournaments.
+/// The in-game clock shows real seconds at Faster since Legacy of the Void.
+pub const GAME_LOOPS_PER_SECOND: f64 = 22.4;
+
+/// Converts the tracker loop to game seconds at the Faster speed.
+/// The tracker loop is first scaled to the same unit as the game loops.
 pub fn convert_tracker_loop_to_seconds(tracker_replay_loop: i64) -> u32 {
     convert_game_loop_to_seconds((crate::TRACKER_SPEED_RATIO * tracker_replay_loop as f32) as i64)
 }
 
-/// Converts the game loop to milliseconds,
+/// Converts the game loop to game seconds at the Faster speed, [`GAME_LOOPS_PER_SECOND`].
 pub fn convert_game_loop_to_seconds(game_replay_loop: i64) -> u32 {
-    // TODO: For now let's use seconds, we'll move this to milliseconds as we need more precision.
-    let ext_replay_milliseconds = game_replay_loop as f32 * 68.58391;
-    (ext_replay_milliseconds / 1000.0) as u32
+    (game_replay_loop.max(0) as f64 / GAME_LOOPS_PER_SECOND) as u32
 }
 
 /// Matches a list of files in case the cli.source param is a directory
@@ -270,5 +268,15 @@ mod tests {
         ];
         let (_tail, v_int) = tagged_vlq_int(&input).unwrap();
         assert_eq!(v_int, 87702);
+    }
+
+    #[test]
+    fn it_converts_the_loops_at_faster_speed() {
+        assert_eq!(convert_game_loop_to_seconds(0), 0);
+        assert_eq!(convert_game_loop_to_seconds(-16), 0);
+        assert_eq!(convert_game_loop_to_seconds(224), 10);
+        // A 10:13 game.
+        assert_eq!(convert_game_loop_to_seconds(13735), 613);
+        assert_eq!(convert_tracker_loop_to_seconds(22400), 1000);
     }
 }

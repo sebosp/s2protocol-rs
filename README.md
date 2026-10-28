@@ -180,6 +180,15 @@ v3.6.0 (2026-10-25), the snapshot format changed, generate the snapshots again
 - Not breaking: the `textures` feature embeds the button textures, see [Textures](#textures). The
   players of older replays without `working_set_slot_id` are matched to the lobby slots by order,
   previously they had no details and these replays were added again on every snapshot run.
+Unreleased, the snapshot format changed, generate the snapshots again
+- `ext_replay_seconds` is in game seconds at the Faster speed, 22.4 loops per second (the new
+  `GAME_LOOPS_PER_SECOND`), it was computed with 68.58 ms per loop and the times were 1.5 times
+  longer than in the game. `convert_game_loop_to_seconds` and `convert_tracker_loop_to_seconds`
+  changed accordingly.
+- The snapshot files are compressed with zstd, about ten times smaller. Polars, pyarrow and DuckDB
+  read them as before, readers built on the `arrow` crate need its `ipc_compression` feature.
+  The version of s2protocol must change on release so that the uncompressed days are written
+  again.
 
 ## Interacting with polars
 

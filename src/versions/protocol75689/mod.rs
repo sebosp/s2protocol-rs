@@ -11,23 +11,6 @@ pub mod bit_packed {
     use crate::game_events::ReplayGameEvent;
     use crate::versions::GameEvent;
 
-    
-
-    
-    
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
     pub(crate) use crate::versions::protocol87702::bit_packed::GameEMessageId;
 
     use crate::versions::protocol87702::bit_packed::GameSAchievementAwardedEvent;
@@ -167,30 +150,12 @@ pub mod bit_packed {
     use crate::versions::protocol87702::bit_packed::GameSUserOptionsEvent;
     use crate::versions::protocol87702::bit_packed::GameSaiCommunicateEvent;
 
-    
-
-    
-    
-
-    
-
-    
-
-    
-
     use crate::versions::protocol87702::bit_packed::GameTUnitTag;
-    
 
     use crate::versions::protocol87702::bit_packed::ReplaySGameUserId;
     pub(crate) use crate::versions::protocol87702::bit_packed::ReplaySInitData;
 
     use crate::versions::protocol87702::bit_packed::SVarUint32;
-
-    
-
-    
-
-    
 
     use crate::versions::protocol87702::bit_packed::Uint32;
     use crate::*;
