@@ -15,7 +15,6 @@ pub mod t3_terrain;
 
 use cache_objects::PlacedObjects;
 use document_header::DocumentHeader;
-use futures::future::join_all;
 use map_info::MapInfo;
 use minimap::Minimap;
 use rayon::prelude::*;
@@ -261,28 +260,11 @@ pub async fn populate_map_info_digest_from_caches(
         .collect::<Vec<_>>();
     unique_cache_handles.sort_unstable();
     unique_cache_handles.dedup();
-    let downloaded_cache_count: usize = join_all(unique_cache_handles.iter().map(
-        |(cache_handle_region, cache_handle_extension, cache_handle_str)| {
-            download_cache(
-                cache_handle_str,
-                cache_handle_region,
-                cache_handle_extension,
-                &destination,
-            )
-        },
-    ))
-    .await
-    .iter()
-    .map(|status| match status {
-        Ok(()) => 1,
-        Err(err) => {
-            println!("{}", err);
-            0
-        }
-    })
-    .collect::<Vec<usize>>()
-    .iter()
-    .sum();
+    let unique_cache_handles: Vec<CacheHandle> = unique_cache_handles
+        .into_iter()
+        .map(|(region, extension, handle)| CacheHandle::new(region, extension, handle))
+        .collect();
+    let downloads = download_caches(&unique_cache_handles, &destination).await;
     let mut cache_builder = CacheCollection::new(destination.clone());
     for source in sources.iter() {
         cache_builder.add_cache_ids(
@@ -293,11 +275,7 @@ pub async fn populate_map_info_digest_from_caches(
                 .cache_handles,
         );
     }
-    tracing::info!(
-        "- init_1 After {} downloads/checks: {:?}",
-        downloaded_cache_count,
-        init_time.elapsed(),
-    );
+    tracing::info!("Map caches after {:?}: {downloads}", init_time.elapsed(),);
 
     for source in sources.iter() {
         let cache_handles = &source
@@ -318,17 +296,191 @@ pub async fn populate_map_info_digest_from_caches(
                     Some(map_cache.map_info.sector_sha256_sum),
                 );
             }
-            Err(err) => println!("Error building map cache: {:?}", err),
+            Err(err) => tracing::warn!("Error building map cache: {:?}", err),
         }
     }
-    println!(
+    tracing::info!(
         "populate_map_info_digest_from_caches: Total time: {:?}",
         init_time.elapsed()
     );
     cache_handle_ids
 }
 
-/// Attempts to download the replay cache from the
+/// The downloads at a time from the depot servers.
+pub const PARALLEL_CACHE_DOWNLOADS: usize = 4;
+
+/// The errors kept in [`CacheDownloads::errors`], all of them are logged.
+const MAX_CACHE_DOWNLOAD_ERRORS: usize = 10;
+
+/// A map cache of a replay: the depot region, the extension and the handle, the sha256 of the
+/// file.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct CacheHandle {
+    pub region: String,
+    pub extension: String,
+    pub handle: String,
+}
+
+impl CacheHandle {
+    pub fn new(region: &str, extension: &str, handle: &str) -> Self {
+        Self {
+            region: region.to_string(),
+            extension: extension.to_string(),
+            handle: handle.to_string(),
+        }
+    }
+
+    /// The file of the cache in `destination`.
+    pub fn path(&self, destination: &Path) -> std::path::PathBuf {
+        destination.join(format!("{}.{}", self.handle, CACHE_MPQ_ARCHIVE_EXTENSION))
+    }
+
+    /// The URL of the cache in Blizzard's depot servers.
+    pub fn url(&self) -> String {
+        // cn-s2-depot.classic.blizzard.com does not resolve, the caches are the same in every
+        // region.
+        let region = if self.region.eq_ignore_ascii_case("cn") {
+            "eu"
+        } else {
+            self.region.as_str()
+        };
+        format!(
+            "https://{}-s2-depot.classic.blizzard.com/{}.{}",
+            region, self.handle, self.extension
+        )
+    }
+}
+
+/// What [`download_caches`] did, the errors are returned instead of only logged so that a client
+/// without a console, i.e. a desktop app, can show them.
+#[derive(Debug, Default, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct CacheDownloads {
+    /// The caches asked for.
+    pub handles: usize,
+    /// The caches that were already in the destination.
+    pub present: usize,
+    pub downloaded: usize,
+    pub failed: usize,
+    /// The first errors, i.e. the destination is not writable or the depot is not reachable.
+    pub errors: Vec<String>,
+}
+
+impl std::fmt::Display for CacheDownloads {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} caches, {} present, {} downloaded, {} failed",
+            self.handles, self.present, self.downloaded, self.failed
+        )?;
+        if let Some(error) = self.errors.first() {
+            write!(f, ", i.e. {error}")?;
+        }
+        Ok(())
+    }
+}
+
+/// Downloads the caches that are not in `destination` yet, [`PARALLEL_CACHE_DOWNLOADS`] at a
+/// time. The destination is created when it does not exist.
+#[instrument(skip(handles), fields(handles = handles.len()))]
+pub async fn download_caches(handles: &[CacheHandle], destination: &str) -> CacheDownloads {
+    use futures::stream::StreamExt;
+    let mut downloads = CacheDownloads {
+        handles: handles.len(),
+        ..Default::default()
+    };
+    let destination = Path::new(destination);
+    let missing: Vec<&CacheHandle> = handles
+        .iter()
+        .filter(|handle| !handle.path(destination).exists())
+        .collect();
+    downloads.present = handles.len() - missing.len();
+    if missing.is_empty() {
+        return downloads;
+    }
+    if let Err(err) = std::fs::create_dir_all(destination) {
+        let error = format!(
+            "Unable to create the caches directory {}: {err}",
+            destination.display()
+        );
+        tracing::error!("{error}");
+        downloads.failed = missing.len();
+        downloads.errors.push(error);
+        return downloads;
+    }
+    let client = CacheClient::default();
+    let mut results = futures::stream::iter(missing)
+        .map(|handle| {
+            let client = &client;
+            async move {
+                client
+                    .download(handle, destination)
+                    .await
+                    .map_err(|err| format!("{}: {err}", handle.url()))
+            }
+        })
+        .buffer_unordered(PARALLEL_CACHE_DOWNLOADS);
+    while let Some(result) = results.next().await {
+        match result {
+            Ok(()) => downloads.downloaded += 1,
+            Err(err) => {
+                tracing::warn!("Unable to download the map cache {err}");
+                downloads.failed += 1;
+                if downloads.errors.len() < MAX_CACHE_DOWNLOAD_ERRORS {
+                    downloads.errors.push(err);
+                }
+            }
+        }
+    }
+    downloads
+}
+
+/// The HTTP client of the downloads, shared so that the connections to the depot are reused.
+#[derive(Default)]
+struct CacheClient {
+    #[cfg(feature = "dep_reqwest")]
+    client: reqwest::Client,
+}
+
+impl CacheClient {
+    /// Downloads the cache into `destination`, written to a temporary file first so that an
+    /// interrupted download does not leave a broken cache behind.
+    async fn download(
+        &self,
+        handle: &CacheHandle,
+        destination: &Path,
+    ) -> Result<(), S2ProtocolError> {
+        let url = handle.url();
+        #[cfg(not(feature = "dep_reqwest"))]
+        {
+            let _ = destination;
+            return Err(S2ProtocolError::CacheHandleDownload(format!(
+                "Will not download {url} because feature dep_reqwest of s2protocol-rs is not enabled."
+            )));
+        }
+        #[cfg(feature = "dep_reqwest")]
+        {
+            let response = self.client.get(&url).send().await?;
+            if !response.status().is_success() {
+                return Err(S2ProtocolError::CacheHandleDownload(format!(
+                    "Failed to download cache {}, status code: {}",
+                    handle.handle,
+                    response.status()
+                )));
+            }
+            let response_bytes = response.bytes().await?;
+            let target = handle.path(destination);
+            let mut tmp_name = target.as_os_str().to_owned();
+            tmp_name.push(".part");
+            let tmp = std::path::PathBuf::from(tmp_name);
+            std::fs::write(&tmp, response_bytes)?;
+            std::fs::rename(&tmp, &target)?;
+            Ok(())
+        }
+    }
+}
+
+/// Downloads one cache into `destination` unless it is there already, see [`download_caches`]
+/// for many.
 #[instrument]
 pub async fn download_cache(
     handle: &str,
@@ -336,43 +488,48 @@ pub async fn download_cache(
     ext: &str,
     destination: &str,
 ) -> Result<(), S2ProtocolError> {
-    let destination = Path::new(destination);
-    let cache_download_target =
-        destination.join(format!("{}.{}", handle, CACHE_MPQ_ARCHIVE_EXTENSION));
-    if cache_download_target.exists() {
-        tracing::info!(
-            "Cache {} already exists, skipping download.",
-            cache_download_target.display()
-        );
-        return Ok(());
+    let downloads = download_caches(&[CacheHandle::new(region, ext, handle)], destination).await;
+    match downloads.errors.into_iter().next() {
+        Some(error) => Err(S2ProtocolError::CacheHandleDownload(error)),
+        None => Ok(()),
     }
-    let mut region = region.to_string();
-    if region.to_lowercase() == "cn" {
-        // I can't resolve  cn-s2-depot.classic.blizzard.com
-        region = String::from("eu");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_builds_the_depot_urls() {
+        let handle = CacheHandle::new("CN", "s2ma", "abc");
+        assert_eq!(
+            handle.url(),
+            "https://eu-s2-depot.classic.blizzard.com/abc.s2ma"
+        );
+        let handle = CacheHandle::new("us", "s2ma", "abc");
+        assert_eq!(
+            handle.url(),
+            "https://us-s2-depot.classic.blizzard.com/abc.s2ma"
+        );
+        assert_eq!(
+            handle.path(Path::new("caches")),
+            Path::new("caches/abc.s2ma")
+        );
     }
 
-    let url = format!(
-        "https://{}-s2-depot.classic.blizzard.com/{}.{}",
-        region, handle, ext
-    );
-    #[cfg(not(feature = "dep_reqwest"))]
-    return Err(S2ProtocolError::CacheHandleDownload(format!(
-        "Will not download {} because feature dep_reqwest of s2protocol-rs is not enabled.",
-        url
-    )));
-    #[cfg(feature = "dep_reqwest")]
-    {
-        let response = reqwest::get(&url).await?;
-        if !response.status().is_success() {
-            return Err(S2ProtocolError::CacheHandleDownload(format!(
-                "Failed to download cache {}, status code: {}",
-                handle,
-                response.status()
-            )));
-        }
-        let response_bytes = response.bytes().await?;
-        std::fs::write(&cache_download_target, response_bytes)?;
-        Ok(())
+    #[test]
+    fn it_reports_an_unwritable_destination() {
+        let file =
+            std::env::temp_dir().join(format!("s2protocol-not-a-dir-{}", std::process::id()));
+        std::fs::write(&file, b"").unwrap();
+        let destination = file.join("caches");
+        let downloads = futures::executor::block_on(download_caches(
+            &[CacheHandle::new("eu", "s2ma", "abc")],
+            destination.to_str().unwrap(),
+        ));
+        std::fs::remove_file(&file).unwrap();
+        assert_eq!(downloads.failed, 1);
+        assert_eq!(downloads.downloaded, 0);
+        assert!(downloads.errors[0].starts_with("Unable to create the caches directory"));
     }
 }

@@ -204,6 +204,13 @@ Unreleased, the snapshot format changed, generate the snapshots again
   `arrow_store::bot_filter`. The bots of AI Arena give 1,100 to 16,800 commands per minute, a
   human a few hundred; their snapshot is about 70% smaller. In 4.10 the abilities have no names,
   the links 42 (move) and 45 (attack) are dropped.
+- The map caches are downloaded into the cache path even when the directory does not exist (it
+  was created by no one and every download failed), 4 at a time instead of all at once, through a
+  temporary file. `cache_handles::download_caches` returns what was downloaded and the errors
+  (`CacheDownloads`), they were printed to the console. `download_snapshot_caches` downloads the
+  missing caches of an existing snapshot, the ones that failed before, and the CLI does it with
+  `--source <snapshot> --cache-path <dir> cache download`. The `map_info_sha256` of the replays
+  written while their caches were missing stays empty until the snapshot is generated again.
 
 ## Interacting with polars
 
