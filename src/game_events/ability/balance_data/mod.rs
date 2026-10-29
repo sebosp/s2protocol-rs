@@ -538,6 +538,57 @@ pub type VersionedBalanceUnits = HashMap<String, VersionedBalanceUnit>;
 /// The abilities for all collected protocol versions.
 pub type MultiVersionedBalanceUnits = HashMap<u32, VersionedBalanceUnits>;
 
+/// The name of each ability link and command index as [`get_indexed_ability_command_name`] names
+/// them, from the first unit by name that has it. The game accepts commands that the selected
+/// units do not list, i.e. a move to Battlecruisers (they list BattlecruiserMove) or the rally of
+/// production structures to a Nexus.
+pub fn ability_names_by_link(
+    balance_data_units: &VersionedBalanceUnits,
+) -> HashMap<(u16, i64), String> {
+    let mut names = HashMap::new();
+    let mut unit_names: Vec<&String> = balance_data_units.keys().collect();
+    unit_names.sort();
+    for unit_name in unit_names {
+        let unit = &balance_data_units[unit_name];
+        for ability in &unit.abilities.inner {
+            let Some(link) = ability.index else {
+                continue;
+            };
+            for command in &ability.commands {
+                names.entry((link, command.index)).or_insert_with(|| {
+                    format!(
+                        "{}.{}",
+                        ability.id,
+                        command.id.as_deref().unwrap_or_default()
+                    )
+                });
+            }
+        }
+        for train in &unit.trains.inner {
+            if let (Some(link), Some(index)) = (train.ability_id, train.command_index) {
+                names
+                    .entry((link, index))
+                    .or_insert_with(|| format!("Train.{}", train.id));
+            }
+        }
+        for build in &unit.builds.inner {
+            if let (Some(link), Some(index)) = (build.ability_id, build.command_index) {
+                names
+                    .entry((link, index))
+                    .or_insert_with(|| format!("Build.{}", build.id));
+            }
+        }
+        if let Some(researches) = &unit.researches {
+            for research in &researches.inner {
+                names
+                    .entry((research.ability, research.index))
+                    .or_insert_with(|| format!("Research.{}", research.id));
+            }
+        }
+    }
+    names
+}
+
 pub fn get_indexed_ability_command_name(
     balance_data_units: &VersionedBalanceUnits,
     unit_name: &str,

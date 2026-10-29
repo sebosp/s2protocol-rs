@@ -25,9 +25,9 @@ const GAME_LOOPS_PER_MINUTE: f64 = crate::GAME_LOOPS_PER_SECOND * 60.;
 /// `attack.Execute`.
 const DROPPED_ABILITIES: [&str; 2] = ["move", "attack"];
 
-/// The links of the move and attack abilities in protocol 75689 (4.10), whose ability names are not
-/// in the balance data. They are the ones of 94137 (43 and 46) minus one, the bots of AI Arena
-/// command their workers with 42 and their army with 45.
+/// The links of the move and attack abilities in protocol 75689 (4.10), for the commands without
+/// a name, i.e. with balance data without 4.10. They are the ones of 94137 (43 and 46) minus one,
+/// the bots of AI Arena command their workers with 42 and their army with 45.
 const DROPPED_ABILITY_LINKS_75689: [u16; 2] = [42, 45];
 
 #[derive(Debug, Default, Clone, Copy)]

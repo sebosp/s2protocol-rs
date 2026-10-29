@@ -14,7 +14,9 @@ use crate::details::Details;
 use crate::details::PlayerLobbyDetails;
 use crate::filters::SC2ReplayFilters;
 use crate::game_events::MultiVersionedBalanceUnits;
-use crate::game_events::{GameEventIteratorState, VersionedBalanceUnits, handle_game_event};
+use crate::game_events::{
+    GameEventIteratorState, VersionedBalanceUnits, ability_names_by_link, handle_game_event,
+};
 use crate::tracker_events::{TrackertEventIteratorState, handle_tracker_event};
 use crate::{common::*, game_events::GameSPointMini};
 use game_events::GameSCmdEvent;
@@ -240,6 +242,11 @@ pub struct SC2ReplayState {
 
     /// The current protocol version abilities, containing a possible string translation.
     pub balance_units: VersionedBalanceUnits,
+
+    /// The names of the commands by ability link and command index, of any unit, for the commands
+    /// of the selections that have no unit with the ability, see [`ability_names_by_link`].
+    #[serde(skip)]
+    pub ability_names: HashMap<(u16, i64), String>,
 }
 
 impl From<SC2ReplayBasicData> for SC2ReplayState {
@@ -264,6 +271,7 @@ impl From<SC2ReplayBasicData> for SC2ReplayState {
 
 impl SC2ReplayState {
     pub fn with_balance_units(mut self, balance_units: VersionedBalanceUnits) -> Self {
+        self.ability_names = ability_names_by_link(&balance_units);
         self.balance_units = balance_units;
         self
     }

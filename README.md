@@ -204,6 +204,16 @@ Unreleased, the snapshot format changed, generate the snapshots again
   `arrow_store::bot_filter`. The bots of AI Arena give 1,100 to 16,800 commands per minute, a
   human a few hundred; their snapshot is about 70% smaller. In 4.10 the abilities have no names,
   the links 42 (move) and 45 (attack) are dropped.
+- The commands of 4.10 (protocol 75689) are named: `assets/BalanceData/75689` has the units of
+  94137 with the ability links of 4.10, one less until attack (46) and two less from the sprays
+  (62), measured on the AI Arena replays, see `scripts/balance_data_75689`. The costs,
+  strengths and weaknesses are the ones of 94137, `DERIVED_BALANCE_DATA_VERSIONS` lists it. The
+  commands that 94137 has not, i.e. the ScanMove of the bots, have the names of sc2reader.
+- A command given to a selection whose units do not all have the ability is named after the first
+  one that has it, it was named after the last unit and often empty, and a command that no unit
+  of the selection has, i.e. a move to Battlecruisers or the rally of a Barracks with a Command
+  Center, after any unit of the balance data with that link: in the pro replays of 94137 99.9% of
+  the commands are named instead of 86.8%. `tests/ability_names.rs` measures it on a directory.
 - The map caches are downloaded into the cache path even when the directory does not exist (it
   was created by no one and every download failed), 4 at a time instead of all at once, through a
   temporary file. `cache_handles::download_caches` returns what was downloaded and the errors
