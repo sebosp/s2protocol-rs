@@ -76,6 +76,10 @@ pub fn handle_cmd(
     // Marines moves with BattlecruiserMove and the Marines with move. The command is named after
     // the first unit that has it, each unit after its own.
     let mut command_name = String::new();
+    let balance_link = cmd
+        .m_abil
+        .as_ref()
+        .map(|abil| sc2_state.balance_ability_link(abil.m_abil_link));
     for selected_unit in &user_selected_unit_ids {
         let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
@@ -86,7 +90,7 @@ pub fn handle_cmd(
                     val.ability = get_indexed_ability_command_name(
                         &sc2_state.balance_units,
                         registered_unit.name.as_str(),
-                        val.m_abil_link,
+                        balance_link.unwrap_or(val.m_abil_link),
                         val.m_abil_cmd_index,
                     );
                     if command_name.is_empty() {
@@ -110,7 +114,10 @@ pub fn handle_cmd(
         if command_name.is_empty() {
             command_name = sc2_state
                 .ability_names
-                .get(&(ability.m_abil_link, ability.m_abil_cmd_index))
+                .get(&(
+                    balance_link.unwrap_or(ability.m_abil_link),
+                    ability.m_abil_cmd_index,
+                ))
                 .cloned()
                 .unwrap_or_default();
         }

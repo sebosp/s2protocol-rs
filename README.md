@@ -209,6 +209,12 @@ Unreleased, the snapshot format changed, generate the snapshots again
   (62), measured on the AI Arena replays, see `scripts/balance_data_75689`. The costs,
   strengths and weaknesses are the ones of 94137, `DERIVED_BALANCE_DATA_VERSIONS` lists it. The
   commands that 94137 has not, i.e. the ScanMove of the bots, have the names of sc2reader.
+- The commands of the 5.0 versions without balance data are named with the balance data of 94137,
+  `DERIVED_ABILITY_LINKS`: 80949 to 92440 have one ability less from HydraliskFrenzy (699), and
+  trained the Banelings with ZerglingTrain (75, named MorphToBaneling as in 94137), 93139 to 93333
+  have the links of 94137. They were 92% of the replays of the full snapshot (27 versions) and
+  had no command named, now 97% to 100% of the commands of each version are named. Their units
+  get the sizes and colors of 94137 too.
 - A command given to a selection whose units do not all have the ability is named after the first
   one that has it, it was named after the last unit and often empty, and a command that no unit
   of the selection has, i.e. a move to Battlecruisers or the rally of a Barracks with a Command
