@@ -102,6 +102,13 @@ pub fn read_balance_data_from_json_dir<P: AsRef<Path>>(
     Ok(balance_data)
 }
 
+/// The versions of the included balance data that were not exported from the Editor but derived
+/// from another version, only their ability links are the ones of the version: 75689 (4.10, the
+/// client of AI Arena) has the units of 94137 with the links of 4.10, see
+/// `scripts/balance_data_75689`. Their costs, strengths and weaknesses are not the ones of the
+/// version, a client comparing the units of the patches skips them.
+pub const DERIVED_BALANCE_DATA_VERSIONS: [u32; 1] = [75689];
+
 static ARCHIVE_DIR: Dir = include_dir!("assets/BalanceData");
 #[tracing::instrument(level = "info")]
 pub fn read_balance_data_from_included_assets()

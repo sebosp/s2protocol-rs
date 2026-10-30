@@ -180,6 +180,53 @@ v3.6.0 (2026-10-25), the snapshot format changed, generate the snapshots again
 - Not breaking: the `textures` feature embeds the button textures, see [Textures](#textures). The
   players of older replays without `working_set_slot_id` are matched to the lobby slots by order,
   previously they had no details and these replays were added again on every snapshot run.
+v4.1.0 (2026-10-30), the snapshot format changed, generate the snapshots again
+- `ext_replay_seconds` is in game seconds at the Faster speed, 22.4 loops per second (the new
+  `GAME_LOOPS_PER_SECOND`), it was computed with 68.58 ms per loop and the times were 1.5 times
+  longer than in the game. `convert_game_loop_to_seconds` and `convert_tracker_loop_to_seconds`
+  changed accordingly.
+- The snapshot files are compressed with zstd, about ten times smaller. Polars, pyarrow and DuckDB
+  read them as before, readers built on the `arrow` crate need its `ipc_compression` feature.
+  The version of s2protocol must change on release so that the uncompressed days are written
+  again.
+- The details have the difficulty, build and handicap of the lobby slot of each player
+  (`lobby_slot_difficulty`, `lobby_slot_ai_build`, `lobby_slot_handicap`), to tell apart the
+  games against the computer, i.e. Cheater 3 (Insane) Economic Focus, and the random seed of the
+  game (`lobby_random_seed`).
+- The replays of 4.10 (protocol 75689), i.e. the ones of AI Arena, are read: their lobby slots have
+  a 7 bits handicap, a 13 bits length of the licenses and not the fields added in 4.11.
+- The maximum number of teams of the game description was read with 5 bits instead of 4, the
+  fields after it were misread until the next byte aligned field: `lobby_slot_map_size_y` was
+  wrong for about half of the replays, and in the games where two users share a player (Archon
+  mode) the name of the units of that player can be the other user.
+- The move and attack commands of the bots are not in the cmd files: a user that gives more than
+  1,000 commands per minute in a window of 1,000 commands is a bot for the rest of the game, see
+  `arrow_store::bot_filter`. The bots of AI Arena give 1,100 to 16,800 commands per minute, a
+  human a few hundred; their snapshot is about 70% smaller. In 4.10 the abilities have no names,
+  the links 42 (move) and 45 (attack) are dropped.
+- The commands of 4.10 (protocol 75689) are named: `assets/BalanceData/75689` has the units of
+  94137 with the ability links of 4.10, one less until attack (46) and two less from the sprays
+  (62), measured on the AI Arena replays, see `scripts/balance_data_75689`. The costs,
+  strengths and weaknesses are the ones of 94137, `DERIVED_BALANCE_DATA_VERSIONS` lists it. The
+  commands that 94137 has not, i.e. the ScanMove of the bots, have the names of sc2reader.
+- The commands of the 5.0 versions without balance data are named with the balance data of 94137,
+  `DERIVED_ABILITY_LINKS`: 80949 to 92440 have one ability less from HydraliskFrenzy (699), and
+  trained the Banelings with ZerglingTrain (75, named MorphToBaneling as in 94137), 93139 to 93333
+  have the links of 94137. They were 92% of the replays of the full snapshot (27 versions) and
+  had no command named, now 97% to 100% of the commands of each version are named. Their units
+  get the sizes and colors of 94137 too.
+- A command given to a selection whose units do not all have the ability is named after the first
+  one that has it, it was named after the last unit and often empty, and a command that no unit
+  of the selection has, i.e. a move to Battlecruisers or the rally of a Barracks with a Command
+  Center, after any unit of the balance data with that link: in the pro replays of 94137 99.9% of
+  the commands are named instead of 86.8%. `tests/ability_names.rs` measures it on a directory.
+- The map caches are downloaded into the cache path even when the directory does not exist (it
+  was created by no one and every download failed), 4 at a time instead of all at once, through a
+  temporary file. `cache_handles::download_caches` returns what was downloaded and the errors
+  (`CacheDownloads`), they were printed to the console. `download_snapshot_caches` downloads the
+  missing caches of an existing snapshot, the ones that failed before, and the CLI does it with
+  `--source <snapshot> --cache-path <dir> cache download`. The `map_info_sha256` of the replays
+  written while their caches were missing stays empty until the snapshot is generated again.
 
 ## Interacting with polars
 

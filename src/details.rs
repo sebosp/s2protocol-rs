@@ -66,6 +66,15 @@ pub struct PlayerLobbyDetailsFlatRow {
     pub lobby_slot_observe: u8,
     pub lobby_slot_map_size_x: u8,
     pub lobby_slot_map_size_y: u8,
+    /// The difficulty of a computer player, 1 Very Easy to 7 Elite, 8 Cheater 1 (Vision),
+    /// 9 Cheater 2 (Resources), 10 Cheater 3 (Insane).
+    pub lobby_slot_difficulty: i64,
+    /// The build of a computer player, i.e. 1 Random, 2 Rush, 3 Timing, 4 Power, 5 Macro
+    /// (Economic Focus), 6 Air.
+    pub lobby_slot_ai_build: i64,
+    pub lobby_slot_handicap: u32,
+    /// The random seed of the game, the same for every player.
+    pub lobby_random_seed: u32,
     pub cache_handle_region: String,
     pub cache_handle_extension: String,
     pub cache_handles: String,
@@ -107,6 +116,10 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
             lobby_slot_observe: source.lobby_slot.observe,
             lobby_slot_map_size_x: source.game_description.map_size_x,
             lobby_slot_map_size_y: source.game_description.map_size_y,
+            lobby_slot_difficulty: source.lobby_slot.difficulty,
+            lobby_slot_ai_build: source.lobby_slot.ai_build,
+            lobby_slot_handicap: source.lobby_slot.handicap,
+            lobby_random_seed: source.lobby_random_seed,
             cache_handle_region: source.cache_handle_region,
             cache_handle_extension: source.cache_handle_extension,
             cache_handles: source.cache_handles.join(","),
@@ -133,6 +146,8 @@ impl PlayerLobbyDetailsFlatRow {
 pub struct PlayerLobbyDetails {
     pub player_details: PlayerDetails,
     pub lobby_slot: LobbySlot,
+    /// The random seed of the lobby state, the same for every player.
+    pub lobby_random_seed: u32,
     /// The name of the map
     pub title: String,
     pub map_info_sha256: String,
@@ -218,6 +233,11 @@ impl From<&SC2ReplayBasicData> for Vec<PlayerLobbyDetails> {
                         .clone(),
                     lobby_slot: basic_data.init_data.sync_lobby_state.lobby_state.slots[slot_idx]
                         .clone(),
+                    lobby_random_seed: basic_data
+                        .init_data
+                        .sync_lobby_state
+                        .lobby_state
+                        .random_seed,
                     player_details: player.clone(),
                     time_utc: basic_data.details.time_utc,
                     time_local_offset: basic_data.details.time_local_offset,

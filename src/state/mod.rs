@@ -14,7 +14,10 @@ use crate::details::Details;
 use crate::details::PlayerLobbyDetails;
 use crate::filters::SC2ReplayFilters;
 use crate::game_events::MultiVersionedBalanceUnits;
-use crate::game_events::{GameEventIteratorState, VersionedBalanceUnits, handle_game_event};
+use crate::game_events::{
+    DerivedAbilityLinks, GameEventIteratorState, VersionedBalanceUnits, ability_names_by_link,
+    derived_ability_links, handle_game_event,
+};
 use crate::tracker_events::{TrackertEventIteratorState, handle_tracker_event};
 use crate::{common::*, game_events::GameSPointMini};
 use game_events::GameSCmdEvent;
@@ -240,6 +243,16 @@ pub struct SC2ReplayState {
 
     /// The current protocol version abilities, containing a possible string translation.
     pub balance_units: VersionedBalanceUnits,
+
+    /// The names of the commands by ability link and command index, of any unit, for the commands
+    /// of the selections that have no unit with the ability, see [`ability_names_by_link`].
+    #[serde(skip)]
+    pub ability_names: HashMap<(u16, i64), String>,
+
+    /// For a version without balance data, how its ability links translate to the ones of the
+    /// balance data used, see [`DERIVED_ABILITY_LINKS`].
+    #[serde(skip)]
+    pub derived_ability_links: Option<DerivedAbilityLinks>,
 }
 
 impl From<SC2ReplayBasicData> for SC2ReplayState {
@@ -263,7 +276,16 @@ impl From<SC2ReplayBasicData> for SC2ReplayState {
 }
 
 impl SC2ReplayState {
+    /// The ability link of the balance data for a link of the replay.
+    pub fn balance_ability_link(&self, link: u16) -> u16 {
+        match &self.derived_ability_links {
+            Some(derived) => derived.base_link(link),
+            None => link,
+        }
+    }
+
     pub fn with_balance_units(mut self, balance_units: VersionedBalanceUnits) -> Self {
+        self.ability_names = ability_names_by_link(&balance_units);
         self.balance_units = balance_units;
         self
     }
@@ -349,8 +371,19 @@ impl SC2EventIterator {
             mpq.read_mpq_file_sector("replay.tracker.events", false, file_contents)?;
         let (_event_tail, game_events) =
             mpq.read_mpq_file_sector("replay.game.events", false, file_contents)?;
+        let version = basic_data.init_data.version;
+        // The versions without balance data use the one of another version, see
+        // DERIVED_ABILITY_LINKS.
+        let derived = match multi_version_abilities.contains_key(&version) {
+            true => None,
+            false => derived_ability_links(version).cloned(),
+        };
+        let balance_version = derived
+            .as_ref()
+            .map(|derived| derived.base_version)
+            .unwrap_or(version);
         let balance_units: VersionedBalanceUnits =
-            match multi_version_abilities.get(&basic_data.init_data.version) {
+            match multi_version_abilities.get(&balance_version) {
                 Some(val) => val.to_owned(),
                 None => HashMap::new(),
             };
@@ -361,7 +394,16 @@ impl SC2EventIterator {
             total_initial_abilities
         );
 
-        let sc2_state = SC2ReplayState::from(basic_data.clone()).with_balance_units(balance_units);
+        let mut sc2_state =
+            SC2ReplayState::from(basic_data.clone()).with_balance_units(balance_units);
+        if let Some(derived) = &derived {
+            for (link, command_index, name) in derived.renamed {
+                sc2_state
+                    .ability_names
+                    .insert((derived.base_link(*link), *command_index), name.to_string());
+            }
+        }
+        sc2_state.derived_ability_links = derived;
         Ok(Self {
             sc2_state,
             tracker_iterator_state: tracker_events.into(),

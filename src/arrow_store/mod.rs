@@ -22,6 +22,8 @@ use crate::*;
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
+pub mod bot_filter;
+use bot_filter::BotFilter;
 pub mod ipc_writer;
 use ipc_writer::*;
 pub mod rows;
@@ -108,6 +110,8 @@ impl ReplayEventRows {
         let event_iterator = SC2EventIterator::new(source, versioned_abilities).ok()?;
 
         let ext_fs_id = event_iterator.sc2_state.details.ext_fs_id;
+        // The move and attack commands of the bots are most of their rows and of no use.
+        let mut bot_filter = BotFilter::new(source.init_data.version);
         let (
             stat_rows,
             upgrade_rows,
@@ -191,33 +195,39 @@ impl ReplayEventRows {
                         game_loop,
                         user_id,
                         player_name,
-                    } => match event.m_data {
-                        game_events::GameSCmdData::TargetPoint(_) => {
-                            target_point_rows.append(
-                                &mut game_events::CmdTargetPointEventFlatRow::new(
-                                    ext_fs_id,
-                                    event,
-                                    game_loop,
-                                    user_id,
-                                    player_name,
-                                    event_item.change_hint,
-                                ),
-                            );
+                    } if {
+                        bot_filter.count(user_id, game_loop);
+                        bot_filter.keeps(user_id, event.m_abil.as_ref())
+                    } =>
+                    {
+                        match event.m_data {
+                            game_events::GameSCmdData::TargetPoint(_) => {
+                                target_point_rows.append(
+                                    &mut game_events::CmdTargetPointEventFlatRow::new(
+                                        ext_fs_id,
+                                        event,
+                                        game_loop,
+                                        user_id,
+                                        player_name,
+                                        event_item.change_hint,
+                                    ),
+                                );
+                            }
+                            game_events::GameSCmdData::TargetUnit(_) => {
+                                target_unit_rows.append(
+                                    &mut game_events::CmdTargetUnitEventFlatRow::new(
+                                        ext_fs_id,
+                                        event,
+                                        game_loop,
+                                        user_id,
+                                        player_name,
+                                        event_item.change_hint,
+                                    ),
+                                );
+                            }
+                            _ => {}
                         }
-                        game_events::GameSCmdData::TargetUnit(_) => {
-                            target_unit_rows.append(
-                                &mut game_events::CmdTargetUnitEventFlatRow::new(
-                                    ext_fs_id,
-                                    event,
-                                    game_loop,
-                                    user_id,
-                                    player_name,
-                                    event_item.change_hint,
-                                ),
-                            );
-                        }
-                        _ => {}
-                    },
+                    }
                     _ => {}
                 };
                 (

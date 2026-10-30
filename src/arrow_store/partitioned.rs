@@ -172,6 +172,68 @@ impl SnapshotIndex {
     }
 }
 
+/// The details files of the snapshot, of every day partition or the one at the root of the
+/// snapshots written before the partitions.
+fn details_files(root: &Path) -> Result<Vec<PathBuf>, std::io::Error> {
+    if has_flat_layout(root) {
+        return Ok(vec![root.join(DETAILS_ARROW_FNAME)]);
+    }
+    Ok(list_partitions(root)?
+        .into_iter()
+        .map(|day| day.join(DETAILS_ARROW_FNAME))
+        .filter(|path| path.is_file())
+        .collect())
+}
+
+/// The map caches the replays of the snapshot refer to, each one once.
+pub fn snapshot_cache_handles(
+    root: &Path,
+) -> Result<Vec<crate::cache_handles::CacheHandle>, Box<dyn std::error::Error>> {
+    let mut handles = BTreeMap::new();
+    for path in details_files(root)? {
+        let reader = FileReader::try_new(std::fs::File::open(&path)?, None)?;
+        for batch in reader {
+            let batch = batch?;
+            let column = |name: &str| {
+                batch
+                    .column_by_name(name)
+                    .and_then(|column| column.as_string_opt::<i32>())
+                    .ok_or_else(|| format!("{} has no string column {name}", path.display()))
+            };
+            let regions = column("cache_handle_region")?;
+            let extensions = column("cache_handle_extension")?;
+            let cache_handles = column("cache_handles")?;
+            for row in 0..batch.num_rows() {
+                // A cache is the same in every region, it is downloaded once.
+                for handle in cache_handles.value(row).split(',') {
+                    if handle.is_empty() || handles.contains_key(handle) {
+                        continue;
+                    }
+                    handles.insert(
+                        handle.to_string(),
+                        crate::cache_handles::CacheHandle::new(
+                            regions.value(row),
+                            extensions.value(row),
+                            handle,
+                        ),
+                    );
+                }
+            }
+        }
+    }
+    Ok(handles.into_values().collect())
+}
+
+/// Downloads the map caches of the snapshot that are not in `destination` yet, i.e. the ones
+/// that failed while the replays were added. The snapshot is not changed.
+pub async fn download_snapshot_caches(
+    root: &Path,
+    destination: &str,
+) -> Result<crate::cache_handles::CacheDownloads, Box<dyn std::error::Error>> {
+    let handles = snapshot_cache_handles(root)?;
+    Ok(crate::cache_handles::download_caches(&handles, destination).await)
+}
+
 /// The file being written next to the final one, renamed once the day is complete.
 /// The days written at the same time, each open day has 7 files open, the default limit of open
 /// files is 256 on macOS and 1024 on Linux, the replays being read are open files too.

@@ -538,6 +538,111 @@ pub type VersionedBalanceUnits = HashMap<String, VersionedBalanceUnit>;
 /// The abilities for all collected protocol versions.
 pub type MultiVersionedBalanceUnits = HashMap<u32, VersionedBalanceUnits>;
 
+/// A range of protocol versions without balance data whose commands are named with the balance
+/// data of another version, translating their ability links. Measured on the replays of corvid-zt
+/// (the units commanding each link have the ability of the translated link) and checked with the
+/// tables of sc2reader of 80949 and 89720.
+#[derive(Debug, Clone, PartialEq)]
+pub struct DerivedAbilityLinks {
+    pub versions: std::ops::RangeInclusive<u32>,
+    /// The version of the balance data used.
+    pub base_version: u32,
+    /// The abilities the base version has and these versions do not: the links of the versions
+    /// from this one on are one less than in the base version, by each entry.
+    pub inserted: &'static [u16],
+    /// The commands of these versions that the base version has with another ability, by link
+    /// (of these versions) and command index, named as the base version names them.
+    pub renamed: &'static [(u16, i64, &'static str)],
+}
+
+/// The versions of 5.0 that have no balance data, i.e. 84643, 91115, 81433, 86383 and 87702, the
+/// most played ones of the replays of 2021 to 2024.
+pub const DERIVED_ABILITY_LINKS: [DerivedAbilityLinks; 2] = [
+    // HydraliskFrenzy (699 in 94137) was added in 93139, the abilities after it moved by one.
+    DerivedAbilityLinks {
+        versions: 80949..=92440,
+        base_version: 94137,
+        inserted: &[699],
+        // The Banelings were trained with ZerglingTrain (75), 94137 has no 75 and morphs them
+        // with MorphToBaneling (730).
+        renamed: &[(75, 0, "MorphToBaneling.Execute")],
+    },
+    DerivedAbilityLinks {
+        versions: 93139..=93333,
+        base_version: 94137,
+        inserted: &[],
+        renamed: &[],
+    },
+];
+
+impl DerivedAbilityLinks {
+    /// The ability link of the base version for a link of these versions.
+    pub fn base_link(&self, link: u16) -> u16 {
+        self.inserted.iter().fold(
+            link,
+            |base, inserted| if base >= *inserted { base + 1 } else { base },
+        )
+    }
+}
+
+/// The links of a version without balance data, see [`DERIVED_ABILITY_LINKS`].
+pub fn derived_ability_links(version: u32) -> Option<&'static DerivedAbilityLinks> {
+    DERIVED_ABILITY_LINKS
+        .iter()
+        .find(|derived| derived.versions.contains(&version))
+}
+
+/// The name of each ability link and command index as [`get_indexed_ability_command_name`] names
+/// them, from the first unit by name that has it. The game accepts commands that the selected
+/// units do not list, i.e. a move to Battlecruisers (they list BattlecruiserMove) or the rally of
+/// production structures to a Nexus.
+pub fn ability_names_by_link(
+    balance_data_units: &VersionedBalanceUnits,
+) -> HashMap<(u16, i64), String> {
+    let mut names = HashMap::new();
+    let mut unit_names: Vec<&String> = balance_data_units.keys().collect();
+    unit_names.sort();
+    for unit_name in unit_names {
+        let unit = &balance_data_units[unit_name];
+        for ability in &unit.abilities.inner {
+            let Some(link) = ability.index else {
+                continue;
+            };
+            for command in &ability.commands {
+                names.entry((link, command.index)).or_insert_with(|| {
+                    format!(
+                        "{}.{}",
+                        ability.id,
+                        command.id.as_deref().unwrap_or_default()
+                    )
+                });
+            }
+        }
+        for train in &unit.trains.inner {
+            if let (Some(link), Some(index)) = (train.ability_id, train.command_index) {
+                names
+                    .entry((link, index))
+                    .or_insert_with(|| format!("Train.{}", train.id));
+            }
+        }
+        for build in &unit.builds.inner {
+            if let (Some(link), Some(index)) = (build.ability_id, build.command_index) {
+                names
+                    .entry((link, index))
+                    .or_insert_with(|| format!("Build.{}", build.id));
+            }
+        }
+        if let Some(researches) = &unit.researches {
+            for research in &researches.inner {
+                names
+                    .entry((research.ability, research.index))
+                    .or_insert_with(|| format!("Research.{}", research.id));
+            }
+        }
+    }
+    names
+}
+
 pub fn get_indexed_ability_command_name(
     balance_data_units: &VersionedBalanceUnits,
     unit_name: &str,
@@ -598,4 +703,24 @@ pub fn get_indexed_ability_command_name(
         );
     }
     Default::default()
+}
+
+#[cfg(test)]
+mod derived_links_tests {
+    use super::*;
+
+    #[test]
+    fn it_translates_the_links_of_the_versions_without_balance_data() {
+        let derived = derived_ability_links(84643).unwrap();
+        assert_eq!(derived.base_version, 94137);
+        // BattlecruiserStop is the same, AmorphousArmorcloud and the following moved by one.
+        assert_eq!(derived.base_link(697), 697);
+        assert_eq!(derived.base_link(698), 698);
+        assert_eq!(derived.base_link(700), 701);
+        assert_eq!(derived.base_link(722), 723);
+        assert_eq!(derived_ability_links(93333).unwrap().base_link(723), 723);
+        assert!(derived_ability_links(94137).is_none());
+        assert!(derived_ability_links(75689).is_none());
+        assert_eq!(derived.renamed, &[(75, 0, "MorphToBaneling.Execute")]);
+    }
 }

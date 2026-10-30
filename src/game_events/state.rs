@@ -72,31 +72,56 @@ pub fn handle_cmd(
     if let Some(state) = sc2_state.user_state.get(&user_id) {
         user_selected_unit_ids = state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
     }
+    // The units of a selection do not all have the ability, i.e. a Battlecruiser selected with
+    // Marines moves with BattlecruiserMove and the Marines with move. The command is named after
+    // the first unit that has it, each unit after its own.
+    let mut command_name = String::new();
+    let balance_link = cmd
+        .m_abil
+        .as_ref()
+        .map(|abil| sc2_state.balance_ability_link(abil.m_abil_link));
     for selected_unit in &user_selected_unit_ids {
         let unit_index = unit_tag_index(*selected_unit as i64);
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
-            match cmd.m_abil {
+            let mut unit_cmd = cmd.clone();
+            match unit_cmd.m_abil {
                 None => continue,
                 Some(ref mut val) => {
                     val.ability = get_indexed_ability_command_name(
                         &sc2_state.balance_units,
                         registered_unit.name.as_str(),
-                        val.m_abil_link,
+                        balance_link.unwrap_or(val.m_abil_link),
                         val.m_abil_cmd_index,
                     );
+                    if command_name.is_empty() {
+                        command_name = val.ability.clone();
+                    }
                 }
             };
             tracing::debug!(
                 "Unit {} executing command: {:?} on target: {:?}",
                 registered_unit.name,
-                cmd.m_abil,
+                unit_cmd.m_abil,
                 target,
             );
-            registered_unit.cmd = cmd.clone().into();
+            registered_unit.cmd = unit_cmd.into();
             registered_unit.cmd.other_unit_name = target.as_ref().map(|u| u.name.clone());
             registered_unit.last_game_loop = game_loop;
             user_selected_units.push(registered_unit.clone());
         }
+    }
+    if let Some(ref mut ability) = cmd.m_abil {
+        if command_name.is_empty() {
+            command_name = sc2_state
+                .ability_names
+                .get(&(
+                    balance_link.unwrap_or(ability.m_abil_link),
+                    ability.m_abil_cmd_index,
+                ))
+                .cloned()
+                .unwrap_or_default();
+        }
+        ability.ability = command_name;
     }
     // TODO: Maybe we can avoid returning the event `cmd` twice? Or is it because of an old
     // consumer/test?

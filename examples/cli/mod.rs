@@ -41,6 +41,10 @@ pub enum CacheUtils {
     DocumentHeader,
     /// Prints the t3Terrain.xml sector within the MPQ archite at source
     T3TerrainXml,
+    /// Downloads the map caches of the snapshot at source that are not in --cache-path yet, i.e.
+    /// the ones that failed while write-arrow-ipc added the replays.
+    #[cfg(feature = "dep_arrow")]
+    Download,
 }
 
 ///  Create a subcommand that handles the max depth and max files to process
@@ -328,6 +332,18 @@ async fn cli_command_handler(cli: &Cli) -> Result<(), Box<dyn std::error::Error>
                 println!("Index: {}, Recycle: {}", index, recycle)
             }
         },
+        #[cfg(feature = "dep_arrow")]
+        Commands::Cache(CacheUtils::Download) => {
+            let downloads = s2protocol::arrow_store::partitioned::download_snapshot_caches(
+                std::path::Path::new(&cli.source),
+                &cli.cache_path,
+            )
+            .await?;
+            println!("{}", serde_json::to_string_pretty(&downloads)?);
+            if downloads.failed > 0 {
+                return Err(format!("{downloads}").into());
+            }
+        }
         Commands::Cache(cache_params) => cmd_cache_handle(
             &cli.source,
             cli.color,
@@ -352,6 +368,9 @@ fn cmd_cache_handle(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let (mpq, cache_contents) = s2protocol::read_mpq(source)?;
     match cache_params {
+        // Handled in cli_command_handler, the source is a snapshot.
+        #[cfg(feature = "dep_arrow")]
+        CacheUtils::Download => {}
         CacheUtils::MapInfo => {
             let map_info =
                 MapInfo::from_mpq(String::from("fake_cache_handle_id"), &mpq, &cache_contents)?;

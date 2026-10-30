@@ -1,0 +1,164 @@
+{
+  "@id": "PointDefenseDrone",
+  "abilities": {
+    "ability": [
+      {
+        "@id": "PointDefense",
+        "@index": null,
+        "command": [
+          {
+            "@id": null,
+            "@index": 0,
+            "meta": {
+              "@hotkey": null,
+              "@icon": "btn-ability-terran-pointdefenselaser",
+              "@index": null,
+              "@name": "185",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "186",
+              "@type": "passive"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "armor": {
+    "@max": 2,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": [
+      {
+        "@type": "Light"
+      },
+      {
+        "@type": "Mechanical"
+      },
+      {
+        "@type": "Structure"
+      }
+    ]
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": null,
+  "life": {
+    "@max": 50,
+    "@regenRate": null,
+    "@start": 50
+  },
+  "meta": {
+    "@hotkey": "0",
+    "@icon": "btn-unit-terran-targetingdrone",
+    "@index": 31,
+    "@name": "183",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "184",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.625,
+    "@range": null,
+    "@sightRadius": 7.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": null,
+  "requires": {
+    "unit": []
+  },
+  "researches": null,
+  "score": {
+    "@build": 0,
+    "@kill": 0
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": [
+      {
+        "@id": "HiSecAutoTracking",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 100,
+              "@supply": null,
+              "@time": 80.0,
+              "@vespene": 100
+            },
+            "meta": {
+              "@hotkey": "188",
+              "@icon": "BTN-Upgrade-Terran-hisecautotracking",
+              "@index": null,
+              "@name": "187",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "189",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      },
+      {
+        "@id": "TerranBuildingArmor",
+        "level": [
+          {
+            "@id": "",
+            "@index": 0,
+            "cost": {
+              "@cooldown": null,
+              "@energy": null,
+              "@life": null,
+              "@minerals": 150,
+              "@supply": null,
+              "@time": 140.0,
+              "@vespene": 150
+            },
+            "meta": {
+              "@hotkey": "75",
+              "@icon": "BTN-upgrade-terran-buildingarmor",
+              "@index": null,
+              "@name": "74",
+              "@race": null,
+              "@source": null,
+              "@tooltip": "76",
+              "@type": null
+            },
+            "requires": []
+          }
+        ]
+      }
+    ]
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}
