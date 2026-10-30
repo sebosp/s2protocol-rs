@@ -120,6 +120,91 @@ pub fn remove_outdated_partitions(root: &Path) -> Result<Vec<PathBuf>, std::io::
     Ok(outdated)
 }
 
+/// Removes the days with a replay without the digest of its MapInfo (`map_info_sha256`) whose map
+/// caches can be read now, i.e. they could not be downloaded when the replay was added because
+/// the caches directory did not exist. Their missing caches are downloaded first, the replays of
+/// the days removed are parsed again with the digest. The replays whose caches cannot be
+/// downloaded or have no MapInfo are left as they are, they are not parsed again on every run.
+pub async fn remove_partitions_missing_map_info(
+    root: &Path,
+    cache_path: &str,
+) -> Result<Vec<PathBuf>, Box<dyn std::error::Error>> {
+    // The replays without a digest by day: their cache handles to download and to read.
+    let mut missing: BTreeMap<PathBuf, BTreeMap<u64, Vec<crate::cache_handles::CacheHandle>>> =
+        BTreeMap::new();
+    for day in list_partitions(root)? {
+        let path = day.join(DETAILS_ARROW_FNAME);
+        if !path.is_file() {
+            continue;
+        }
+        let reader = FileReader::try_new(std::fs::File::open(&path)?, None)?;
+        for batch in reader {
+            let batch = batch?;
+            let strings = |name: &str| {
+                batch
+                    .column_by_name(name)
+                    .and_then(|column| column.as_string_opt::<i32>())
+                    .ok_or_else(|| format!("{} has no string column {name}", path.display()))
+            };
+            let digests = strings("map_info_sha256")?;
+            let regions = strings("cache_handle_region")?;
+            let extensions = strings("cache_handle_extension")?;
+            let handles = strings("cache_handles")?;
+            let ids = batch
+                .column_by_name("ext_fs_id")
+                .and_then(|column| column.as_primitive_opt::<UInt64Type>())
+                .ok_or("ext_fs_id is not a u64")?;
+            for row in 0..batch.num_rows() {
+                if !digests.value(row).is_empty() || handles.value(row).is_empty() {
+                    continue;
+                }
+                missing
+                    .entry(day.clone())
+                    .or_default()
+                    .entry(ids.value(row))
+                    .or_insert_with(|| {
+                        handles
+                            .value(row)
+                            .split(',')
+                            .map(|handle| {
+                                crate::cache_handles::CacheHandle::new(
+                                    regions.value(row),
+                                    extensions.value(row),
+                                    handle,
+                                )
+                            })
+                            .collect()
+                    });
+            }
+        }
+    }
+    if missing.is_empty() {
+        return Ok(vec![]);
+    }
+    let mut to_download: Vec<crate::cache_handles::CacheHandle> = missing
+        .values()
+        .flat_map(|replays| replays.values().flatten().cloned())
+        .collect();
+    to_download.sort();
+    to_download.dedup_by(|a, b| a.handle == b.handle);
+    let downloads = crate::cache_handles::download_caches(&to_download, cache_path).await;
+    tracing::info!("Map caches of the replays without MapInfo digest: {downloads}");
+    let mut caches = crate::cache_handles::CacheCollection::new(cache_path.to_string());
+    let mut removed = vec![];
+    for (day, replays) in missing {
+        let readable = replays.values().any(|handles| {
+            let ids: Vec<String> = handles.iter().map(|handle| handle.handle.clone()).collect();
+            caches.add_cache_ids(&ids);
+            caches.build_map_cache(&ids).is_ok()
+        });
+        if readable {
+            std::fs::remove_dir_all(&day)?;
+            removed.push(day);
+        }
+    }
+    Ok(removed)
+}
+
 /// The replays already in the snapshot.
 #[derive(Debug, Default, Clone)]
 pub struct SnapshotIndex {

@@ -907,6 +907,16 @@ impl ArrowIpcTypes {
                 outdated.len()
             );
         }
+        // The replays added while their map caches could not be downloaded are parsed again
+        // once the caches can be read, with the digest of their MapInfo.
+        let missing_map_info = remove_partitions_missing_map_info(&output, &cache_path).await?;
+        if !missing_map_info.is_empty() {
+            println!(
+                "Removed {} days with replays without the digest of their MapInfo, their caches \
+                 can be read now, their replays are parsed again",
+                missing_map_info.len()
+            );
+        }
         let index = SnapshotIndex::read(&output)?;
         let located = sources.len();
         // The file names are compared first, so the known replays are not read at all.

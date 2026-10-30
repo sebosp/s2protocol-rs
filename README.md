@@ -180,6 +180,12 @@ v3.6.0 (2026-10-25), the snapshot format changed, generate the snapshots again
 - Not breaking: the `textures` feature embeds the button textures, see [Textures](#textures). The
   players of older replays without `working_set_slot_id` are matched to the lobby slots by order,
   previously they had no details and these replays were added again on every snapshot run.
+v4.1.1 (2026-10-30)
+- The replays added while their map caches could not be downloaded, i.e. because the caches
+  directory did not exist, had no `map_info_sha256` and kept none. `write-arrow-ipc` now
+  downloads their missing caches first and parses again the days of the replays whose MapInfo
+  can be read, `partitioned::remove_partitions_missing_map_info`. The replays whose caches cannot
+  be downloaded or have no MapInfo, i.e. the local maps of AI Arena, are not parsed again.
 v4.1.0 (2026-10-30), the snapshot format changed, generate the snapshots again
 - `ext_replay_seconds` is in game seconds at the Faster speed, 22.4 loops per second (the new
   `GAME_LOOPS_PER_SECOND`), it was computed with 68.58 ms per loop and the times were 1.5 times
