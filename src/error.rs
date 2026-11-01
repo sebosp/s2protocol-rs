@@ -17,6 +17,9 @@ pub enum S2ProtocolError {
     /// Unable to parse the MPQ file, could be corrupted or not a replay file
     #[error("MPQ")]
     MPQ(#[from] nom_mpq::MPQParserError),
+    /// The bit packed and byte aligned decoders of the protocol types.
+    #[error(transparent)]
+    SerdeMpq(#[from] serde_mpq::Error),
     /// The protocol version is not yet supported.
     #[error("Unsupported Protocol Version: {0}")]
     UnsupportedProtocolVersion(u32),

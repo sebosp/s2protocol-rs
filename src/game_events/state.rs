@@ -340,27 +340,10 @@ pub fn handle_selection_delta(
     )
 }
 
-/// Whether the unit at the index of a selection of `len` units is removed by the mask. The mask is
-/// read in chunks of 8 bits and the last chunk, with the remaining bits, has the lowest indices, as
-/// sc2reader reads it.
-fn is_masked(mask: &[u8], len: usize, idx: usize) -> bool {
-    let last_bits = match len % 8 {
-        0 => 8,
-        bits => bits,
-    };
-    let mut pos = idx;
-    for (chunk_idx, chunk) in mask.iter().enumerate().rev() {
-        let bits = if chunk_idx + 1 == mask.len() {
-            last_bits
-        } else {
-            8
-        };
-        if pos < bits {
-            return (chunk >> pos) & 1 == 1;
-        }
-        pos -= bits;
-    }
-    false
+/// Whether the unit at the index of the selection is removed by the mask: the mask is the integer
+/// Blizzard's decoder reads, unit `i` is its bit `i`.
+fn is_masked(mask: &crate::BitArray, idx: usize) -> bool {
+    mask.bit(idx)
 }
 
 /// The units of a selection or control group that remain after the remove mask.
@@ -379,14 +362,14 @@ pub fn remove_from_selection(current: &[u32], mask: &GameSSelectionMask) -> Vec<
     match mask {
         GameSSelectionMask::None => current.to_vec(),
         GameSSelectionMask::Mask(mask) => {
-            if mask.value.len() != current.len().div_ceil(8) {
+            if mask.value.bits != current.len() {
                 tracing::debug!(
-                    "Selection mask of {} bytes for {} units",
-                    mask.value.len(),
+                    "Selection mask of {} bits for {} units",
+                    mask.value.bits,
                     current.len()
                 );
             }
-            keep_by_index(&|idx| !is_masked(&mask.value, current.len(), idx))
+            keep_by_index(&|idx| !is_masked(&mask.value, idx))
         }
         GameSSelectionMask::OneIndices(indices) => {
             keep_by_index(&|idx| !indices.value.contains(&(idx as GameTSelectionIndex)))
@@ -580,7 +563,9 @@ mod tests {
             vec![10, 30, 40]
         );
         // 0b010: the second unit is removed.
-        let mask = GameSSelectionMask::Mask(GameSelectionMaskType { value: vec![0b010] });
+        let mask = GameSSelectionMask::Mask(GameSelectionMaskType {
+            value: crate::BitArray::new(3, vec![0b010]),
+        });
         assert_eq!(
             apply_selection_delta(&current, &delta(mask, &[])),
             vec![10, 30]
@@ -588,10 +573,10 @@ mod tests {
     }
 
     #[test]
-    fn it_reads_the_lowest_indices_from_the_last_chunk_of_the_mask() {
-        // 10 units: a chunk of 8 bits, then a chunk of 2 bits with the indices 0 and 1.
-        let mask = [0b1000_0000, 0b01];
-        let masked: Vec<usize> = (0..10).filter(|idx| is_masked(&mask, 10, *idx)).collect();
+    fn it_reads_the_lowest_indices_from_the_lowest_bits_of_the_mask() {
+        // 10 units: the integer 0b10_0000_0001 has the bits 0 and 9 set.
+        let mask = crate::BitArray::new(10, vec![0b10, 0b0000_0001]);
+        let masked: Vec<usize> = (0..10).filter(|idx| is_masked(&mask, *idx)).collect();
         assert_eq!(masked, vec![0, 9]);
     }
 }

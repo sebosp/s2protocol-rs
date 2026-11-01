@@ -12,7 +12,6 @@ pub mod dir_stats;
 pub mod error;
 pub mod filters;
 pub mod game_events;
-pub mod generator;
 pub mod init_data;
 pub mod message_events;
 pub mod protocol_version_decoder;
@@ -37,13 +36,10 @@ pub use arrow_store::*;
 pub use bit_packed_decoder::*;
 use chrono::DateTime;
 use chrono::Utc;
-use colored::*;
 pub use common::*;
 pub use error::*;
 pub use filters::*;
 pub use init_data::*;
-use nom::IResult;
-use nom::number::complete::u8;
 pub use protocol_version_decoder::read_protocol_header;
 use std::collections::HashMap;
 use std::io::Read;
@@ -53,24 +49,14 @@ pub use versioned_decoder::*;
 
 pub use nom_mpq::MPQ;
 /// Re-export to avoid having to also add this crate to other consumers.
-pub use nom_mpq::parser::{self, peek_hex};
-
-/// Many fields are optional, this macro will return an Ok for the nom::IResult but the value will
-/// be an Err(S2ProtocolError::MissingField) if the field is not present.
-/// This allows for avoiding panic!() and instead can be ?
-#[macro_export]
-macro_rules! ok_or_return_missing_field_err {
-    ($req_field:ident) => {
-        match $req_field {
-            Some(v) => v,
-            None => {
-                return Err(S2ProtocolError::MissingField(
-                    stringify!($req_field).to_string(),
-                ));
-            }
-        }
-    };
-}
+pub use nom_mpq::parser;
+pub use serde_mpq::peek::*;
+pub use serde_mpq::{
+    BitArray, BitInput, BitPackedDeserialize, BitPackedSerialize, BitResult, BitWriter,
+    ByteAlignedDeserialize, ByteAlignedSerialize, ByteResult, ByteWriter,
+    MAX_INITIAL_CAPACITY_BYTES, MPQBitPackedDeserialize, MPQBitPackedSerialize,
+    MPQByteAlignedDeserialize, MPQByteAlignedSerialize,
+};
 
 /// Reads a file into memory.
 pub fn read_file(path: &PathBuf) -> Result<Vec<u8>, S2ProtocolError> {
@@ -80,11 +66,6 @@ pub fn read_file(path: &PathBuf) -> Result<Vec<u8>, S2ProtocolError> {
     Ok(buffer)
 }
 
-/// Pre-allocating memory is a nice optimization but count fields can't
-/// always be trusted. (Copied from nom::multi source.).
-/// This is used for arrays.
-pub const MAX_INITIAL_CAPACITY_BYTES: usize = 65536;
-
 /// Reads the MPQ file and returns both the MPQ read file and the reference to its contents.
 pub fn read_mpq(path: &str) -> Result<(MPQ, Vec<u8>), S2ProtocolError> {
     tracing::info!("Processing MPQ file {}", path);
@@ -92,84 +73,6 @@ pub fn read_mpq(path: &str) -> Result<(MPQ, Vec<u8>), S2ProtocolError> {
     let file_contents = crate::read_file(&path)?;
     let (_, mpq) = parser::parse(&file_contents)?;
     Ok((mpq, file_contents))
-}
-
-/// Creates a colored binary representation of the input.
-/// The pre-amble bits are set to blue (these are bits previously processed)
-/// The current position, is set to green color.
-/// The remaining bits are colored in yellow. These are un-processed bits)
-pub fn peek_bits(input: (&[u8], usize)) -> String {
-    if input.0.is_empty() {
-        return String::from("[]");
-    }
-    let input_str = format!("{:08b}", input.0[0]);
-    let mut res = String::from("[0b");
-    for (idx, bit_str) in input_str.chars().enumerate() {
-        match idx.cmp(&input.1) {
-            std::cmp::Ordering::Less => res.push_str(&format!("{bit_str}").blue()),
-            std::cmp::Ordering::Equal => res.push_str(&format!(">{bit_str}<").green()),
-            std::cmp::Ordering::Greater => res.push_str(&format!("{bit_str}").yellow()),
-        };
-    }
-    res.push(']');
-    res.push_str(&peek_hex(input.0));
-    res
-}
-
-/// Returns the 8 bytes following where the error was found for context.
-#[allow(clippy::type_complexity)]
-pub fn dbg_peek_bits<'a, F, O, E: std::fmt::Debug>(
-    mut f: F,
-    context: &'static str,
-) -> impl FnMut((&'a [u8], usize)) -> IResult<(&'a [u8], usize), O, E>
-where
-    F: FnMut((&'a [u8], usize)) -> IResult<(&'a [u8], usize), O, E>,
-{
-    move |i: (&'a [u8], usize)| match f(i) {
-        Err(e) => {
-            tracing::error!("{}: Error({:?}) at: {}", context, e, peek_bits(i));
-            Err(e)
-        }
-        a => a,
-    }
-}
-
-/// Returns the 8 bytes following where the error was found for context.
-pub fn dbg_peek_hex<'a, F, O, E: std::fmt::Debug>(
-    mut f: F,
-    context: &'static str,
-) -> impl FnMut(&'a [u8]) -> IResult<&'a [u8], O, E>
-where
-    F: FnMut(&'a [u8]) -> IResult<&'a [u8], O, E>,
-{
-    move |i: &'a [u8]| match f(i) {
-        Err(e) => {
-            tracing::error!("{}: Error({:?}) at: {}", context, e, peek_hex(i));
-            Err(e)
-        }
-        a => a,
-    }
-}
-
-/// Reads a VLQ Int that is prepend by its tag
-#[tracing::instrument(level = "debug", skip(input), fields(input = peek_hex(input)))]
-#[allow(clippy::unnecessary_cast)]
-pub fn parse_vlq_int(input: &[u8]) -> IResult<&[u8], i64> {
-    let (mut tail, mut v_int_value) = dbg_peek_hex(u8, "v_int")(input)?;
-    let is_negative = v_int_value & 1 != 0;
-    let mut result: i64 = ((v_int_value >> 1) & 0x3f) as i64;
-    let mut bits: i64 = 6;
-    while (v_int_value & 0x80) != 0 {
-        let (new_tail, new_v_int_value) = dbg_peek_hex(u8, "v_int")(tail)?;
-        tail = new_tail;
-        result |= ((new_v_int_value as i64 & 0x7fi64) << bits) as i64;
-        v_int_value = new_v_int_value;
-        bits += 7;
-    }
-    if is_negative {
-        result = -result;
-    }
-    Ok((tail, result))
 }
 
 /// Transforms the details MPQ sector time utc and local offset into possibly chrono::NaiveDateTime

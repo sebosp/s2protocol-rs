@@ -162,886 +162,256 @@ pub mod bit_packed {
     use crate::*;
     use nom::*;
 
-    #[derive(Debug, PartialEq, Clone)]
+    #[derive(Debug, PartialEq, Clone, MPQBitPackedDeserialize, MPQBitPackedSerialize)]
+    #[mpq(choice, bits = 7)]
     pub(crate) enum GameEEventId {
+        #[mpq(tag = 0)]
         ESetLobbySlot(GameSSetLobbySlotEvent),
+        #[mpq(tag = 1)]
         EDropUser(GameSDropUserEvent),
+        #[mpq(tag = 2)]
         EStartGame(GameSStartGameEvent),
+        #[mpq(tag = 3)]
         EDropOurselves(GameSDropOurselvesEvent),
+        #[mpq(tag = 4)]
         EUserFinishedLoading(GameSUserFinishedLoadingEvent),
+        #[mpq(tag = 5)]
         EUserFinishedLoadingSync(GameSUserFinishedLoadingSyncEvent),
+        #[mpq(tag = 6)]
         ESetGameDuration(GameSSetGameDurationEvent),
+        #[mpq(tag = 7)]
         EUserOptions(GameSUserOptionsEvent),
+        #[mpq(tag = 114)]
         EPickMapTag(GameSPickMapTagEvent),
+        #[mpq(tag = 8)]
         ETurn(GameSTurnEvent),
+        #[mpq(tag = 9)]
         EBankFile(GameSBankFileEvent),
+        #[mpq(tag = 10)]
         EBankSection(GameSBankSectionEvent),
+        #[mpq(tag = 11)]
         EBankKey(GameSBankKeyEvent),
+        #[mpq(tag = 12)]
         EBankValue(GameSBankValueEvent),
+        #[mpq(tag = 13)]
         EBankSignature(GameSBankSignatureEvent),
+        #[mpq(tag = 14)]
         ECameraSave(GameSCameraSaveEvent),
+        #[mpq(tag = 15)]
         EPauseGame(GameSPauseGameEvent),
+        #[mpq(tag = 16)]
         EUnpauseGame(GameSUnpauseGameEvent),
+        #[mpq(tag = 17)]
         ESingleStepGame(GameSSingleStepGameEvent),
+        #[mpq(tag = 18)]
         ESetGameSpeed(GameSSetGameSpeedEvent),
+        #[mpq(tag = 19)]
         EAddGameSpeed(GameSAddGameSpeedEvent),
+        #[mpq(tag = 20)]
         EReplayJump(GameSReplayJumpEvent),
+        #[mpq(tag = 21)]
         ESaveGame(GameSSaveGameEvent),
+        #[mpq(tag = 22)]
         ESaveGameDone(GameSSaveGameDoneEvent),
+        #[mpq(tag = 23)]
         ELoadGameDone(GameSLoadGameDoneEvent),
+        #[mpq(tag = 24)]
         ESessionCheat(GameSSessionCheatEvent),
+        #[mpq(tag = 25)]
         ECommandManagerReset(GameSCommandManagerResetEvent),
+        #[mpq(tag = 26)]
         EGameCheat(GameSGameCheatEvent),
+        #[mpq(tag = 27)]
         ECmd(GameSCmdEvent),
+        #[mpq(tag = 28)]
         ESelectionDelta(GameSSelectionDeltaEvent),
+        #[mpq(tag = 29)]
         EControlGroupUpdate(GameSControlGroupUpdateEvent),
+        #[mpq(tag = 30)]
         ESelectionSyncCheck(GameSSelectionSyncCheckEvent),
+        #[mpq(tag = 31)]
         EResourceTrade(GameSResourceTradeEvent),
+        #[mpq(tag = 32)]
         ETriggerChatMessage(GameSTriggerChatMessageEvent),
+        #[mpq(tag = 33)]
         EAiCommunicate(GameSaiCommunicateEvent),
+        #[mpq(tag = 34)]
         ESetAbsoluteGameSpeed(GameSSetAbsoluteGameSpeedEvent),
+        #[mpq(tag = 35)]
         EAddAbsoluteGameSpeed(GameSAddAbsoluteGameSpeedEvent),
+        #[mpq(tag = 36)]
         ETriggerPing(GameSTriggerPingEvent),
+        #[mpq(tag = 37)]
         EBroadcastCheat(GameSBroadcastCheatEvent),
+        #[mpq(tag = 38)]
         EAlliance(GameSAllianceEvent),
+        #[mpq(tag = 39)]
         EUnitClick(GameSUnitClickEvent),
+        #[mpq(tag = 40)]
         EUnitHighlight(GameSUnitHighlightEvent),
+        #[mpq(tag = 41)]
         ETriggerReplySelected(GameSTriggerReplySelectedEvent),
+        #[mpq(tag = 42)]
         EHijackReplaySession(GameSHijackReplaySessionEvent),
+        #[mpq(tag = 43)]
         EHijackReplayGame(GameSHijackReplayGameEvent),
+        #[mpq(tag = 44)]
         ETriggerSkipped(GameSTriggerSkippedEvent),
+        #[mpq(tag = 45)]
         ETriggerSoundLengthQuery(GameSTriggerSoundLengthQueryEvent),
+        #[mpq(tag = 46)]
         ETriggerSoundOffset(GameSTriggerSoundOffsetEvent),
+        #[mpq(tag = 47)]
         ETriggerTransmissionOffset(GameSTriggerTransmissionOffsetEvent),
+        #[mpq(tag = 48)]
         ETriggerTransmissionComplete(GameSTriggerTransmissionCompleteEvent),
+        #[mpq(tag = 49)]
         ECameraUpdate(GameSCameraUpdateEvent),
+        #[mpq(tag = 50)]
         ETriggerAbortMission(GameSTriggerAbortMissionEvent),
+        #[mpq(tag = 51)]
         ETriggerPurchaseMade(GameSTriggerPurchaseMadeEvent),
+        #[mpq(tag = 52)]
         ETriggerPurchaseExit(GameSTriggerPurchaseExitEvent),
+        #[mpq(tag = 53)]
         ETriggerPlanetMissionLaunched(GameSTriggerPlanetMissionLaunchedEvent),
+        #[mpq(tag = 54)]
         ETriggerPlanetPanelCanceled(GameSTriggerPlanetPanelCanceledEvent),
+        #[mpq(tag = 55)]
         ETriggerDialogControl(GameSTriggerDialogControlEvent),
+        #[mpq(tag = 56)]
         ETriggerSoundLengthSync(GameSTriggerSoundLengthSyncEvent),
+        #[mpq(tag = 57)]
         ETriggerConversationSkipped(GameSTriggerConversationSkippedEvent),
+        #[mpq(tag = 58)]
         ETriggerMouseClicked(GameSTriggerMouseClickedEvent),
+        #[mpq(tag = 59)]
         ETriggerMouseMoved(GameSTriggerMouseMovedEvent),
+        #[mpq(tag = 60)]
         EAchievementAwarded(GameSAchievementAwardedEvent),
+        #[mpq(tag = 61)]
         ETriggerHotkeyPressed(GameSTriggerHotkeyPressedEvent),
+        #[mpq(tag = 62)]
         ETriggerTargetModeUpdate(GameSTriggerTargetModeUpdateEvent),
+        #[mpq(tag = 63)]
         ETriggerPlanetPanelPanelReplay(GameSTriggerPlanetPanelReplayEvent),
+        #[mpq(tag = 64)]
         ETriggerSoundtrackDone(GameSTriggerSoundtrackDoneEvent),
+        #[mpq(tag = 65)]
         ETriggerPlanetMissionSelected(GameSTriggerPlanetMissionSelectedEvent),
+        #[mpq(tag = 66)]
         ETriggerKeyPressed(GameSTriggerKeyPressedEvent),
+        #[mpq(tag = 67)]
         ETriggerMovieFunction(GameSTriggerMovieFunctionEvent),
+        #[mpq(tag = 68)]
         ETriggerPlanetPanelPanelBirthComplete(GameSTriggerPlanetPanelBirthCompleteEvent),
+        #[mpq(tag = 69)]
         ETriggerPlanetPanelPanelDeathComplete(GameSTriggerPlanetPanelDeathCompleteEvent),
+        #[mpq(tag = 70)]
         EResourceRequest(GameSResourceRequestEvent),
+        #[mpq(tag = 71)]
         EResourceRequestFulfill(GameSResourceRequestFulfillEvent),
+        #[mpq(tag = 72)]
         EResourceRequestCancel(GameSResourceRequestCancelEvent),
+        #[mpq(tag = 73)]
         ETriggerResearchPanelExit(GameSTriggerResearchPanelExitEvent),
+        #[mpq(tag = 74)]
         ETriggerResearchPanelPurchase(GameSTriggerResearchPanelPurchaseEvent),
+        #[mpq(tag = 75)]
         ETriggerResearchPanelSelectionChanged(GameSTriggerResearchPanelSelectionChangedEvent),
+        #[mpq(tag = 76)]
         ETriggerCommandError(GameSTriggerCommandErrorEvent),
+        #[mpq(tag = 77)]
         ETriggerMercenaryPanelExit(GameSTriggerMercenaryPanelExitEvent),
+        #[mpq(tag = 78)]
         ETriggerMercenaryPanelPurchase(GameSTriggerMercenaryPanelPurchaseEvent),
+        #[mpq(tag = 79)]
         ETriggerMercenaryPanelSelectionChanged(GameSTriggerMercenaryPanelSelectionChangedEvent),
+        #[mpq(tag = 80)]
         ETriggerVictoryPanelExit(GameSTriggerVictoryPanelExitEvent),
+        #[mpq(tag = 81)]
         ETriggerBattleReportPanelExit(GameSTriggerBattleReportPanelExitEvent),
+        #[mpq(tag = 82)]
         ETriggerBattleReportPanelPlayMission(GameSTriggerBattleReportPanelPlayMissionEvent),
+        #[mpq(tag = 83)]
         ETriggerBattleReportPanelPlayScene(GameSTriggerBattleReportPanelPlaySceneEvent),
+        #[mpq(tag = 84)]
         ETriggerBattleReportSelectionChanged(GameSTriggerBattleReportPanelSelectionChangedEvent),
+        #[mpq(tag = 85)]
         ETriggerVictoryPanelPlayMissionAgain(GameSTriggerVictoryPanelPlayMissionAgainEvent),
+        #[mpq(tag = 86)]
         ETriggerMovieStarted(GameSTriggerMovieStartedEvent),
+        #[mpq(tag = 87)]
         ETriggerMovieFinished(GameSTriggerMovieFinishedEvent),
+        #[mpq(tag = 88)]
         EDecrementGameTimeRemaining(GameSDecrementGameTimeRemainingEvent),
+        #[mpq(tag = 89)]
         ETriggerPortraitLoaded(GameSTriggerPortraitLoadedEvent),
+        #[mpq(tag = 90)]
         ETriggerQueryDialogDismissed(GameSTriggerCustomDialogDismissedEvent),
+        #[mpq(tag = 91)]
         ETriggerGameMenuItemSelected(GameSTriggerGameMenuItemSelectedEvent),
+        #[mpq(tag = 92)]
         ETriggerMouseWheel(GameSTriggerMouseWheelEvent),
+        #[mpq(tag = 93)]
         ETriggerPurchasePanelSelectedPurchaseItemChanged(
             GameSTriggerPurchasePanelSelectedPurchaseItemChangedEvent,
         ),
+        #[mpq(tag = 94)]
         ETriggerPurchasePanelSelectedPurchaseCategoryChanged(
             GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent,
         ),
+        #[mpq(tag = 95)]
         ETriggerButtonPressed(GameSTriggerButtonPressedEvent),
+        #[mpq(tag = 96)]
         ETriggerGameCreditsFinished(GameSTriggerGameCreditsFinishedEvent),
+        #[mpq(tag = 97)]
         ETriggerCutsceneBookmarkFired(GameSTriggerCutsceneBookmarkFiredEvent),
+        #[mpq(tag = 98)]
         ETriggerCutsceneEndSceneFired(GameSTriggerCutsceneEndSceneFiredEvent),
+        #[mpq(tag = 99)]
         ETriggerCutsceneConversationLine(GameSTriggerCutsceneConversationLineEvent),
+        #[mpq(tag = 100)]
         ETriggerCutsceneConversationLineMissing(GameSTriggerCutsceneConversationLineMissingEvent),
+        #[mpq(tag = 101)]
         EGameUserLeave(GameSGameUserLeaveEvent),
+        #[mpq(tag = 102)]
         EGameUserJoin(GameSGameUserJoinEvent),
+        #[mpq(tag = 103)]
         ECommandManagerState(GameSCommandManagerStateEvent),
+        #[mpq(tag = 104)]
         ECmdUpdateTargetPoint(GameSCmdUpdateTargetPointEvent),
+        #[mpq(tag = 105)]
         ECmdUpdateTargetUnit(GameSCmdUpdateTargetUnitEvent),
+        #[mpq(tag = 106)]
         ETriggerAnimLengthQueryByName(GameSTriggerAnimLengthQueryByNameEvent),
+        #[mpq(tag = 107)]
         ETriggerAnimLengthQueryByProps(GameSTriggerAnimLengthQueryByPropsEvent),
+        #[mpq(tag = 108)]
         ETriggerAnimOffset(GameSTriggerAnimOffsetEvent),
+        #[mpq(tag = 109)]
         ECatalogModify(GameSCatalogModifyEvent),
+        #[mpq(tag = 110)]
         EHeroTalentTreeSelected(GameSHeroTalentTreeSelectedEvent),
+        #[mpq(tag = 111)]
         ETriggerProfilerLoggingFinished(GameSTriggerProfilerLoggingFinishedEvent),
+        #[mpq(tag = 112)]
         EHeroTalentTreeSelectionPanelToggled(GameSHeroTalentTreeSelectionPanelToggledEvent),
+        #[mpq(tag = 113)]
         EMuteUserChanged(GameSMuteChatEvent),
+        #[mpq(tag = 115)]
         EConvertToReplaySession(GameSConvertToReplaySessionEvent),
+        #[mpq(tag = 116)]
         ESetSyncLoadingTime(GameSSetSyncLoadingTimeEvent),
+        #[mpq(tag = 117)]
         ESetSyncPlayingTime(GameSSetSyncPlayingTimeEvent),
+        #[mpq(tag = 118)]
         EPeerSetSyncLoadingTime(GameSPeerSetSyncLoadingTimeEvent),
+        #[mpq(tag = 119)]
         EPeerSetSyncPlayingTime(GameSPeerSetSyncPlayingTimeEvent),
     }
 
     impl GameEEventId {
-        #[tracing::instrument(name="75689::GameEEventId::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
-            // Total fields: 120
-            let num_bits: usize = 7;
-            let (tail, variant_tag) = parse_packed_int(input, 0, num_bits)?;
-            match variant_tag {
-                0 => {
-                    tracing::debug!("Variant ESetLobbySlot for value '0'");
-
-                    let (tail, res) = GameSSetLobbySlotEvent::parse(tail)?;
-                    Ok((tail, Self::ESetLobbySlot(res)))
-                }
-                1 => {
-                    tracing::debug!("Variant EDropUser for value '1'");
-
-                    let (tail, res) = GameSDropUserEvent::parse(tail)?;
-                    Ok((tail, Self::EDropUser(res)))
-                }
-                2 => {
-                    tracing::debug!("Variant EStartGame for value '2'");
-
-                    let (tail, res) = GameSStartGameEvent::parse(tail)?;
-                    Ok((tail, Self::EStartGame(res)))
-                }
-                3 => {
-                    tracing::debug!("Variant EDropOurselves for value '3'");
-
-                    let (tail, res) = GameSDropOurselvesEvent::parse(tail)?;
-                    Ok((tail, Self::EDropOurselves(res)))
-                }
-                4 => {
-                    tracing::debug!("Variant EUserFinishedLoading for value '4'");
-
-                    let (tail, res) = GameSUserFinishedLoadingEvent::parse(tail)?;
-                    Ok((tail, Self::EUserFinishedLoading(res)))
-                }
-                5 => {
-                    tracing::debug!("Variant EUserFinishedLoadingSync for value '5'");
-
-                    let (tail, res) = GameSUserFinishedLoadingSyncEvent::parse(tail)?;
-                    Ok((tail, Self::EUserFinishedLoadingSync(res)))
-                }
-                6 => {
-                    tracing::debug!("Variant ESetGameDuration for value '6'");
-
-                    let (tail, res) = GameSSetGameDurationEvent::parse(tail)?;
-                    Ok((tail, Self::ESetGameDuration(res)))
-                }
-                7 => {
-                    tracing::debug!("Variant EUserOptions for value '7'");
-
-                    let (tail, res) = GameSUserOptionsEvent::parse(tail)?;
-                    Ok((tail, Self::EUserOptions(res)))
-                }
-                114 => {
-                    tracing::debug!("Variant EPickMapTag for value '114'");
-
-                    let (tail, res) = GameSPickMapTagEvent::parse(tail)?;
-                    Ok((tail, Self::EPickMapTag(res)))
-                }
-                8 => {
-                    tracing::debug!("Variant ETurn for value '8'");
-
-                    let (tail, res) = GameSTurnEvent::parse(tail)?;
-                    Ok((tail, Self::ETurn(res)))
-                }
-                9 => {
-                    tracing::debug!("Variant EBankFile for value '9'");
-
-                    let (tail, res) = GameSBankFileEvent::parse(tail)?;
-                    Ok((tail, Self::EBankFile(res)))
-                }
-                10 => {
-                    tracing::debug!("Variant EBankSection for value '10'");
-
-                    let (tail, res) = GameSBankSectionEvent::parse(tail)?;
-                    Ok((tail, Self::EBankSection(res)))
-                }
-                11 => {
-                    tracing::debug!("Variant EBankKey for value '11'");
-
-                    let (tail, res) = GameSBankKeyEvent::parse(tail)?;
-                    Ok((tail, Self::EBankKey(res)))
-                }
-                12 => {
-                    tracing::debug!("Variant EBankValue for value '12'");
-
-                    let (tail, res) = GameSBankValueEvent::parse(tail)?;
-                    Ok((tail, Self::EBankValue(res)))
-                }
-                13 => {
-                    tracing::debug!("Variant EBankSignature for value '13'");
-
-                    let (tail, res) = GameSBankSignatureEvent::parse(tail)?;
-                    Ok((tail, Self::EBankSignature(res)))
-                }
-                14 => {
-                    tracing::debug!("Variant ECameraSave for value '14'");
-
-                    let (tail, res) = GameSCameraSaveEvent::parse(tail)?;
-                    Ok((tail, Self::ECameraSave(res)))
-                }
-                15 => {
-                    tracing::debug!("Variant EPauseGame for value '15'");
-
-                    let (tail, res) = GameSPauseGameEvent::parse(tail)?;
-                    Ok((tail, Self::EPauseGame(res)))
-                }
-                16 => {
-                    tracing::debug!("Variant EUnpauseGame for value '16'");
-
-                    let (tail, res) = GameSUnpauseGameEvent::parse(tail)?;
-                    Ok((tail, Self::EUnpauseGame(res)))
-                }
-                17 => {
-                    tracing::debug!("Variant ESingleStepGame for value '17'");
-
-                    let (tail, res) = GameSSingleStepGameEvent::parse(tail)?;
-                    Ok((tail, Self::ESingleStepGame(res)))
-                }
-                18 => {
-                    tracing::debug!("Variant ESetGameSpeed for value '18'");
-
-                    let (tail, res) = GameSSetGameSpeedEvent::parse(tail)?;
-                    Ok((tail, Self::ESetGameSpeed(res)))
-                }
-                19 => {
-                    tracing::debug!("Variant EAddGameSpeed for value '19'");
-
-                    let (tail, res) = GameSAddGameSpeedEvent::parse(tail)?;
-                    Ok((tail, Self::EAddGameSpeed(res)))
-                }
-                20 => {
-                    tracing::debug!("Variant EReplayJump for value '20'");
-
-                    let (tail, res) = GameSReplayJumpEvent::parse(tail)?;
-                    Ok((tail, Self::EReplayJump(res)))
-                }
-                21 => {
-                    tracing::debug!("Variant ESaveGame for value '21'");
-
-                    let (tail, res) = GameSSaveGameEvent::parse(tail)?;
-                    Ok((tail, Self::ESaveGame(res)))
-                }
-                22 => {
-                    tracing::debug!("Variant ESaveGameDone for value '22'");
-
-                    let (tail, res) = GameSSaveGameDoneEvent::parse(tail)?;
-                    Ok((tail, Self::ESaveGameDone(res)))
-                }
-                23 => {
-                    tracing::debug!("Variant ELoadGameDone for value '23'");
-
-                    let (tail, res) = GameSLoadGameDoneEvent::parse(tail)?;
-                    Ok((tail, Self::ELoadGameDone(res)))
-                }
-                24 => {
-                    tracing::debug!("Variant ESessionCheat for value '24'");
-
-                    let (tail, res) = GameSSessionCheatEvent::parse(tail)?;
-                    Ok((tail, Self::ESessionCheat(res)))
-                }
-                25 => {
-                    tracing::debug!("Variant ECommandManagerReset for value '25'");
-
-                    let (tail, res) = GameSCommandManagerResetEvent::parse(tail)?;
-                    Ok((tail, Self::ECommandManagerReset(res)))
-                }
-                26 => {
-                    tracing::debug!("Variant EGameCheat for value '26'");
-
-                    let (tail, res) = GameSGameCheatEvent::parse(tail)?;
-                    Ok((tail, Self::EGameCheat(res)))
-                }
-                27 => {
-                    tracing::debug!("Variant ECmd for value '27'");
-
-                    let (tail, res) = GameSCmdEvent::parse(tail)?;
-                    Ok((tail, Self::ECmd(res)))
-                }
-                28 => {
-                    tracing::debug!("Variant ESelectionDelta for value '28'");
-
-                    let (tail, res) = GameSSelectionDeltaEvent::parse(tail)?;
-                    Ok((tail, Self::ESelectionDelta(res)))
-                }
-                29 => {
-                    tracing::debug!("Variant EControlGroupUpdate for value '29'");
-
-                    let (tail, res) = GameSControlGroupUpdateEvent::parse(tail)?;
-                    Ok((tail, Self::EControlGroupUpdate(res)))
-                }
-                30 => {
-                    tracing::debug!("Variant ESelectionSyncCheck for value '30'");
-
-                    let (tail, res) = GameSSelectionSyncCheckEvent::parse(tail)?;
-                    Ok((tail, Self::ESelectionSyncCheck(res)))
-                }
-                31 => {
-                    tracing::debug!("Variant EResourceTrade for value '31'");
-
-                    let (tail, res) = GameSResourceTradeEvent::parse(tail)?;
-                    Ok((tail, Self::EResourceTrade(res)))
-                }
-                32 => {
-                    tracing::debug!("Variant ETriggerChatMessage for value '32'");
-
-                    let (tail, res) = GameSTriggerChatMessageEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerChatMessage(res)))
-                }
-                33 => {
-                    tracing::debug!("Variant EAiCommunicate for value '33'");
-
-                    let (tail, res) = GameSaiCommunicateEvent::parse(tail)?;
-                    Ok((tail, Self::EAiCommunicate(res)))
-                }
-                34 => {
-                    tracing::debug!("Variant ESetAbsoluteGameSpeed for value '34'");
-
-                    let (tail, res) = GameSSetAbsoluteGameSpeedEvent::parse(tail)?;
-                    Ok((tail, Self::ESetAbsoluteGameSpeed(res)))
-                }
-                35 => {
-                    tracing::debug!("Variant EAddAbsoluteGameSpeed for value '35'");
-
-                    let (tail, res) = GameSAddAbsoluteGameSpeedEvent::parse(tail)?;
-                    Ok((tail, Self::EAddAbsoluteGameSpeed(res)))
-                }
-                36 => {
-                    tracing::debug!("Variant ETriggerPing for value '36'");
-
-                    let (tail, res) = GameSTriggerPingEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerPing(res)))
-                }
-                37 => {
-                    tracing::debug!("Variant EBroadcastCheat for value '37'");
-
-                    let (tail, res) = GameSBroadcastCheatEvent::parse(tail)?;
-                    Ok((tail, Self::EBroadcastCheat(res)))
-                }
-                38 => {
-                    tracing::debug!("Variant EAlliance for value '38'");
-
-                    let (tail, res) = GameSAllianceEvent::parse(tail)?;
-                    Ok((tail, Self::EAlliance(res)))
-                }
-                39 => {
-                    tracing::debug!("Variant EUnitClick for value '39'");
-
-                    let (tail, res) = GameSUnitClickEvent::parse(tail)?;
-                    Ok((tail, Self::EUnitClick(res)))
-                }
-                40 => {
-                    tracing::debug!("Variant EUnitHighlight for value '40'");
-
-                    let (tail, res) = GameSUnitHighlightEvent::parse(tail)?;
-                    Ok((tail, Self::EUnitHighlight(res)))
-                }
-                41 => {
-                    tracing::debug!("Variant ETriggerReplySelected for value '41'");
-
-                    let (tail, res) = GameSTriggerReplySelectedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerReplySelected(res)))
-                }
-                42 => {
-                    tracing::debug!("Variant EHijackReplaySession for value '42'");
-
-                    let (tail, res) = GameSHijackReplaySessionEvent::parse(tail)?;
-                    Ok((tail, Self::EHijackReplaySession(res)))
-                }
-                43 => {
-                    tracing::debug!("Variant EHijackReplayGame for value '43'");
-
-                    let (tail, res) = GameSHijackReplayGameEvent::parse(tail)?;
-                    Ok((tail, Self::EHijackReplayGame(res)))
-                }
-                44 => {
-                    tracing::debug!("Variant ETriggerSkipped for value '44'");
-
-                    let (tail, res) = GameSTriggerSkippedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerSkipped(res)))
-                }
-                45 => {
-                    tracing::debug!("Variant ETriggerSoundLengthQuery for value '45'");
-
-                    let (tail, res) = GameSTriggerSoundLengthQueryEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerSoundLengthQuery(res)))
-                }
-                46 => {
-                    tracing::debug!("Variant ETriggerSoundOffset for value '46'");
-
-                    let (tail, res) = GameSTriggerSoundOffsetEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerSoundOffset(res)))
-                }
-                47 => {
-                    tracing::debug!("Variant ETriggerTransmissionOffset for value '47'");
-
-                    let (tail, res) = GameSTriggerTransmissionOffsetEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerTransmissionOffset(res)))
-                }
-                48 => {
-                    tracing::debug!("Variant ETriggerTransmissionComplete for value '48'");
-
-                    let (tail, res) = GameSTriggerTransmissionCompleteEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerTransmissionComplete(res)))
-                }
-                49 => {
-                    tracing::debug!("Variant ECameraUpdate for value '49'");
-
-                    let (tail, res) = GameSCameraUpdateEvent::parse(tail)?;
-                    Ok((tail, Self::ECameraUpdate(res)))
-                }
-                50 => {
-                    tracing::debug!("Variant ETriggerAbortMission for value '50'");
-
-                    let (tail, res) = GameSTriggerAbortMissionEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerAbortMission(res)))
-                }
-                51 => {
-                    tracing::debug!("Variant ETriggerPurchaseMade for value '51'");
-
-                    let (tail, res) = GameSTriggerPurchaseMadeEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerPurchaseMade(res)))
-                }
-                52 => {
-                    tracing::debug!("Variant ETriggerPurchaseExit for value '52'");
-
-                    let (tail, res) = GameSTriggerPurchaseExitEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerPurchaseExit(res)))
-                }
-                53 => {
-                    tracing::debug!("Variant ETriggerPlanetMissionLaunched for value '53'");
-
-                    let (tail, res) = GameSTriggerPlanetMissionLaunchedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerPlanetMissionLaunched(res)))
-                }
-                54 => {
-                    tracing::debug!("Variant ETriggerPlanetPanelCanceled for value '54'");
-
-                    let (tail, res) = GameSTriggerPlanetPanelCanceledEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerPlanetPanelCanceled(res)))
-                }
-                55 => {
-                    tracing::debug!("Variant ETriggerDialogControl for value '55'");
-
-                    let (tail, res) = GameSTriggerDialogControlEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerDialogControl(res)))
-                }
-                56 => {
-                    tracing::debug!("Variant ETriggerSoundLengthSync for value '56'");
-
-                    let (tail, res) = GameSTriggerSoundLengthSyncEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerSoundLengthSync(res)))
-                }
-                57 => {
-                    tracing::debug!("Variant ETriggerConversationSkipped for value '57'");
-
-                    let (tail, res) = GameSTriggerConversationSkippedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerConversationSkipped(res)))
-                }
-                58 => {
-                    tracing::debug!("Variant ETriggerMouseClicked for value '58'");
-
-                    let (tail, res) = GameSTriggerMouseClickedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerMouseClicked(res)))
-                }
-                59 => {
-                    tracing::debug!("Variant ETriggerMouseMoved for value '59'");
-
-                    let (tail, res) = GameSTriggerMouseMovedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerMouseMoved(res)))
-                }
-                60 => {
-                    tracing::debug!("Variant EAchievementAwarded for value '60'");
-
-                    let (tail, res) = GameSAchievementAwardedEvent::parse(tail)?;
-                    Ok((tail, Self::EAchievementAwarded(res)))
-                }
-                61 => {
-                    tracing::debug!("Variant ETriggerHotkeyPressed for value '61'");
-
-                    let (tail, res) = GameSTriggerHotkeyPressedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerHotkeyPressed(res)))
-                }
-                62 => {
-                    tracing::debug!("Variant ETriggerTargetModeUpdate for value '62'");
-
-                    let (tail, res) = GameSTriggerTargetModeUpdateEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerTargetModeUpdate(res)))
-                }
-                63 => {
-                    tracing::debug!("Variant ETriggerPlanetPanelPanelReplay for value '63'");
-
-                    let (tail, res) = GameSTriggerPlanetPanelReplayEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerPlanetPanelPanelReplay(res)))
-                }
-                64 => {
-                    tracing::debug!("Variant ETriggerSoundtrackDone for value '64'");
-
-                    let (tail, res) = GameSTriggerSoundtrackDoneEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerSoundtrackDone(res)))
-                }
-                65 => {
-                    tracing::debug!("Variant ETriggerPlanetMissionSelected for value '65'");
-
-                    let (tail, res) = GameSTriggerPlanetMissionSelectedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerPlanetMissionSelected(res)))
-                }
-                66 => {
-                    tracing::debug!("Variant ETriggerKeyPressed for value '66'");
-
-                    let (tail, res) = GameSTriggerKeyPressedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerKeyPressed(res)))
-                }
-                67 => {
-                    tracing::debug!("Variant ETriggerMovieFunction for value '67'");
-
-                    let (tail, res) = GameSTriggerMovieFunctionEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerMovieFunction(res)))
-                }
-                68 => {
-                    tracing::debug!("Variant ETriggerPlanetPanelPanelBirthComplete for value '68'");
-
-                    let (tail, res) = GameSTriggerPlanetPanelBirthCompleteEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerPlanetPanelPanelBirthComplete(res)))
-                }
-                69 => {
-                    tracing::debug!("Variant ETriggerPlanetPanelPanelDeathComplete for value '69'");
-
-                    let (tail, res) = GameSTriggerPlanetPanelDeathCompleteEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerPlanetPanelPanelDeathComplete(res)))
-                }
-                70 => {
-                    tracing::debug!("Variant EResourceRequest for value '70'");
-
-                    let (tail, res) = GameSResourceRequestEvent::parse(tail)?;
-                    Ok((tail, Self::EResourceRequest(res)))
-                }
-                71 => {
-                    tracing::debug!("Variant EResourceRequestFulfill for value '71'");
-
-                    let (tail, res) = GameSResourceRequestFulfillEvent::parse(tail)?;
-                    Ok((tail, Self::EResourceRequestFulfill(res)))
-                }
-                72 => {
-                    tracing::debug!("Variant EResourceRequestCancel for value '72'");
-
-                    let (tail, res) = GameSResourceRequestCancelEvent::parse(tail)?;
-                    Ok((tail, Self::EResourceRequestCancel(res)))
-                }
-                73 => {
-                    tracing::debug!("Variant ETriggerResearchPanelExit for value '73'");
-
-                    let (tail, res) = GameSTriggerResearchPanelExitEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerResearchPanelExit(res)))
-                }
-                74 => {
-                    tracing::debug!("Variant ETriggerResearchPanelPurchase for value '74'");
-
-                    let (tail, res) = GameSTriggerResearchPanelPurchaseEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerResearchPanelPurchase(res)))
-                }
-                75 => {
-                    tracing::debug!("Variant ETriggerResearchPanelSelectionChanged for value '75'");
-
-                    let (tail, res) = GameSTriggerResearchPanelSelectionChangedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerResearchPanelSelectionChanged(res)))
-                }
-                76 => {
-                    tracing::debug!("Variant ETriggerCommandError for value '76'");
-
-                    let (tail, res) = GameSTriggerCommandErrorEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerCommandError(res)))
-                }
-                77 => {
-                    tracing::debug!("Variant ETriggerMercenaryPanelExit for value '77'");
-
-                    let (tail, res) = GameSTriggerMercenaryPanelExitEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerMercenaryPanelExit(res)))
-                }
-                78 => {
-                    tracing::debug!("Variant ETriggerMercenaryPanelPurchase for value '78'");
-
-                    let (tail, res) = GameSTriggerMercenaryPanelPurchaseEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerMercenaryPanelPurchase(res)))
-                }
-                79 => {
-                    tracing::debug!(
-                        "Variant ETriggerMercenaryPanelSelectionChanged for value '79'"
-                    );
-
-                    let (tail, res) = GameSTriggerMercenaryPanelSelectionChangedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerMercenaryPanelSelectionChanged(res)))
-                }
-                80 => {
-                    tracing::debug!("Variant ETriggerVictoryPanelExit for value '80'");
-
-                    let (tail, res) = GameSTriggerVictoryPanelExitEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerVictoryPanelExit(res)))
-                }
-                81 => {
-                    tracing::debug!("Variant ETriggerBattleReportPanelExit for value '81'");
-
-                    let (tail, res) = GameSTriggerBattleReportPanelExitEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerBattleReportPanelExit(res)))
-                }
-                82 => {
-                    tracing::debug!("Variant ETriggerBattleReportPanelPlayMission for value '82'");
-
-                    let (tail, res) = GameSTriggerBattleReportPanelPlayMissionEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerBattleReportPanelPlayMission(res)))
-                }
-                83 => {
-                    tracing::debug!("Variant ETriggerBattleReportPanelPlayScene for value '83'");
-
-                    let (tail, res) = GameSTriggerBattleReportPanelPlaySceneEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerBattleReportPanelPlayScene(res)))
-                }
-                84 => {
-                    tracing::debug!("Variant ETriggerBattleReportSelectionChanged for value '84'");
-
-                    let (tail, res) =
-                        GameSTriggerBattleReportPanelSelectionChangedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerBattleReportSelectionChanged(res)))
-                }
-                85 => {
-                    tracing::debug!("Variant ETriggerVictoryPanelPlayMissionAgain for value '85'");
-
-                    let (tail, res) = GameSTriggerVictoryPanelPlayMissionAgainEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerVictoryPanelPlayMissionAgain(res)))
-                }
-                86 => {
-                    tracing::debug!("Variant ETriggerMovieStarted for value '86'");
-
-                    let (tail, res) = GameSTriggerMovieStartedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerMovieStarted(res)))
-                }
-                87 => {
-                    tracing::debug!("Variant ETriggerMovieFinished for value '87'");
-
-                    let (tail, res) = GameSTriggerMovieFinishedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerMovieFinished(res)))
-                }
-                88 => {
-                    tracing::debug!("Variant EDecrementGameTimeRemaining for value '88'");
-
-                    let (tail, res) = GameSDecrementGameTimeRemainingEvent::parse(tail)?;
-                    Ok((tail, Self::EDecrementGameTimeRemaining(res)))
-                }
-                89 => {
-                    tracing::debug!("Variant ETriggerPortraitLoaded for value '89'");
-
-                    let (tail, res) = GameSTriggerPortraitLoadedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerPortraitLoaded(res)))
-                }
-                90 => {
-                    tracing::debug!("Variant ETriggerQueryDialogDismissed for value '90'");
-
-                    let (tail, res) = GameSTriggerCustomDialogDismissedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerQueryDialogDismissed(res)))
-                }
-                91 => {
-                    tracing::debug!("Variant ETriggerGameMenuItemSelected for value '91'");
-
-                    let (tail, res) = GameSTriggerGameMenuItemSelectedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerGameMenuItemSelected(res)))
-                }
-                92 => {
-                    tracing::debug!("Variant ETriggerMouseWheel for value '92'");
-
-                    let (tail, res) = GameSTriggerMouseWheelEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerMouseWheel(res)))
-                }
-                93 => {
-                    tracing::debug!(
-                        "Variant ETriggerPurchasePanelSelectedPurchaseItemChanged for value '93'"
-                    );
-
-                    let (tail, res) =
-                        GameSTriggerPurchasePanelSelectedPurchaseItemChangedEvent::parse(tail)?;
-                    Ok((
-                        tail,
-                        Self::ETriggerPurchasePanelSelectedPurchaseItemChanged(res),
-                    ))
-                }
-                94 => {
-                    tracing::debug!(
-                        "Variant ETriggerPurchasePanelSelectedPurchaseCategoryChanged for value '94'"
-                    );
-
-                    let (tail, res) =
-                        GameSTriggerPurchasePanelSelectedPurchaseCategoryChangedEvent::parse(tail)?;
-                    Ok((
-                        tail,
-                        Self::ETriggerPurchasePanelSelectedPurchaseCategoryChanged(res),
-                    ))
-                }
-                95 => {
-                    tracing::debug!("Variant ETriggerButtonPressed for value '95'");
-
-                    let (tail, res) = GameSTriggerButtonPressedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerButtonPressed(res)))
-                }
-                96 => {
-                    tracing::debug!("Variant ETriggerGameCreditsFinished for value '96'");
-
-                    let (tail, res) = GameSTriggerGameCreditsFinishedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerGameCreditsFinished(res)))
-                }
-                97 => {
-                    tracing::debug!("Variant ETriggerCutsceneBookmarkFired for value '97'");
-
-                    let (tail, res) = GameSTriggerCutsceneBookmarkFiredEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerCutsceneBookmarkFired(res)))
-                }
-                98 => {
-                    tracing::debug!("Variant ETriggerCutsceneEndSceneFired for value '98'");
-
-                    let (tail, res) = GameSTriggerCutsceneEndSceneFiredEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerCutsceneEndSceneFired(res)))
-                }
-                99 => {
-                    tracing::debug!("Variant ETriggerCutsceneConversationLine for value '99'");
-
-                    let (tail, res) = GameSTriggerCutsceneConversationLineEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerCutsceneConversationLine(res)))
-                }
-                100 => {
-                    tracing::debug!(
-                        "Variant ETriggerCutsceneConversationLineMissing for value '100'"
-                    );
-
-                    let (tail, res) =
-                        GameSTriggerCutsceneConversationLineMissingEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerCutsceneConversationLineMissing(res)))
-                }
-                101 => {
-                    tracing::debug!("Variant EGameUserLeave for value '101'");
-
-                    let (tail, res) = GameSGameUserLeaveEvent::parse(tail)?;
-                    Ok((tail, Self::EGameUserLeave(res)))
-                }
-                102 => {
-                    tracing::debug!("Variant EGameUserJoin for value '102'");
-
-                    let (tail, res) = GameSGameUserJoinEvent::parse(tail)?;
-                    Ok((tail, Self::EGameUserJoin(res)))
-                }
-                103 => {
-                    tracing::debug!("Variant ECommandManagerState for value '103'");
-
-                    let (tail, res) = GameSCommandManagerStateEvent::parse(tail)?;
-                    Ok((tail, Self::ECommandManagerState(res)))
-                }
-                104 => {
-                    tracing::debug!("Variant ECmdUpdateTargetPoint for value '104'");
-
-                    let (tail, res) = GameSCmdUpdateTargetPointEvent::parse(tail)?;
-                    Ok((tail, Self::ECmdUpdateTargetPoint(res)))
-                }
-                105 => {
-                    tracing::debug!("Variant ECmdUpdateTargetUnit for value '105'");
-
-                    let (tail, res) = GameSCmdUpdateTargetUnitEvent::parse(tail)?;
-                    Ok((tail, Self::ECmdUpdateTargetUnit(res)))
-                }
-                106 => {
-                    tracing::debug!("Variant ETriggerAnimLengthQueryByName for value '106'");
-
-                    let (tail, res) = GameSTriggerAnimLengthQueryByNameEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerAnimLengthQueryByName(res)))
-                }
-                107 => {
-                    tracing::debug!("Variant ETriggerAnimLengthQueryByProps for value '107'");
-
-                    let (tail, res) = GameSTriggerAnimLengthQueryByPropsEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerAnimLengthQueryByProps(res)))
-                }
-                108 => {
-                    tracing::debug!("Variant ETriggerAnimOffset for value '108'");
-
-                    let (tail, res) = GameSTriggerAnimOffsetEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerAnimOffset(res)))
-                }
-                109 => {
-                    tracing::debug!("Variant ECatalogModify for value '109'");
-
-                    let (tail, res) = GameSCatalogModifyEvent::parse(tail)?;
-                    Ok((tail, Self::ECatalogModify(res)))
-                }
-                110 => {
-                    tracing::debug!("Variant EHeroTalentTreeSelected for value '110'");
-
-                    let (tail, res) = GameSHeroTalentTreeSelectedEvent::parse(tail)?;
-                    Ok((tail, Self::EHeroTalentTreeSelected(res)))
-                }
-                111 => {
-                    tracing::debug!("Variant ETriggerProfilerLoggingFinished for value '111'");
-
-                    let (tail, res) = GameSTriggerProfilerLoggingFinishedEvent::parse(tail)?;
-                    Ok((tail, Self::ETriggerProfilerLoggingFinished(res)))
-                }
-                112 => {
-                    tracing::debug!("Variant EHeroTalentTreeSelectionPanelToggled for value '112'");
-
-                    let (tail, res) = GameSHeroTalentTreeSelectionPanelToggledEvent::parse(tail)?;
-                    Ok((tail, Self::EHeroTalentTreeSelectionPanelToggled(res)))
-                }
-                113 => {
-                    tracing::debug!("Variant EMuteUserChanged for value '113'");
-
-                    let (tail, res) = GameSMuteChatEvent::parse(tail)?;
-                    Ok((tail, Self::EMuteUserChanged(res)))
-                }
-                115 => {
-                    tracing::debug!("Variant EConvertToReplaySession for value '115'");
-
-                    let (tail, res) = GameSConvertToReplaySessionEvent::parse(tail)?;
-                    Ok((tail, Self::EConvertToReplaySession(res)))
-                }
-                116 => {
-                    tracing::debug!("Variant ESetSyncLoadingTime for value '116'");
-
-                    let (tail, res) = GameSSetSyncLoadingTimeEvent::parse(tail)?;
-                    Ok((tail, Self::ESetSyncLoadingTime(res)))
-                }
-                117 => {
-                    tracing::debug!("Variant ESetSyncPlayingTime for value '117'");
-
-                    let (tail, res) = GameSSetSyncPlayingTimeEvent::parse(tail)?;
-                    Ok((tail, Self::ESetSyncPlayingTime(res)))
-                }
-                118 => {
-                    tracing::debug!("Variant EPeerSetSyncLoadingTime for value '118'");
-
-                    let (tail, res) = GameSPeerSetSyncLoadingTimeEvent::parse(tail)?;
-                    Ok((tail, Self::EPeerSetSyncLoadingTime(res)))
-                }
-                119 => {
-                    tracing::debug!("Variant EPeerSetSyncPlayingTime for value '119'");
-
-                    let (tail, res) = GameSPeerSetSyncPlayingTimeEvent::parse(tail)?;
-                    Ok((tail, Self::EPeerSetSyncPlayingTime(res)))
-                }
-
-                _ => {
-                    tracing::debug!("Unknown variant value {variant_tag}");
-                    Err(S2ProtocolError::UnknownTag(variant_tag))
-                }
-            }
-        }
         /// Reads a delta, GameEvent set
         #[tracing::instrument(name="GameEvents::parse_events", level = "debug", skip(input), fields(peek = peek_bits(input)))]
         pub(crate) fn parse_event_triplet(
@@ -1140,132 +510,15 @@ pub mod bit_packed {
         }
     }
 
-    #[derive(Debug, PartialEq, Clone)]
+    #[derive(Debug, PartialEq, Clone, MPQBitPackedDeserialize, MPQBitPackedSerialize)]
     pub(crate) struct GameSCmdEvent {
+        #[mpq(bits = 26, offset = 0)]
         pub m_cmd_flags: i64,
         pub m_abil: Option<GameSCmdAbil>,
         pub m_data: GameSCmdData,
+        #[mpq(bits = 32, offset = 1)]
         pub m_sequence: i64,
         pub m_other_unit: Option<GameTUnitTag>,
         pub m_unit_group: Option<Uint32>,
-    }
-    impl GameSCmdEvent {
-        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse_m_cmd_flags(
-            input: (&[u8], usize),
-        ) -> S2ProtoResult<(&[u8], usize), i64> {
-            let (tail, m_cmd_flags) = parse_packed_int(input, 0, 26usize)?;
-            tracing::trace!("res: {:?}", m_cmd_flags);
-            Ok((tail, m_cmd_flags))
-        }
-        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse_m_abil(
-            input: (&[u8], usize),
-        ) -> S2ProtoResult<(&[u8], usize), Option<GameSCmdAbil>> {
-            let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
-            let (tail, m_abil) = if is_provided {
-                let (tail, res) = GameSCmdAbil::parse(tail)?;
-                (tail, Some(res))
-            } else {
-                (tail, None)
-            };
-            tracing::trace!("res: {:?}", m_abil);
-            Ok((tail, m_abil))
-        }
-        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse_m_data(
-            input: (&[u8], usize),
-        ) -> S2ProtoResult<(&[u8], usize), GameSCmdData> {
-            let (tail, m_data) = GameSCmdData::parse(input)?;
-            tracing::trace!("res: {:?}", m_data);
-            Ok((tail, m_data))
-        }
-        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse_m_sequence(
-            input: (&[u8], usize),
-        ) -> S2ProtoResult<(&[u8], usize), i64> {
-            let (tail, m_sequence) = parse_packed_int(input, 1, 32usize)?;
-            tracing::trace!("res: {:?}", m_sequence);
-            Ok((tail, m_sequence))
-        }
-        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse_m_other_unit(
-            input: (&[u8], usize),
-        ) -> S2ProtoResult<(&[u8], usize), Option<GameTUnitTag>> {
-            let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
-            let (tail, m_other_unit) = if is_provided {
-                let (tail, res) = GameTUnitTag::parse(tail)?;
-                (tail, Some(res))
-            } else {
-                (tail, None)
-            };
-            tracing::trace!("res: {:?}", m_other_unit);
-            Ok((tail, m_other_unit))
-        }
-        #[tracing::instrument(level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse_m_unit_group(
-            input: (&[u8], usize),
-        ) -> S2ProtoResult<(&[u8], usize), Option<Uint32>> {
-            let (tail, is_provided): ((&[u8], usize), bool) = parse_bool(input)?;
-            let (tail, m_unit_group) = if is_provided {
-                let (tail, res) = Uint32::parse(tail)?;
-                (tail, Some(res))
-            } else {
-                (tail, None)
-            };
-            tracing::trace!("res: {:?}", m_unit_group);
-            Ok((tail, m_unit_group))
-        }
-        #[tracing::instrument(name="75689::bit_packed::GameSCmdEvent::Parse", level = "trace", skip(input), fields(peek = peek_bits(input)))]
-        pub(crate) fn parse(input: (&[u8], usize)) -> S2ProtoResult<(&[u8], usize), Self> {
-            let mut tail = input;
-            let mut m_cmd_flags: Option<i64> = None;
-            let mut m_abil: Option<Option<GameSCmdAbil>> = Some(None);
-            let mut m_data: Option<GameSCmdData> = None;
-            let mut m_sequence: Option<i64> = None;
-            let mut m_other_unit: Option<Option<GameTUnitTag>> = Some(None);
-            let mut m_unit_group: Option<Option<Uint32>> = Some(None);
-            if m_cmd_flags.is_none() {
-                let (new_tail, parsed_m_cmd_flags) = Self::parse_m_cmd_flags(tail)?;
-                tail = new_tail;
-                m_cmd_flags = Some(parsed_m_cmd_flags);
-            }
-            if let Some(None) = m_abil {
-                let (new_tail, parsed_m_abil) = Self::parse_m_abil(tail)?;
-                tail = new_tail;
-                m_abil = Some(parsed_m_abil);
-            }
-            if m_data.is_none() {
-                let (new_tail, parsed_m_data) = Self::parse_m_data(tail)?;
-                tail = new_tail;
-                m_data = Some(parsed_m_data);
-            }
-            if m_sequence.is_none() {
-                let (new_tail, parsed_m_sequence) = Self::parse_m_sequence(tail)?;
-                tail = new_tail;
-                m_sequence = Some(parsed_m_sequence);
-            }
-            if let Some(None) = m_other_unit {
-                let (new_tail, parsed_m_other_unit) = Self::parse_m_other_unit(tail)?;
-                tail = new_tail;
-                m_other_unit = Some(parsed_m_other_unit);
-            }
-            if let Some(None) = m_unit_group {
-                let (new_tail, parsed_m_unit_group) = Self::parse_m_unit_group(tail)?;
-                tail = new_tail;
-                m_unit_group = Some(parsed_m_unit_group);
-            }
-            Ok((
-                tail,
-                Self {
-                    m_cmd_flags: m_cmd_flags.expect("Missing m_cmd_flags from struct"),
-                    m_abil: m_abil.expect("Missing m_abil from struct"),
-                    m_data: m_data.expect("Missing m_data from struct"),
-                    m_sequence: m_sequence.expect("Missing m_sequence from struct"),
-                    m_other_unit: m_other_unit.expect("Missing m_other_unit from struct"),
-                    m_unit_group: m_unit_group.expect("Missing m_unit_group from struct"),
-                },
-            ))
-        }
     }
 }

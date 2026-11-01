@@ -1,0 +1,16 @@
+[package]
+name = "serde_mpq_derive"
+description = "The derive macros of serde_mpq: the bit packed and byte aligned encodings of the StarCraft II replays"
+version = "0.1.0"
+authors = ["Seb Ospina <kraige@gmail.com>"]
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/sebosp/s2protocol-rs"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1"
+quote = "1"
+syn = { version = "2", features = ["full"] }
