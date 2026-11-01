@@ -11,7 +11,7 @@ keywords = ["sc2replay", "polars", "arrow", "starcraft2", "mpq"]
 categories = ["games", "parsing"]
 # The map caches the CLI downloads into the current directory by default, and the snapshots of the
 # examples, are not part of the crate.
-exclude = ["/*.s2ma", "/*-MapInfo", "/ipcs", "/lastcmd", "/bench.md"]
+exclude = ["/*.s2ma", "/*-MapInfo", "/ipcs", "/lastcmd", "/bench.md", "/serde_mpq", "/serde_mpq_derive"]
 
 [workspace]
 members = ["serde_mpq", "serde_mpq_derive"]
