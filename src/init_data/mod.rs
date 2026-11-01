@@ -296,6 +296,7 @@ mod tests {
         let (tail, logo) = GameSLobbySlot::parse_m_logo_index(tail).unwrap();
         assert_eq!(logo.value.value, 0);
         let (_tail, hero) = GameSLobbySlot::parse_m_hero(tail).unwrap();
-        assert_eq!(hero.value, vec![0]);
+        // An empty string, it was read as a NUL character before serde_mpq.
+        assert_eq!(hero.value, Vec::<u8>::new());
     }
 }

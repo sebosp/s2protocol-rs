@@ -221,12 +221,12 @@ impl TryFrom<super::bit_packed::GameSGameDescription> for crate::init_data::Game
 
 impl From<super::bit_packed::GameSSlotDescription> for crate::init_data::SlotDescription {
     fn from(value: super::bit_packed::GameSSlotDescription) -> Self {
-        let allowed_colors = value.m_allowed_colors.value;
-        let allowed_races = value.m_allowed_races.value;
-        let allowed_difficulty = value.m_allowed_difficulty.value;
-        let allowed_controls = value.m_allowed_controls.value.clone();
-        let allowed_observe_types = value.m_allowed_observe_types.value;
-        let allowed_ai_builds = value.m_allowed_ai_builds.value.clone();
+        let allowed_colors = value.m_allowed_colors.value.to_i64();
+        let allowed_races = value.m_allowed_races.value.to_i64();
+        let allowed_difficulty = value.m_allowed_difficulty.value.to_i64();
+        let allowed_controls = value.m_allowed_controls.value.value.clone();
+        let allowed_observe_types = value.m_allowed_observe_types.value.to_i64();
+        let allowed_ai_builds = value.m_allowed_ai_builds.value.value.clone();
         Self {
             allowed_colors,
             allowed_races,

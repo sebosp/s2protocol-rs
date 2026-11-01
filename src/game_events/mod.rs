@@ -244,7 +244,8 @@ pub enum GameSSelectionMask {
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct GameSelectionMaskType {
-    pub value: Vec<u8>,
+    /// Unit `i` of the selection is removed when bit `i` is set.
+    pub value: serde_mpq::BitArray,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]

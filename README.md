@@ -162,6 +162,27 @@ $ cargo run --features syntax,dep_ratatui,tracing_off -- --max-loop 1000 --color
 
 ## BREAKING CHANGES
 
+v5.0.0 (unreleased), the snapshot format did not change
+- The protocol types are derived with [serde_mpq](serde_mpq/README.md), see
+  [The protocol types and serde_mpq](#the-protocol-types-and-serde_mpq): the `generator` module
+  and the `generate` command of the CLI are gone, `bit_packed_decoder` and `versioned_decoder`
+  re-export `serde_mpq::bit_packed` and `serde_mpq::byte_aligned`, the parsers return
+  `serde_mpq::Error` (`S2ProtocolError::SerdeMpq`), and the types can be written back.
+- The bit arrays are `serde_mpq::BitArray`, the integer Blizzard's `read_bits` reads with its
+  length: `GameSelectionMaskType.value` (unit `i` of the selection is bit `i`) and, in the
+  `InitData`, `allowed_controls` and `allowed_ai_builds` are the big endian bytes of that integer.
+  Previously these were read in chunks of 8 bits from the current bit, which is the same integer
+  only when the array starts at a byte boundary: the selection masks of more than 8 units that
+  did not were applied to the wrong units.
+- Fixes found by checking every type against Blizzard's `protocol87702.py`: the `m_sequence` of
+  `SCommandManagerStateEvent` was read one bit early (its value had the presence bit as high
+  bits); 16 blob fields (`m_hotkey_profile` of the user options, the bank events, save game,
+  cutscene and catalog events) were read without the byte alignment and some with the wrong
+  number of length bits; `GameCCheatString`, `GameCTriggerChatMessageString` and
+  `GameCGameCacheName` have 10 length bits, not 11. An empty string is empty, it was a NUL
+  character: the `clan_tag`, `hero`, `skin` and `mount` of the players without one are `""` in
+  the snapshot instead of `"\u0000"`, regenerate the snapshot to update them.
+
 v3
 
 - Feature `arrow`  has been renamed to `dep_arrow` as we now use the `arrow` crate.
@@ -425,22 +446,27 @@ After a bit of testing, it seems most of the types are compatible between versio
 Since I started this exercise on protocol87702, all types would be relative to it. That is, most modules would re-use protocol87702 as much as possible.
 This explains why old-er versions such as 75689 would still reference 87702 as much as possible.
 
-The generator above thus would show example code `S2ProtoResult` created in favour of unwrapping/panic'ing.
 
-## Generating protocol-specific code:
+## The protocol types and serde_mpq
 
-The rust code for the protocols versions available were generated using:
-This would now be compared with ./src/versions/protocol99999.template file and from there we can analyze what has changed.
-Notably, the number of bits used for the Chat Message is still miscalculated to 3 so it needs to be dismissed.
+The types of each protocol version, `src/versions/protocol87702/mod.rs`, are structs and enums
+with `#[mpq(...)]` attributes and the derives of [serde_mpq](serde_mpq/README.md), a crate of this
+repository: `MPQBitPackedDeserialize` and `MPQBitPackedSerialize` for the game events, message
+events and init data, `MPQByteAlignedDeserialize` and `MPQByteAlignedSerialize` for the header,
+details and tracker events. The declaration order of the fields is the wire format of the bit
+packed types, as in `deku` or `binrw`; the byte aligned ones are matched by `#[mpq(tag = n)]`.
 
-```bash
-mkdir src/versions/protocol89720/
-RUST_LOG_SPAN_EVENTS=full RUST_LOG=debug cargo watch -i src/versions/protocol89720/mod.rs -x 'run -- --source ../s2protocol/json/protocol89720.json generate --output src/versions/protocol89720/mod.rs'
-# Add the new module to src/versions/mod.rs
-# Run rust format on the new src/versions/protocol87702/mod.rs file
-# cargo check, cargo build, etc
-# Additionally some code to transform from Protocol-Specific to Protocol-Agnostic was added, TODO: Add to generator.rs
-```
+The derives generate a `parse` method and a `parse_<field>` method per field with `tracing`
+spans, so a replay can be followed field by field with `RUST_LOG=trace`, and they write the types
+back: `src/versions/round_trip_tests.rs` parses every section of the test replays, writes it and
+compares the bits.
+
+Until 4.1.1 the parsers were generated from the JSON of
+[Blizzard/s2protocol](https://github.com/Blizzard/s2protocol) by a generator in this crate, 17,034
+lines for protocol 87702 against 2,634 lines of types now, the generator is gone. The types were
+checked against the `typeinfos` of Blizzard's `protocol87702.py` field by field (names, order,
+tags, bits, offsets, lengths), which found the fixes listed in the 5.0.0 changes. A new protocol
+version is added by declaring the types that differ, as `protocol75689` does.
 
 ## JSON Spec Sources
 

@@ -22,7 +22,6 @@ use s2protocol::filters::SC2ReplayFilters;
 use s2protocol::game_events::MultiVersionedBalanceUnits;
 use s2protocol::game_events::ability::balance_data::json_handler::*;
 use s2protocol::game_events::ability::traverse_versioned_balance_abilities;
-use s2protocol::generator::proto_morphist::ProtoMorphist;
 use s2protocol::tracker_events::{unit_tag_index, unit_tag_recycle};
 
 #[derive(Subcommand, Debug, Clone)]
@@ -96,9 +95,6 @@ impl From<WriteArrowIpcPropsArgs> for s2protocol::WriteArrowIpcProps {
 
 #[derive(Subcommand, Debug, Clone)]
 pub enum Commands {
-    /// Generates Rust code for a specific protocol.
-    Generate,
-
     /// Generates static json files for a specific Balance Data export.
     ///
     BalanceDataToJson,
@@ -303,9 +299,6 @@ async fn cli_command_handler(cli: &Cli) -> Result<(), Box<dyn std::error::Error>
         });
     }
     match &cli.command {
-        Commands::Generate => {
-            ProtoMorphist::r#gen(&cli.source, &cli.output.clone().expect("Requires --output"))?;
-        }
         Commands::BalanceDataToJson => {
             cmd_balance_data_to_json_export(&cli)?;
         }

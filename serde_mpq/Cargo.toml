@@ -1,0 +1,27 @@
+[package]
+name = "serde_mpq"
+description = "The bit packed and byte aligned (versioned) encodings of the StarCraft II replay sections, with derive macros"
+version = "0.1.0"
+authors = ["Seb Ospina <kraige@gmail.com>"]
+edition = "2024"
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/sebosp/s2protocol-rs"
+keywords = ["sc2replay", "starcraft2", "mpq", "serde", "bitpacked"]
+categories = ["encoding", "parsing"]
+
+[features]
+default = ["derive"]
+# The MPQBitPacked* and MPQByteAligned* derive macros.
+derive = ["dep:serde_mpq_derive"]
+# Serialize and Deserialize of BitArray.
+serde = ["dep:serde"]
+
+[dependencies]
+serde_mpq_derive = { path = "../serde_mpq_derive", version = "0.1.0", optional = true }
+nom = "8.0"
+serde = { version = "1", features = ["derive"], optional = true }
+thiserror = "2"
+tracing = "0.1"
+# The colors of the bits already read, being read and still to read in the trace spans.
+colored = "3.1"

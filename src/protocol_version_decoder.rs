@@ -54,5 +54,5 @@ pub fn read_protocol_header(mpq: &MPQ) -> S2ProtoResult<&[u8], ReplaySHeader> {
         .user_data
         .as_ref()
         .expect("Unable to locate protocol version, missing user data in MPQ");
-    ReplaySHeader::parse(&user_data.content)
+    Ok(ReplaySHeader::parse(&user_data.content)?)
 }

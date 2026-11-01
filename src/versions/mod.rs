@@ -9,6 +9,8 @@ use nom_mpq::MPQ;
 
 pub mod protocol75689;
 pub mod protocol87702;
+#[cfg(test)]
+mod round_trip_tests;
 
 /// Attempts to read the tracker events, panics under unknown protocol
 #[tracing::instrument(level = "debug", skip(mpq, file_contents, file_name))]
