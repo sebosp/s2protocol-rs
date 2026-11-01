@@ -162,6 +162,14 @@ $ cargo run --features syntax,dep_ratatui,tracing_off -- --max-loop 1000 --color
 
 ## BREAKING CHANGES
 
+v5.0.1 (2026-11-01), not breaking, the snapshot format did not change
+- `snapshot::snapshot_state` tells whether a snapshot is ready, being generated or was
+  interrupted, i.e. the application was closed: the generation writes `in_progress.json` in the
+  snapshot directory and keeps it locked, the lock dies with the process and the file stays. A day
+  written after the root metadata, without its metadata or with files still being written is an
+  interrupted generation too. A second generation of the same directory cannot start while one
+  runs.
+
 v5.0.0 (unreleased), the snapshot format did not change
 - The protocol types are derived with [serde_mpq](serde_mpq/README.md), see
   [The protocol types and serde_mpq](#the-protocol-types-and-serde_mpq): the `generator` module

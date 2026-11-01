@@ -874,6 +874,8 @@ impl ArrowIpcTypes {
             println!("Removing the snapshot at {}", output.display());
             remove_snapshot(&output)?;
         }
+        // Marks the snapshot as being generated until this function returns, see snapshot_state.
+        let _in_progress = crate::snapshot::SnapshotInProgressGuard::start(&output)?;
         send_progress(
             progress,
             SnapshotProgress::Step {
