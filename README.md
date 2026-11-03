@@ -162,6 +162,10 @@ $ cargo run --features syntax,dep_ratatui,tracing_off -- --max-loop 1000 --color
 
 ## BREAKING CHANGES
 
+v5.0.2 (2026-11-03), not breaking, the snapshot format did not change
+- The ids of the new replays (`ext_fs_id`) follow the time of their game, then their file name,
+  instead of the order of the files: a snapshot generated again (`--recreate`) has the same ids.
+
 v5.0.1 (2026-11-01), not breaking, the snapshot format did not change
 - `snapshot::snapshot_state` tells whether a snapshot is ready, being generated or was
   interrupted, i.e. the application was closed: the generation writes `in_progress.json` in the

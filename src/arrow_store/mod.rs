@@ -101,6 +101,27 @@ fn write_rows(
     }
 }
 
+/// Numbers the new replays from `first_id` by the time of their game, then their file name: the
+/// ids read with the headers were in the order of the files, a snapshot generated again has the
+/// same ids this way.
+pub fn number_by_game_time(sources: &mut [SC2ReplayBasicData], first_id: u64) {
+    sources.sort_by(|a, b| {
+        a.details
+            .ext_datetime
+            .cmp(&b.details.ext_datetime)
+            .then_with(|| {
+                a.init_data
+                    .ext_fs_file_name
+                    .cmp(&b.init_data.ext_fs_file_name)
+            })
+    });
+    for (offset, source) in sources.iter_mut().enumerate() {
+        let id = first_id + offset as u64;
+        source.details.ext_fs_id = id;
+        source.init_data.ext_fs_id = id;
+    }
+}
+
 impl ReplayEventRows {
     /// Reads the events of the replay, None if the replay events cannot be read.
     pub fn collect(
@@ -970,6 +991,9 @@ impl ArrowIpcTypes {
             })
             .take(cmd.process_max_files)
             .collect();
+        let mut sources = sources;
+        number_by_game_time(&mut sources, first_id);
+        let sources = sources;
         println!(
             "{already_in_snapshot} replays are already in the snapshot, {copies} are copies of \
              another replay, {unreadable} could not be read, {} new replays have valid init data, \
@@ -1051,5 +1075,40 @@ impl ArrowIpcTypes {
         }
         send_progress(progress, SnapshotProgress::Done { elapsed_ms });
         Ok(metadata)
+    }
+}
+
+#[cfg(test)]
+mod numbering_tests {
+    use super::*;
+
+    fn replay(file_name: &str, seconds: i64) -> SC2ReplayBasicData {
+        let mut replay = SC2ReplayBasicData::default();
+        replay.init_data.ext_fs_file_name = file_name.to_string();
+        replay.details.ext_datetime = chrono::DateTime::from_timestamp(seconds, 0)
+            .unwrap()
+            .naive_utc();
+        replay
+    }
+
+    #[test]
+    fn it_numbers_the_replays_by_game_time_then_file_name() {
+        let mut replays = vec![replay("c", 300), replay("b", 100), replay("a", 100)];
+        number_by_game_time(&mut replays, 10);
+        let ids: Vec<(&str, u64)> = replays
+            .iter()
+            .map(|replay| {
+                (
+                    replay.init_data.ext_fs_file_name.as_str(),
+                    replay.details.ext_fs_id,
+                )
+            })
+            .collect();
+        assert_eq!(ids, vec![("a", 10), ("b", 11), ("c", 12)]);
+        assert!(
+            replays
+                .iter()
+                .all(|r| r.init_data.ext_fs_id == r.details.ext_fs_id)
+        );
     }
 }
