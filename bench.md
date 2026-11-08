@@ -6,8 +6,8 @@ the versions and the machines. The replays are read from a local NVMe, an NFS mo
 The command, from the s2protocol-rs checkout, the release build is done before so it is not timed:
 
 ```bash
-cargo build --example full -r --no-default-features --features=dep_arrow,tracing_off
-time cargo run --example full -r --no-default-features --features=dep_arrow,tracing_off -- \
+cargo build --example full -r --no-default-features --features=dep_arrow,dep_tokio,tracing_off
+time cargo run --example full -r --no-default-features --features=dep_arrow,dep_tokio,tracing_off -- \
   -v error --timing \
   --source $HOME/SCReplaysOnNVMe/ \
   --output $HOME/git/s2protocol-rs/ipcs/ \
@@ -38,6 +38,9 @@ bytes of each file and `elapsed_ms`.
 | 2026-10-25 | 3.5.10 `df7e640` | corvid | Full | 59,696 | 6,413 | 17,132 | 36,151 | 2,090 | 30 GB | 340.1 s (5m40s) | 106 |
 | 2026-10-25 | 3.5.10 `df7e640` | corvid | Incremental, nothing new | 59,696 | 6,413 | 17,132 | 0 | 0 | 30 GB | 45.4 s | - |
 | 2026-10-25 | 3.5.10 `8422fc6` | local | Full, `SC2Replays/PRO/RSL` | 834 | 180 | 0 | 654 | 61 | - | 17.8 s | 37 |
+| 2026-11-04 | 5.0.2 | corvid | Full | 59,696 | 6,413 | 16,889 | 36,394 | 2,095 | 5.3 GB | 100.6 s | 362 |
+| 2026-11-04 | 5.1.0 uncommitted | corvid | Full, aggregations included | 59,696 | 6,413 | 16,889 | 36,394 | 2,095 | 4.2 GB | 97.2 s | 374 |
+| 2026-11-04 | 5.1.0 uncommitted | corvid | Only the aggregations, nothing parsed | 59,696 | 6,413 | 16,889 | 0 | 2,095 | 4.2 GB | 6.4 s | - |
 
 Notes on the corvid full run (`df7e640`):
 

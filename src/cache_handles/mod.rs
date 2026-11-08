@@ -7,6 +7,8 @@ use crate::{MAX_ERROR_CONTEXT_CHARS, S2ProtocolError, basic_replay_data::SC2Repl
 
 pub mod cache_objects;
 pub mod document_header;
+pub mod graphics;
+pub mod m3;
 pub mod map;
 pub mod map_info;
 pub mod minimap;
@@ -123,6 +125,11 @@ impl CacheCollection {
                     cache_id.to_string(),
                     match try_read_embedded_sectors_with_contents(&cache_handle_fname) {
                         Ok(val) => val,
+                        // A mod of the game the map depends on, there is nothing to read.
+                        Err(S2ProtocolError::MPQ(nom_mpq::MPQParserError::StandardData(name))) => {
+                            tracing::debug!("{cache_handle_fname} names the mod {name}");
+                            vec![]
+                        }
                         Err(err) => {
                             tracing::error!(
                                 "failed to read mpq contents on {1} {2:.0$}",
