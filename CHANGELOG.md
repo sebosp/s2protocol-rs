@@ -4,7 +4,7 @@ The changes of each version of s2protocol, newest first. A change of the snapsho
 the minor version, see [Snapshot metadata](README.md#snapshot-metadata): the applications
 compare the major and minor versions of the snapshot with theirs and ask for a Rebuild.
 
-## 5.1.0 (unreleased)
+## 5.1.0 (2026-11-08)
 
 The snapshot format changed, generate the snapshots again.
 
