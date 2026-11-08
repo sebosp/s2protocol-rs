@@ -18,10 +18,56 @@ by using
 - jupyter notebooks in [s2-polars-data-analysis](https://github.com/sebosp/s2-polars-data-analysis)
 - the replay analyser [swarmy](https://github.com/sebosp/swarmy), and its 3D map viewer [swarmy-bevy](https://github.com/sebosp/swarmy-bevy)
 - [yew](https://github.com/yewstack/yew) [cooper](https://github.com/sebosp/cooper)
-- [eframe/egui](https://github.com/emilk/egui): See repo [eframes-c2](https://github.com/sebosp/eframe-sc2)
+- [eframe/egui](https://github.com/emilk/egui): See repo [eframe-sc2](https://github.com/sebosp/eframe-sc2)
 - [bevyengine/bevy](https://github.com/bevyengine/bevy) can be used to see:
   - An Enhanced Replay Minimap
   - Additional statistics.
+
+| | |
+|---|---|
+| [![swarmy](https://raw.githubusercontent.com/sebosp/swarmy/main/docs/screenshots/replay_detail.png)](https://github.com/sebosp/swarmy) [swarmy](https://github.com/sebosp/swarmy): the win chance of a game, from the snapshot | [![s2-polars-data-analysis](https://raw.githubusercontent.com/sebosp/s2-polars-data-analysis/main/jupyter_notebooks/static/img/level_2_inject_per_month.png)](https://github.com/sebosp/s2-polars-data-analysis) [s2-polars-data-analysis](https://github.com/sebosp/s2-polars-data-analysis): the injects per game of the Zerg players, per month |
+| [![cooper](https://raw.githubusercontent.com/sebosp/cooper/main/docs/screenshots/replay.png)](https://github.com/sebosp/cooper) [cooper](https://github.com/sebosp/cooper): a replay read in the browser (wasm) | [![swarmy-bevy](https://raw.githubusercontent.com/sebosp/swarmy/main/docs/screenshots/swarmy_bevy.png)](https://github.com/sebosp/swarmy-bevy) [swarmy-bevy](https://github.com/sebosp/swarmy-bevy): the units died of a game on its map |
+
+## Using the crate
+
+```toml
+[dependencies]
+s2protocol = "5.1"
+# With the snapshots (Arrow IPC) and the map cache downloads:
+# s2protocol = { version = "5.1", features = ["dep_arrow"] }
+```
+
+The map and the players of a replay, `examples/readme_details.rs`:
+
+```rust
+use std::path::PathBuf;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let path = PathBuf::from(std::env::args().nth(1).expect("a replay"));
+    let contents = s2protocol::read_file(&path)?;
+    let (_, mpq) = s2protocol::parser::parse(&contents).map_err(|e| format!("{e:?}"))?;
+    let details = s2protocol::read_details(&path.to_string_lossy(), &mpq, &contents)?;
+    println!("{}", details.title);
+    for player in &details.player_list {
+        println!("{} ({})", player.name, player.race);
+    }
+    Ok(())
+}
+```
+
+```bash
+$ cargo run -q --example readme_details -- assets/FieldsDeath202507.SC2Replay
+Fields of Death
+&lt;chezs&gt;<sp/>Sazed (Zerg)
+Cheater 1 (Insane) (Terran)
+Cheater 2 (Insane) (Protoss)
+```
+
+The names keep the clan tag as the replay writes it, escaped. `read_tracker_events`,
+`read_game_events`, `read_message_events` and `read_init_data` read the other sections, and
+`SC2EventIterator` goes through the events of a game in order, see below. The features:
+`dep_arrow` writes and reads the [snapshots](#snapshots); `tracing_off` (default) removes the
+tracing of the parsers, `tracing_*_level` keep it up to a level.
 
 ## Consuming events
 
@@ -313,7 +359,7 @@ all the days, `partitions` the number of days and `added` the replays added by t
 
 ```json
 {
-  "s2protocol_version": "3.5.10",
+  "s2protocol_version": "5.1.0",
   "created_at": "2026-10-24T10:15:00Z",
   "elapsed_ms": 95021,
   "replays": 1470,
@@ -398,15 +444,8 @@ $ echo "SELECT ability, count() FROM read_ipc('ipcs/year=*/month=*/day=*/cmd_tar
 
 ## Status
 
-- [x] Replay Tracker, Game Events and Chat Message Events for protocol75689
-- [x] Replay Tracker, Game Events and Chat Message Events for protocol84643
-- [x] Replay Tracker, Game Events and Chat Message Events for protocol87702
-- [x] Replay Tracker, Game Events and Chat Message Events for protocol88500
-- [x] Replay Tracker, Game Events and Chat Message Events for protocol89634
-- [x] Replay Tracker, Game Events and Chat Message Events for protocol89720
-- [x] Replay Tracker, Game Events and Chat Message Events for protocol90136
-- [x] Replay Tracker, Game Events and Chat Message Events for protocol90779
-- [x] Replay Tracker, Game Events and Chat Message Events for protocol90870
+- [x] The replays from protocol 75689 (4.10, the client of AI Arena) to the current ladder (98310):
+  the types of `protocol75689` up to 75689, the ones of `protocol87702` after it.
 - [x] Parsing unit movement is done.
 - [x] Decoding the tag/recycle done to match Game Events.
 - [x] Game Events are parsed (tho some that seem irrelevant are skipped).
