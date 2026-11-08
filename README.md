@@ -15,7 +15,8 @@ information it packs.
 
 From the available data, analytics, visualizations and generative art can be created, for example
 by using 
-- jupyter notebook in [s2-polars-data-analysis](https://github.com/sebosp/s2-polars-data-analysis) - [rerun](https://github.com/rerun-io/rerun) : See the repo [swarmy](https://github.com/sebosp/swarmy)
+- jupyter notebooks in [s2-polars-data-analysis](https://github.com/sebosp/s2-polars-data-analysis)
+- the replay analyser [swarmy](https://github.com/sebosp/swarmy), and its 3D map viewer [swarmy-bevy](https://github.com/sebosp/swarmy-bevy)
 - [yew](https://github.com/yewstack/yew) [cooper](https://github.com/sebosp/cooper)
 - [eframe/egui](https://github.com/emilk/egui): See repo [eframes-c2](https://github.com/sebosp/eframe-sc2)
 - [bevyengine/bevy](https://github.com/bevyengine/bevy) can be used to see:
@@ -160,151 +161,112 @@ $ cargo run --features syntax,dep_ratatui,tracing_off -- --max-loop 1000 --color
 
 [![Ratatui asciicast](https://asciinema.org/a/726584.svg)](https://asciinema.org/a/726584)
 
-## BREAKING CHANGES
+## Changelog
 
-v5.0.2 (2026-11-03), not breaking, the snapshot format did not change
-- The ids of the new replays (`ext_fs_id`) follow the time of their game, then their file name,
-  instead of the order of the files: a snapshot generated again (`--recreate`) has the same ids.
+The changes of each version, and the ones that need the snapshots to be generated again, are in
+[CHANGELOG.md](CHANGELOG.md).
 
-v5.0.1 (2026-11-01), not breaking, the snapshot format did not change
-- `snapshot::snapshot_state` tells whether a snapshot is ready, being generated or was
-  interrupted, i.e. the application was closed: the generation writes `in_progress.json` in the
-  snapshot directory and keeps it locked, the lock dies with the process and the file stays. A day
-  written after the root metadata, without its metadata or with files still being written is an
-  interrupted generation too. A second generation of the same directory cannot start while one
-  runs.
+## AI Arena replays
 
-v5.0.0 (unreleased), the snapshot format did not change
-- The protocol types are derived with [serde_mpq](serde_mpq/README.md), see
-  [The protocol types and serde_mpq](#the-protocol-types-and-serde_mpq): the `generator` module
-  and the `generate` command of the CLI are gone, `bit_packed_decoder` and `versioned_decoder`
-  re-export `serde_mpq::bit_packed` and `serde_mpq::byte_aligned`, the parsers return
-  `serde_mpq::Error` (`S2ProtocolError::SerdeMpq`), and the types can be written back.
-- The bit arrays are `serde_mpq::BitArray`, the integer Blizzard's `read_bits` reads with its
-  length: `GameSelectionMaskType.value` (unit `i` of the selection is bit `i`) and, in the
-  `InitData`, `allowed_controls` and `allowed_ai_builds` are the big endian bytes of that integer.
-  Previously these were read in chunks of 8 bits from the current bit, which is the same integer
-  only when the array starts at a byte boundary: the selection masks of more than 8 units that
-  did not were applied to the wrong units.
-- Fixes found by checking every type against Blizzard's `protocol87702.py`: the `m_sequence` of
-  `SCommandManagerStateEvent` was read one bit early (its value had the presence bit as high
-  bits); 16 blob fields (`m_hotkey_profile` of the user options, the bank events, save game,
-  cutscene and catalog events) were read without the byte alignment and some with the wrong
-  number of length bits; `GameCCheatString`, `GameCTriggerChatMessageString` and
-  `GameCGameCacheName` have 10 length bits, not 11. An empty string is empty, it was a NUL
-  character: the `clan_tag`, `hero`, `skin` and `mount` of the players without one are `""` in
-  the snapshot instead of `"\u0000"`, regenerate the snapshot to update them.
+The replays of [AI Arena](https://aiarena.net), the StarCraft II bot ladder, are planned to be
+supported as a first class source: the client of AI Arena is 4.10 (protocol 75689), whose init
+data is read since 4.1.0, and its bots give thousands of commands per minute, so their move and
+attack commands are left out of the snapshot (`arrow_store::bot_filter`). What is left to do:
+the maps of AI Arena are local maps that are not on the Blizzard depots, so their replays have no
+`map_info_sha256` and no map cache; and a few of the replays cannot be read yet. A snapshot of tens
+of thousands of bot games has many times the command rows of a human ladder, the applications read
+its [aggregations](#aggregations) instead of those rows.
 
-v3
+## Snapshots
 
-- Feature `arrow`  has been renamed to `dep_arrow` as we now use the `arrow` crate.
-- Previously the generated arrow IPC files relied on a sha256 of the file as "key", this wasted a lot of space and has been changed into a sequential
-  As a result, queries must use the new `ext_fs_id`, which also means all the files must be generated in bulk and are no longer independent.
-  The IPCs then is valid as a snapshot generated as a whole.
-v3.4
-- There is only one iterator provided now, that goes through both the Tracker and Game events to build the game state.
-  Previously two iterators were provided that build partial state only for either track/game and the result was inconsistent, plus lots of duplicated code.
-v3.6.0 (2026-10-25), the snapshot format changed, generate the snapshots again
-- `write-arrow-ipc` writes the snapshot partitioned by day, `year=YYYY/month=MM/day=DD`, and only adds the replays that are not in it yet.
-  The files are no longer at the root of the output directory, read them with `year=*/month=*/day=*/<file>.arrow`.
-  `WriteArrowIpcProps` has a new `recreate` field (`--recreate`) and `SnapshotProgress` a new `AlreadyInSnapshot` variant.
-  The days written by another version of s2protocol are removed and their replays parsed again, the replays of the
-  other days are not parsed again.
-- Not breaking: the `textures` feature embeds the button textures, see [Textures](#textures). The
-  players of older replays without `working_set_slot_id` are matched to the lobby slots by order,
-  previously they had no details and these replays were added again on every snapshot run.
-v4.1.1 (2026-10-30)
-- The replays added while their map caches could not be downloaded, i.e. because the caches
-  directory did not exist, had no `map_info_sha256` and kept none. `write-arrow-ipc` now
-  downloads their missing caches first and parses again the days of the replays whose MapInfo
-  can be read, `partitioned::remove_partitions_missing_map_info`. The replays whose caches cannot
-  be downloaded or have no MapInfo, i.e. the local maps of AI Arena, are not parsed again.
-v4.1.0 (2026-10-30), the snapshot format changed, generate the snapshots again
-- `ext_replay_seconds` is in game seconds at the Faster speed, 22.4 loops per second (the new
-  `GAME_LOOPS_PER_SECOND`), it was computed with 68.58 ms per loop and the times were 1.5 times
-  longer than in the game. `convert_game_loop_to_seconds` and `convert_tracker_loop_to_seconds`
-  changed accordingly.
-- The snapshot files are compressed with zstd, about ten times smaller. Polars, pyarrow and DuckDB
-  read them as before, readers built on the `arrow` crate need its `ipc_compression` feature.
-  The version of s2protocol must change on release so that the uncompressed days are written
-  again.
-- The details have the difficulty, build and handicap of the lobby slot of each player
-  (`lobby_slot_difficulty`, `lobby_slot_ai_build`, `lobby_slot_handicap`), to tell apart the
-  games against the computer, i.e. Cheater 3 (Insane) Economic Focus, and the random seed of the
-  game (`lobby_random_seed`).
-- The replays of 4.10 (protocol 75689), i.e. the ones of AI Arena, are read: their lobby slots have
-  a 7 bits handicap, a 13 bits length of the licenses and not the fields added in 4.11.
-- The maximum number of teams of the game description was read with 5 bits instead of 4, the
-  fields after it were misread until the next byte aligned field: `lobby_slot_map_size_y` was
-  wrong for about half of the replays, and in the games where two users share a player (Archon
-  mode) the name of the units of that player can be the other user.
-- The move and attack commands of the bots are not in the cmd files: a user that gives more than
-  1,000 commands per minute in a window of 1,000 commands is a bot for the rest of the game, see
-  `arrow_store::bot_filter`. The bots of AI Arena give 1,100 to 16,800 commands per minute, a
-  human a few hundred; their snapshot is about 70% smaller. In 4.10 the abilities have no names,
-  the links 42 (move) and 45 (attack) are dropped.
-- The commands of 4.10 (protocol 75689) are named: `assets/BalanceData/75689` has the units of
-  94137 with the ability links of 4.10, one less until attack (46) and two less from the sprays
-  (62), measured on the AI Arena replays, see `scripts/balance_data_75689`. The costs,
-  strengths and weaknesses are the ones of 94137, `DERIVED_BALANCE_DATA_VERSIONS` lists it. The
-  commands that 94137 has not, i.e. the ScanMove of the bots, have the names of sc2reader.
-- The commands of the 5.0 versions without balance data are named with the balance data of 94137,
-  `DERIVED_ABILITY_LINKS`: 80949 to 92440 have one ability less from HydraliskFrenzy (699), and
-  trained the Banelings with ZerglingTrain (75, named MorphToBaneling as in 94137), 93139 to 93333
-  have the links of 94137. They were 92% of the replays of the full snapshot (27 versions) and
-  had no command named, now 97% to 100% of the commands of each version are named. Their units
-  get the sizes and colors of 94137 too.
-- A command given to a selection whose units do not all have the ability is named after the first
-  one that has it, it was named after the last unit and often empty, and a command that no unit
-  of the selection has, i.e. a move to Battlecruisers or the rally of a Barracks with a Command
-  Center, after any unit of the balance data with that link: in the pro replays of 94137 99.9% of
-  the commands are named instead of 86.8%. `tests/ability_names.rs` measures it on a directory.
-- The map caches are downloaded into the cache path even when the directory does not exist (it
-  was created by no one and every download failed), 4 at a time instead of all at once, through a
-  temporary file. `cache_handles::download_caches` returns what was downloaded and the errors
-  (`CacheDownloads`), they were printed to the console. `download_snapshot_caches` downloads the
-  missing caches of an existing snapshot, the ones that failed before, and the CLI does it with
-  `--source <snapshot> --cache-path <dir> cache download`. The `map_info_sha256` of the replays
-  written while their caches were missing stays empty until the snapshot is generated again.
+A snapshot is a directory of Arrow IPC files (`.arrow`, compressed with zstd) written by
+`write-arrow-ipc` from a directory of replays, that the applications and the notebooks query
+with Polars, pyarrow or DuckDB. The files, one of each per day the games were played, see
+[Partitioned snapshots](#partitioned-snapshots):
 
-## Interacting with polars
+| File | A row per |
+|---|---|
+| `details.arrow` | player of a game: the names, races, result, map, patch and lobby slot |
+| `stats.arrow` | `PlayerStats` tracker event, every 10 seconds of each player |
+| `upgrades.arrow` | upgrade completed |
+| `unit_born.arrow` | unit born, finished (UnitDone) or changing type, with its position |
+| `unit_init.arrow` | structure whose construction started (UnitInit), same columns as `unit_born.arrow`; its first `unit_born` row with the same tag is when it finished |
+| `unit_died.arrow` | unit died, with its position and killer |
+| `cmd_target_point.arrow` | command aimed at a point, with the named ability and the units of the selection |
+| `cmd_target_unit.arrow` | command aimed at a unit, with the named ability and the units of the selection |
+| `cmd_no_target.arrow` | command without a target: train, research, morph, stop, hold... |
+| `game_actions.arrow` | player and minute of a game: commands, camera moves, control group assigns and recalls, the groups assigned (a bit each) and selection changes |
+| `game_selections.arrow` | player, minute and unit type selected: the selections, the units, the first and last second |
+| `messages.arrow` | chat message, with the sender and the recipients |
 
-### TODO:
-- The UpdateTargetPoint Cmd arrow snapshot should contain the unit name, otherwise kindof to have an ability withouth it.
+The record batches have about 256 thousand rows. A command is one row: `unit_name` is the first
+unit of the selection, `unit_names` its unit types separated by commas and `selection_size` how
+many units it had. The right clicks (moves and attacks without a named ability) are commands with
+an empty `ability`. The camera moves, control groups and selections are counted per minute in
+`game_actions.arrow` and `game_selections.arrow`, a row each would be tens of thousands of rows
+per game.
 
-### Generating the IPC Arrow datasets
+The applications read the snapshot, not the replays: what a view needs of the games is in these
+files or in the [aggregations](#aggregations), a question the files cannot answer adds a column or
+a file here.
 
-In the directory ipcs/ one .arrow file will be created per implemented data type and day, see
-[Partitioned snapshots](#partitioned-snapshots).
-The `--source` is the directory that contains the replay directory (Or a single file).
-Multiple subdirectories are supported.
-Files are processed using parallel operations.
-For 17K replays (2.3 GBs) it takes 120 seconds to parse/transform/split them. YMMV, in this case only 10K files had valid init data (as in are supported protocol versions).
+The rows of a game share its `ext_fs_id`, the event rows have the game loop and the game
+seconds (`ext_replay_loop`, `ext_replay_seconds`) of the event.
+
+### Generating a snapshot
+
+`--source` is the directory of the replays (subdirectories included) or a single replay,
+`--output` the snapshot directory and `--cache-path` the directory of the map caches (`.s2ma`),
+downloaded from the Blizzard depots when they are missing. Without `--cache-path` the caches are
+downloaded into the working directory. The replays are read in parallel:
 
 ```bash
-$ mkdir -p ipcs/
-$ cargo run --example full -r --no-default-features --features=dep_arrow,tracing_off -- -v error --timing --source $HOME/SCReplaysOnNVMe --output $HOME/git/s2protocol-rs/ipcs/ write-arrow-ipc --process-max-files 1000000
-36752 files have valid init data, processing...
-Total time: 396.363965713s
+$ cargo run --example full -r --no-default-features --features=dep_arrow,dep_tokio,tracing_off -- \
+    -v error --timing \
+    --source $HOME/SC2Replays/ \
+    --output $HOME/git/s2protocol-rs/ipcs/ \
+    --cache-path $HOME/SC2Replays/swarmy/ \
+    write-arrow-ipc --process-max-files 1000000
+Located 59696 matching files by extension
+0 replays are already in the snapshot, 6413 are copies of another replay, 16889 could not be read, 36394 new replays have valid init data, processing...
+Wrote 36394 replays into 2095 days after 97.995619873s
+Aggregated 2095 days, 76 months and 8 years after 102.119933809s
+Total time: 102.618965264s
 $ du -sh ipcs
-22G     ipcs
-$ ls -ltra ipc
-total 22239120
-drwxr-xr-x  2 seb seb       4096 Aug 17 18:27 .
-drwxr-xr-x 12 seb seb       4096 Aug 30 18:14 ..
--rw-r--r--  1 seb seb  117183106 Aug 30 20:45 lobby_init_data.ipc
--rw-r--r--  1 seb seb   10095306 Aug 30 20:45 details.ipc
--rw-r--r--  1 seb seb 2173322874 Aug 30 20:46 stats.ipc
--rw-r--r--  1 seb seb  179426002 Aug 30 20:47 upgrades.ipc
--rw-r--r--  1 seb seb 9958263882 Aug 30 20:48 unit_born.ipc
--rw-r--r--  1 seb seb 5859714578 Aug 30 20:49 unit_died.ipc
--rw-r--r--  1 seb seb 3479428050 Aug 30 20:50 cmd_target_point.ipc
--rw-r--r--  1 seb seb  995379658 Aug 30 20:51 cmd_target_unit.ipc
+4.2G    ipcs
 ```
 
-### Partitioned snapshots
+The times per version and machine are in [bench.md](bench.md). `snapshot::snapshot_state` tells
+whether a snapshot is ready, being generated (`in_progress.json`, locked by the process) or was
+interrupted, the applications ask for a Rebuild in that case; the generation reports its steps,
+see [Snapshot progress](#snapshot-progress).
 
-The time it takes to generate a snapshot on different versions and machines is in [bench.md](bench.md).
+### Aggregations
+
+Most questions do not need the hundreds of millions of event rows. The generation writes, from the
+files of each day and without reading the replays again, see `arrow_store::aggregates`:
+
+| File | Where | A row per |
+|---|---|---|
+| `game_abilities.arrow` | each day | game, player and ability: uses, first use |
+| `game_units.arrow` | each day | game, player and unit: made, lost, kills, resources killed |
+| `game_players.arrow` | each day | game and player: tracker player id, length of the game |
+| `game_minutes.arrow` | each day | game, player and minute: workers, supply, income, army |
+| `ability_usage.arrow` | each day, month, year | period, protocol version, race, player, ability |
+| `unit_usage.arrow` | each day, month, year | period, protocol version, race, player, unit |
+| `player_usage.arrow` | each day, month, year | period, protocol version, race, player: games, wins |
+
+```bash
+$ echo "SELECT ability, SUM(uses) FROM read_ipc('ipcs/year=*/ability_usage.arrow') GROUP BY ability"|polars
+$ echo "SELECT period, SUM(uses) FROM read_ipc('ipcs/year=*/month=*/ability_usage.arrow') WHERE ability = 'SpawnLarva.Execute' GROUP BY period"|polars
+```
+
+A day is computed from its files, a month from its days and a year from its months. An
+`aggregates.json` in each directory tells what it was computed from: `aggregates::find_gaps` lists
+the periods that are missing or older than their days, i.e. after an interrupted generation, and
+running `write-arrow-ipc` again only computes those.
+
+### Partitioned snapshots
 
 The snapshot is partitioned by the day the games were played, each day directory has all the
 `.arrow` files and its own `metadata.json`, the root has the `metadata.json` of the whole snapshot:
@@ -392,9 +354,11 @@ The jupyter notebook with examples on how to interact with the data are availabl
 
 ### polars-cli
 
+The files of all the days are read with the glob of the partitions:
+
 ```bash
 $ cargo install polars-cli
-$ echo "SELECT ext_fs_id, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s2protocol-rs/ipcs/stats.ipc') GROUP BY ext_fs_id ORDER BY minerals_lost_army DESC;"|polars
+$ echo "SELECT ext_fs_id, MAX(minerals_lost_army) FROM read_ipc('ipcs/year=*/month=*/day=*/stats.arrow') GROUP BY ext_fs_id ORDER BY minerals_lost_army DESC;"|polars
 ┌───────────┬────────────────────┐
 │ ext_fs_id ┆ minerals_lost_army │
 │ ---       ┆ ---                │
@@ -412,7 +376,7 @@ $ echo "SELECT ext_fs_id, MAX(minerals_lost_army) FROM read_ipc('/home/seb/git/s
 │ 38654     ┆ 177675             │
 │ 24162     ┆ 168120             │
 └───────────┴────────────────────┘
-& echo "SELECT ability, count() FROM read_ipc('/home/seb/git/s2protocol-rs/ipcs/cmd_target_unit.ipc') GROUP BY ability ORDER BY len DESC LIMIT 10"|polars
+$ echo "SELECT ability, count() FROM read_ipc('ipcs/year=*/month=*/day=*/cmd_target_unit.arrow') GROUP BY ability ORDER BY len DESC LIMIT 10"|polars
 ┌───────────────────────────────┬─────────┐
 │ ability                       ┆ len     │
 │ ---                           ┆ ---     │

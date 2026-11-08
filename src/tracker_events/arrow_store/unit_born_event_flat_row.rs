@@ -4,7 +4,7 @@
 use arrow::datatypes::Schema;
 
 use crate::state::UnitChangeHint;
-use crate::tracker_events::{UnitBornEvent, UnitDoneEvent, UnitTypeChangeEvent};
+use crate::tracker_events::{UnitBornEvent, UnitDoneEvent, UnitInitEvent, UnitTypeChangeEvent};
 use serde::{Deserialize, Serialize};
 
 /// An experiment creating a flat row of UnitBornEventFlatRow for Arrow usage
@@ -63,6 +63,37 @@ impl UnitBornEventFlatRow {
             creator_unit_type_name,
             ext_replay_loop,
             ext_replay_seconds,
+            ext_fs_id,
+            player_name: unit.player_name,
+        })
+    }
+
+    /// Create a new UnitBornEventFlatRow from a UnitInitEvent: a structure (or a unit morphing in
+    /// place) whose construction started, written to [`crate::arrow_store::UNIT_INIT_ARROW_FNAME`].
+    /// Its UnitDone, when it is finished, is a row of the unit born file.
+    pub fn from_unit_init(
+        event: UnitInitEvent,
+        ext_replay_loop: i64,
+        ext_fs_id: u64,
+        change_hint: UnitChangeHint,
+    ) -> Option<Self> {
+        let UnitChangeHint::Registered { unit, .. } = change_hint else {
+            return None;
+        };
+        Some(Self {
+            unit_tag_index: event.unit_tag_index,
+            unit_tag_recycle: event.unit_tag_recycle,
+            unit_type_name: event.unit_type_name,
+            control_player_id: Some(event.control_player_id),
+            upkeep_player_id: Some(event.upkeep_player_id),
+            x: event.x as f32,
+            y: event.y as f32,
+            creator_unit_tag_index: None,
+            creator_unit_tag_recycle: None,
+            creator_unit_type_name: None,
+            creator_ability_name: unit.creator_ability_name,
+            ext_replay_loop,
+            ext_replay_seconds: crate::convert_tracker_loop_to_seconds(ext_replay_loop),
             ext_fs_id,
             player_name: unit.player_name,
         })

@@ -47,14 +47,74 @@ pub fn write_batches(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut writer = open_file_writer(path, &schema)?;
 
-    writer.write(&chunk)?;
+    // A file without rows has only the schema, Polars 0.55 (Python 1.40) panics on the
+    // empty compressed buffers of a batch without rows.
+    if chunk.num_rows() > 0 {
+        writer.write(&chunk)?;
+    }
     writer.finish()?;
     Ok(())
 }
 
+/// The rows of a record batch of the snapshot files. The replays are written as they are read, a
+/// batch per replay is thousands of small batches per file and readers decode each on its own:
+/// on a day of 2,376 AI Arena games this makes the scans of a file 2.5 times faster. Above about a
+/// million rows they are slower again, a batch is decoded by one thread.
+pub const RECORD_BATCH_ROWS: usize = 256 * 1024;
+
+/// A file writer that gathers the batches into record batches of about [`RECORD_BATCH_ROWS`].
+#[cfg(feature = "dep_arrow")]
+pub struct CoalescingFileWriter {
+    writer: FileWriter<std::fs::File>,
+    schema: arrow::datatypes::SchemaRef,
+    pending: Vec<RecordBatch>,
+    pending_rows: usize,
+}
+
+#[cfg(feature = "dep_arrow")]
+impl CoalescingFileWriter {
+    fn new(writer: FileWriter<std::fs::File>, schema: &Schema) -> Self {
+        Self {
+            writer,
+            schema: std::sync::Arc::new(schema.clone()),
+            pending: vec![],
+            pending_rows: 0,
+        }
+    }
+
+    /// Adds the rows, they are written once there are enough for a record batch.
+    pub fn write(&mut self, batch: &RecordBatch) -> Result<(), arrow::error::ArrowError> {
+        if batch.num_rows() == 0 {
+            return Ok(());
+        }
+        self.pending_rows += batch.num_rows();
+        self.pending.push(batch.clone());
+        if self.pending_rows >= RECORD_BATCH_ROWS {
+            self.flush()?;
+        }
+        Ok(())
+    }
+
+    fn flush(&mut self) -> Result<(), arrow::error::ArrowError> {
+        if self.pending.is_empty() {
+            return Ok(());
+        }
+        let batch = arrow::compute::concat_batches(&self.schema, &self.pending)?;
+        self.pending.clear();
+        self.pending_rows = 0;
+        self.writer.write(&batch)
+    }
+
+    /// Writes the rows left and closes the file.
+    pub fn finish(&mut self) -> Result<(), arrow::error::ArrowError> {
+        self.flush()?;
+        self.writer.finish()
+    }
+}
+
 /// An Arrow IPC file writer shared by parallel iterators.
 #[cfg(feature = "dep_arrow")]
-pub type ArrowMutexWriter = std::sync::Mutex<FileWriter<std::fs::File>>;
+pub type ArrowMutexWriter = std::sync::Mutex<CoalescingFileWriter>;
 
 /// Opens a mutex protected Arrow IPC file writer
 #[cfg(feature = "dep_arrow")]
@@ -62,15 +122,15 @@ pub fn open_arrow_mutex_writer(
     output: PathBuf,
     schema: Schema,
 ) -> Result<ArrowMutexWriter, Box<dyn std::error::Error>> {
-    Ok(std::sync::Mutex::new(open_file_writer(output, &schema)?))
+    Ok(std::sync::Mutex::new(CoalescingFileWriter::new(
+        open_file_writer(output, &schema)?,
+        &schema,
+    )))
 }
 
 /// Writes the batch to the Arrow IPC file held over a mutex, to be called from within a parallel iterator
 #[cfg(feature = "dep_arrow")]
-pub fn write_to_arrow_mutex_writer(
-    writer: &std::sync::Mutex<FileWriter<std::fs::File>>,
-    res: ArrayRef,
-) -> Option<usize> {
+pub fn write_to_arrow_mutex_writer(writer: &ArrowMutexWriter, res: ArrayRef) -> Option<usize> {
     let mut file_lock = match writer.lock() {
         Ok(lock) => lock,
         Err(err) => {
@@ -98,7 +158,7 @@ pub fn write_to_arrow_mutex_writer(
 /// Closes the Arrow IPC file held over a mutex
 #[cfg(feature = "dep_arrow")]
 pub fn close_arrow_mutex_writer(
-    writer: std::sync::Mutex<FileWriter<std::fs::File>>,
+    writer: ArrowMutexWriter,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut writer = match writer.lock() {
         Ok(writer) => writer,

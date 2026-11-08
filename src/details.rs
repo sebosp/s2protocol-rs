@@ -73,6 +73,8 @@ pub struct PlayerLobbyDetailsFlatRow {
     /// (Economic Focus), 6 Air.
     pub lobby_slot_ai_build: i64,
     pub lobby_slot_handicap: u32,
+    /// The rating (MMR) of the player when the game started, the ladder games have one.
+    pub player_scaled_rating: Option<i32>,
     /// The random seed of the game, the same for every player.
     pub lobby_random_seed: u32,
     pub cache_handle_region: String,
@@ -119,6 +121,7 @@ impl From<PlayerLobbyDetails> for PlayerLobbyDetailsFlatRow {
             lobby_slot_difficulty: source.lobby_slot.difficulty,
             lobby_slot_ai_build: source.lobby_slot.ai_build,
             lobby_slot_handicap: source.lobby_slot.handicap,
+            player_scaled_rating: source.user_init_data_scaled_rating,
             lobby_random_seed: source.lobby_random_seed,
             cache_handle_region: source.cache_handle_region,
             cache_handle_extension: source.cache_handle_extension,
@@ -156,6 +159,8 @@ pub struct PlayerLobbyDetails {
     pub time_local_offset: i64,
     pub user_init_data_name: String,
     pub user_init_data_clan_tag: String,
+    /// The rating (MMR) of the player when the game started, the ladder games have one.
+    pub user_init_data_scaled_rating: Option<i32>,
     // Attempt a join from the PlayerSetupEvent at the start of ReplayTrackerEvents
     pub tracker_setup_player_id: Option<u8>,
     pub tracker_setup_slot_id: Option<u32>, // Is this u32 or?
@@ -253,6 +258,12 @@ impl From<&SC2ReplayBasicData> for Vec<PlayerLobbyDetails> {
                         .user_initial_data
                         .get(slot_idx)
                         .map_or("".to_string(), |u| u.clan_tag.clone().unwrap_or_default()),
+                    user_init_data_scaled_rating: basic_data
+                        .init_data
+                        .sync_lobby_state
+                        .user_initial_data
+                        .get(slot_idx)
+                        .and_then(|u| u.scaled_rating),
                     tracker_setup_player_id: None,
                     tracker_setup_slot_id: None,
                     cache_handles: basic_data

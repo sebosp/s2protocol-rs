@@ -10,3 +10,6 @@ Cargo.lock
 **/*.rs.bk
 
 ipcs/
+
+# Map caches downloaded by runs without --cache-path land in the working directory
+*.s2ma

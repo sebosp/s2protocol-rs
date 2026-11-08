@@ -17,7 +17,7 @@ use std::path::Path;
 use std::sync::{Arc, Mutex};
 
 /// The files of every day partition, the details first, then the [`EVENT_ARROW_FNAMES`].
-pub const PARTITION_ARROW_FNAMES: [&str; 7] = [
+pub const PARTITION_ARROW_FNAMES: [&str; 1 + EVENT_FILES] = [
     DETAILS_ARROW_FNAME,
     STATS_ARROW_FNAME,
     UPGRADES_ARROW_FNAME,
@@ -25,7 +25,30 @@ pub const PARTITION_ARROW_FNAMES: [&str; 7] = [
     UNIT_DIED_ARROW_FNAME,
     CMD_TARGET_POINT_ARROW_FNAME,
     CMD_TARGET_UNIT_ARROW_FNAME,
+    UNIT_INIT_ARROW_FNAME,
+    CMD_NO_TARGET_ARROW_FNAME,
+    GAME_ACTIONS_ARROW_FNAME,
+    GAME_SELECTIONS_ARROW_FNAME,
+    MESSAGES_ARROW_FNAME,
 ];
+
+// The partition files are the details then the event files, in the same order.
+const _: () = {
+    let mut idx = 0;
+    while idx < EVENT_FILES {
+        let (a, b) = (
+            PARTITION_ARROW_FNAMES[idx + 1].as_bytes(),
+            EVENT_ARROW_FNAMES[idx].as_bytes(),
+        );
+        assert!(a.len() == b.len());
+        let mut byte = 0;
+        while byte < a.len() {
+            assert!(a[byte] == b[byte]);
+            byte += 1;
+        }
+        idx += 1;
+    }
+};
 
 /// The glob of a snapshot file in all the day partitions, relative to the snapshot root.
 pub fn partition_glob(file_name: &str) -> String {
@@ -44,7 +67,7 @@ pub fn partition_dir(date: chrono::NaiveDate) -> PathBuf {
 }
 
 /// The sub directories of `dir` named `{key}=...`, sorted.
-fn key_dirs(dir: &Path, key: &str) -> Result<Vec<PathBuf>, std::io::Error> {
+pub(crate) fn key_dirs(dir: &Path, key: &str) -> Result<Vec<PathBuf>, std::io::Error> {
     let prefix = format!("{key}=");
     let mut dirs = vec![];
     for entry in std::fs::read_dir(dir)? {
@@ -363,7 +386,7 @@ struct DayWriter {
     /// The writers of the [`PARTITION_ARROW_FNAMES`].
     writers: Vec<ArrowMutexWriter>,
     /// The rows written to each of the [`PARTITION_ARROW_FNAMES`], copied and new.
-    counts: [AtomicUsize; 7],
+    counts: [AtomicUsize; 1 + EVENT_FILES],
 }
 
 impl DayWriter {
@@ -374,7 +397,7 @@ impl DayWriter {
         std::fs::create_dir_all(&dir)?;
         let schemas = std::iter::once(PlayerLobbyDetailsFlatRow::schema()).chain(event_schemas());
         let mut writers = vec![];
-        let counts: [AtomicUsize; 7] = Default::default();
+        let counts: [AtomicUsize; 1 + EVENT_FILES] = Default::default();
         for ((name, schema), count) in PARTITION_ARROW_FNAMES.iter().zip(schemas).zip(&counts) {
             let path = dir.join(name);
             let writer = open_arrow_mutex_writer(tmp_path(&path), schema.clone())?;

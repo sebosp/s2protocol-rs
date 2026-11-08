@@ -11,7 +11,8 @@ use crate::get_matching_files;
 
 use crate::details::{PlayerLobbyDetails, PlayerLobbyDetailsFlatRow};
 use crate::game_events::{
-    CmdTargetPointEventFlatRow, CmdTargetUnitEventFlatRow, MultiVersionedBalanceUnits,
+    CmdNoTargetEventFlatRow, CmdTargetPointEventFlatRow, CmdTargetUnitEventFlatRow,
+    GameActionsAccumulator, GameActionsFlatRow, GameSelectionsFlatRow, MultiVersionedBalanceUnits,
 };
 use crate::snapshot::*;
 use crate::tracker_events::{
@@ -23,24 +24,38 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
 pub mod bot_filter;
+pub mod messages;
 use bot_filter::BotFilter;
+use messages::MessageFlatRow;
 pub mod ipc_writer;
 use ipc_writer::*;
 pub mod rows;
 pub use rows::TryIntoArrow;
 pub mod partitioned;
 use partitioned::*;
+#[cfg(feature = "dep_arrow")]
+pub mod aggregates;
 
-pub const DETAILS_ARROW_FNAME: &'static str = "details.arrow";
-pub const STATS_ARROW_FNAME: &'static str = "stats.arrow";
-pub const UPGRADES_ARROW_FNAME: &'static str = "upgrades.arrow";
-pub const UNIT_BORN_ARROW_FNAME: &'static str = "unit_born.arrow";
-pub const UNIT_DIED_ARROW_FNAME: &'static str = "unit_died.arrow";
-pub const CMD_TARGET_POINT_ARROW_FNAME: &'static str = "cmd_target_point.arrow";
-pub const CMD_TARGET_UNIT_ARROW_FNAME: &'static str = "cmd_target_unit.arrow";
+pub const DETAILS_ARROW_FNAME: &str = "details.arrow";
+pub const STATS_ARROW_FNAME: &str = "stats.arrow";
+pub const UPGRADES_ARROW_FNAME: &str = "upgrades.arrow";
+pub const UNIT_BORN_ARROW_FNAME: &str = "unit_born.arrow";
+pub const UNIT_DIED_ARROW_FNAME: &str = "unit_died.arrow";
+pub const CMD_TARGET_POINT_ARROW_FNAME: &str = "cmd_target_point.arrow";
+pub const CMD_TARGET_UNIT_ARROW_FNAME: &str = "cmd_target_unit.arrow";
+/// The structures (and the units morphing in place) whose construction started.
+pub const UNIT_INIT_ARROW_FNAME: &str = "unit_init.arrow";
+/// The commands without a target point or unit: train, research, morph, stop...
+pub const CMD_NO_TARGET_ARROW_FNAME: &str = "cmd_no_target.arrow";
+/// The camera moves, control groups and selections of each player and minute.
+pub const GAME_ACTIONS_ARROW_FNAME: &str = "game_actions.arrow";
+/// The unit types selected by each player in each minute.
+pub const GAME_SELECTIONS_ARROW_FNAME: &str = "game_selections.arrow";
+/// The chat messages.
+pub const MESSAGES_ARROW_FNAME: &str = "messages.arrow";
 
 /// The steps of [`ArrowIpcTypes::handle_arrow_ipc_cmd_with_progress`].
-const SNAPSHOT_STEPS: usize = 5;
+const SNAPSHOT_STEPS: usize = 6;
 
 /// The size and records of a file written to the snapshot directory.
 fn snapshot_file(output: &std::path::Path, name: &str, records: usize) -> SnapshotFile {
@@ -53,18 +68,26 @@ fn snapshot_file(output: &std::path::Path, name: &str, records: usize) -> Snapsh
     }
 }
 
+/// The number of [`EVENT_ARROW_FNAMES`].
+pub const EVENT_FILES: usize = 11;
+
 /// The event files of a snapshot, in the order of [`ReplayEventRows::write`].
-pub const EVENT_ARROW_FNAMES: [&str; 6] = [
+pub const EVENT_ARROW_FNAMES: [&str; EVENT_FILES] = [
     STATS_ARROW_FNAME,
     UPGRADES_ARROW_FNAME,
     UNIT_BORN_ARROW_FNAME,
     UNIT_DIED_ARROW_FNAME,
     CMD_TARGET_POINT_ARROW_FNAME,
     CMD_TARGET_UNIT_ARROW_FNAME,
+    UNIT_INIT_ARROW_FNAME,
+    CMD_NO_TARGET_ARROW_FNAME,
+    GAME_ACTIONS_ARROW_FNAME,
+    GAME_SELECTIONS_ARROW_FNAME,
+    MESSAGES_ARROW_FNAME,
 ];
 
 /// The schemas of the [`EVENT_ARROW_FNAMES`].
-pub fn event_schemas() -> [Schema; 6] {
+pub fn event_schemas() -> [Schema; EVENT_FILES] {
     [
         PlayerStatsFlatRow::schema(),
         UpgradeEventFlatRow::schema(),
@@ -72,6 +95,11 @@ pub fn event_schemas() -> [Schema; 6] {
         UnitDiedEventFlatRow::schema(),
         CmdTargetPointEventFlatRow::schema(),
         CmdTargetUnitEventFlatRow::schema(),
+        UnitBornEventFlatRow::schema(),
+        CmdNoTargetEventFlatRow::schema(),
+        GameActionsFlatRow::schema(),
+        GameSelectionsFlatRow::schema(),
+        MessageFlatRow::schema(),
     ]
 }
 
@@ -84,6 +112,11 @@ pub struct ReplayEventRows {
     pub unit_died: Vec<UnitDiedEventFlatRow>,
     pub target_points: Vec<CmdTargetPointEventFlatRow>,
     pub target_units: Vec<CmdTargetUnitEventFlatRow>,
+    pub unit_init: Vec<UnitBornEventFlatRow>,
+    pub no_targets: Vec<CmdNoTargetEventFlatRow>,
+    pub actions: Vec<GameActionsFlatRow>,
+    pub selections: Vec<GameSelectionsFlatRow>,
+    pub messages: Vec<MessageFlatRow>,
 }
 
 /// Writes the rows converted to arrow to the writer, logging the errors, returns the rows written.
@@ -131,149 +164,153 @@ impl ReplayEventRows {
         let event_iterator = SC2EventIterator::new(source, versioned_abilities).ok()?;
 
         let ext_fs_id = event_iterator.sc2_state.details.ext_fs_id;
+        let names: std::collections::HashMap<i64, String> = event_iterator
+            .sc2_state
+            .user_state
+            .iter()
+            .map(|(user_id, user)| {
+                (
+                    *user_id,
+                    user.player_lobby_details.player_details.name.clone(),
+                )
+            })
+            .collect();
         // The move and attack commands of the bots are most of their rows and of no use.
         let mut bot_filter = BotFilter::new(source.init_data.version);
-        let (
-            stat_rows,
-            upgrade_rows,
-            unit_born_rows,
-            unit_died_rows,
-            target_point_rows,
-            target_unit_rows,
-        ) = event_iterator.into_iter().fold(
-            (vec![], vec![], vec![], vec![], vec![], vec![]),
-            |(
-                mut stat_rows,
-                mut upgrade_rows,
-                mut unit_born_rows,
-                mut unit_died_rows,
-                mut target_point_rows,
-                mut target_unit_rows,
-            ),
-             event_item| {
-                match event_item.event_type {
-                    SC2EventType::Tracker {
-                        tracker_loop,
-                        event,
-                    } => match event {
-                        ReplayTrackerEvent::PlayerStats(event) => {
-                            stat_rows.push(PlayerStatsFlatRow::new(event, tracker_loop, ext_fs_id));
-                        }
-                        ReplayTrackerEvent::UnitBorn(event) => {
-                            if let Some(new_row) = UnitBornEventFlatRow::from_unit_born(
-                                event,
-                                tracker_loop,
-                                ext_fs_id,
-                                event_item.change_hint,
-                            ) {
-                                unit_born_rows.push(new_row);
-                            }
-                        }
-                        ReplayTrackerEvent::UnitDone(event) => {
-                            if let Some(new_row) = UnitBornEventFlatRow::from_unit_done(
-                                event,
-                                tracker_loop,
-                                ext_fs_id,
-                                event_item.change_hint,
-                            ) {
-                                unit_born_rows.push(new_row);
-                            }
-                        }
-                        ReplayTrackerEvent::UnitTypeChange(event) => match event_item.change_hint {
-                            UnitChangeHint::None => {}
-                            change_hint => {
-                                if let Some(new_row) = UnitBornEventFlatRow::from_unit_type_change(
+        let mut rows = Self::default();
+        let mut actions = GameActionsAccumulator::default();
+        for event_item in event_iterator.into_iter() {
+            match event_item.event_type {
+                SC2EventType::Tracker {
+                    tracker_loop,
+                    event,
+                } => match event {
+                    ReplayTrackerEvent::PlayerStats(event) => {
+                        rows.stats
+                            .push(PlayerStatsFlatRow::new(event, tracker_loop, ext_fs_id));
+                    }
+                    ReplayTrackerEvent::UnitBorn(event) => {
+                        rows.unit_born.extend(UnitBornEventFlatRow::from_unit_born(
+                            event,
+                            tracker_loop,
+                            ext_fs_id,
+                            event_item.change_hint,
+                        ));
+                    }
+                    ReplayTrackerEvent::UnitInit(event) => {
+                        rows.unit_init.extend(UnitBornEventFlatRow::from_unit_init(
+                            event,
+                            tracker_loop,
+                            ext_fs_id,
+                            event_item.change_hint,
+                        ));
+                    }
+                    ReplayTrackerEvent::UnitDone(event) => {
+                        rows.unit_born.extend(UnitBornEventFlatRow::from_unit_done(
+                            event,
+                            tracker_loop,
+                            ext_fs_id,
+                            event_item.change_hint,
+                        ));
+                    }
+                    ReplayTrackerEvent::UnitTypeChange(event) => match event_item.change_hint {
+                        UnitChangeHint::None => {}
+                        change_hint => {
+                            rows.unit_born
+                                .extend(UnitBornEventFlatRow::from_unit_type_change(
                                     event,
                                     tracker_loop,
                                     ext_fs_id,
                                     change_hint,
-                                ) {
-                                    unit_born_rows.push(new_row);
-                                }
-                            }
-                        },
-                        ReplayTrackerEvent::UnitDied(event) => {
-                            if let Some(new_row) = UnitDiedEventFlatRow::new(
-                                ext_fs_id,
-                                event,
-                                tracker_loop,
-                                event_item.change_hint,
-                            ) {
-                                unit_died_rows.push(new_row);
-                            }
+                                ));
                         }
-                        ReplayTrackerEvent::Upgrade(event) => {
-                            upgrade_rows.push(UpgradeEventFlatRow::new(
-                                event,
-                                tracker_loop,
-                                ext_fs_id,
-                            ));
-                        }
-                        _ => {}
                     },
-                    SC2EventType::Game {
-                        event: game_events::ReplayGameEvent::Cmd(event),
-                        game_loop,
-                        user_id,
-                        player_name,
-                    } if {
-                        bot_filter.count(user_id, game_loop);
-                        bot_filter.keeps(user_id, event.m_abil.as_ref())
-                    } =>
-                    {
-                        match event.m_data {
-                            game_events::GameSCmdData::TargetPoint(_) => {
-                                target_point_rows.append(
-                                    &mut game_events::CmdTargetPointEventFlatRow::new(
-                                        ext_fs_id,
-                                        event,
-                                        game_loop,
-                                        user_id,
-                                        player_name,
-                                        event_item.change_hint,
-                                    ),
-                                );
-                            }
-                            game_events::GameSCmdData::TargetUnit(_) => {
-                                target_unit_rows.append(
-                                    &mut game_events::CmdTargetUnitEventFlatRow::new(
-                                        ext_fs_id,
-                                        event,
-                                        game_loop,
-                                        user_id,
-                                        player_name,
-                                        event_item.change_hint,
-                                    ),
-                                );
-                            }
-                            _ => {}
-                        }
+                    ReplayTrackerEvent::UnitDied(event) => {
+                        rows.unit_died.extend(UnitDiedEventFlatRow::new(
+                            ext_fs_id,
+                            event,
+                            tracker_loop,
+                            event_item.change_hint,
+                        ));
+                    }
+                    ReplayTrackerEvent::Upgrade(event) => {
+                        rows.upgrades.push(UpgradeEventFlatRow::new(
+                            event,
+                            tracker_loop,
+                            ext_fs_id,
+                        ));
                     }
                     _ => {}
-                };
-                (
-                    stat_rows,
-                    upgrade_rows,
-                    unit_born_rows,
-                    unit_died_rows,
-                    target_point_rows,
-                    target_unit_rows,
-                )
-            },
-        );
-        Some(Self {
-            stats: stat_rows,
-            upgrades: upgrade_rows,
-            unit_born: unit_born_rows,
-            unit_died: unit_died_rows,
-            target_points: target_point_rows,
-            target_units: target_unit_rows,
-        })
+                },
+                SC2EventType::Game {
+                    event,
+                    game_loop,
+                    user_id,
+                    player_name,
+                } => {
+                    actions.add(
+                        user_id,
+                        &player_name,
+                        game_loop,
+                        &event,
+                        &event_item.change_hint,
+                    );
+                    let game_events::ReplayGameEvent::Cmd(event) = event else {
+                        continue;
+                    };
+                    bot_filter.count(user_id, game_loop);
+                    if !bot_filter.keeps(user_id, event.m_abil.as_ref()) {
+                        continue;
+                    }
+                    let hint = event_item.change_hint;
+                    match event.m_data {
+                        game_events::GameSCmdData::TargetPoint(_) => {
+                            rows.target_points.append(
+                                &mut game_events::CmdTargetPointEventFlatRow::new(
+                                    ext_fs_id,
+                                    event,
+                                    game_loop,
+                                    user_id,
+                                    player_name,
+                                    hint,
+                                ),
+                            );
+                        }
+                        game_events::GameSCmdData::TargetUnit(_) => {
+                            rows.target_units.append(
+                                &mut game_events::CmdTargetUnitEventFlatRow::new(
+                                    ext_fs_id,
+                                    event,
+                                    game_loop,
+                                    user_id,
+                                    player_name,
+                                    hint,
+                                ),
+                            );
+                        }
+                        game_events::GameSCmdData::None | game_events::GameSCmdData::Data(_) => {
+                            rows.no_targets.extend(CmdNoTargetEventFlatRow::new(
+                                ext_fs_id,
+                                event,
+                                game_loop,
+                                user_id,
+                                player_name,
+                                hint,
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+        (rows.actions, rows.selections) = actions.rows(ext_fs_id);
+        rows.messages =
+            messages::message_rows(&source.init_data.ext_fs_file_name, ext_fs_id, &names);
+        Some(rows)
     }
 
     /// Writes the rows to the writers of the [`EVENT_ARROW_FNAMES`], returns the rows written
     /// to each.
-    pub fn write(self, writers: &[ArrowMutexWriter]) -> [usize; 6] {
+    pub fn write(self, writers: &[ArrowMutexWriter]) -> [usize; EVENT_FILES] {
         [
             write_rows(&writers[0], self.stats.try_into_arrow()),
             write_rows(&writers[1], self.upgrades.try_into_arrow()),
@@ -281,6 +318,11 @@ impl ReplayEventRows {
             write_rows(&writers[3], self.unit_died.try_into_arrow()),
             write_rows(&writers[4], self.target_points.try_into_arrow()),
             write_rows(&writers[5], self.target_units.try_into_arrow()),
+            write_rows(&writers[6], self.unit_init.try_into_arrow()),
+            write_rows(&writers[7], self.no_targets.try_into_arrow()),
+            write_rows(&writers[8], self.actions.try_into_arrow()),
+            write_rows(&writers[9], self.selections.try_into_arrow()),
+            write_rows(&writers[10], self.messages.try_into_arrow()),
         ]
     }
 }
@@ -297,7 +339,7 @@ pub async fn details_rows(
 
     sources
         .par_iter()
-        .map(|source| std::convert::Into::<Vec<PlayerLobbyDetails>>::into(source))
+        .map(std::convert::Into::<Vec<PlayerLobbyDetails>>::into)
         .flatten()
         .map(|mut detail| {
             for cache_id in &detail.cache_handles {
@@ -497,8 +539,7 @@ impl ArrowIpcTypes {
             sources
                 .iter()
                 .filter_map(|source| {
-                    let event_iterator =
-                        SC2EventIterator::new(&source, versioned_abilities).ok()?;
+                    let event_iterator = SC2EventIterator::new(source, versioned_abilities).ok()?;
                     match self {
                         Self::Stats => {
                             let batch = event_iterator.collect_into_player_stats_flat_rows();
@@ -522,7 +563,7 @@ impl ArrowIpcTypes {
                 .collect::<Vec<ArrayRef>>()
                 .into_iter()
                 .filter_map(|array_ref| {
-                    if array_ref.len() == 0 {
+                    if array_ref.is_empty() {
                         None
                     } else {
                         write_to_arrow_mutex_writer(&writer, array_ref)
@@ -533,8 +574,7 @@ impl ArrowIpcTypes {
             sources
                 .par_iter()
                 .filter_map(|source| {
-                    let event_iterator =
-                        SC2EventIterator::new(&source, versioned_abilities).ok()?;
+                    let event_iterator = SC2EventIterator::new(source, versioned_abilities).ok()?;
                     match self {
                         Self::Stats => {
                             let batch = event_iterator.collect_into_player_stats_flat_rows();
@@ -558,7 +598,7 @@ impl ArrowIpcTypes {
                 .collect::<Vec<ArrayRef>>()
                 .into_iter()
                 .filter_map(|array_ref| {
-                    if array_ref.len() == 0 {
+                    if array_ref.is_empty() {
                         None
                     } else {
                         write_to_arrow_mutex_writer(&writer, array_ref)
@@ -650,7 +690,7 @@ impl ArrowIpcTypes {
         let total_sources = sources.len();
         // Send an update for every percent of the replays processed.
         let progress_every = (total_sources / 100).max(1);
-        let counts: [AtomicUsize; 6] = Default::default();
+        let counts: [AtomicUsize; EVENT_FILES] = Default::default();
         let event_writers = EVENT_ARROW_FNAMES
             .into_iter()
             .zip(event_schemas())
@@ -711,8 +751,7 @@ impl ArrowIpcTypes {
             sources
                 .iter()
                 .filter_map(|source| {
-                    let event_iterator =
-                        SC2EventIterator::new(&source, versioned_abilities).ok()?;
+                    let event_iterator = SC2EventIterator::new(source, versioned_abilities).ok()?;
                     match self {
                         Self::CmdTargetPoint => {
                             let batch =
@@ -730,7 +769,7 @@ impl ArrowIpcTypes {
                 .collect::<Vec<ArrayRef>>()
                 .into_iter()
                 .filter_map(|array_ref| {
-                    if array_ref.len() == 0 {
+                    if array_ref.is_empty() {
                         None
                     } else {
                         write_to_arrow_mutex_writer(&writer, array_ref)
@@ -741,8 +780,7 @@ impl ArrowIpcTypes {
             sources
                 .par_iter()
                 .filter_map(|source| {
-                    let event_iterator =
-                        SC2EventIterator::new(&source, versioned_abilities).ok()?;
+                    let event_iterator = SC2EventIterator::new(source, versioned_abilities).ok()?;
                     match self {
                         Self::CmdTargetPoint => {
                             let batch =
@@ -760,7 +798,7 @@ impl ArrowIpcTypes {
                 .collect::<Vec<ArrayRef>>()
                 .into_iter()
                 .filter_map(|array_ref| {
-                    if array_ref.len() == 0 {
+                    if array_ref.is_empty() {
                         None
                     } else {
                         write_to_arrow_mutex_writer(&writer, array_ref)
@@ -1063,6 +1101,25 @@ impl ArrowIpcTypes {
             progress,
             SnapshotProgress::Step {
                 index: 5,
+                total: SNAPSHOT_STEPS,
+                name: "Aggregating the days, months and years".to_string(),
+            },
+        );
+        let aggregated = aggregates::build_missing(&output, |update| {
+            send_progress(progress, update);
+        })
+        .map_err(|err| err.to_string())?;
+        println!(
+            "Aggregated {} days, {} months and {} years after {:?}",
+            aggregated.days.len(),
+            aggregated.months.len(),
+            aggregated.years.len(),
+            init_time.elapsed()
+        );
+        send_progress(
+            progress,
+            SnapshotProgress::Step {
+                index: 6,
                 total: SNAPSHOT_STEPS,
                 name: format!("Writing {SNAPSHOT_METADATA_FNAME}"),
             },

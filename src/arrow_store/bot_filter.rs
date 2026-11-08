@@ -84,13 +84,14 @@ impl BotFilter {
     }
 
     /// Whether the rows of the command are kept: all the commands of the humans, and the ones of
-    /// the bots that are not a move or an attack.
+    /// the bots that are not a move, an attack or a right click.
     pub fn keeps(&self, user_id: i64, ability: Option<&GameSCmdAbil>) -> bool {
         if !self.is_bot(user_id) {
             return true;
         }
+        // The right clicks, the commands without an ability, are moves and attacks.
         let Some(ability) = ability else {
-            return true;
+            return false;
         };
         let is_dropped = if ability.ability.is_empty() && self.protocol_version == 75689 {
             DROPPED_ABILITY_LINKS_75689.contains(&ability.m_abil_link)

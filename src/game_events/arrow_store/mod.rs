@@ -5,3 +5,6 @@
 pub mod cmd_event_flat_row;
 pub use cmd_event_flat_row::CmdTargetPointEventFlatRow;
 pub use cmd_event_flat_row::CmdTargetUnitEventFlatRow;
+pub mod game_actions;
+pub use cmd_event_flat_row::CmdNoTargetEventFlatRow;
+pub use game_actions::{GameActionsAccumulator, GameActionsFlatRow, GameSelectionsFlatRow};

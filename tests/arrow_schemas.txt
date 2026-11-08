@@ -27,6 +27,7 @@ lobby_slot_map_size_y UInt8 false
 lobby_slot_difficulty Int64 false
 lobby_slot_ai_build Int64 false
 lobby_slot_handicap UInt32 false
+player_scaled_rating Int32 true
 lobby_random_seed UInt32 false
 cache_handle_region Utf8 false
 cache_handle_extension Utf8 false
@@ -137,6 +138,8 @@ target_point_z Int32 false
 sequence Int64 false
 unit_group UInt32 true
 unit_name Utf8 false
+unit_names Utf8 false
+selection_size UInt32 false
 ext_replay_loop Int64 false
 ext_replay_seconds UInt32 false
 ext_fs_id UInt64 false
@@ -157,7 +160,131 @@ snapshot_point_y Int64 false
 snapshot_point_z Int32 false
 sequence Int64 false
 unit_name Utf8 false
+unit_names Utf8 false
+selection_size UInt32 false
 target_unit_name Utf8 false
 ext_replay_loop Int64 false
 ext_replay_seconds UInt32 false
 ext_fs_id UInt64 false
+## unit_init
+unit_tag_index UInt32 false
+unit_tag_recycle UInt32 false
+unit_type_name Utf8 false
+control_player_id UInt8 true
+upkeep_player_id UInt8 true
+x Float32 false
+y Float32 false
+creator_unit_tag_index UInt32 true
+creator_unit_tag_recycle UInt32 true
+creator_unit_type_name Utf8 true
+creator_ability_name Utf8 true
+ext_replay_loop Int64 false
+ext_replay_seconds UInt32 false
+ext_fs_id UInt64 false
+player_name Utf8 true
+## cmd_no_target
+user_id Int64 false
+player_name Utf8 true
+cmd_flags Int64 false
+abil_link UInt16 true
+abil_cmd_index Int64 true
+ability Utf8 false
+data UInt32 true
+sequence Int64 false
+unit_group UInt32 true
+unit_name Utf8 false
+unit_names Utf8 false
+selection_size UInt32 false
+ext_replay_loop Int64 false
+ext_replay_seconds UInt32 false
+ext_fs_id UInt64 false
+## game_actions
+ext_fs_id UInt64 false
+user_id Int64 false
+player_name Utf8 true
+minute UInt32 false
+commands UInt32 false
+camera_moves UInt32 false
+control_group_assigns UInt32 false
+control_group_recalls UInt32 false
+control_groups_assigned UInt32 false
+selection_changes UInt32 false
+## game_selections
+ext_fs_id UInt64 false
+user_id Int64 false
+player_name Utf8 true
+minute UInt32 false
+unit_type_name Utf8 false
+selections UInt32 false
+units UInt32 false
+first_seconds UInt32 false
+last_seconds UInt32 false
+## messages
+ext_fs_id UInt64 false
+user_id Int64 false
+player_name Utf8 true
+recipient Utf8 false
+text Utf8 false
+ext_replay_loop Int64 false
+ext_replay_seconds UInt32 false
+## game_abilities
+ext_fs_id UInt64 false
+player_name Utf8 false
+ability Utf8 false
+uses UInt32 false
+first_seconds UInt32 false
+## game_units
+ext_fs_id UInt64 false
+player_name Utf8 false
+unit Utf8 false
+born UInt32 false
+died UInt32 false
+kills UInt32 false
+value_killed UInt64 false
+## game_players
+ext_fs_id UInt64 false
+player_name Utf8 false
+player_id UInt8 false
+game_seconds UInt32 false
+## game_minutes
+ext_fs_id UInt64 false
+player_id UInt8 false
+minute UInt32 false
+workers Int32 false
+supply Int32 false
+minerals_rate Int32 false
+vespene_rate Int32 false
+army_value Int32 false
+## ability_usage
+period Utf8 false
+ext_protocol_version UInt32 false
+player_race Utf8 false
+account Utf8 false
+player Utf8 false
+ability Utf8 false
+games UInt32 false
+wins UInt32 false
+uses UInt64 false
+## unit_usage
+period Utf8 false
+ext_protocol_version UInt32 false
+player_race Utf8 false
+account Utf8 false
+player Utf8 false
+unit Utf8 false
+games UInt32 false
+wins UInt32 false
+born UInt64 false
+died UInt64 false
+kills UInt64 false
+value_killed UInt64 false
+## player_usage
+period Utf8 false
+ext_protocol_version UInt32 false
+player_race Utf8 false
+account Utf8 false
+player Utf8 false
+games UInt32 false
+wins UInt32 false
+versus_games UInt32 false
+versus_wins UInt32 false

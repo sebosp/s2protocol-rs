@@ -85,7 +85,13 @@ pub fn handle_cmd(
         if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
             let mut unit_cmd = cmd.clone();
             match unit_cmd.m_abil {
-                None => continue,
+                // A command without an ability, a right click (a move or an attack): the unit
+                // received it, its current command is not changed.
+                None => {
+                    registered_unit.last_game_loop = game_loop;
+                    user_selected_units.push(registered_unit.clone());
+                    continue;
+                }
                 Some(ref mut val) => {
                     val.ability = get_indexed_ability_command_name(
                         &sc2_state.balance_units,
