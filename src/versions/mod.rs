@@ -25,7 +25,6 @@ pub fn read_tracker_events(
         proto_header.m_version.m_base_build,
         file_name
     );
-    assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         0..=75689 => protocol75689::byte_aligned::ReplayTrackerEEventId::read_tracker_events(
             mpq,
@@ -56,7 +55,6 @@ pub fn read_game_events(
         proto_header.m_version.m_base_build,
         file_name
     );
-    assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         0..=75689 => protocol75689::bit_packed::GameEEventId::read_events(mpq, file_contents),
         83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
@@ -78,7 +76,6 @@ pub fn read_message_events(
         proto_header.m_version.m_base_build,
         file_name
     );
-    assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         0..=75689 => protocol75689::bit_packed::GameEMessageId::read_events(mpq, file_contents),
         83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
@@ -100,7 +97,6 @@ pub fn read_details(
         proto_header.m_version.m_base_build,
         file_name
     );
-    assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     match proto_header.m_version.m_base_build {
         0..=75689 => protocol75689::byte_aligned::GameSDetails::read_details(mpq, file_contents),
         83830 | 84643 | 88500 | 86383 | 87702 | 89634 | 89165 | 89720 | 90136 | 90779 | 90870
@@ -109,7 +105,7 @@ pub fn read_details(
     }
 }
 
-/// Attempts to read the initData, panics if signature doesn't match
+/// Attempts to read the initData
 #[tracing::instrument(level = "debug", skip(mpq, file_contents, file_name))]
 pub fn read_init_data(
     file_name: &str,
@@ -122,7 +118,6 @@ pub fn read_init_data(
         proto_header.m_version.m_base_build,
         file_name
     );
-    assert_eq!(proto_header.m_signature, b"StarCraft II replay\x1b11"[..]);
     let res = match proto_header.m_version.m_base_build {
         // The lobby slots of 4.10 are not the ones of 4.11, see protocol75689::init_data.
         0..=75689 => protocol75689::init_data::read_init_data(mpq, file_contents),

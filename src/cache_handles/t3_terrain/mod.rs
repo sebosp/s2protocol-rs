@@ -44,9 +44,34 @@ pub struct T3Terrain {
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct HeightMap {
+    /// The terrain type of the map (`CTerrain` of the game data), i.e. `HybridLabXelNaga`.
+    #[serde(rename = "@tileSet", default)]
+    pub tile_set: String,
     #[serde(rename = "rampList")]
     pub ramp_list: Option<RampListTag>,
+    /// The terrain textures: the first 8 are the layers of `t3TextureMasks`, see
+    /// [`T3Terrain::blend_texture_names`].
+    #[serde(rename = "textureList")]
+    pub texture_list: Option<TextureListTag>,
 }
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct TextureListTag {
+    #[serde(rename = "texture", default)]
+    pub inner: Vec<TextureTag>,
+}
+
+/// A terrain texture of the map, by its id in the game data (`CTerrainTex`), i.e. `AgriaDirt`.
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct TextureTag {
+    #[serde(rename = "@i", default)]
+    pub index: usize,
+    #[serde(rename = "@name", default)]
+    pub name: String,
+}
+
+/// The number of texture layers the terrain blends, see [`T3Terrain::blend_texture_names`].
+pub const TERRAIN_BLEND_LAYERS: usize = 8;
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct RampListTag {
@@ -103,9 +128,41 @@ mod tests {
         assert_eq!((ramp.dir, ramp.hi, ramp.lo, ramp.cid), (6, 2, 1, 1));
         assert!(ramp.left_lo.contains("c=(5.200000e+01, 2.000000e+01)"));
     }
+
+    #[test]
+    fn it_reads_the_tile_set_and_the_blend_textures() {
+        let xml = r#"<terrain version="115"><heightMap tileSet="HybridLabXelNaga">
+            <textureList num="64">
+                <texture i="0" name="TyradorGrass"/>
+                <texture i="2" name="CharDunes_4"/>
+                <texture i="8" name=""/>
+                <texture i="9" name="NotALayer"/>
+            </textureList></heightMap></terrain>"#;
+        let terrain = T3Terrain::parse("id".to_string(), xml.as_bytes()).unwrap();
+        assert_eq!(terrain.height_map.tile_set, "HybridLabXelNaga");
+        let names = terrain.blend_texture_names();
+        assert_eq!(names[0], "TyradorGrass");
+        assert_eq!(names[1], "");
+        assert_eq!(names[2], "CharDunes_4");
+        assert!(names.iter().all(|name| name != "NotALayer"));
+    }
 }
 
 impl T3Terrain {
+    /// The textures of the 8 layers the terrain blends, the layers of `t3TextureMasks` in order,
+    /// empty for an unused layer.
+    pub fn blend_texture_names(&self) -> [String; TERRAIN_BLEND_LAYERS] {
+        let mut names: [String; TERRAIN_BLEND_LAYERS] = Default::default();
+        if let Some(list) = &self.height_map.texture_list {
+            for texture in &list.inner {
+                if texture.index < TERRAIN_BLEND_LAYERS {
+                    names[texture.index] = texture.name.clone();
+                }
+            }
+        }
+        names
+    }
+
     #[instrument(level = "debug", skip(file_contents))]
     pub fn parse(cache_handle_id: String, file_contents: &[u8]) -> Result<Self, S2ProtocolError> {
         // Seems like the end of this XML may end ni <cliffCellList> rather than </cliffCellList>

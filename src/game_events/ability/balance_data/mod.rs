@@ -541,7 +541,10 @@ pub type MultiVersionedBalanceUnits = HashMap<u32, VersionedBalanceUnits>;
 /// A range of protocol versions without balance data whose commands are named with the balance
 /// data of another version, translating their ability links. Measured on the replays of corvid-zt
 /// (the units commanding each link have the ability of the translated link) and checked with the
-/// tables of sc2reader of 80949 and 89720.
+/// tables of sc2reader of 80949 and 89720. Validated on 2026-11-13 against the game itself: the
+/// SC2 API of builds 81433, 82457, 82893, 83830, 84643, 86383, 87702, 88500, 89165, 89720, 90136
+/// and 93333, observing 10 pro replays each, named the abilities of their targeted commands, and
+/// no link disagreed with this mapping (tools in wormgat `/data/seb/sc2-wine`, `compare_derived.py`).
 #[derive(Debug, Clone, PartialEq)]
 pub struct DerivedAbilityLinks {
     pub versions: std::ops::RangeInclusive<u32>,

@@ -13,6 +13,7 @@ pub type S2ProtoResult<I, O> = Result<(I, O), S2ProtocolError>;
 pub const MAX_ERROR_CONTEXT_CHARS: usize = 128;
 
 #[derive(thiserror::Error, Debug)]
+#[non_exhaustive]
 pub enum S2ProtocolError {
     /// Unable to parse the MPQ file, could be corrupted or not a replay file
     #[error("MPQ")]
@@ -63,6 +64,10 @@ pub enum S2ProtocolError {
     /// The Minimap.tga of the map caches could not be decoded.
     #[error("Minimap: {0}")]
     Minimap(String),
+    /// The terrain textures of the map caches (`t3TextureMasks`, `TerrainData.xml`) could not be
+    /// decoded.
+    #[error("TerrainTextures: {0}")]
+    TerrainTextures(String),
     /// An XML serde error when reading replay caches
     #[error("SerdeXml: {0}")]
     SerdeXML(#[from] serde_xml_rs::Error),
@@ -84,6 +89,11 @@ pub enum S2ProtocolError {
     /// included in the binary with include_assets.
     #[error("serde_json")]
     SerdeJson(#[from] serde_json::Error),
+
+    /// The MPQ has no user data or its signature is not `StarCraft II replay\x1b11`: not a
+    /// replay, or a damaged or hand edited one.
+    #[error("Not a StarCraft II replay header: {0}")]
+    FileHeader(String),
 }
 
 /// Conversion of errors from byte aligned parser
