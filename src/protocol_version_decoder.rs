@@ -48,11 +48,22 @@ impl ProtocolHeader {
     }
 }
 
-/// Read the protocol header, this can be read with any protocol
+/// The signature of the protocol header of every replay.
+pub const REPLAY_SIGNATURE: &[u8] = b"StarCraft II replay\x1b11";
+
+/// Read the protocol header, this can be read with any protocol.
+/// An MPQ without user data or with another signature is
+/// [`S2ProtocolError::FileHeader`], so that one damaged file does not stop a directory scan.
 pub fn read_protocol_header(mpq: &MPQ) -> S2ProtoResult<&[u8], ReplaySHeader> {
-    let user_data = mpq
-        .user_data
-        .as_ref()
-        .expect("Unable to locate protocol version, missing user data in MPQ");
-    Ok(ReplaySHeader::parse(&user_data.content)?)
+    let user_data = mpq.user_data.as_ref().ok_or_else(|| {
+        S2ProtocolError::FileHeader("no user data in the MPQ, no protocol header".to_string())
+    })?;
+    let (tail, header) = ReplaySHeader::parse(&user_data.content)?;
+    if header.m_signature != REPLAY_SIGNATURE {
+        return Err(S2ProtocolError::FileHeader(format!(
+            "signature {:?}",
+            String::from_utf8_lossy(&header.m_signature)
+        )));
+    }
+    Ok((tail, header))
 }

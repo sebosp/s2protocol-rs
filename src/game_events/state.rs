@@ -1,7 +1,7 @@
 //! Handles the state change of units for GameEvents
 
 use super::*;
-use crate::tracker_events::unit_tag_index;
+use crate::tracker_events::{unit_tag_index, unit_tag_recycle};
 use crate::*;
 
 /// The game events seem to be at this ratio when compared to Tracker Events.
@@ -62,8 +62,9 @@ pub fn handle_cmd(
     // TODO:: Many commands, such as "Stop", should clear the unit.cmd.other_unit.
     // For now this is not implemented and a unit maybe have a target unit, even tho the active
     // command is Stop.
+    // The units are registered by tag index, the command has the whole tag.
     let target = if let GameSCmdData::TargetUnit(tu) = &cmd.m_data {
-        sc2_state.units.get(&tu.m_tag).cloned()
+        sc2_state.unit_by_tag(tu.m_tag).cloned()
     } else {
         None
     };
@@ -81,8 +82,7 @@ pub fn handle_cmd(
         .as_ref()
         .map(|abil| sc2_state.balance_ability_link(abil.m_abil_link));
     for selected_unit in &user_selected_unit_ids {
-        let unit_index = unit_tag_index(*selected_unit as i64);
-        if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
+        if let Some(registered_unit) = unit_by_tag_mut(&mut sc2_state.units, *selected_unit) {
             let mut unit_cmd = cmd.clone();
             match unit_cmd.m_abil {
                 // A command without an ability, a right click (a move or an attack): the unit
@@ -156,8 +156,7 @@ pub fn handle_update_target_point(
         user_selected_unit_ids = state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
     }
     for selected_unit in &user_selected_unit_ids {
-        let unit_index = unit_tag_index(*selected_unit as i64);
-        if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
+        if let Some(registered_unit) = unit_by_tag_mut(&mut sc2_state.units, *selected_unit) {
             registered_unit
                 .cmd
                 .set_data_target_point(target_point.m_target.clone());
@@ -218,8 +217,7 @@ pub fn handle_update_target_unit(
         user_selected_unit_ids = state.control_groups[ACTIVE_UNITS_GROUP_IDX].clone();
     }
     for selected_unit in &user_selected_unit_ids {
-        let unit_index = unit_tag_index(*selected_unit as i64);
-        if let Some(ref mut registered_unit) = sc2_state.units.get_mut(&unit_index) {
+        if let Some(registered_unit) = unit_by_tag_mut(&mut sc2_state.units, *selected_unit) {
             registered_unit
                 .cmd
                 .set_data_target_unit(target_unit.m_target.clone().into());
@@ -243,6 +241,14 @@ pub fn handle_update_target_unit(
     )
 }
 
+/// The unit of a tag of the game events, see [`SC2ReplayState::unit_by_tag`]; on the units only,
+/// to borrow the other fields of the state meanwhile.
+fn unit_by_tag_mut(units: &mut HashMap<u32, SC2Unit>, tag: u32) -> Option<&mut SC2Unit> {
+    units
+        .get_mut(&unit_tag_index(tag as i64))
+        .filter(|unit| unit.tag_recycle == unit_tag_recycle(tag as i64))
+}
+
 /// Removes the changes to the units that signify they are selected.
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn unmark_previously_selected_units(
@@ -254,7 +260,11 @@ pub fn unmark_previously_selected_units(
     if let Some(state) = sc2_state.user_state.get_mut(&user_id) {
         for prev_unit in &state.control_groups[ACTIVE_UNITS_GROUP_IDX] {
             let unit_index = unit_tag_index(*prev_unit as i64);
-            if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_index) {
+            if let Some(unit) = sc2_state
+                .units
+                .get_mut(&unit_index)
+                .filter(|unit| unit.tag_recycle == unit_tag_recycle(*prev_unit as i64))
+            {
                 if unit.is_selected {
                     unit.is_selected = false;
                     unit.radius *= 0.5;
@@ -283,7 +293,7 @@ pub fn mark_selected_units(
     let mut updated_unit_ids = vec![];
     for new_selected_unit in selected_units {
         let unit_index = unit_tag_index(*new_selected_unit as i64);
-        if let Some(ref mut unit) = sc2_state.units.get_mut(&unit_index) {
+        if let Some(unit) = sc2_state.unit_by_tag_mut(*new_selected_unit) {
             if !unit.is_selected {
                 unit.is_selected = true;
                 unit.radius *= 2.0;
@@ -346,10 +356,20 @@ pub fn handle_selection_delta(
     )
 }
 
-/// Whether the unit at the index of the selection is removed by the mask: the mask is the integer
-/// Blizzard's decoder reads, unit `i` is its bit `i`.
+/// Whether the unit at the index of the selection is removed by the mask. The mask is the integer
+/// Blizzard's decoder reads, made of 8 bit chunks, the first chunk in its most significant bits:
+/// units 0 to 7 are the first chunk, its bit `k` unit `k`, units 8 to 15 the next one, and so on,
+/// the last chunk has the remaining bits. Up to 8 units, unit `i` is the bit `i` of the integer.
+/// Checked with the SC2 API on 167 remove masks of the selections of 20 pro replays: 160 match
+/// the game's selection after, 144 when unit `i` was the bit `i` of the integer.
 fn is_masked(mask: &crate::BitArray, idx: usize) -> bool {
-    mask.bit(idx)
+    if idx >= mask.bits {
+        return false;
+    }
+    let chunk = idx / 8;
+    let chunk_bits = (mask.bits - chunk * 8).min(8);
+    let chunk_lowest_bit = mask.bits - chunk * 8 - chunk_bits;
+    mask.bit(chunk_lowest_bit + idx % 8)
 }
 
 /// The units of a selection or control group that remain after the remove mask.
@@ -388,7 +408,9 @@ pub fn remove_from_selection(current: &[u32], mask: &GameSSelectionMask) -> Vec<
     }
 }
 
-/// Adds units to a selection, the selection is sorted by unit tag, as sc2reader does.
+/// Adds units to a selection, the selection is sorted by unit tag, as sc2reader does. Checked
+/// against the game (SC2 API, 20 pro replays): the game's order is not the order of the unit types
+/// (subgroup priorities) nor the order the units were added in, those match it less.
 fn add_to_selection(mut selection: Vec<u32>, units: &[u32]) -> Vec<u32> {
     selection.extend_from_slice(units);
     selection.sort_unstable();
@@ -579,10 +601,27 @@ mod tests {
     }
 
     #[test]
-    fn it_reads_the_lowest_indices_from_the_lowest_bits_of_the_mask() {
-        // 10 units: the integer 0b10_0000_0001 has the bits 0 and 9 set.
-        let mask = crate::BitArray::new(10, vec![0b10, 0b0000_0001]);
-        let masked: Vec<usize> = (0..10).filter(|idx| is_masked(&mask, *idx)).collect();
-        assert_eq!(masked, vec![0, 9]);
+    fn it_reads_the_masks_in_chunks_of_8_units() {
+        let masked = |mask: crate::BitArray| -> Vec<usize> {
+            (0..mask.bits)
+                .filter(|idx| is_masked(&mask, *idx))
+                .collect()
+        };
+        // Up to 8 units, unit `i` is bit `i`: 0b010 removes the second unit.
+        assert_eq!(masked(crate::BitArray::new(3, vec![0b010])), vec![1]);
+        // 9 units, the integer 0b1_1111_1001: units 0 to 7 are its bits 1 to 8, unit 8 its bit 0.
+        // A replay of 81433 (loop 4669): the game kept the first 2 of 9 eggs and larvae.
+        assert_eq!(
+            masked(crate::BitArray::new(9, vec![1, 0b1111_1001])),
+            vec![2, 3, 4, 5, 6, 7, 8]
+        );
+        // A replay of 89165 (loop 11343): of 9 zealots, the integer 9 removed the third and the
+        // last ones.
+        assert_eq!(masked(crate::BitArray::new(9, vec![0, 9])), vec![2, 8]);
+        // 10 units, the integer 0b10_0000_0001: unit 7 is bit 9, unit 8 bit 0.
+        assert_eq!(
+            masked(crate::BitArray::new(10, vec![0b10, 0b0000_0001])),
+            vec![7, 8]
+        );
     }
 }

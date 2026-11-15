@@ -14,6 +14,7 @@ pub mod map_info;
 pub mod minimap;
 pub mod t3_height_map;
 pub mod t3_terrain;
+pub mod terrain_textures;
 
 use cache_objects::PlacedObjects;
 use document_header::DocumentHeader;
@@ -221,6 +222,67 @@ impl CacheCollection {
             t3_terrain,
             placed_objects,
             minimap,
+        })
+    }
+}
+
+impl CacheCollection {
+    /// A file of a cache read from its archive, for the files the collection does not keep.
+    pub fn read_cache_file(
+        &self,
+        cache_id: &str,
+        file_name: &str,
+    ) -> Result<Vec<u8>, S2ProtocolError> {
+        let path = format!(
+            "{}/{}.{}",
+            self.cache_path, cache_id, CACHE_MPQ_ARCHIVE_EXTENSION
+        );
+        let (_, cache_contents) = crate::read_mpq(&path)?;
+        let (_, mpq) = nom_mpq::parser::parse(&cache_contents)?;
+        let (_, content) = mpq.read_mpq_file_sector(file_name, false, &cache_contents)?;
+        Ok(content)
+    }
+
+    /// The textures of the terrain of the map: the names and weights of its 8 layers, its terrain
+    /// type when the map changes it, and the colors of the layers estimated from the minimap. Read
+    /// apart from [`Self::build_map_cache`]: the masks are megabytes, only a 3D view needs them.
+    #[instrument(level = "debug", skip(self))]
+    pub fn build_terrain_textures(
+        &self,
+        cache_ids: &[String],
+    ) -> Result<terrain_textures::TerrainTextures, S2ProtocolError> {
+        use terrain_textures::*;
+        let cache_ids = cache_ids.iter().map(|x| x.as_str()).collect::<Vec<&str>>();
+        let (cache_handle_id, map_info_contents) =
+            self.try_get_sector_content_from_collection(&cache_ids, MAP_INFO_FILE_NAME)?;
+        let (_, map_info) = MapInfo::parse(cache_handle_id.clone(), &map_info_contents)?;
+        let map_cache_id = vec![cache_handle_id.as_str()];
+        let (_, terrain_xml) =
+            self.try_get_sector_content_from_collection(&map_cache_id, T3_TERRAIN_MAP_FILE_NAME)?;
+        let t3_terrain = T3Terrain::parse(cache_handle_id.clone(), &terrain_xml)?;
+        // The masks and the terrain data are not kept in the collection (megabytes, only a 3D view
+        // needs them), they are read from the map's archive.
+        let masks_contents = self.read_cache_file(&cache_handle_id, T3_TEXTURE_MASKS_FILE_NAME)?;
+        let masks = T3TextureMasks::parse(cache_handle_id.clone(), &masks_contents)?;
+        let tile_set = t3_terrain.height_map.tile_set.clone();
+        let terrain_data = self
+            .read_cache_file(&cache_handle_id, TERRAIN_DATA_FILE_NAME)
+            .and_then(|contents| TerrainData::parse(&contents, &tile_set))
+            .inspect_err(|err| tracing::debug!("No terrain data: {err:?}"))
+            .ok();
+        let layer_colors = self
+            .try_get_sector_content_from_collection(&map_cache_id, MINIMAP_FILE_NAME)
+            .and_then(|(_, contents)| Minimap::parse(cache_handle_id.clone(), &contents))
+            .map(|minimap| LayerColors::fit(&masks, &minimap, &map_info))
+            .inspect_err(|err| tracing::warn!("No minimap for the terrain colors: {err:?}"))
+            .ok();
+        Ok(TerrainTextures {
+            cache_handle_id,
+            tile_set,
+            layer_names: t3_terrain.blend_texture_names(),
+            masks,
+            terrain_data,
+            layer_colors,
         })
     }
 }

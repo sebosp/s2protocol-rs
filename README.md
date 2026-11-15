@@ -32,9 +32,9 @@ by using
 
 ```toml
 [dependencies]
-s2protocol = "5.1"
+s2protocol = "6"
 # With the snapshots (Arrow IPC) and the map cache downloads:
-# s2protocol = { version = "5.1", features = ["dep_arrow"] }
+# s2protocol = { version = "6", features = ["dep_arrow"] }
 ```
 
 The map and the players of a replay, `examples/readme_details.rs`:
@@ -359,7 +359,7 @@ all the days, `partitions` the number of days and `added` the replays added by t
 
 ```json
 {
-  "s2protocol_version": "5.1.0",
+  "s2protocol_version": "6.0.0",
   "created_at": "2026-10-24T10:15:00Z",
   "elapsed_ms": 95021,
   "replays": 1470,

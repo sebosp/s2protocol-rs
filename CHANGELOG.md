@@ -4,6 +4,45 @@ The changes of each version of s2protocol, newest first. A change of the snapsho
 the minor version, see [Snapshot metadata](README.md#snapshot-metadata): the applications
 compare the major and minor versions of the snapshot with theirs and ask for a Rebuild.
 
+## 6.0.0 (2026-11-15)
+
+Generate the snapshots again: the targets of the commands and the selections change.
+`S2ProtocolError` has two new variants and is `#[non_exhaustive]` from now on, a `match` on it
+needs a `_` arm; the next variants will not be breaking changes. nom-mpq 2.0.14: an archive cut
+short is an error, not a panic.
+
+- A replay without user data or whose signature is not `StarCraft II replay\x1b11` is
+  `S2ProtocolError::FileHeader`, it panicked (`assert_eq!` in `read_details`, `read_init_data`
+  and the event readers, `expect` in `read_protocol_header`). One hand edited replay of
+  SpawningTool (`DeadGame2_recovered_max_compat`) stopped the whole Optimize of a 40k replay
+  directory. `read_protocol_header` checks the signature, `REPLAY_SIGNATURE` is public. The new
+  variant of `S2ProtocolError` is a breaking change for a `match` that lists all of them.
+- The target of a command at a unit is found: `handle_cmd` looked the whole tag up in the units,
+  which are by tag index, so `target_unit_name` of `cmd_target_unit` was empty for 97% of the
+  rows (1,932 of 66,189 named in May 2026 of the PRO snapshot). Checked with the SC2 API on 20
+  pro replays: 1,850 of 1,900 targets named, 1,813 of the 1,816 the game shows are its unit type.
+  The snapshots fill it once rebuilt.
+- The selections and control groups keep the dead units until a remove mask of the game removes
+  them, as the game does: `handle_unit_died` removed them at once, so the masks of the same loop
+  removed other units (the eggs hatching in a control group). `SC2Unit::tag_recycle` and
+  `SC2ReplayState::unit_by_tag` resolve the tags of the groups, a dead unit's tag index is reused.
+  The commands are named after the units of the selection.
+- The remove masks of the selections and control groups longer than 8 units are read in chunks
+  of 8 units, as the game does: units 0 to 7 are the 8 most significant bits of the integer
+  Blizzard's decoder reads, the last units its lowest bits; unit `i` was its bit `i`. On 167
+  masks with a known effect, 160 match the game (144 before).
+- With both, the selections that last 32 loops or more match the game's 94.5% of the time on
+  those 20 replays (90.9% before), and 94.1% on 20 other replays recorded afterwards (89.9%).
+
+- The terrain textures of the map caches, `cache_handles::terrain_textures` and
+  `CacheCollection::build_terrain_textures`: the weights of the 8 terrain textures at each point
+  (`t3TextureMasks`, 8 points per cell, 4 bits per weight in 64x64 blocks), the texture names and
+  the tile set (`T3Terrain::blend_texture_names`, `HeightMap::tile_set`), the terrain type when the
+  map changes it (`TerrainData.xml`: fog, lighting, cliffs) and the color of each texture fitted to
+  the minimap (`LayerColors`, with the fit error: a hand-painted minimap does not fit). Read apart
+  from `build_map_cache`, straight from the archive (`CacheCollection::read_cache_file`): the
+  masks are megabytes, only a 3D view needs them. New variant `S2ProtocolError::TerrainTextures`.
+
 ## 5.1.0 (2026-11-08)
 
 The snapshot format changed, generate the snapshots again.

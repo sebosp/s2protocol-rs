@@ -44,6 +44,10 @@ pub const ACTIVE_UNITS_GROUP_IDX: usize = 10usize;
 pub struct SC2Unit {
     /// The tag index of the unit.
     pub tag_index: u32,
+    /// The tag recycle of the unit: a tag index is reused by a new unit after one dies, the game
+    /// events refer to the units by index and recycle.
+    #[serde(default)]
+    pub tag_recycle: u32,
     /// The last time the unit was updated
     pub last_game_loop: i64,
     /// The owner user_id
@@ -276,6 +280,21 @@ impl From<SC2ReplayBasicData> for SC2ReplayState {
 }
 
 impl SC2ReplayState {
+    /// The unit of a tag of the game events (index and recycle), None if it died: its tag index
+    /// may be used by another unit since.
+    pub fn unit_by_tag(&self, tag: u32) -> Option<&SC2Unit> {
+        self.units
+            .get(&tracker_events::unit_tag_index(tag as i64))
+            .filter(|unit| unit.tag_recycle == tracker_events::unit_tag_recycle(tag as i64))
+    }
+
+    /// The unit of a tag of the game events, to change it, see [`Self::unit_by_tag`].
+    pub fn unit_by_tag_mut(&mut self, tag: u32) -> Option<&mut SC2Unit> {
+        self.units
+            .get_mut(&tracker_events::unit_tag_index(tag as i64))
+            .filter(|unit| unit.tag_recycle == tracker_events::unit_tag_recycle(tag as i64))
+    }
+
     /// The ability link of the balance data for a link of the replay.
     pub fn balance_ability_link(&self, link: u16) -> u16 {
         match &self.derived_ability_links {

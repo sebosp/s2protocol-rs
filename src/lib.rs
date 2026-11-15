@@ -40,7 +40,7 @@ pub use common::*;
 pub use error::*;
 pub use filters::*;
 pub use init_data::*;
-pub use protocol_version_decoder::read_protocol_header;
+pub use protocol_version_decoder::{REPLAY_SIGNATURE, read_protocol_header};
 use std::collections::HashMap;
 use std::io::Read;
 use std::path::PathBuf;
