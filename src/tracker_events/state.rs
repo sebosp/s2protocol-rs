@@ -84,6 +84,7 @@ pub fn handle_unit_born(
     game_loop: i64,
     unit_born: UnitBornEvent,
 ) -> (ReplayTrackerEvent, UnitChangeHint) {
+    sc2_state.unit_deaths.born(game_loop, &unit_born);
     let creator: Option<SC2Unit> = if let Some(creator_unit_tag) = unit_born.creator_unit_tag_index
     {
         if let Some(unit) = sc2_state.units.get_mut(&creator_unit_tag) {
@@ -117,6 +118,7 @@ pub fn handle_unit_born(
             init_game_loop: game_loop,
             tag_index: unit_born.unit_tag_index,
             tag_recycle: unit_born.unit_tag_recycle,
+            creator_ability_name: unit_born.creator_ability_name.clone(),
             player_name: get_player_name_by_tracker_control_player_id(
                 &sc2_state.user_state,
                 unit_born.control_player_id,
@@ -191,6 +193,7 @@ pub fn handle_unit_done(
         unit.last_game_loop = game_loop;
         unit.is_init = false;
         unit.set_unit_props(&sc2_state.balance_units);
+        sc2_state.unit_deaths.done(game_loop, unit);
         (
             ReplayTrackerEvent::UnitDone(unit_done),
             UnitChangeHint::Registered {
@@ -245,11 +248,14 @@ pub fn handle_unit_position(
     )
 }
 
+/// Removes the unit from the state and sets the cause of the event, see
+/// [`UnitDiedCause`]: the tracker events report a UnitDied for the units that morph into others
+/// or expire too.
 #[tracing::instrument(level = "debug", skip(sc2_state))]
 pub fn handle_unit_died(
     sc2_state: &mut SC2ReplayState,
     game_loop: i64,
-    unit_dead: UnitDiedEvent,
+    mut unit_dead: UnitDiedEvent,
 ) -> (ReplayTrackerEvent, UnitChangeHint) {
     // The dead unit stays in the selections and control groups: the game removes it from them
     // with the remove masks of its later events, which count the dead units. Removing it here
@@ -266,6 +272,11 @@ pub fn handle_unit_died(
                 "Unit {} reported dead but was not registered before.",
                 unit_dead.unit_tag_index
             );
+            unit_dead.cause = if unit_dead.killer_player_id.is_some() {
+                UnitDiedCause::Killed
+            } else {
+                UnitDiedCause::Removed
+            };
             (
                 ReplayTrackerEvent::UnitDied(unit_dead),
                 UnitChangeHint::None,
@@ -273,6 +284,12 @@ pub fn handle_unit_died(
         }
         Some(val) => {
             tracing::debug!("Unit died: {:?}", val);
+            unit_dead.cause = sc2_state.unit_deaths.classify(
+                game_loop,
+                &unit_dead,
+                &val,
+                &sc2_state.balance_units,
+            );
             let killer_unit: Option<SC2Unit> = match unit_dead.killer_unit_tag_index {
                 Some(killer_unit_tag_index) => sc2_state.units.get(&killer_unit_tag_index).cloned(),
                 None => None,

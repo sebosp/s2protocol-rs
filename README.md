@@ -444,7 +444,7 @@ $ echo "SELECT ability, count() FROM read_ipc('ipcs/year=*/month=*/day=*/cmd_tar
 
 ## Status
 
-- [x] The replays from protocol 75689 (4.10, the client of AI Arena) to the current ladder (98310):
+- [x] The replays from protocol 75689 (4.10, the client of AI Arena) to the current ladder (98745):
   the types of `protocol75689` up to 75689, the ones of `protocol87702` after it.
 - [x] Parsing unit movement is done.
 - [x] Decoding the tag/recycle done to match Game Events.

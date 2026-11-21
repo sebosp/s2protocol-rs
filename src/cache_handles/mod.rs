@@ -12,6 +12,7 @@ pub mod m3;
 pub mod map;
 pub mod map_info;
 pub mod minimap;
+pub mod pathing;
 pub mod t3_height_map;
 pub mod t3_terrain;
 pub mod terrain_textures;
@@ -20,6 +21,7 @@ use cache_objects::PlacedObjects;
 use document_header::DocumentHeader;
 use map_info::MapInfo;
 use minimap::Minimap;
+use pathing::PathingGrid;
 use rayon::prelude::*;
 use std::{collections::HashMap, path::Path};
 use t3_height_map::T3HeightMap;
@@ -48,6 +50,8 @@ pub struct MapCache {
     pub placed_objects: PlacedObjects,
     /// The minimap image, None if the map cache does not have it or it cannot be decoded.
     pub minimap: Option<Minimap>,
+    /// The ground pathing, None if the map cache does not have its cliff levels.
+    pub pathing: Option<PathingGrid>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -74,7 +78,9 @@ fn is_file_known(fname: &str) -> bool {
         | T3_HEIGHT_MAP_FILE_NAME
         | T3_TERRAIN_MAP_FILE_NAME
         | PLACED_OBJECTS_FILE_NAME
-        | MINIMAP_FILE_NAME => true,
+        | MINIMAP_FILE_NAME
+        | pathing::CLIFF_LEVEL_FILE_NAME
+        | pathing::NO_PATHING_FILE_NAME => true,
         _ => false,
     }
 }
@@ -212,8 +218,32 @@ impl CacheCollection {
 
         let minimap = self
             .try_get_sector_content_from_collection(&map_info_only_cache_id, MINIMAP_FILE_NAME)
-            .and_then(|(_, cache_contents)| Minimap::parse(map_cache_handle_id, &cache_contents))
+            .and_then(|(_, cache_contents)| {
+                Minimap::parse(map_cache_handle_id.clone(), &cache_contents)
+            })
             .inspect_err(|err| tracing::warn!("No minimap: {err:?}"))
+            .ok();
+        let no_pathing = self
+            .try_get_sector_content_from_collection(
+                &map_info_only_cache_id,
+                pathing::NO_PATHING_FILE_NAME,
+            )
+            .ok()
+            .map(|(_, contents)| contents);
+        let pathing = self
+            .try_get_sector_content_from_collection(
+                &map_info_only_cache_id,
+                pathing::CLIFF_LEVEL_FILE_NAME,
+            )
+            .and_then(|(_, cliff_level)| {
+                PathingGrid::parse(
+                    map_cache_handle_id,
+                    &cliff_level,
+                    no_pathing.as_deref(),
+                    &map_info,
+                )
+            })
+            .inspect_err(|err| tracing::warn!("No pathing grid: {err:?}"))
             .ok();
         Ok(MapCache {
             map_info,
@@ -222,6 +252,7 @@ impl CacheCollection {
             t3_terrain,
             placed_objects,
             minimap,
+            pathing,
         })
     }
 }

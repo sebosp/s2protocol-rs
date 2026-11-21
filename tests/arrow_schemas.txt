@@ -122,6 +122,7 @@ y UInt8 false
 unit_killer_name Utf8 false
 killer_unit_tag_index UInt32 true
 killer_unit_tag_recycle UInt32 true
+cause Utf8 false
 ext_replay_loop Int64 false
 ext_replay_seconds UInt32 false
 ext_fs_id UInt64 false

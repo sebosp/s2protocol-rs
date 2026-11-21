@@ -24,6 +24,7 @@ use super::ipc_writer::write_batches;
 use super::partitioned::key_dirs;
 use super::rows::{ArrowRow, TryIntoArrow};
 use crate::snapshot::{SnapshotMetadata, SnapshotProgress};
+use crate::tracker_events::UnitDiedCause;
 use arrow::array::{Array, AsArray, RecordBatch, StringArray, StructArray};
 use arrow::datatypes::{Int32Type, Int64Type, UInt8Type, UInt32Type, UInt64Type};
 use arrow::ipc::reader::FileReader;
@@ -418,6 +419,9 @@ fn game_abilities(day: &Path) -> Result<Vec<GameAbilityRow>, BoxError> {
 
 /// The units made, lost and their kills, per game, player and unit type. The players of the
 /// tracker events are their ids, the births tell the name of each id and the owner of each unit.
+/// The hallucinations are not made, the deaths that are not losses (`cause` of the unit died file:
+/// a drone that became a building, a larva that hatched, a MULE that expired...) are not lost, see
+/// [`crate::tracker_events::UnitDiedCause`].
 fn game_units(
     day: &Path,
     durations: &HashMap<u64, u32>,
@@ -441,6 +445,7 @@ fn game_units(
         "unit_tag_index",
         "unit_tag_recycle",
         "unit_type_name",
+        "creator_ability_name",
     ];
     read_columns(&day.join(super::UNIT_BORN_ARROW_FNAME), &columns, |batch| {
         let ids = column(batch, "ext_fs_id")?.as_primitive::<UInt64Type>();
@@ -449,12 +454,15 @@ fn game_units(
         let tags = column(batch, "unit_tag_index")?.as_primitive::<UInt32Type>();
         let recycles = column(batch, "unit_tag_recycle")?.as_primitive::<UInt32Type>();
         let units = strings(batch, "unit_type_name")?;
+        let abilities = strings(batch, "creator_ability_name")?;
         for row in 0..batch.num_rows() {
             let game = ids.value(row);
             let tag = (game, tags.value(row), recycles.value(row));
             let control = (!controls.is_null(row)).then(|| controls.value(row));
             owners.entry(tag).or_insert(control);
-            if players.is_null(row) {
+            if players.is_null(row)
+                || (!abilities.is_null(row) && abilities.value(row).starts_with("Hallucination"))
+            {
                 continue;
             }
             let player = names.id(players.value(row));
@@ -476,7 +484,12 @@ fn game_units(
         "killer_player_id",
         "unit_killer_name",
         "unit_died_name",
+        "cause",
     ];
+    let (killed, own_player) = (
+        UnitDiedCause::Killed.as_str(),
+        UnitDiedCause::OwnPlayer.as_str(),
+    );
     read_columns(&day.join(super::UNIT_DIED_ARROW_FNAME), &columns, |batch| {
         let ids = column(batch, "ext_fs_id")?.as_primitive::<UInt64Type>();
         let tags = column(batch, "unit_tag_index")?.as_primitive::<UInt32Type>();
@@ -484,7 +497,12 @@ fn game_units(
         let killers = column(batch, "killer_player_id")?.as_primitive::<UInt8Type>();
         let killer_units = strings(batch, "unit_killer_name")?;
         let died_units = strings(batch, "unit_died_name")?;
+        let causes = strings(batch, "cause")?;
         for row in 0..batch.num_rows() {
+            let cause = causes.value(row);
+            if cause != killed && cause != own_player {
+                continue;
+            }
             let game = ids.value(row);
             let owner = owners
                 .get(&(game, tags.value(row), recycles.value(row)))
@@ -495,7 +513,7 @@ fn game_units(
                 let unit = names.id(died);
                 counts.entry((game, *player, unit)).or_default().died += 1;
             }
-            if killers.is_null(row) || killer_units.value(row).is_empty() {
+            if cause != killed || killers.is_null(row) || killer_units.value(row).is_empty() {
                 continue;
             }
             let killer = killers.value(row);
@@ -1058,6 +1076,7 @@ mod tests {
                 Field::new("unit_tag_index", DataType::UInt32, false),
                 Field::new("unit_tag_recycle", DataType::UInt32, false),
                 string("unit_type_name", false),
+                string("creator_ability_name", true),
             ]),
             super::super::UNIT_DIED_ARROW_FNAME => Schema::new(vec![
                 Field::new("ext_fs_id", DataType::UInt64, false),
@@ -1066,6 +1085,7 @@ mod tests {
                 Field::new("killer_player_id", DataType::UInt8, true),
                 string("unit_killer_name", false),
                 string("unit_died_name", false),
+                string("cause", false),
             ]),
             _ => Schema::new(vec![
                 Field::new("ext_fs_id", DataType::UInt64, false),
@@ -1108,11 +1128,19 @@ mod tests {
         }));
         commands.push(command("", 2));
         write_json_rows(&day, super::super::CMD_TARGET_POINT_ARROW_FNAME, commands);
-        let born = |player: Option<&str>, control: Option<u8>, tag: u32, unit: &str| {
+        let born_from = |player: Option<&str>,
+                         control: Option<u8>,
+                         tag: u32,
+                         unit: &str,
+                         ability: Option<&str>| {
             serde_json::json!({
                 "ext_fs_id": game, "player_name": player, "control_player_id": control,
                 "unit_tag_index": tag, "unit_tag_recycle": 1, "unit_type_name": unit,
+                "creator_ability_name": ability,
             })
+        };
+        let born = |player: Option<&str>, control: Option<u8>, tag: u32, unit: &str| {
+            born_from(player, control, tag, unit, None)
         };
         write_json_rows(
             &day,
@@ -1124,13 +1152,32 @@ mod tests {
                 born(Some("Clan<sp/>Ana"), Some(1), 2, "Marine"),
                 born(Some("Bob"), Some(2), 3, "Zergling"),
                 born(None, None, 4, "MineralField"),
+                born(Some("Bob"), Some(2), 5, "Drone"),
+                born(Some("Bob"), Some(2), 6, "Larva"),
+                // A hallucination is not a unit made.
+                born_from(
+                    Some("Clan<sp/>Ana"),
+                    Some(1),
+                    7,
+                    "Phoenix",
+                    Some("HallucinationPhoenix"),
+                ),
             ],
         );
-        let died = |tag: u32, killer: Option<u8>, killer_unit: &str, unit: &str| {
+        let died_of = |tag: u32, killer: Option<u8>, killer_unit: &str, unit: &str, cause: &str| {
             serde_json::json!({
                 "ext_fs_id": game, "unit_tag_index": tag, "unit_tag_recycle": 1,
                 "killer_player_id": killer, "unit_killer_name": killer_unit, "unit_died_name": unit,
+                "cause": cause,
             })
+        };
+        let died = |tag: u32, killer: Option<u8>, killer_unit: &str, unit: &str| {
+            let cause = if killer == Some(1) && unit != "Marine" {
+                "killed"
+            } else {
+                "own_player"
+            };
+            died_of(tag, killer, killer_unit, unit, cause)
         };
         write_json_rows(
             &day,
@@ -1139,6 +1186,11 @@ mod tests {
                 died(3, Some(1), "SiegeTankSieged", "Zergling"),
                 // A unit killed by its owner is not a kill, it is still lost.
                 died(2, Some(1), "SiegeTankSieged", "Marine"),
+                // A drone that became a building, a larva that hatched, a hallucination killed
+                // are not lost, nor kills.
+                died_of(5, None, "", "Drone", "morphed"),
+                died_of(6, None, "", "Larva", "morphed"),
+                died_of(7, Some(2), "Zergling", "Phoenix", "hallucination"),
             ],
         );
         let metadata = SnapshotMetadata {
@@ -1192,6 +1244,10 @@ mod tests {
         assert_eq!(unit("Marine").died, 1);
         assert_eq!(unit("Zergling").player_name, "Bob");
         assert_eq!(unit("Zergling").died, 1);
+        assert_eq!(unit("Zergling").kills, 0);
+        assert_eq!((unit("Drone").born, unit("Drone").died), (1, 0));
+        assert_eq!(unit("Larva").died, 0);
+        assert!(!units.iter().any(|row| row.unit == "Phoenix"));
 
         let period_rows = |dir: PathBuf| -> Vec<AbilityUsageRow> {
             read_rows(&dir.join(ABILITY_USAGE_ARROW_FNAME)).unwrap()

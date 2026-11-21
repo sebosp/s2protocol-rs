@@ -128,6 +128,7 @@ impl From<ReplayTrackerSUnitDiedEvent> for ReplayTrackerEvent {
             y: source.m_y,
             killer_unit_tag_index: source.m_killer_unit_tag_index,
             killer_unit_tag_recycle: source.m_killer_unit_tag_recycle,
+            cause: Default::default(),
         })
     }
 }
