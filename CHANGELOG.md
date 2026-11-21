@@ -4,6 +4,43 @@ The changes of each version of s2protocol, newest first. A change of the snapsho
 the minor version, see [Snapshot metadata](README.md#snapshot-metadata): the applications
 compare the major and minor versions of the snapshot with theirs and ask for a Rebuild.
 
+## 6.1.0 (2026-11-21)
+
+6.1.0: generate the snapshots again, `unit_died.arrow` has a new column `cause` and the units
+lost of `game_units` change.
+
+- The balance data of the ladder patch 98745 (`assets/BalanceData/98745`, the same as 98310's):
+  a version without its own balance data has no ability names, its commands were empty.
+  Generate the days of its replays again.
+- Why a unit died, `UnitDiedEvent::cause` (`UnitDiedCause`) and the `cause` column of
+  `unit_died.arrow`: `killed`, `own_player`, `morphed`, `expired`, `cancelled`, `hallucination`,
+  `removed`. The tracker events report a UnitDied for a drone that becomes a building (when the
+  building is done, without a killer), a larva that hatches, a zergling that becomes a baneling,
+  templars that merge, and for a MULE, an adept shade, a locust or a changeling whose time runs
+  out (killed by their creator or themselves): they were counted as units lost. On the 22,037
+  games of two players of SpawningTool, 52% of the drones that died and 71% of all the Zerg
+  deaths were not losses; 17% of the Protoss deaths (shades, novas, hallucinations, archons) and
+  10% of the Terran ones (MULEs, KD8 charges, auto-turrets). `handle_unit_died` sets it from the
+  killer and the units born, done or killed at the same game loop and the one before
+  (`tracker_events::unit_died_cause`); the drone of a building killed while it is built and the
+  templars of an archon killed while it merges die without a killer, they are `killed`. Checked:
+  the 270,196 drones morphed match the 270,318 Zerg buildings done, the 39k cancelled the 35.6k
+  `BuildInProgress.Cancel` commands, a unit killed by another player is always `killed`.
+  `UnitDiedCause::is_loss` (killed or own player) and `is_kill` are what the applications count.
+- `game_units`: `died` counts the losses only and `kills` the `killed` units, `born` leaves out
+  the hallucinations of the sentries.
+- `SC2Unit::creator_ability_name` is set for the units born, it was only for a tag reused.
+
+- The ground pathing of a map (`cache_handles::pathing`, `MapCache::pathing`): the cells a ground
+  unit can walk on, from the cliff levels (`t3SyncCliffLevel`) and the cells painted unpathable
+  (`CellAttribute_Pnp`) inside the playable area. `PathingBlockers` adds the footprints of the
+  buildings, minerals, geysers and rocks of a replay, `PathingGrid::regions` finds the areas they
+  close off (a base walled in). Checked against the grid of the game (SC2 API) on the 8 AI Arena
+  maps of 2026-10 (`tests/pathing.rs`, ignored, the maps in `S2PROTOCOL_PATHING_MAPS`): 96.6 to
+  98.9% of the playable cells agree with the units of the game counted, the same connected regions
+  on 7 maps. Not read yet: the doodads that block the ground (two islands on Ultralove, the
+  platforms of the Xel'Naga towers), the diagonal and huge destructible rocks.
+
 ## 6.0.0 (2026-11-15)
 
 Generate the snapshots again: the targets of the commands and the selections change.

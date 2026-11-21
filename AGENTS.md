@@ -41,6 +41,19 @@ Write the decisions taken with the author here, explicitly, so that the next age
   needs from the games is exported here as facts: a row per event when a game has a few hundred
   of them, counts per player and minute otherwise (`game_actions`, `game_selections`). Values that
   need the game state are computed in the event pass of `ReplayEventRows::collect`.
+- 2026-11-21: idle and trapped units. The replay alone does not tell a unit that stands still:
+  the UnitPositions events skip 42% of the army units, even units that kill, and the bots command
+  their units all the time. Measured with the game (SC2 API, positions every 5 s) on 40 AI Arena
+  games: 4 army units shut in by their own buildings for a minute or more. Trapped units are found
+  with the pathing grid (`cache_handles::pathing`): a ground unit born in an area its buildings
+  close off. The author looks for games with stuck units to tune it.
+- 2026-11-21: a UnitDied is not always a loss. Its `cause` (`UnitDiedEvent::cause`, the `cause`
+  column of `unit_died.arrow`, 6.1.0) is killed, own_player, morphed (a Drone into a building, a
+  Larva or Egg hatching, Zerglings into Banelings, Templars into an Archon), expired (MULE,
+  AutoTurret, AdeptPhaseShift, Broodling, Locust... `EXPIRING_UNIT_TYPES`), cancelled,
+  hallucination or removed. The apps count losses with `is_loss()` and kills with `is_kill()`,
+  never "killer present" (the timed units are killed by their own creator). Measured on 22k games:
+  51% of the Drone deaths are morphs.
 
 ## Code
 

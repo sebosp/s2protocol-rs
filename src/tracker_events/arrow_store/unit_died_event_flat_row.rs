@@ -19,6 +19,10 @@ pub struct UnitDiedEventFlatRow {
     pub unit_killer_name: String,
     pub killer_unit_tag_index: Option<u32>,
     pub killer_unit_tag_recycle: Option<u32>,
+    /// Why the unit died, [`crate::tracker_events::UnitDiedCause::as_str`]: `killed`,
+    /// `own_player`, `morphed`, `expired`, `cancelled`, `hallucination` or `removed`. The units
+    /// lost by a player are the `killed` and `own_player` ones.
+    pub cause: String,
     // TODO: Tho these fields should be equivalent, they were observed in a couple of games.
     // We should corroborate these numbers and remove the loop in favor of the seconds.
     pub ext_replay_loop: i64,
@@ -55,6 +59,7 @@ impl UnitDiedEventFlatRow {
             unit_killer_name,
             killer_unit_tag_index: event.killer_unit_tag_index,
             killer_unit_tag_recycle: event.killer_unit_tag_recycle,
+            cause: event.cause.as_str().to_string(),
             ext_replay_loop,
             ext_replay_seconds,
             ext_fs_id,

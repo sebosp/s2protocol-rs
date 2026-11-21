@@ -257,6 +257,11 @@ pub struct SC2ReplayState {
     /// balance data used, see [`DERIVED_ABILITY_LINKS`].
     #[serde(skip)]
     pub derived_ability_links: Option<DerivedAbilityLinks>,
+
+    /// The creators of the units and the units born, done and killed in the last game loops, to
+    /// tell why a unit died, see [`crate::tracker_events::UnitDiedCause`].
+    #[serde(skip)]
+    pub(crate) unit_deaths: crate::tracker_events::UnitDeathContext,
 }
 
 impl From<SC2ReplayBasicData> for SC2ReplayState {

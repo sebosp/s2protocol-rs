@@ -1,0 +1,94 @@
+{
+  "@id": "Nuke",
+  "abilities": {
+    "ability": []
+  },
+  "armor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "attributes": {
+    "attribute": []
+  },
+  "builds": {
+    "unit": []
+  },
+  "cost": {
+    "@cooldown": null,
+    "@energy": null,
+    "@life": null,
+    "@minerals": 100,
+    "@supply": null,
+    "@time": 60.0,
+    "@vespene": 100
+  },
+  "life": {
+    "@max": 100,
+    "@regenRate": null,
+    "@start": 100
+  },
+  "meta": {
+    "@hotkey": "338",
+    "@icon": "btn-ability-terran-armnuke",
+    "@index": 81,
+    "@name": "572",
+    "@race": "Terr",
+    "@source": "Liberty.SC2Mod",
+    "@tooltip": "0",
+    "@type": null
+  },
+  "misc": {
+    "@cargoCapacity": null,
+    "@cargoSize": 0,
+    "@count": null,
+    "@footprint": null,
+    "@radius": 0.5,
+    "@range": null,
+    "@sightRadius": 0.0,
+    "@speed": null,
+    "@supply": 0.0,
+    "@targets": null
+  },
+  "movement": null,
+  "producer": {
+    "@id": "GhostAcademy",
+    "@name": "260"
+  },
+  "requires": {
+    "unit": [
+      {
+        "@id": "Factory",
+        "@name": "340"
+      },
+      {
+        "@id": "FactoryFlying",
+        "@name": "340"
+      }
+    ]
+  },
+  "researches": null,
+  "score": {
+    "@build": 200,
+    "@kill": 200
+  },
+  "shieldArmor": {
+    "@max": 0,
+    "@start": 0
+  },
+  "shields": null,
+  "strengths": {
+    "unit": []
+  },
+  "trains": {
+    "unit": []
+  },
+  "upgrades": {
+    "upgrade": []
+  },
+  "weaknesses": {
+    "unit": []
+  },
+  "weapons": {
+    "weapon": []
+  }
+}
